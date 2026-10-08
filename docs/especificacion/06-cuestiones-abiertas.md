@@ -18,7 +18,7 @@ Decisiones pendientes de confirmación por la autora del proyecto. Cada cuestió
 | **CP-12** | ¿Puede un usuario cambiar su perfil (Abogado o Aseguradora) después de registrarse? | Sí, desde "Mi perfil", porque el perfil no condiciona permisos. | RF07 |
 | **CP-13** | ¿Se mantiene el tipo de organización "Independiente"? | No. Con la existencia del espacio personal gratuito, los profesionales independientes usan ese espacio; los tipos de organización son Estudio Jurídico y Aseguradora. | RF10 |
 | **CP-14** | ¿Qué tipos de commit en español se adoptan? | Ver la convención propuesta a continuación. | RNF20 |
-| **CP-15** | Repositorio existente de metadatos y firma digital. | Pendiente de recibir para evaluar su reutilización en las capas 1 y 2. | RF39, RF40 |
+| **CP-15** | Repositorio existente de metadatos y firma digital. | **Resuelta**: analizado; ver `docs/arquitectura/reutilizacion-repositorio-tif.md`. | RF39, RF40 |
 | **CP-16** | ¿Cuál es la fecha de entrega del proyecto? | Pendiente; necesaria para priorizar los requisitos **Debería** y **Podría**. | Planificación |
 
 ## Planes propuestos (CP-02)

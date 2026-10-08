@@ -1,0 +1,22 @@
+# Registros de decisiones de arquitectura (ADR)
+
+Un ADR (*Architecture Decision Record*) documenta una decisión de arquitectura relevante: su contexto, las alternativas evaluadas, la decisión tomada y sus consecuencias. Permite entender **por qué** el sistema es como es, y no solo **cómo** es.
+
+## Reglas
+
+- Un archivo por decisión: `NNNN-titulo-corto.md`, numeración correlativa.
+- Una decisión aceptada no se edita: si cambia, se crea un ADR nuevo que la **reemplaza** y el anterior pasa a estado *Reemplazada por ADR-NNNN*.
+- Se usa la plantilla [plantilla.md](plantilla.md).
+
+## Índice
+
+| ADR | Decisión | Estado |
+|---|---|---|
+| [0001](0001-monorepositorio.md) | Monorepositorio con backend, frontend, red neuronal e infraestructura | Aceptada |
+| [0002](0002-react-y-api-rest.md) | Interfaz en React y backend como API REST | Aceptada |
+| [0003](0003-sesion-con-cookies.md) | Autenticación con sesión en cookie en lugar de JWT | Aceptada |
+| [0004](0004-procesamiento-asincrono-rq.md) | Procesamiento de análisis en segundo plano con RQ y Redis | Aceptada |
+| [0005](0005-postgresql-en-ec2.md) | PostgreSQL en la misma instancia EC2 | Propuesta |
+| [0006](0006-capas-de-analisis-strategy.md) | Capas de análisis como Strategy, sin puntaje global | Aceptada |
+| [0007](0007-idioma-espaniol.md) | Español en código, commits y ramas | Aceptada |
+| [0008](0008-migraciones-con-alembic.md) | Migraciones de esquema con Alembic | Aceptada |
