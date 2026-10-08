@@ -7,6 +7,12 @@
       "skillPath": "skills/engineering/code-review/SKILL.md",
       "computedHash": "57cfd4ceb011f05e58a1a4f4cad3b2e03419d371f8990f4bcb32ff0d435a039f"
     },
+    "the-fool": {
+      "source": "jeffallan/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/the-fool/SKILL.md",
+      "computedHash": "0a80318bd1ed6457cade13ad0c13a490b7a20830d00d7e5616d44d51ace1ce0d"
+    },
     "ui-ux-pro-max": {
       "source": "nextlevelbuilder/ui-ux-pro-max-skill",
       "sourceType": "github",
