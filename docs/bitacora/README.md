@@ -17,3 +17,4 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | Fecha | Tema |
 |---|---|
 | 2026-10-08 | [Especificación inicial y estructura del repositorio](2026-10-08-especificacion-y-estructura.md) |
+| 2026-10-08 | [Hoja de ruta y entorno de desarrollo](2026-10-08-hoja-de-ruta-y-entorno.md) |

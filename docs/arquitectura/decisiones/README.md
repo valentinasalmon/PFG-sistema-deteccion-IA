@@ -20,3 +20,4 @@ Un ADR (*Architecture Decision Record*) documenta una decisión de arquitectura 
 | [0006](0006-capas-de-analisis-strategy.md) | Capas de análisis como Strategy, sin puntaje global | Aceptada |
 | [0007](0007-idioma-espaniol.md) | Español en código, commits y ramas | Aceptada |
 | [0008](0008-migraciones-con-alembic.md) | Migraciones de esquema con Alembic | Aceptada |
+| [0009](0009-desarrollo-en-wsl2.md) | Entorno de desarrollo en WSL2 con Ubuntu | Aceptada |

@@ -43,6 +43,8 @@ El detalle de cada carpeta está en [docs/arquitectura/estructura-del-repositori
 | [docs/especificacion/](docs/especificacion/) | Requisitos, reglas de negocio y casos de uso |
 | [docs/funcionalidades/](docs/funcionalidades/) | Especificación, plan y tareas de cada funcionalidad |
 | [docs/arquitectura/decisiones/](docs/arquitectura/decisiones/) | Registros de decisiones de arquitectura (ADR) |
+| [docs/guias/hoja-de-ruta.md](docs/guias/hoja-de-ruta.md) | Fases, funcionalidades e hitos hasta la entrega |
+| [docs/guias/instalacion-entorno-windows.md](docs/guias/instalacion-entorno-windows.md) | Instalación del entorno de desarrollo |
 | [docs/guias/flujo-de-trabajo.md](docs/guias/flujo-de-trabajo.md) | Ramas, commits, desarrollo guiado por especificaciones |
 | [docs/bitacora/](docs/bitacora/) | Registro cronológico de lo realizado en cada etapa |
 
