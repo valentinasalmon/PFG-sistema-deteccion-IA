@@ -21,7 +21,7 @@ Un **esqueleto caminante** es la versión mínima del sistema que recorre todas 
 ### Incluido
 
 **Servicios de desarrollo**
-- Definición en un único archivo de Docker Compose de los servicios: PostgreSQL, Redis, almacenamiento compatible con S3 y servidor de correo de prueba.
+- Definición en un único archivo de Docker Compose de los servicios: PostgreSQL, Redis y servidor de correo de prueba.
 
 **Backend**
 - Aplicación Flask construida con *Application Factory*.
@@ -53,13 +53,14 @@ Un **esqueleto caminante** es la versión mínima del sistema que recorre todas 
 
 - Modelos y tablas del negocio (desde la funcionalidad 002).
 - Autenticación y sesión (funcionalidad 002).
-- Uso del almacenamiento S3 y del correo: en esta funcionalidad solo se levantan los servicios (funcionalidades 006 y 013).
+- Almacenamiento compatible con S3: se elige, se levanta y se usa en la funcionalidad 006.
+- Uso del correo: en esta funcionalidad solo se levanta el servicio (funcionalidad 013).
 - Cola de tareas en segundo plano con RQ: solo se verifica la conexión a Redis (funcionalidad 007).
 - Despliegue en AWS (funcionalidad 017).
 
 ## Criterios de aceptación
 
-- [ ] **CA1 — Servicios**: Dado el repositorio clonado, cuando se ejecuta `docker compose up -d`, entonces PostgreSQL, Redis, el almacenamiento S3 y el servidor de correo quedan en ejecución y en estado saludable.
+- [ ] **CA1 — Servicios**: Dado el repositorio clonado, cuando se ejecuta `docker compose up -d`, entonces PostgreSQL, Redis y el servidor de correo quedan en ejecución y en estado saludable.
 - [ ] **CA2 — Salud de la API**: Dados los servicios en ejecución, cuando se consulta `GET /api/salud`, entonces la respuesta es 200 con un JSON que informa `ok` para la API, la base de datos y Redis, junto con el entorno y la versión.
 - [ ] **CA3 — Servicio caído**: Dada la base de datos detenida, cuando se consulta `GET /api/salud`, entonces la respuesta es 503 e indica cuál servicio no responde.
 - [ ] **CA4 — Interfaz conectada**: Dados el backend y el frontend en ejecución, cuando se abre la página inicial en el navegador, entonces se muestra en español que la API está conectada y el estado de cada servicio.
@@ -74,3 +75,9 @@ Un **esqueleto caminante** es la versión mínima del sistema que recorre todas 
 ## Preguntas abiertas
 
 - Ninguna.
+
+## Registro de cambios
+
+| Fecha | Cambio | Motivo |
+|---|---|---|
+| 2026-10-10 | Se quita el almacenamiento compatible con S3 (MinIO) del alcance de esta funcionalidad y se traslada a la 006. | La imagen `minio/minio` dejó de publicarse en Docker Hub. El almacenamiento S3 recién se utiliza en la funcionalidad 006, donde se elegirá un reemplazo verificado y se registrará en un ADR. |

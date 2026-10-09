@@ -82,7 +82,6 @@ No se crean tablas. Se inicializa la carpeta de migraciones (`backend/migracione
 |---|---|---|---|
 | `postgres` | `postgres:16-alpine` | 5432 | Base de datos |
 | `redis` | `redis:7-alpine` | 6379 | Cola de tareas (desde la 007) |
-| `minio` | `minio/minio` | 9000, consola 9001 | Reemplaza a Amazon S3 en desarrollo (desde la 006) |
 | `mailpit` | `axllent/mailpit` | 1025, bandeja web 8025 | Captura los correos sin enviarlos (desde la 002) |
 
 ## Bibliotecas nuevas
@@ -151,3 +150,8 @@ Las pruebas del backend usan SQLite en memoria y simulan Redis: nunca tocan la b
 | Finales de línea de Windows (CRLF) que rompen scripts | `.gitattributes` normaliza a LF y `core.autocrlf=input` |
 | Límite de descargas de Docker Hub | Reintentar más tarde o iniciar sesión con `docker login` |
 | Versiones de bibliotecas que dejan de tener soporte | Versiones fijadas exactas; revisión al inicio de cada fase |
+
+
+## Registro de cambios
+
+| 2026-10-10 | Se quita MinIO de los servicios de desarrollo (imagen discontinuada en Docker Hub); el almacenamiento S3 se resuelve en la funcionalidad 006. |
