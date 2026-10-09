@@ -33,6 +33,10 @@ class ConfiguracionBase:
     DEBUG = False
     TESTING = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Verifica cada conexión antes de usarla: si la base se reinició, descarta
+    # las conexiones viejas en lugar de fallar en la primera consulta (RNF16).
+    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
+
     VARIABLES_OBLIGATORIAS = ()
 
     def __init__(self):
