@@ -78,13 +78,16 @@ El sistema debe permitir a un usuario autenticado cambiar su contraseña indican
 ### RF07 — Editar perfil propio
 **Prioridad:** Debe · **Reglas:** RN02, RN04
 
-El sistema debe permitir al usuario modificar sus datos personales (nombre, apellido, correo, colegio o empresa). El perfil (Abogado o Aseguradora) puede modificarse **[PROPUESTA]**.
+El sistema debe permitir al usuario modificar sus datos personales (nombre, apellido, correo, colegio o empresa). El perfil (Abogado o Aseguradora) **no puede modificarse** después del registro (RN01, CP-12).
 
 - **CA1:** Dado un usuario autenticado, cuando modifica su nombre o apellido, entonces los cambios se guardan y se registran en la auditoría.
 - **CA2:** Dado un usuario que cambia su correo, entonces el cambio queda pendiente hasta que confirme el enlace enviado a la nueva dirección, y se envía un aviso a la dirección anterior.
 - **CA3:** Dado cualquier otro usuario, incluidos el Referente y el Administrador, entonces el sistema no ofrece ninguna operación para modificar los datos personales de terceros.
+- **CA4:** Dado un usuario autenticado, cuando intenta modificar su perfil (Abogado o Aseguradora), entonces la operación se rechaza.
 
 ### RF08 — Eliminar cuenta propia
+> **Planificación:** se implementa en la funcionalidad 019, después de la 005, porque depende de que existan casos y organizaciones.
+
 **Prioridad:** Debe · **Reglas:** RN05, RN08, RN34
 
 El sistema debe permitir al usuario eliminar su cuenta, exigiendo previamente que resuelva la situación de sus casos activos y de las organizaciones que referencia.
@@ -95,6 +98,8 @@ El sistema debe permitir al usuario eliminar su cuenta, exigiendo previamente qu
 - **CA4:** Dada la eliminación completada, entonces se envía un correo de confirmación a la dirección de la cuenta eliminada.
 
 ### RF09 — Solicitar copia de datos personales
+> **Planificación:** se implementa en la funcionalidad 019, después de la 005, porque depende de que existan casos y organizaciones.
+
 **Prioridad:** Debe · **Reglas:** RN04
 
 El sistema debe permitir al usuario obtener una copia de los datos personales que el sistema almacena sobre él (derecho de acceso, Ley N.° 25.326, art. 14).

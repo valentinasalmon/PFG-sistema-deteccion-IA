@@ -15,7 +15,7 @@ Decisiones pendientes de confirmación por la autora del proyecto. Cada cuestió
 | **CP-09** | ¿Cuál es el tamaño máximo por imagen? | 20 MB por imagen; la cantidad de imágenes por caso la define cada plan. | RN22, RF34 |
 | **CP-10** | ¿Se permite prorrogar la retención? | Sí, por 1 año renovable, con motivo obligatorio registrado en la auditoría. | RN32, RF51, CU31 |
 | **CP-11** | ¿Cómo se transfiere un caso del espacio personal? | A otro usuario registrado, indicando su correo; el destinatario debe aceptar la transferencia. | RF33, CU23 |
-| **CP-12** | ¿Puede un usuario cambiar su perfil (Abogado o Aseguradora) después de registrarse? | Sí, desde "Mi perfil", porque el perfil no condiciona permisos. | RF07 |
+| **CP-12** | ¿Puede un usuario cambiar su perfil (Abogado o Aseguradora) después de registrarse? | **Resuelta (2026-10-10)**: no. El perfil se elige al registrarse y no puede modificarse. | RN01, RF07 |
 | **CP-13** | ¿Se mantiene el tipo de organización "Independiente"? | No. Con la existencia del espacio personal gratuito, los profesionales independientes usan ese espacio; los tipos de organización son Estudio Jurídico y Aseguradora. | RF10 |
 | **CP-14** | ¿Qué tipos de commit en español se adoptan? | Ver la convención propuesta a continuación. | RNF20 |
 | **CP-15** | Repositorio existente de metadatos y firma digital. | **Resuelta**: analizado; ver `docs/arquitectura/reutilizacion-repositorio-tif.md`. | RF39, RF40 |

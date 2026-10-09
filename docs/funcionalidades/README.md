@@ -27,7 +27,7 @@ implementación siguiendo tareas.md, con pruebas
 | N.° | Funcionalidad | Fase | Requisitos | Estado |
 |---|---|---|---|---|
 | 001 | Esqueleto caminante: estructura, configuración, servicios, calidad e integración continua | 1 | RNF17 – RNF22 | Completado |
-| 002 | Cuentas y sesión | 2 | RF01 – RF09 | Pendiente |
+| 002 | Cuentas y sesión | 2 | RF01 – RF07 | En curso |
 | 003 | Auditoría | 2 | RNF06 | Pendiente |
 | 004 | Organizaciones e invitaciones | 3 | RF10 – RF18 | Pendiente |
 | 005 | Casos y permisos | 3 | RF23 – RF33 | Pendiente |
@@ -44,5 +44,6 @@ implementación siguiendo tareas.md, con pruebas
 | 016 | Sello de tiempo en Blockchain Federal Argentina | 7 | RF37 | Pendiente |
 | 017 | Infraestructura y despliegue en AWS | 8 | RNF02, RNF03, RNF15, RNF22 | Pendiente |
 | 018 | Cierre: usabilidad, índice de calidad y documentación final | 9 | RNF10, RNF11, RNF19 | Pendiente |
+| 019 | Eliminación de cuenta y copia de datos personales | 3 | RF08, RF09 | Pendiente |
 
 Las fases, los hitos y el ciclo de trabajo están en [docs/guias/hoja-de-ruta.md](../guias/hoja-de-ruta.md).

@@ -13,6 +13,8 @@ Este archivo forma parte del **arnés** del proyecto: define cómo debe trabajar
 - La autora crea los archivos, las ramas y los commits por su cuenta. El agente **explica qué hacer paso a paso**, entrega el contenido de cada archivo y verifica el resultado; solo modifica el repositorio cuando se le pide explícitamente.
 - Cada paso indica: qué archivo crear y dónde, su contenido completo, por qué existe, qué rama usar y el mensaje de commit sugerido.
 - Ante cualquier ambigüedad, **preguntar antes de asumir**.
+- **Documentación de seguimiento a cargo del agente** (decisión de la autora, 2026-10-10): la entrada de bitácora, el marcado de casillas en `tareas.md` y `especificacion.md`, el estado de cada funcionalidad y la actualización de la especificación general ante decisiones nuevas. El agente sube esos cambios en un commit propio a la rama `funcionalidad/NNN` en curso, avisa antes qué va a cambiar y pide a la autora `git pull` antes de que continúe.
+- En cada mensaje se indica en qué rama debe estar la autora y si corresponde o no abrir un Pull Request.
 
 ## Reglas de código
 
