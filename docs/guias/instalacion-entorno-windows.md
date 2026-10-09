@@ -225,6 +225,8 @@ python3 --version && node --version && npm --version && git --version \
 | Problema | Solución |
 |---|---|
 | `wsl --install` dice que la virtualización está deshabilitada | Activar *Virtualization Technology* (Intel VT-x / AMD-V) en la BIOS. |
+| `permission denied while trying to connect to the docker API at unix:///var/run/docker.sock` | El usuario de Ubuntu no pertenece al grupo `docker`. Ejecutar en Ubuntu `sudo groupadd docker 2>/dev/null; sudo usermod -aG docker $USER`, luego en PowerShell `wsl --shutdown`, verificar que Docker Desktop esté abierto y con la integración de Ubuntu-24.04 activada, y volver a abrir Ubuntu. Comprobar con `groups` que aparezca `docker`. |
+| La terminal de Ubuntu abre en `/mnt/c/WINDOWS/system32` | Ocurre al abrir Ubuntu desde una consola de administrador. Ejecutar `cd ~` para ir a la carpeta personal de Ubuntu. |
 | `docker: command not found` en Ubuntu | Verificar en Docker Desktop que la integración con Ubuntu-24.04 esté activada (paso 4). |
 | `code .` no funciona | Reinstalar VS Code marcando *Agregar a PATH*, y reiniciar la terminal. |
 | Los archivos aparecen todos modificados en Git | Revisar que `core.autocrlf` sea `input` (paso 7). |
