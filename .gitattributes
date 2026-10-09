@@ -1,0 +1,10 @@
+# Normaliza los finales de línea a LF (Linux) para todo el texto,
+# aunque se edite desde Windows (ADR-0009).
+* text=auto eol=lf
+
+# Archivos binarios: Git no debe modificarlos.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.onnx binary
