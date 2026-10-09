@@ -1,0 +1,17 @@
+{
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.eol": "\n",
+
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
+  "python.testing.pytestEnabled": true,
+  "python.testing.cwd": "${workspaceFolder}/backend",
+  "python.testing.pytestArgs": ["pruebas", "--no-cov"],
+
+  "flake8.args": ["--config=backend/.flake8"],
+  "pylint.args": ["--rcfile=backend/pyproject.toml"],
+
+  "[python]": {
+    "editor.rulers": [100]
+  }
+}
