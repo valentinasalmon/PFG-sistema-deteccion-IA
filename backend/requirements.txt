@@ -1,0 +1,11 @@
+# Dependencias de ejecución del backend.
+# Versiones fijadas para que todos los entornos (desarrollo, integración continua
+# y producción) usen exactamente las mismas.
+
+Flask==3.1.3                # Framework web
+Flask-SQLAlchemy==3.1.1     # Integración de SQLAlchemy (ORM) con Flask
+Flask-Migrate==4.1.0        # Migraciones de esquema con Alembic (ADR-0008)
+SQLAlchemy==2.0.54          # ORM y acceso a la base de datos
+psycopg[binary]==3.3.6      # Controlador de PostgreSQL
+redis==6.4.0                # Cliente de Redis (cola de tareas, ADR-0004)
+python-dotenv==1.2.4        # Lectura del archivo .env en desarrollo

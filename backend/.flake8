@@ -1,0 +1,4 @@
+# Configuración de flake8 (estilo PEP 8).
+[flake8]
+max-line-length = 100
+exclude = .venv,__pycache__,migraciones

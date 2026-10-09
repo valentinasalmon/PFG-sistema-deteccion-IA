@@ -1,0 +1,50 @@
+# Configuración de las herramientas de calidad del backend.
+# (flake8 no admite este archivo: su configuración está en .flake8)
+
+[tool.pytest.ini_options]
+testpaths = ["pruebas"]
+addopts = "--cov=app --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["app"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 80          # RNF19: cobertura mínima del 80 %
+show_missing = true
+
+[tool.pylint.main]
+ignore = [".venv", "migraciones"]
+fail-under = 8.5         # RNF19: puntuación mínima de pylint
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint."messages control"]
+# Los docstrings son obligatorios (RNF21): NO se desactivan los avisos missing-*-docstring.
+disable = ["too-few-public-methods"]
+
+# Arquitectura en capas verificada automáticamente (RNF17, CA9 de la funcionalidad 001).
+[tool.importlinter]
+root_package = "app"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Las capas solo dependen de las inferiores"
+type = "layers"
+layers = ["app.rutas", "app.servicios", "app.repositorios", "app.modelos"]
+
+[[tool.importlinter.contracts]]
+name = "Las rutas solo usan servicios"
+type = "forbidden"
+source_modules = ["app.rutas"]
+forbidden_modules = ["app.repositorios", "app.modelos", "app.integraciones"]
+# Solo se prohíbe la importación directa: ruta -> servicio -> repositorio es el recorrido correcto.
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "Los servicios no conocen Flask"
+type = "forbidden"
+source_modules = ["app.servicios"]
+forbidden_modules = ["flask"]
+allow_indirect_imports = true
