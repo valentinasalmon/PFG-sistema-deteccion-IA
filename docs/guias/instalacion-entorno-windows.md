@@ -82,6 +82,27 @@ Debe imprimir *Hello from Docker!*.
 
 ---
 
+## Opción automática para los pasos 5 a 7
+
+El script [`infraestructura/scripts/preparar_entorno_wsl.sh`](../../infraestructura/scripts/preparar_entorno_wsl.sh) realiza los pasos 5, 6 y 7 de forma automática:
+
+- Instala solo los paquetes que faltan (no desinstala ni borra nada).
+- Agrega el usuario al grupo `docker`.
+- Instala nvm y la versión LTS de Node.js.
+- Configura Git sin sobrescribir valores existentes (pide nombre y correo si faltan).
+- Verifica cada herramienta y muestra un resumen.
+- Guarda todo lo realizado en `~/preparar_entorno.log`.
+
+Se ejecuta desde Ubuntu, **sin** `sudo` (el script pide la contraseña cuando la necesita):
+
+```bash
+bash ~/preparar_entorno_wsl.sh
+```
+
+Al terminar quedan dos pasos manuales que el script indica: `gh auth login` y, si hizo falta agregar el grupo `docker`, `wsl --shutdown` desde PowerShell.
+
+Probado en Ubuntu 24.04 limpio: primera ejecución completa sin errores y segunda ejecución sin cambios (idempotente).
+
 ## Paso 5 — Preparar Ubuntu: herramientas del sistema
 
 **Ubuntu**:
@@ -225,6 +246,8 @@ python3 --version && node --version && npm --version && git --version \
 | Problema | Solución |
 |---|---|
 | `wsl --install` dice que la virtualización está deshabilitada | Activar *Virtualization Technology* (Intel VT-x / AMD-V) en la BIOS. |
+| `permission denied while trying to connect to the docker API at unix:///var/run/docker.sock` | El usuario de Ubuntu no pertenece al grupo `docker`. Ejecutar en Ubuntu `sudo groupadd docker 2>/dev/null; sudo usermod -aG docker $USER`, luego en PowerShell `wsl --shutdown`, verificar que Docker Desktop esté abierto y con la integración de Ubuntu-24.04 activada, y volver a abrir Ubuntu. Comprobar con `groups` que aparezca `docker`. |
+| La terminal de Ubuntu abre en `/mnt/c/WINDOWS/system32` | Ocurre al abrir Ubuntu desde una consola de administrador. Ejecutar `cd ~` para ir a la carpeta personal de Ubuntu. |
 | `docker: command not found` en Ubuntu | Verificar en Docker Desktop que la integración con Ubuntu-24.04 esté activada (paso 4). |
 | `code .` no funciona | Reinstalar VS Code marcando *Agregar a PATH*, y reiniciar la terminal. |
 | Los archivos aparecen todos modificados en Git | Revisar que `core.autocrlf` sea `input` (paso 7). |
