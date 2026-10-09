@@ -82,6 +82,27 @@ Debe imprimir *Hello from Docker!*.
 
 ---
 
+## Opción automática para los pasos 5 a 7
+
+El script [`infraestructura/scripts/preparar_entorno_wsl.sh`](../../infraestructura/scripts/preparar_entorno_wsl.sh) realiza los pasos 5, 6 y 7 de forma automática:
+
+- Instala solo los paquetes que faltan (no desinstala ni borra nada).
+- Agrega el usuario al grupo `docker`.
+- Instala nvm y la versión LTS de Node.js.
+- Configura Git sin sobrescribir valores existentes (pide nombre y correo si faltan).
+- Verifica cada herramienta y muestra un resumen.
+- Guarda todo lo realizado en `~/preparar_entorno.log`.
+
+Se ejecuta desde Ubuntu, **sin** `sudo` (el script pide la contraseña cuando la necesita):
+
+```bash
+bash ~/preparar_entorno_wsl.sh
+```
+
+Al terminar quedan dos pasos manuales que el script indica: `gh auth login` y, si hizo falta agregar el grupo `docker`, `wsl --shutdown` desde PowerShell.
+
+Probado en Ubuntu 24.04 limpio: primera ejecución completa sin errores y segunda ejecución sin cambios (idempotente).
+
 ## Paso 5 — Preparar Ubuntu: herramientas del sistema
 
 **Ubuntu**:
