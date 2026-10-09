@@ -26,7 +26,7 @@ implementación siguiendo tareas.md, con pruebas
 
 | N.° | Funcionalidad | Fase | Requisitos | Estado |
 |---|---|---|---|---|
-| 001 | Esqueleto caminante: estructura, configuración, servicios, calidad e integración continua | 1 | RNF17 – RNF22 | Pendiente |
+| 001 | Esqueleto caminante: estructura, configuración, servicios, calidad e integración continua | 1 | RNF17 – RNF22 | Completado |
 | 002 | Cuentas y sesión | 2 | RF01 – RF09 | Pendiente |
 | 003 | Auditoría | 2 | RNF06 | Pendiente |
 | 004 | Organizaciones e invitaciones | 3 | RF10 – RF18 | Pendiente |
