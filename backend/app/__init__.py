@@ -11,6 +11,8 @@ import os
 
 from flask import Flask
 
+# Se importan los modelos para que Alembic los detecte al generar migraciones.
+from app import modelos  # noqa: F401  pylint: disable=unused-import
 from app.configuracion import obtener_configuracion
 from app.extensiones import db, migrar
 from app.rutas import registrar_rutas
