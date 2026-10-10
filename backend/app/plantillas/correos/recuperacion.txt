@@ -1,0 +1,6 @@
+Hola, {{ nombre }}:
+
+Recibimos un pedido para restablecer tu contraseña. Abrí este enlace (vence en 1 hora y se puede usar una sola vez):
+{{ enlace }}
+
+Si no lo pediste, ignorá este mensaje: tu contraseña no cambia.

@@ -1,0 +1,6 @@
+Hola, {{ nombre }}:
+
+Detectamos varios intentos fallidos de inicio de sesión en tu cuenta. Por seguridad, quedó bloqueada durante {{ minutos }} minutos.
+
+Si no fuiste vos, te recomendamos restablecer tu contraseña en:
+{{ enlace }}
