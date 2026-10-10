@@ -110,7 +110,7 @@ Códigos de error comunes: 400 `csrf_invalido`, 404 `no_encontrado`, 405 `metodo
 | `SERVIDOR_CORREO` | producción | `localhost` |
 | `PUERTO_CORREO` | — (por defecto 1025) | `1025` |
 | `USUARIO_CORREO`, `CONTRASENIA_CORREO` | — | vacías (Mailpit no pide credenciales) |
-| `USAR_TLS_CORREO` | — (por defecto `no`; `si` en producción) | `no` |
+| `USAR_TLS_CORREO` | — (por defecto `si`) | `no` |
 | `REMITENTE_CORREO` | producción | `Plataforma de análisis de imágenes <no-responder@localhost>` |
 
 ### Pantallas
@@ -181,7 +181,7 @@ Se registra como **ADR-0010: sesiones del servidor en Redis y enlaces firmados s
 **Backend (pytest, 93 pruebas, cobertura 99 %)**
 
 - Unitarias: política de contraseñas (incluidos 72 bytes), tokens (vencido, alterado, de otro propósito), esquemas (mensajes en español, contraseñas sin recortar espacios), correos (plantillas y enviadores), configuración de producción.
-- Integración por endpoint, una o más pruebas por cada criterio de aceptación: CA1–CA6 y CA13–CA15 en \`, CA7–CA12 y CA22 en `test_rutas_sesion.py`, CA16–CA19 en `test_rutas_perfil.py`, CA20–CA21 en `test_seguridad.py` (con CSRF activado como en producción).
+- Integración por endpoint, una o más pruebas por cada criterio de aceptación: CA1–CA6 y CA13–CA15 en `test_rutas_cuentas.py`, CA7–CA12 y CA22 en `test_rutas_sesion.py`, CA16–CA19 en `test_rutas_perfil.py`, CA20–CA21 en `test_seguridad.py` (con CSRF activado como en producción).
 - El accesorio `aplicacion` no deja abierto el contexto de Flask entre solicitudes: cada solicitud de prueba abre el suyo, como en producción. (Si quedara abierto, Flask-Login reutilizaría el usuario de una solicitud anterior y las pruebas de cierre de sesiones darían un falso resultado.)
 
 **Frontend (Vitest + Testing Library, 50 pruebas, cobertura 98 %, umbral 80 %)**
