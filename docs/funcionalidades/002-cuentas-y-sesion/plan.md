@@ -98,3 +98,114 @@ Códigos de error comunes: 400 `csrf_invalido`, 404 `no_encontrado`, 405 `metodo
 | `ServicioCuentas` | `registrar(solicitud)`, `verificar_correo(token)`, `reenviar_verificacion(correo)`, `solicitar_recuperacion(correo)`, `restablecer_contrasenia(token, nueva)` | `ErrorValidacion`, `TokenInvalido` |
 | `ServicioSesion` | `autenticar(correo, contrasenia) -> Usuario`, `obtener_usuario_de_sesion(identificador) -> Usuario \| None` | `CredencialesInvalidas`, `CuentaNoVerificada` |
 | `ServicioPerfil` | `actualizar_datos(usuario, cambios) -> Usuario`, `cambiar_contrasenia(usuario, actual, nueva) -> Usuario`, `solicitar_cambio_correo(usuario, correo_nuevo, contrasenia)`, `confirmar_cambio_correo(token)` | `ErrorValidacion`, `ConflictoDatos`, `TokenInvalido` |
+
+
+| `GestorTokens` | `generar(proposito, datos) -> str`, `leer(proposito, token, vigencia) -> dict` | `TokenInvalido` |
+| `contrasenias` | `problema_de_politica(c) -> str \| None`, `validar_politica(c, campo)`, `generar_hash(c, costo) -> str`, `verificar(c, hash) -> bool` | `ErrorValidacion` |
+| `crear_enviador` | `crear_enviador(configuracion) -> EnviadorSMTP \| EnviadorMemoria` | — |
+
+### Variables de entorno nuevas
+
+| Variable | Obligatoria en | Ejemplo en desarrollo |
+|---|---|---|
+| `URL_FRONTEND` | producción | `http://localhost:5173` |
+| `SERVIDOR_CORREO` | producción | `localhost` |
+| `PUERTO_CORREO` | — (por defecto 1025) | `1025` |
+| `USUARIO_CORREO`, `CONTRASENIA_CORREO` | — | vacías (Mailpit no pide credenciales) |
+| `USAR_TLS_CORREO` | — (por defecto `si`) | `no` |
+| `REMITENTE_CORREO` | producción | `Plataforma de análisis de imágenes <no-responder@localhost>` |
+
+### Pantallas
+
+| Ruta | Acceso | Pantalla |
+|---|---|---|
+| `/iniciar-sesion`, `/registro`, `/recuperar-contrasenia` | Solo sin sesión | Acceso |
+| `/verificar-correo`, `/restablecer-contrasenia`, `/confirmar-correo` | Libre (llegan desde un correo) | Enlaces |
+| `/terminos`, `/privacidad`, `/estado` | Libre | Textos legales y estado del sistema (la antigua página de la 001) |
+| `/`, `/perfil` | Con sesión | Inicio y Mi perfil |
+
+## Cambios en datos
+
+Tabla `usuarios` (migración `a58c14fe9514`):
+
+| Columna | Tipo | Notas |
+|---|---|---|
+| `id` | entero | Clave primaria |
+| `nombre`, `apellido` | texto (100) | Obligatorios |
+| `correo` | texto (254) | Único, con índice; se guarda en minúsculas (RN03) |
+| `hash_contrasenia` | texto (60) | Hash bcrypt, costo 12 (CA20) |
+| `perfil` | texto (20) | `abogado` o `aseguradora` (restricción `ck_usuarios_perfil`); no se modifica (RN01) |
+| `colegio`, `empresa` | texto (150) | Opcionales; solo el que corresponde al perfil (RN02) |
+| `rol` | texto (20) | `usuario` por defecto; `administrador` en la 014 |
+| `version_terminos`, `aceptacion_terminos_en` | texto, fecha | Consentimiento (CA5, Ley 25.326) |
+| `correo_verificado_en` | fecha | Nula hasta verificar |
+| `intentos_fallidos`, `bloqueado_hasta` | entero, fecha | Bloqueo (CA10) |
+| `version_sesion` | entero | Invalida todas las sesiones al cambiar |
+| `creado_en`, `actualizado_en` | fecha | Fechas en UTC |
+
+## Bibliotecas nuevas
+
+Todas en su última versión estable a la fecha.
+
+| Biblioteca | Versión | Para qué se usa |
+|---|---|---|
+| Flask-Login | 0.6.3 | Usuario de la sesión y `@login_required` |
+| Flask-Session | 0.8.0 | Sesiones guardadas en Redis |
+| cachelib | 0.17.0 | Sesiones en memoria durante las pruebas |
+| Flask-WTF | 1.3.0 | Protección CSRF (`CSRFProtect`) |
+| bcrypt | 5.0.0 | Hash de contraseñas |
+| pydantic | 2.14.0 | Validación de los datos que recibe la API |
+| email-validator | 2.3.0 | Formato de los correos en pydantic |
+| react-router | 8.4.0 | Rutas del frontend |
+| @testing-library/user-event | 14.6.7 | Simular la escritura y los clics en las pruebas |
+
+`itsdangerous` y `Jinja2` ya vienen con Flask.
+
+## Decisiones de diseño
+
+| Decisión | Motivo |
+|---|---|
+| Sesión en Redis y no en una cookie firmada | Cerrar sesión debe invalidar la cookie (CA11); con una cookie firmada seguiría siendo válida |
+| Tokens de enlace sin tabla en la base | Vencen solos y se vuelven de un solo uso por el dato que cambia; menos código y nada que limpiar |
+| Mensajes genéricos en registro, recuperación e inicio de sesión | No revelar qué correos están registrados (CA3, CA8, CA13) |
+| Cálculo de un hash ficticio cuando el correo no existe | El tiempo de respuesta no delata si la cuenta existe |
+| Pedir la contraseña para cambiar el correo | Una sesión olvidada abierta no alcanza para apoderarse de la cuenta |
+| Cambiar la contraseña cierra las demás sesiones, pero no la actual | Seguridad sin obligar a volver a ingresar a quien hizo el cambio |
+| Contraseña de 72 bytes como máximo | bcrypt 5 rechaza contraseñas más largas; se informa como una regla más |
+| La política de contraseñas se valida en el esquema y en el servicio | El formulario muestra todos los errores juntos; el servicio garantiza la regla aunque se lo use desde otro lugar |
+| Lista propia de contraseñas comunes | De las 10 000 más usadas (SecLists), solo 5 cumplen la política base; se completa con contraseñas frecuentes en Argentina |
+| Fechas en UTC sin zona horaria | Comparaciones uniformes entre PostgreSQL y SQLite (pruebas) |
+
+Se registra como **ADR-0010: sesiones del servidor en Redis y enlaces firmados sin estado**, que complementa la ADR-0003.
+
+## Estrategia de pruebas
+
+**Backend (pytest, 93 pruebas, cobertura 99 %)**
+
+- Unitarias: política de contraseñas (incluidos 72 bytes), tokens (vencido, alterado, de otro propósito), esquemas (mensajes en español, contraseñas sin recortar espacios), correos (plantillas y enviadores), configuración de producción.
+- Integración por endpoint, una o más pruebas por cada criterio de aceptación: CA1–CA6 y CA13–CA15 en `test_rutas_cuentas.py`, CA7–CA12 y CA22 en `test_rutas_sesion.py`, CA16–CA19 en `test_rutas_perfil.py`, CA20–CA21 en `test_seguridad.py` (con CSRF activado como en producción).
+- El accesorio `aplicacion` no deja abierto el contexto de Flask entre solicitudes: cada solicitud de prueba abre el suyo, como en producción. (Si quedara abierto, Flask-Login reutilizaría el usuario de una solicitud anterior y las pruebas de cierre de sesiones darían un falso resultado.)
+
+**Frontend (Vitest + Testing Library, 50 pruebas, cobertura 98 %, umbral 80 %)**
+
+- Cliente HTTP: CSRF, reintento ante token vencido, errores, sin conexión, sesión vencida.
+- Pantallas renderizadas con todas las rutas y la API simulada: acceso, registro, enlaces, recuperación y perfil.
+
+**Manual (en el navegador, con Docker Compose)**
+
+- Recorrido completo: registro → correo en Mailpit → verificación → inicio de sesión → perfil → cambio de contraseña → cierre de sesión.
+- Probado en el prototipo con PostgreSQL, Redis y SMTP reales, en escritorio y en pantalla de celular (375 px).
+
+## Excepciones a la constitución
+
+Ninguna.
+
+## Riesgos
+
+| Riesgo | Mitigación |
+|---|---|
+| Si Redis se reinicia, se cierran todas las sesiones | Aceptable: solo obliga a volver a ingresar. En producción, Redis con persistencia (017) |
+| El envío de correo falla o tarda | El enviador registra el error y la operación no se cae; en la 007 pasa a segundo plano con reintentos |
+| Los correos de prueba llegan a direcciones reales | En desarrollo todo va a Mailpit; nunca se configura un SMTP real fuera de producción |
+| Clave secreta filtrada permitiría falsificar enlaces | Solo en `.env` (fuera del repositorio) y obligatoria en producción |
+| Textos legales provisorios | Marcados como provisorios y versionados; al cambiarlos se sube la versión |
