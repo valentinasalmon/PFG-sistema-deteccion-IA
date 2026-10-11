@@ -36,8 +36,8 @@ Cada tarea termina con una verificación y un commit. **Responsable** indica qui
   - Archivos: `backend/app/integraciones/correo.py`, `app/servicios/servicio_correos.py`, `app/plantillas/correos/` (16 archivos), `pruebas/unitarias/test_correo.py`
   - Verificación: `ls app/plantillas/correos | wc -l` muestra 16 y las pruebas de correo pasan, incluida la que comprueba que cada plantilla tenga su propio texto.
   - Commit: `funcionalidad(correos): agregar envio de correos con plantillas`
-- [ ] **T07** — Servicios de cuentas, sesión y perfil.
-  - Responsable: Autora
+- [x] **T07** — Servicios de cuentas, sesión y perfil.
+  - Responsable: Autora (subida por el asistente a pedido de la autora)
   - Archivos: `backend/app/servicios/servicio_cuentas.py`, `servicio_sesion.py`, `servicio_perfil.py`, `fabrica.py`
   - Verificación: `python -m pytest --no-cov` (35 pruebas), `flake8 app pruebas wsgi.py` y `lint-imports` sin errores (los servicios no importan Flask). De la T07 a la T09 la cobertura total queda por debajo del 80 % hasta que llegan las pruebas de la API en la T10; por eso se usa `--no-cov`.
   - Commit: `funcionalidad(cuentas): agregar servicios de cuentas, sesion y perfil`
