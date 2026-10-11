@@ -39,6 +39,30 @@ def test_todos_los_correos_se_redactan():
     assert enviador.enviados[4].destinatario == "nuevo@ejemplo.com"
 
 
+def test_cada_correo_tiene_su_propio_texto():
+    """El texto y el HTML de cada correo corresponden a su motivo (evita plantillas cruzadas)."""
+    enviador = EnviadorMemoria()
+    servicio = ServicioCorreos(enviador, "http://frontend")
+    usuario = UsuarioFalso()
+    esperados = [
+        (lambda: servicio.enviar_verificacion(usuario, "t"), "Gracias por registrarte"),
+        (lambda: servicio.enviar_aviso_registro_existente(usuario), "intentó crear una cuenta"),
+        (lambda: servicio.enviar_recuperacion(usuario, "t"), "restablecer tu contraseña"),
+        (lambda: servicio.enviar_aviso_contrasenia_cambiada(usuario), "fue cambiada"),
+        (lambda: servicio.enviar_aviso_bloqueo(usuario, 15), "intentos fallidos"),
+        (lambda: servicio.enviar_confirmacion_cambio_correo(usuario, "n@e.com", "t"),
+         "nuevo correo"),
+        (lambda: servicio.enviar_aviso_cambio_correo(usuario, "n@e.com"), "Se pidió cambiar"),
+    ]
+    for enviar, frase in esperados:
+        enviar()
+        correo = enviador.enviados[-1]
+        assert frase in correo.texto, correo.asunto
+        assert frase in correo.html, correo.asunto
+        assert "{%" not in correo.texto and "<p>" not in correo.texto, correo.asunto
+        assert correo.html.lstrip().startswith("<!doctype html>"), correo.asunto
+
+
 def test_fabrica_de_enviadores():
     """La fábrica elige la implementación según la configuración."""
     assert isinstance(crear_enviador({"PROVEEDOR_CORREO": "memoria"}), EnviadorMemoria)
