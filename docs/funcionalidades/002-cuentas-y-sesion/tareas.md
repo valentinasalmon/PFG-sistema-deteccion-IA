@@ -59,7 +59,7 @@ Cada tarea termina con una verificación y un commit. **Responsable** indica qui
 
 ## Frontend
 
-- [ ] **T11** — Dependencias y umbral de cobertura.
+- [x] **T11** — Dependencias y umbral de cobertura.
   - Responsable: Asistente
   - Archivos: `frontend/package.json`, `frontend/package-lock.json` (generado por `npm install`), `frontend/vite.config.js`
   - Verificación: `npm install` termina sin errores.
@@ -70,13 +70,13 @@ Cada tarea termina con una verificación y un commit. **Responsable** indica qui
   - Verificación (CA21, CA22): `npx vitest run src/api` pasa.
   - Commit: `funcionalidad(frontend): agregar cliente de la api con proteccion csrf`
 - [ ] **T13** — Sesión compartida, formularios y reglas de contraseña.
-  - Responsable: Autora (contexto y hooks); asistente (`src/utilidades/` y las pruebas)
+  - Responsable: Autora (contexto y hooks); asistente (`src/utilidades/` y las pruebas). Parte del asistente: hecha.
   - Archivos: `frontend/src/contextos/contextoSesion.js`, `ProveedorSesion.jsx`, `src/hooks/useSesion.js`, `useFormulario.js`, `useAccionAlCargar.js`, `src/hooks/useSesion.test.jsx`, `src/utilidades/contrasenia.js`, `contrasenia.test.js`, `legales.js`
   - Verificación: `npx vitest run src/hooks src/utilidades` pasa.
   - Commit: `funcionalidad(frontend): agregar contexto de sesion y utilidades de formularios`
 - [ ] **T14** — Componentes comunes.
-  - Responsable: Autora (`Encabezado`, `Disposiciones`, `Rutas`, `FormularioReenvio`); asistente (`Aviso`, `AvisoProvisorio`, `CampoTexto`, `Cargando`, `ReglasContrasenia` y `global.css`)
-  - Archivos: `frontend/src/componentes/Aviso.jsx`, `AvisoProvisorio.jsx`, `CampoTexto.jsx`, `Cargando.jsx`, `Disposiciones.jsx`, `Encabezado.jsx`, `FormularioReenvio.jsx`, `ReglasContrasenia.jsx`, `Rutas.jsx`, `src/estilos/global.css`
+  - Responsable: Autora (`Encabezado`, `Disposiciones`, `Rutas`, `FormularioReenvio`); asistente (`Aviso`, `AvisoProvisorio`, `CampoTexto`, `Cargando`, `ReglasContrasenia` y sus pruebas: hechos; `global.css` se sube con la T15 para no dejar sin estilos la página actual)
+  - Archivos: `frontend/src/componentes/Aviso.jsx`, `AvisoProvisorio.jsx`, `CampoTexto.jsx`, `Cargando.jsx`, `Disposiciones.jsx`, `Encabezado.jsx`, `FormularioReenvio.jsx`, `ReglasContrasenia.jsx`, `Rutas.jsx`, `presentacion.test.jsx`, `src/estilos/global.css`
   - Verificación: `npm run lint` sin errores.
   - Commit: `funcionalidad(frontend): agregar componentes comunes y estilos`
 - [ ] **T15** — Pantallas, rutas de la aplicación y sus pruebas.
