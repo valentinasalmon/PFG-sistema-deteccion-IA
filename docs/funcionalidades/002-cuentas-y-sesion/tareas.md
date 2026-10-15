@@ -41,7 +41,7 @@ Cada tarea termina con una verificación y un commit. **Responsable** indica qui
   - Archivos: `backend/app/servicios/servicio_cuentas.py`, `servicio_sesion.py`, `servicio_perfil.py`, `fabrica.py`
   - Verificación: `python -m pytest --no-cov` (35 pruebas), `flake8 app pruebas wsgi.py` y `lint-imports` sin errores (los servicios no importan Flask). De la T07 a la T09 la cobertura total queda por debajo del 80 % hasta que llegan las pruebas de la API en la T10; por eso se usa `--no-cov`.
   - Commit: `funcionalidad(cuentas): agregar servicios de cuentas, sesion y perfil`
-- [ ] **T08** — Validación de entradas.
+- [x] **T08** — Validación de entradas.
   - Responsable: Autora (`app/esquemas/`); asistente (`test_esquemas.py`)
   - Archivos: `backend/app/esquemas/__init__.py`, `app/esquemas/cuentas.py`, `pruebas/unitarias/test_esquemas.py`
   - Verificación: las pruebas de esquemas pasan (mensajes en español).
