@@ -64,12 +64,12 @@ Cada tarea termina con una verificación y un commit. **Responsable** indica qui
   - Archivos: `frontend/package.json`, `frontend/package-lock.json` (generado por `npm install`), `frontend/vite.config.js`
   - Verificación: `npm install` termina sin errores.
   - Commit: `construccion(frontend): agregar enrutador y umbral de cobertura`
-- [ ] **T12** — Cliente de la API con CSRF.
+- [x] **T12** — Cliente de la API con CSRF.
   - Responsable: Autora (`src/api/`); asistente (`cliente.test.js` y `src/pruebas/`)
   - Archivos: `frontend/src/api/cliente.js`, `cuentas.js`, `sesion.js`, `perfil.js`, `src/api/cliente.test.js`, `src/pruebas/configuracion.js`, `src/pruebas/api.js`
   - Verificación (CA21, CA22): `npx vitest run src/api` pasa.
   - Commit: `funcionalidad(frontend): agregar cliente de la api con proteccion csrf`
-- [ ] **T13** — Sesión compartida, formularios y reglas de contraseña.
+- [x] **T13** — Sesión compartida, formularios y reglas de contraseña.
   - Responsable: Autora (contexto y hooks); asistente (`src/utilidades/` y las pruebas). Parte del asistente: hecha.
   - Archivos: `frontend/src/contextos/contextoSesion.js`, `ProveedorSesion.jsx`, `src/hooks/useSesion.js`, `useFormulario.js`, `useAccionAlCargar.js`, `src/hooks/useSesion.test.jsx`, `src/utilidades/contrasenia.js`, `contrasenia.test.js`, `legales.js`
   - Verificación: `npx vitest run src/hooks src/utilidades` pasa.
