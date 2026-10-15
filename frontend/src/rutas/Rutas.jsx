@@ -11,7 +11,7 @@
  */
 import { Navigate, Outlet, useLocation } from 'react-router'
 import { useSesion } from '../hooks/useSesion.js'
-import Cargando from './Cargando.jsx'
+import Cargando from '../componentes/Cargando.jsx'
 
 const MENSAJES_SALIDA = {
   cierre: 'Cerraste la sesión.',

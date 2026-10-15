@@ -1,65 +1,26 @@
 /**
- * Página inicial del esqueleto caminante.
+ * Pantalla de inicio con sesión iniciada.
  *
- * Consulta el estado de la API al cargar y muestra, en español, si cada
- * componente del sistema responde. Es provisoria: a partir de la
- * funcionalidad 002 se reemplaza por el inicio de sesión.
+ * Por ahora saluda y anticipa lo que vendrá: el listado de casos llega con
+ * la funcionalidad 005 y el panel principal con la 013.
  *
- * Realiza: CA4 y CA5 de la funcionalidad 001.
+ * Realiza: CA7 de la funcionalidad 002.
  */
-import { useEffect, useState } from 'react'
-import { obtenerSalud } from '../api/salud.js'
-
-/** Nombres legibles de cada componente informado por la API. */
-const NOMBRES_COMPONENTES = {
-  api: 'API',
-  base_de_datos: 'Base de datos',
-  redis: 'Cola de tareas (Redis)',
-}
+import { useSesion } from '../hooks/useSesion.js'
 
 export default function PaginaInicio() {
-  const [salud, setSalud] = useState(null)
-  const [error, setError] = useState(false)
-
-  useEffect(() => {
-    obtenerSalud()
-      .then(setSalud)
-      .catch(() => setError(true))
-  }, [])
+  const { usuario } = useSesion()
 
   return (
-    <main className="contenedor">
-      <h1>Sistema de detección de imágenes</h1>
-      <p className="subtitulo">Plataforma de apoyo a la evaluación preliminar de pruebas</p>
-
-      {error && (
-        <p className="aviso aviso--error" role="alert">
-          No se pudo conectar con la API.
-        </p>
-      )}
-
-      {!error && !salud && <p>Verificando la conexión con la API…</p>}
-
-      {salud && (
-        <section aria-label="Estado del sistema">
-          <p className={salud.estado === 'ok' ? 'aviso aviso--ok' : 'aviso aviso--error'}>
-            {salud.estado === 'ok'
-              ? 'API conectada: todos los servicios funcionan.'
-              : 'API conectada, pero hay servicios que no responden.'}
-          </p>
-          <ul className="lista-componentes">
-            {Object.entries(salud.componentes).map(([nombre, estado]) => (
-              <li key={nombre}>
-                <span>{NOMBRES_COMPONENTES[nombre] ?? nombre}</span>
-                <strong>{estado === 'ok' ? 'Funciona' : 'No responde'}</strong>
-              </li>
-            ))}
-          </ul>
-          <p className="pie">
-            Entorno: {salud.entorno} · Versión {salud.version}
-          </p>
-        </section>
-      )}
-    </main>
+    <>
+      <h1>Hola, {usuario.nombre}</h1>
+      <p className="subtitulo">
+        Desde acá vas a poder crear casos, cargar imágenes y descargar los informes de análisis.
+      </p>
+      <section className="seccion seccion--vacia" aria-labelledby="titulo-casos">
+        <h2 id="titulo-casos">Tus casos</h2>
+        <p>Todavía no hay casos. La gestión de casos estará disponible próximamente.</p>
+      </section>
+    </>
   )
 }
