@@ -75,14 +75,14 @@ Cada tarea termina con una verificación y un commit. **Responsable** indica qui
   - Verificación: `npx vitest run src/hooks src/utilidades` pasa.
   - Commit: `funcionalidad(frontend): agregar contexto de sesion y utilidades de formularios`
 - [x] **T14** — Componentes comunes.
-  - Responsable: Autora (`Encabezado`, `Disposiciones`, `Rutas`, `FormularioReenvio`); asistente (`Aviso`, `AvisoProvisorio`, `CampoTexto`, `Cargando`, `ReglasContrasenia` y sus pruebas: hechos; `global.css` se sube con la T15 para no dejar sin estilos la página actual)
-  - Archivos: `frontend/src/componentes/Aviso.jsx`, `AvisoProvisorio.jsx`, `CampoTexto.jsx`, `Cargando.jsx`, `Disposiciones.jsx`, `Encabezado.jsx`, `FormularioReenvio.jsx`, `ReglasContrasenia.jsx`, `Rutas.jsx`, `presentacion.test.jsx`, `src/estilos/global.css`
+  - Responsable: Autora (`Encabezado`, `Disposiciones`, `Rutas` —movido después a `src/rutas/`—, `FormularioReenvio`); asistente (`Aviso`, `AvisoProvisorio`, `CampoTexto`, `Cargando`, `ReglasContrasenia` y sus pruebas: hechos; `global.css` se sube con la T15 para no dejar sin estilos la página actual)
+  - Archivos: `frontend/src/componentes/Aviso.jsx`, `AvisoProvisorio.jsx`, `CampoTexto.jsx`, `Cargando.jsx`, `Disposiciones.jsx`, `Encabezado.jsx`, `FormularioReenvio.jsx`, `ReglasContrasenia.jsx`, `presentacion.test.jsx`, `src/rutas/Rutas.jsx`, `src/estilos/global.css`
   - Verificación: `npm run lint` sin errores.
   - Commit: `funcionalidad(frontend): agregar componentes comunes y estilos`
-- [ ] **T15** — Pantallas, rutas de la aplicación y sus pruebas.
+- [x] **T15** — Pantallas, rutas de la aplicación y sus pruebas.
   - Responsable: Autora (las 7 pantallas con formularios: `PaginaIniciarSesion`, `PaginaRegistro`, `PaginaVerificarCorreo`, `PaginaRecuperarContrasenia`, `PaginaRestablecerContrasenia`, `PaginaConfirmarCorreo` y `PaginaPerfil`); asistente (`PaginaTerminos`, `PaginaPrivacidad`, `PaginaNoEncontrada` y `legales.test.jsx`: hechos; `PaginaEstado`, `PaginaInicio`, `App.jsx`, `main.jsx`, `global.css`, `src/pruebas/renderizar.jsx` y las pruebas de pantallas, después de las 7 pantallas)
   - Archivos: `frontend/src/paginas/` (`PaginaEstado.jsx` y su prueba, que reemplazan a `PaginaInicio`; `PaginaInicio.jsx`, `PaginaIniciarSesion.jsx`, `PaginaRegistro.jsx`, `PaginaVerificarCorreo.jsx`, `PaginaRecuperarContrasenia.jsx`, `PaginaRestablecerContrasenia.jsx`, `PaginaConfirmarCorreo.jsx`, `PaginaPerfil.jsx`, `PaginaTerminos.jsx`, `PaginaPrivacidad.jsx`, `PaginaNoEncontrada.jsx`, `legales.test.jsx`, `acceso.test.jsx`, `enlaces.test.jsx`, `PaginaPerfil.test.jsx`), `src/App.jsx`, `src/main.jsx`, `src/pruebas/renderizar.jsx`
-  - Verificación (CA1–CA22 del lado de la interfaz): `npm run lint` y `npm run test:cobertura` en verde; 50 pruebas y cobertura cercana al 98 %.
+  - Verificación (CA1–CA22 del lado de la interfaz): `npm run lint` y `npm run test:cobertura` en verde; 59 pruebas y cobertura cercana al 99 %.
   - Commit: `funcionalidad(frontend): agregar pantallas de cuentas, sesion y perfil`
 
 ## Verificación manual
