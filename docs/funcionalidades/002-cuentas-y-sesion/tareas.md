@@ -46,12 +46,12 @@ Cada tarea termina con una verificación y un commit. **Responsable** indica qui
   - Archivos: `backend/app/esquemas/__init__.py`, `app/esquemas/cuentas.py`, `pruebas/unitarias/test_esquemas.py`
   - Verificación: las pruebas de esquemas pasan (mensajes en español).
   - Commit: `funcionalidad(cuentas): agregar esquemas de validacion de entradas`
-- [ ] **T09** — Autenticación y rutas de la API.
+- [x] **T09** — Autenticación y rutas de la API.
   - Responsable: Autora
   - Archivos: `backend/app/seguridad/__init__.py`, `app/seguridad/autenticacion.py`, `app/rutas/errores.py`, `app/rutas/cuentas.py`, `app/rutas/sesion.py`, `app/rutas/perfil.py`, `app/rutas/__init__.py`, `app/__init__.py`
   - Verificación: `flask --app wsgi routes` lista las 15 rutas de `/api`.
   - Commit: `funcionalidad(cuentas): agregar rutas de cuentas, sesion y perfil`
-- [ ] **T10** — Pruebas de integración de la API.
+- [x] **T10** — Pruebas de integración de la API.
   - Responsable: Asistente
   - Archivos: `backend/pruebas/conftest.py`, `pruebas/integracion/test_rutas_cuentas.py`, `test_rutas_sesion.py`, `test_rutas_perfil.py`, `test_seguridad.py`
   - Verificación (CA1–CA22 del lado del servidor): `python -m pytest`, `flake8 app pruebas wsgi.py`, `pylint app pruebas wsgi.py` y `lint-imports` en verde; 94 pruebas y cobertura cercana al 99 %.
