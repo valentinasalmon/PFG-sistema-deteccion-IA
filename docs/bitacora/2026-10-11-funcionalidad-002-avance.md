@@ -1,4 +1,4 @@
-# 2026-10-11 — Funcionalidad 002: avance (backend hasta servicios)
+# 2026-10-11 — Funcionalidad 002: avance
 
 Entrada de avance. La entrada de cierre de la funcionalidad se agrega cuando se integre en `desarrollo`.
 
@@ -64,3 +64,22 @@ Estado de las verificaciones: backend con 35 pruebas en verde (la cobertura tota
 
 - **Autora**: T08 (`app/esquemas/`), T09 (seguridad y rutas), T12 (`src/api/`), T13 (contexto y hooks), T14 (`Encabezado`, `Disposiciones`, `Rutas`, `FormularioReenvio`), T15 (pantallas, `App.jsx`, `main.jsx`) y T16 (recorrido manual).
 - **Asistente**: `test_esquemas.py` (después de la T08), pruebas de integración de la API (T10, después de la T09), pruebas del cliente (T12), `global.css`, textos legales, página 404 y pruebas de pantallas (T15), ADR-0010 y entrada de cierre.
+
+## Actualización 2026-10-15: backend terminado
+
+| Tarea | Contenido | Estado |
+|---|---|---|
+| T08 | Esquemas de validación (autora) y sus pruebas (asistente) | Hecha |
+| T09 | Autenticación, rutas de la API y manejo de errores en JSON (autora) | Hecha: 15 rutas en `/api` |
+| T10 | Pruebas de integración de la API (asistente) | Hecha: 94 pruebas, cobertura 99,6 % |
+| T15 (parte del asistente) | Términos de Uso, Política de Privacidad y página no encontrada, con pruebas | Hecha |
+
+- El backend de la 002 cumple los criterios CA1 a CA22 del lado del servidor, verificados por pruebas automáticas. flake8 sin errores, pylint 10/10 y los tres contratos de capas cumplidos.
+- **Revisión de accesibilidad con la skill `ui-ux-pro-max`**: los textos, botones, enlaces y avisos superan el contraste 4,5:1 (WCAG AA). El borde de los campos (`#d1d5db`) tenía 1,47:1 y WCAG 1.4.11 exige 3:1 para el contorno de los controles: se cambia a `#6b7280` (4,8:1) en `global.css`, que se sube junto con las pantallas. Los errores ya cumplían la guía de la skill: se muestran debajo de cada campo, asociados con `aria-describedby`, y el resumen se anuncia con `role="alert"`.
+- Se quitó una línea vacía al comienzo de dos plantillas de correo.
+- La instalación de `react-router` en la computadora de la autora falló por un corte de red (`ETIMEDOUT`); se documentaron los pasos para reintentar y para forzar IPv4 en WSL.
+
+### Pendientes actualizados
+
+- **Autora**: T12 (`src/api/`), T13 (contexto y hooks), T14 (`Encabezado`, `Disposiciones`, `Rutas`, `FormularioReenvio`), T15 (pantallas, `App.jsx`, `main.jsx`) y T16 (recorrido manual).
+- **Asistente**: pruebas del cliente (después de la T12), `global.css`, `renderizar.jsx` y pruebas de pantallas (después de la T15), ADR-0010 y entrada de cierre.

@@ -80,8 +80,8 @@ Cada tarea termina con una verificación y un commit. **Responsable** indica qui
   - Verificación: `npm run lint` sin errores.
   - Commit: `funcionalidad(frontend): agregar componentes comunes y estilos`
 - [ ] **T15** — Pantallas, rutas de la aplicación y sus pruebas.
-  - Responsable: Autora (pantallas, `App.jsx`, `main.jsx`); asistente (`PaginaTerminos`, `PaginaPrivacidad`, `PaginaNoEncontrada`, `src/pruebas/renderizar.jsx` y las pruebas de pantallas)
-  - Archivos: `frontend/src/paginas/` (`PaginaEstado.jsx` y su prueba, que reemplazan a `PaginaInicio`; `PaginaInicio.jsx`, `PaginaIniciarSesion.jsx`, `PaginaRegistro.jsx`, `PaginaVerificarCorreo.jsx`, `PaginaRecuperarContrasenia.jsx`, `PaginaRestablecerContrasenia.jsx`, `PaginaConfirmarCorreo.jsx`, `PaginaPerfil.jsx`, `PaginaTerminos.jsx`, `PaginaPrivacidad.jsx`, `PaginaNoEncontrada.jsx`, `acceso.test.jsx`, `enlaces.test.jsx`, `PaginaPerfil.test.jsx`), `src/App.jsx`, `src/main.jsx`, `src/pruebas/renderizar.jsx`
+  - Responsable: Autora (pantallas, `App.jsx`, `main.jsx`); asistente (`PaginaTerminos`, `PaginaPrivacidad`, `PaginaNoEncontrada` y `legales.test.jsx`: hechos; `global.css`, `src/pruebas/renderizar.jsx` y las pruebas de las demás pantallas: después de las pantallas de la autora)
+  - Archivos: `frontend/src/paginas/` (`PaginaEstado.jsx` y su prueba, que reemplazan a `PaginaInicio`; `PaginaInicio.jsx`, `PaginaIniciarSesion.jsx`, `PaginaRegistro.jsx`, `PaginaVerificarCorreo.jsx`, `PaginaRecuperarContrasenia.jsx`, `PaginaRestablecerContrasenia.jsx`, `PaginaConfirmarCorreo.jsx`, `PaginaPerfil.jsx`, `PaginaTerminos.jsx`, `PaginaPrivacidad.jsx`, `PaginaNoEncontrada.jsx`, `legales.test.jsx`, `acceso.test.jsx`, `enlaces.test.jsx`, `PaginaPerfil.test.jsx`), `src/App.jsx`, `src/main.jsx`, `src/pruebas/renderizar.jsx`
   - Verificación (CA1–CA22 del lado de la interfaz): `npm run lint` y `npm run test:cobertura` en verde; 50 pruebas y cobertura cercana al 98 %.
   - Commit: `funcionalidad(frontend): agregar pantallas de cuentas, sesion y perfil`
 
