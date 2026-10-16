@@ -1,7 +1,7 @@
 # Especificación: 003 — Auditoría
 
 - **Rama**: `funcionalidad/003-auditoria`
-- **Estado**: Borrador
+- **Estado**: En implementación
 - **Requisitos que realiza**: RNF06 (CA1 a CA5, CA7 y CA8, para las acciones de cuenta y sesión); RF03 (CA4); RF07 (CA1, registro en la auditoría)
 - **Reglas de negocio aplicadas**: RN34 (preparación: las entradas se conservan al eliminarse una cuenta)
 - **Casos de uso**: postcondición común de los casos de uso con actor autenticado ("la operación queda registrada en la auditoría"), aplicada a CU01 a CU05
