@@ -45,5 +45,6 @@ implementación siguiendo tareas.md, con pruebas
 | 017 | Infraestructura y despliegue en AWS | 8 | RNF02, RNF03, RNF15, RNF22 | Pendiente |
 | 018 | Cierre: usabilidad, índice de calidad y documentación final | 9 | RNF10, RNF11, RNF19 | Pendiente |
 | 019 | Eliminación de cuenta y copia de datos personales | 3 | RF08, RF09 | Pendiente |
+| 020 | Registro guiado por pasos | 2 | RF01 (interfaz), RNF10 | En curso |
 
 Las fases, los hitos y el ciclo de trabajo están en [docs/guias/hoja-de-ruta.md](../guias/hoja-de-ruta.md).
