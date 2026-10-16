@@ -29,7 +29,7 @@ implementación siguiendo tareas.md, con pruebas
 | 001 | Esqueleto caminante: estructura, configuración, servicios, calidad e integración continua | 1 | RNF17 – RNF22 | Completado |
 | 002 | Cuentas y sesión | 2 | RF01 – RF07 | Completado |
 | 003 | Auditoría | 2 | RNF06 | Completado |
-| 004 | Organizaciones e invitaciones | 3 | RF10 – RF18 | Pendiente |
+| 004 | Organizaciones e invitaciones | 3 | RF10 – RF18 (sin las reglas de casos) | Completado |
 | 005 | Casos y permisos | 3 | RF23 – RF33 | Pendiente |
 | 006 | Carga de imágenes, huella y almacenamiento | 4 | RF34 – RF36 | Pendiente |
 | 007 | Motor de análisis y capa 1 (metadatos) | 4 | RF38, RF39, RF43, RF46 | Pendiente |
