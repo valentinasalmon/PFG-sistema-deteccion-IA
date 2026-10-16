@@ -21,6 +21,13 @@ describe('textos legales', () => {
     expect(screen.getByRole('heading', { name: /no veredictos/ })).toBeInTheDocument()
   })
 
+  it('la Política de Privacidad informa el registro de actividad y su conservación (003)', () => {
+    render(<PaginaPrivacidad />)
+    expect(screen.getByRole('heading', { name: '4. Registro de actividad' })).toBeInTheDocument()
+    expect(screen.getByText(/se conserva durante cinco años/)).toBeInTheDocument()
+    expect(screen.getByText(/Nunca guarda contraseñas/)).toBeInTheDocument()
+  })
+
   it('la Política de Privacidad informa la retención y la Ley 25.326', () => {
     render(<PaginaPrivacidad />)
     expect(screen.getByRole('heading', { level: 1, name: 'Política de Privacidad' })).toBeInTheDocument()

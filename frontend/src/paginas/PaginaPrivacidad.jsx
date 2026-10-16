@@ -4,7 +4,8 @@
  * Informa el tratamiento de datos personales conforme a la Ley N.° 25.326.
  * El texto definitivo debe validarse con los tutores.
  *
- * Realiza: RF01 (CA2); RNF08.
+ * Realiza: RF01 (CA2); RNF08; RNF06 (informa el registro de auditoría,
+ * funcionalidad 003).
  */
 import AvisoProvisorio from '../componentes/AvisoProvisorio.jsx'
 
@@ -33,19 +34,34 @@ export default function PaginaPrivacidad() {
         archivarlo, y luego se eliminan. Los casos que eliminás se borran de inmediato.
       </p>
 
-      <h2>4. Seguridad</h2>
+      <h2>4. Registro de actividad</h2>
+      <p>
+        Para poder reconstruir quién hizo cada acción, la plataforma registra las acciones
+        relevantes de las cuentas: registro, verificación del correo, inicios y cierres de sesión
+        (incluidos los intentos fallidos, con el correo ingresado), bloqueos, cambios de contraseña
+        y cambios en los datos del perfil y del correo. Cada registro guarda la fecha y la hora,
+        la cuenta, la dirección IP de origen, la acción, su resultado y los datos modificados.
+        Nunca guarda contraseñas ni enlaces de acceso.
+      </p>
+      <p>
+        Este registro se usa solo con fines de seguridad y de trazabilidad legal, no puede
+        modificarse y se conserva durante cinco años. Si eliminás tu cuenta, los registros se
+        conservan sin identificarte.
+      </p>
+
+      <h2>5. Seguridad</h2>
       <p>
         Las contraseñas se guardan cifradas de forma irreversible, las comunicaciones viajan
         cifradas y el almacenamiento de las imágenes es privado.
       </p>
 
-      <h2>5. Cookies</h2>
+      <h2>6. Cookies</h2>
       <p>
         Se usa únicamente una cookie de sesión, imprescindible para mantenerte identificado. No se
         usan cookies de publicidad ni de seguimiento.
       </p>
 
-      <h2>6. Tus derechos</h2>
+      <h2>7. Tus derechos</h2>
       <p>
         Podés acceder a tus datos, rectificarlos y solicitar su supresión, conforme a la Ley N.°
         25.326 de Protección de los Datos Personales. La Agencia de Acceso a la Información
