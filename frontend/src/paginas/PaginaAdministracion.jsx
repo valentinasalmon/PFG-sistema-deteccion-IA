@@ -6,7 +6,7 @@
  * con un motivo que se informa por correo. El tablero completo llega con la
  * funcionalidad 014.
  *
- * Realiza: RN37; CA7 a CA9 de la funcionalidad 021.
+ * Realiza: RN38; CA7 a CA9 de la funcionalidad 021.
  */
 import { useState } from 'react'
 import {

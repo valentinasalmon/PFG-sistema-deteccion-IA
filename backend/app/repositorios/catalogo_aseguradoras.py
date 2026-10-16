@@ -4,7 +4,7 @@ Lee ``recursos/catalogos/aseguradoras_ssn.csv`` una sola vez y lo mantiene en
 memoria: son 192 filas que solo cambian cuando se reemplaza el archivo (ver el
 README de esa carpeta).
 
-Realiza: RN35, RN36 (CP-18).
+Realiza: RN36, RN37 (CP-18).
 """
 import csv
 from dataclasses import dataclass

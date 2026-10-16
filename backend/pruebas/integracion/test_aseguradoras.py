@@ -1,7 +1,7 @@
 """Pruebas de las organizaciones de aseguradoras a través de la API.
 
 Criterios de aceptación de la funcionalidad 021: CA2 a CA19 (CA1 es de la
-interfaz). Reglas RN35 a RN39.
+interfaz). Reglas RN36 a RN40.
 """
 # Los accesorios de pytest se reciben como argumentos aunque no se usen en el cuerpo.
 # pylint: disable=unused-argument,redefined-outer-name
@@ -118,7 +118,7 @@ def test_registrar_una_aseguradora_crea_la_organizacion_pendiente(aplicacion, ri
 
 
 def test_una_aseguradora_ya_registrada_se_rechaza(aplicacion, rita, nuevo_cliente):
-    """CA4 (RN36): se indica pedir una invitación y no se crea la cuenta."""
+    """CA4 (RN37): se indica pedir una invitación y no se crea la cuenta."""
     respuesta = nuevo_cliente().post("/api/cuentas/registro", json=datos_registro(
         correo="otra@galicia.com", perfil="aseguradora", colegio=None,
         id_aseguradora=ID_SEGUROS_GALICIA,
@@ -131,7 +131,7 @@ def test_una_aseguradora_ya_registrada_se_rechaza(aplicacion, rita, nuevo_client
 
 @pytest.mark.parametrize("id_aseguradora", [None, 999999])
 def test_aseguradora_sin_catalogo_ni_invitacion_se_rechaza(aplicacion, cliente, id_aseguradora):
-    """CA5 (RN35)."""
+    """CA5 (RN36)."""
     respuesta = cliente.post("/api/cuentas/registro", json=datos_registro(
         perfil="aseguradora", colegio=None, empresa="Inventada SA", id_aseguradora=id_aseguradora,
     ))
@@ -156,7 +156,7 @@ def test_un_correo_existente_no_crea_otra_aseguradora(
 # --- Aprobación (CA6 a CA9) ---
 
 def test_pendiente_no_puede_invitar(rita):
-    """CA6 (RN37)."""
+    """CA6 (RN38)."""
     id_org = _organizacion_de(rita)["id"]
     respuesta = rita.post(
         f"/api/organizaciones/{id_org}/invitaciones", json={"correo": "x@galicia.com"}
@@ -408,7 +408,7 @@ def test_un_abogado_que_deja_una_aseguradora_no_se_desactiva(
 def test_una_empleada_en_dos_aseguradoras_sigue_activa_al_dejar_una(
     aplicacion, correos, nuevo_cliente, administrador, eva, galicia_activa
 ):
-    """RN38: solo se desactiva al quedarse sin ninguna aseguradora."""
+    """RN39: solo se desactiva al quedarse sin ninguna aseguradora."""
     surco = _registrar_aseguradora(nuevo_cliente(), correos, "sol@surco.com", ID_EL_SURCO)
     id_surco = _aprobar(administrador, surco)
     id_inv = _invitar(surco, id_surco, "eva@galicia.com")
@@ -421,13 +421,13 @@ def test_una_empleada_en_dos_aseguradoras_sigue_activa_al_dejar_una(
 # --- Creación y edición de organizaciones (CA17, CA18) ---
 
 def test_una_aseguradora_no_crea_organizaciones(rita):
-    """CA17 (RN39)."""
+    """CA17 (RN40)."""
     respuesta = rita.post("/api/organizaciones", json={"nombre": "X", "tipo": "estudio_juridico"})
     assert respuesta.status_code == 403
 
 
 def test_un_abogado_solo_crea_estudios(cliente, registrar_y_verificar):
-    """CA17 (RN39)."""
+    """CA17 (RN40)."""
     registrar_y_verificar()
     _iniciar(cliente, "ana@ejemplo.com")
     respuesta = cliente.post("/api/organizaciones", json={"nombre": "X", "tipo": "aseguradora"})

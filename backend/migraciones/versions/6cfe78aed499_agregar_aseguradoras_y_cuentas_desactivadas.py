@@ -1,7 +1,7 @@
 """Agregar el estado y el CUIT de las organizaciones y las cuentas desactivadas.
 
-Funcionalidad 021 (organizaciones de aseguradoras). Realiza: RN36 (un CUIT
-por organización), RN37 (aseguradoras pendientes de aprobación) y RN38
+Funcionalidad 021 (organizaciones de aseguradoras). Realiza: RN37 (un CUIT
+por organización), RN38 (aseguradoras pendientes de aprobación) y RN39
 (cuentas desactivadas). Las organizaciones y cuentas existentes quedan
 activas.
 

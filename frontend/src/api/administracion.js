@@ -1,7 +1,7 @@
 /**
  * Operaciones del Administrador de la plataforma (funcionalidad 021).
  *
- * Realiza: RN37 (aprobación de aseguradoras).
+ * Realiza: RN38 (aprobación de aseguradoras).
  */
 import { solicitar } from './cliente.js'
 

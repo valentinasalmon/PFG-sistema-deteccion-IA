@@ -394,7 +394,7 @@ function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
     setEnviando(true)
     try {
       const respuesta = await accion()
-      // Si la cuenta quedó sin aseguradora, el servidor ya cerró la sesión (RN38).
+      // Si la cuenta quedó sin aseguradora, el servidor ya cerró la sesión (RN39).
       if (respuesta.cuenta_desactivada) {
         terminarSesion('desactivada')
         return

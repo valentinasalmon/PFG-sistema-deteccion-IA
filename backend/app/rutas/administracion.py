@@ -1,8 +1,8 @@
 """Rutas del Administrador de la plataforma (funcionalidad 021).
 
 GET  /api/administracion/aseguradoras-pendientes                 Aseguradoras por aprobar
-POST /api/administracion/organizaciones/<id>/aprobacion          Aprobar (RN37)
-POST /api/administracion/organizaciones/<id>/rechazo             Rechazar con motivo (RN37)
+POST /api/administracion/organizaciones/<id>/aprobacion          Aprobar (RN38)
+POST /api/administracion/organizaciones/<id>/rechazo             Rechazar con motivo (RN38)
 
 El tablero completo de administración es de la funcionalidad 014.
 """

@@ -138,7 +138,7 @@ describe('mis organizaciones', () => {
 })
 
 describe('crear organización', () => {
-  it('crea un estudio jurídico (CA1; RN39)', async () => {
+  it('crea un estudio jurídico (CA1; RN40)', async () => {
     const { solicitudes } = apiDeOrganizacion({
       invitaciones: [],
       miembros: [ANA],

@@ -63,7 +63,7 @@ export default function ProveedorSesion({ children }) {
     }
   }, [])
 
-  /** Olvida la sesión que el servidor ya cerró, por ejemplo al desactivarse la cuenta (RN38). */
+  /** Olvida la sesión que el servidor ya cerró, por ejemplo al desactivarse la cuenta (RN39). */
   const terminarSesion = useCallback((motivo) => {
     setMotivoSalida(motivo)
     setUsuario(null)

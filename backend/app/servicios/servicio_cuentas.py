@@ -6,9 +6,9 @@ transacción que el cambio, y los correos se envían después de confirmar.
 
 Desde la funcionalidad 021, el perfil Aseguradora solo se obtiene
 registrando una aseguradora del catálogo de la SSN o con la invitación de
-una aseguradora (RN35).
+una aseguradora (RN36).
 
-Realiza: RF01, RF02, RF05; RN01, RN02, RN03, RN35; RNF01 (CA5), RNF08 (CA1);
+Realiza: RF01, RF02, RF05; RN01, RN02, RN03, RN36; RNF01 (CA5), RNF08 (CA1);
 RNF06 y CA7 a CA9 de la funcionalidad 003; CA3 a CA5 y CA10 a CA12 de la 021.
 """
 from app.modelos.usuario import (
@@ -50,7 +50,7 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
         self.catalogo = catalogo
 
     def _origen_aseguradora(self, solicitud):
-        """Valida de dónde sale el perfil Aseguradora (RN35).
+        """Valida de dónde sale el perfil Aseguradora (RN36).
 
         Returns:
             ``(invitacion, aseguradora)``: la invitación usada para registrarse

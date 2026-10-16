@@ -15,7 +15,7 @@ aprueba, y las cuentas con perfil Aseguradora que se quedan sin aseguradora
 se desactivan.
 
 Realiza: RF10 a RF18 (sin las reglas de casos, que agrega la 005); RN06,
-RN07, RN08, RN10, RN11, RN15, RN35 a RN39; RNF06.
+RN07, RN08, RN10, RN11, RN15, RN36 a RN40; RNF06.
 """
 from app.modelos.organizacion import (
     INVITACION_ACEPTADA,
@@ -196,7 +196,7 @@ class ServicioOrganizaciones:
         return organizacion
 
     def _desactivar_si_corresponde(self, miembro, organizacion, actor):
-        """Desactiva la cuenta si se queda sin aseguradora (RN38).
+        """Desactiva la cuenta si se queda sin aseguradora (RN39).
 
         Solo aplica al perfil Aseguradora al salir de una aseguradora. Cierra
         sus sesiones abiertas incrementando la versión de sesión. No confirma:
@@ -222,7 +222,7 @@ class ServicioOrganizaciones:
         """Elimina la organización con sus membresías e invitaciones (RN09 sin casos).
 
         Returns:
-            True si la cuenta de ``usuario`` quedó desactivada (RN38).
+            True si la cuenta de ``usuario`` quedó desactivada (RN39).
         """
         nombre = organizacion.nombre
         miembros = [m.usuario for m in organizacion.membresias]
@@ -248,7 +248,7 @@ class ServicioOrganizaciones:
         """Elimina la organización si se escribe su nombre exacto (RF18). Solo el Referente.
 
         Returns:
-            True si la cuenta del Referente quedó desactivada (RN38).
+            True si la cuenta del Referente quedó desactivada (RN39).
         """
         organizacion = self._como_referente(
             id_organizacion, usuario, auditoria.ORGANIZACION_ELIMINACION
@@ -338,7 +338,7 @@ class ServicioOrganizaciones:
         Returns:
             ``(organizacion_eliminada, cuenta_desactivada)``: si la organización
             se eliminó porque era su único miembro y si la cuenta del usuario
-            quedó desactivada por quedarse sin aseguradora (RN38).
+            quedó desactivada por quedarse sin aseguradora (RN39).
         """
         organizacion, membresia = self._acceso(id_organizacion, usuario)
         if membresia.es_referente:
@@ -551,7 +551,7 @@ class ServicioOrganizaciones:
         return organizacion
 
     def _incorporar(self, invitacion, usuario):
-        """Suma al usuario como Miembro y, si estaba desactivado, lo reactiva (RN38).
+        """Suma al usuario como Miembro y, si estaba desactivado, lo reactiva (RN39).
 
         No confirma: se guarda junto con la operación que la provoca.
         """
@@ -578,7 +578,7 @@ class ServicioOrganizaciones:
         self.correos.enviar_respuesta_invitacion(referente.usuario, invitacion, aceptada)
 
     def tiene_invitaciones_vigentes(self, correo):
-        """True si el correo tiene invitaciones pendientes y vigentes (RN38)."""
+        """True si el correo tiene invitaciones pendientes y vigentes (RN39)."""
         return bool(self.repositorio.invitaciones_pendientes_de_correo(correo, ahora_utc()))
 
     def incorporar_al_verificar(self, usuario):
@@ -626,7 +626,7 @@ class ServicioOrganizaciones:
     # --- Aseguradoras (funcionalidad 021) ---
 
     def exigir_aseguradora_libre(self, aseguradora):
-        """Rechaza registrar una aseguradora que ya tiene organización (RN36).
+        """Rechaza registrar una aseguradora que ya tiene organización (RN37).
 
         Raises:
             ConflictoDatos: con la indicación de pedir una invitación.
@@ -643,11 +643,11 @@ class ServicioOrganizaciones:
     def crear_aseguradora(self, usuario, aseguradora):
         """Crea la organización de una aseguradora del catálogo con el usuario como Referente.
 
-        Queda pendiente de aprobación (RN37). No confirma: se guarda junto con
+        Queda pendiente de aprobación (RN38). No confirma: se guarda junto con
         el registro de la cuenta.
 
         Raises:
-            ConflictoDatos: si esa aseguradora ya está registrada (RN36).
+            ConflictoDatos: si esa aseguradora ya está registrada (RN37).
         """
         self.exigir_aseguradora_libre(aseguradora)
         organizacion = Organizacion(

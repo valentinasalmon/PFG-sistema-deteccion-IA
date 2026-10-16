@@ -5,7 +5,7 @@ Cada membresía indica el rol del usuario en ella: exactamente uno es el
 Referente, que la administra (RN07). Las invitaciones se envían a un correo,
 esté registrado o no, y vencen a los 7 días (RN10).
 
-Realiza: RF10 a RF18; RN06, RN07, RN10, RN11, RN36, RN37.
+Realiza: RF10 a RF18; RN06, RN07, RN10, RN11, RN37, RN38.
 """
 from app.extensiones import db
 from app.utilidades.tiempo import ahora_utc
@@ -18,7 +18,7 @@ ROL_REFERENTE = "referente"
 ROL_MIEMBRO = "miembro"
 ROLES_ORGANIZACION = (ROL_REFERENTE, ROL_MIEMBRO)
 
-# Estado de la organización: las aseguradoras esperan la aprobación del Administrador (RN37).
+# Estado de la organización: las aseguradoras esperan la aprobación del Administrador (RN38).
 ORGANIZACION_PENDIENTE = "pendiente"
 ORGANIZACION_ACTIVA = "activa"
 ESTADOS_ORGANIZACION = (ORGANIZACION_PENDIENTE, ORGANIZACION_ACTIVA)
@@ -52,7 +52,7 @@ class Organizacion(db.Model):  # pylint: disable=too-few-public-methods
     correo_contacto = db.Column(db.String(254), nullable=True)
     telefono = db.Column(db.String(30), nullable=True)
     plan = db.Column(db.String(20), nullable=False)
-    # CUIT de la aseguradora del catálogo de la SSN: una organización por empresa (RN36).
+    # CUIT de la aseguradora del catálogo de la SSN: una organización por empresa (RN37).
     cuit = db.Column(db.String(11), nullable=True)
     estado = db.Column(
         db.String(20), nullable=False, default=ORGANIZACION_ACTIVA,
@@ -76,7 +76,7 @@ class Organizacion(db.Model):  # pylint: disable=too-few-public-methods
 
     @property
     def pendiente(self):
-        """True si espera la aprobación del Administrador (RN37)."""
+        """True si espera la aprobación del Administrador (RN38)."""
         return self.estado == ORGANIZACION_PENDIENTE
 
 

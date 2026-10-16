@@ -2,7 +2,7 @@
  * Pantalla "Organizaciones": las organizaciones del usuario con su rol y las
  * invitaciones pendientes a su correo, que puede aceptar o rechazar desde acá.
  *
- * Realiza: RN06, RN39; CA2, CA10 y CA13 de la funcionalidad 004 (CU11 3a);
+ * Realiza: RN06, RN40; CA2, CA10 y CA13 de la funcionalidad 004 (CU11 3a);
  * CA6 y CA17 de la 021.
  */
 import { useState } from 'react'
@@ -102,7 +102,7 @@ export default function PaginaOrganizaciones() {
   const { datos, error, cargando, recargar } = useDatos(cargarPantalla)
   const { state } = useLocation()
   const { usuario } = useSesion()
-  // Solo los abogados crean organizaciones, y solo estudios jurídicos (RN39).
+  // Solo los abogados crean organizaciones, y solo estudios jurídicos (RN40).
   const puedeCrear = usuario.perfil === 'abogado'
 
   return (

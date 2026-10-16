@@ -17,7 +17,7 @@
  * El backend valida de forma definitiva al crear la cuenta: si rechaza un
  * dato de un paso anterior, se vuelve a ese paso con el error junto al campo.
  *
- * Realiza: RF01; RN01, RN02, RN35; CA1 a CA5 de la funcionalidad 002, CA1 a
+ * Realiza: RF01; RN01, RN02, RN36; CA1 a CA5 de la funcionalidad 002, CA1 a
  * CA8 de la 020, CA9 de la 004 y CA1, CA2, CA5, CA10 de la 021; RNF10.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'

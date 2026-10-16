@@ -36,7 +36,7 @@ class ServicioSesion:
         Args:
             registro: ``ServicioAuditoria`` donde se registra cada intento.
             organizaciones: ``ServicioOrganizaciones``, para saber si una cuenta
-                desactivada tiene invitaciones vigentes (RN38).
+                desactivada tiene invitaciones vigentes (RN39).
         """
         self.repositorio = repositorio
         self.correos = correos
@@ -66,7 +66,7 @@ class ServicioSesion:
             CredencialesInvalidas: credenciales incorrectas o cuenta bloqueada.
             CuentaNoVerificada: la contraseña es correcta pero falta verificar el correo.
             CuentaDesactivada: la contraseña es correcta pero la cuenta quedó sin
-                aseguradora y no tiene invitaciones vigentes (RN38).
+                aseguradora y no tiene invitaciones vigentes (RN39).
         """
         usuario = self.repositorio.obtener_por_correo(correo)
         if usuario is None:

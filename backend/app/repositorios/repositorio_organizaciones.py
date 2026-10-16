@@ -101,11 +101,11 @@ class RepositorioOrganizaciones:
         ).count()
 
     def obtener_por_cuit(self, cuit):
-        """Organización registrada para ese CUIT, o None (RN36)."""
+        """Organización registrada para ese CUIT, o None (RN37)."""
         return Organizacion.query.filter_by(cuit=cuit).first()
 
     def pendientes_de_aprobacion(self):
-        """Aseguradoras que esperan la aprobación del Administrador (RN37)."""
+        """Aseguradoras que esperan la aprobación del Administrador (RN38)."""
         return (
             Organizacion.query.filter_by(estado=ORGANIZACION_PENDIENTE)
             .order_by(Organizacion.creada_en)

@@ -1,6 +1,6 @@
 """Modelo de usuario de la plataforma.
 
-Realiza: RF01, RF02, RF03, RF05, RF07; RN01, RN02, RN03, RN38.
+Realiza: RF01, RF02, RF03, RF05, RF07; RN01, RN02, RN03, RN39.
 """
 from flask_login import UserMixin
 
@@ -45,7 +45,7 @@ class Usuario(UserMixin, db.Model):  # pylint: disable=too-few-public-methods
     intentos_fallidos = db.Column(db.Integer, nullable=False, default=0)
     bloqueado_hasta = db.Column(db.DateTime, nullable=True)
     version_sesion = db.Column(db.Integer, nullable=False, default=1)
-    # Una cuenta con perfil Aseguradora sin aseguradora queda desactivada (RN38).
+    # Una cuenta con perfil Aseguradora sin aseguradora queda desactivada (RN39).
     activo = db.Column(db.Boolean, nullable=False, default=True, server_default=db.true())
 
     creado_en = db.Column(db.DateTime, nullable=False, default=ahora_utc)

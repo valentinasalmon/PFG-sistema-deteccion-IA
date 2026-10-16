@@ -121,7 +121,7 @@ class ServicioCorreos:
         """Aviso a quien fue desvinculado de una organización (RF14 CA1).
 
         Args:
-            desactivada: True si la cuenta quedó desactivada por no tener aseguradora (RN38).
+            desactivada: True si la cuenta quedó desactivada por no tener aseguradora (RN39).
         """
         return self._enviar(
             usuario.correo, f"Ya no sos miembro de {organizacion.nombre}", "desvinculacion",

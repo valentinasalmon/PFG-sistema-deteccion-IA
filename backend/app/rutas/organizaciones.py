@@ -157,7 +157,7 @@ def abandonar(id_organizacion):
 
 
 def _respuesta_de_salida(mensaje, eliminada, desactivada):
-    """Si la cuenta quedó desactivada (RN38), cierra la sesión actual."""
+    """Si la cuenta quedó desactivada (RN39), cierra la sesión actual."""
     if desactivada:
         cerrar_sesion(MOTIVO_CIERRE_CUENTA_DESACTIVADA)
         mensaje += " Tu cuenta quedó desactivada porque ya no pertenecés a ninguna aseguradora."

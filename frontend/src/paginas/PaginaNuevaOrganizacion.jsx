@@ -1,7 +1,7 @@
 /**
  * Pantalla "Crear estudio jurídico": nombre y datos de contacto opcionales.
  * Solo los abogados crean organizaciones, y solo del tipo Estudio Jurídico
- * (RN39, funcionalidad 021).
+ * (RN40, funcionalidad 021).
  *
  * Al crearla, el usuario queda como Referente y pasa a la pantalla de la
  * organización, donde puede invitar a su equipo (CU08 paso 5).

@@ -44,7 +44,7 @@ class CuentaNoVerificada(ErrorDominio):
 
 
 class CuentaDesactivada(ErrorDominio):
-    """La cuenta con perfil Aseguradora ya no pertenece a ninguna aseguradora (403, RN38)."""
+    """La cuenta con perfil Aseguradora ya no pertenece a ninguna aseguradora (403, RN39)."""
 
     codigo = "cuenta_desactivada"
 
