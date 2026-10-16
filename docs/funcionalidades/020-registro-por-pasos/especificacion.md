@@ -31,8 +31,8 @@ Dividir el registro en pasos cortos, con una pregunta principal por pantalla, ha
 
 - Cambios en la API o en las reglas del registro: los criterios de RF01 no cambian.
 - Elegir entre usuario individual u organización, e invitar a otras personas: funcionalidad 004 (ver CP-17).
-- Validación del nombre de la aseguradora contra un catálogo: pendiente (ver CP-18).
-- Verificación de la habilitación de los abogados: pendiente de decisión (ver CP-19).
+- Validación de la empresa aseguradora contra el catálogo de la Superintendencia de Seguros de la Nación: decidida, se especifica aparte (ver CP-18).
+- Verificación de la habilitación de los abogados: no se hace (ver CP-19).
 - Pasos en el inicio de sesión: sigue siendo una sola pantalla, porque solo pide correo y contraseña.
 
 ## Criterios de aceptación
@@ -48,4 +48,4 @@ Dividir el registro en pasos cortos, con una pregunta principal por pantalla, ha
 
 ## Preguntas abiertas
 
-- Ninguna para esta funcionalidad. Las ideas relacionadas que quedan para después están registradas como CP-17, CP-18 y CP-19.
+- Ninguna para esta funcionalidad. Las ideas relacionadas están registradas como CP-17, CP-18 y CP-19.
