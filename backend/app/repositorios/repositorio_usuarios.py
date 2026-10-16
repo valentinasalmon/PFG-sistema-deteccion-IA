@@ -18,6 +18,16 @@ class RepositorioUsuarios:
         """True si el correo ya pertenece a alguna cuenta."""
         return self.obtener_por_correo(correo) is not None
 
+    def preparar(self, usuario):
+        """Agrega un usuario nuevo a la transacción y le asigna su identificador, sin confirmar.
+
+        Permite registrar en la auditoría la creación de la cuenta con su
+        identificador y confirmar ambas cosas juntas al llamar a ``guardar``.
+        """
+        db.session.add(usuario)
+        db.session.flush()
+        return usuario
+
     def guardar(self, usuario):
         """Inserta o actualiza el usuario y confirma la transacción."""
         db.session.add(usuario)
