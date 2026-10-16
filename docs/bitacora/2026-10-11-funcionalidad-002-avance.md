@@ -83,3 +83,22 @@ Estado de las verificaciones: backend con 35 pruebas en verde (la cobertura tota
 
 - **Autora**: T12 (`src/api/`), T13 (contexto y hooks), T14 (`Encabezado`, `Disposiciones`, `Rutas`, `FormularioReenvio`), T15 (pantallas, `App.jsx`, `main.jsx`) y T16 (recorrido manual).
 - **Asistente**: pruebas del cliente (después de la T12), `global.css`, `renderizar.jsx` y pruebas de pantallas (después de la T15), ADR-0010 y entrada de cierre.
+
+## Actualización 2026-10-16: frontend terminado
+
+| Tarea | Contenido | Estado |
+|---|---|---|
+| T12 | Cliente de la API con CSRF (autora) y sus pruebas (asistente) | Hecha |
+| T13 | Contexto de sesión y hooks (autora); utilidades y pruebas (asistente) | Hecha |
+| T14 | Encabezado, disposiciones, guardas y reenvío (autora); componentes de presentación (asistente) | Hecha |
+| T15 | 7 pantallas con formularios (autora); rutas, inicio, estado, estilos y pruebas (asistente) | Hecha |
+
+- **Frontend**: 59 pruebas, cobertura del 99 %, ESLint sin errores y compilación de producción correcta.
+- **Recorrido en un navegador real** con PostgreSQL, Redis y un servidor de correo: registro con los errores juntos, verificación por correo, enlace reutilizado rechazado, mensaje genérico ante credenciales inválidas, inicio, edición del perfil, cambio de contraseña sin perder la sesión, cierre de sesión con aviso, página de estado y diseño sin desbordes en celular (375 px). Sin errores en la consola.
+- **Correcciones durante la integración**: el archivo `useAccionAICargar.js` (con I mayúscula) se renombró a `useAccionAlCargar.js`; las guardas de navegación se movieron de `src/componentes/` a `src/rutas/`, como indica la [estructura del repositorio](../arquitectura/estructura-del-repositorio.md).
+- **Decisión de arquitectura registrada**: [ADR-0010](../arquitectura/decisiones/0010-sesiones-en-redis-y-enlaces-firmados.md), sesiones del servidor en Redis y enlaces firmados sin estado.
+
+### Pendientes para cerrar la 002
+
+- **Autora**: T16 (recorrido manual con Docker y Mailpit) y el Pull Request hacia `desarrollo`.
+- **Asistente**: revisar la integración continua del Pull Request, marcar los criterios de aceptación, cambiar el estado a "Completado" y escribir la entrada de cierre de la bitácora.
