@@ -24,11 +24,11 @@ Referencias: [especificacion.md](especificacion.md) · [plan.md](plan.md)
   - Archivos: `src/paginas/acceso.test.jsx`
   - Verificación: `npm run lint && npm run test:cobertura` en verde.
   - Commit: `pruebas(registro): probar el registro por pasos`
-- [ ] **T05** — Recorrido manual con Docker y Mailpit: registrar una cuenta de cada perfil, volver atrás, dejar un paso vacío y usar solo el teclado.
+- [x] **T05** — Recorrido manual con Docker y Mailpit: registrar una cuenta de cada perfil, volver atrás, dejar un paso vacío y usar solo el teclado.
   - Responsable: Autora
 
 ## Cierre
 
-- [ ] Lint, pruebas y cobertura en verde; integración continua del Pull Request en verde.
-- [ ] Criterios de aceptación de la especificación verificados.
-- [ ] Entrada en la bitácora.
+- [x] Lint, pruebas y cobertura en verde; integración continua del Pull Request en verde.
+- [x] Criterios de aceptación de la especificación verificados.
+- [x] Entrada en la bitácora.

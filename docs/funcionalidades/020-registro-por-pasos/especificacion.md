@@ -1,7 +1,7 @@
 # Especificación: 020 — Registro guiado por pasos
 
 - **Rama**: `funcionalidad/020-registro-por-pasos`
-- **Estado**: En implementación
+- **Estado**: Completada
 - **Requisitos que realiza**: RF01 (interfaz de registro, sin cambios en sus criterios); RNF10 (facilidad de uso para usuarios no técnicos)
 - **Reglas de negocio aplicadas**: RN01, RN02
 - **Casos de uso**: CU01
