@@ -1,7 +1,7 @@
 # Especificación: 002 — Cuentas y sesión
 
 - **Rama**: `funcionalidad/002-cuentas-y-sesion`
-- **Estado**: Implementada (pendiente de integrar en `desarrollo`)
+- **Estado**: Completada
 - **Requisitos que realiza**: RF01, RF02, RF03, RF04, RF05, RF06, RF07; RNF01; RNF02 (CA2, CA3); RNF04 (CA1); RNF08 (CA1, CA2, CA7)
 - **Reglas de negocio aplicadas**: RN01, RN02, RN03, RN04
 - **Casos de uso**: CU01, CU02, CU03, CU04, CU05

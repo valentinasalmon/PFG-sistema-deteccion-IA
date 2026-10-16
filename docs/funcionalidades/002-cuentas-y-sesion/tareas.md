@@ -105,5 +105,5 @@ Cada tarea termina con una verificación y un commit. **Responsable** indica qui
 
 - [x] Pruebas, flake8, pylint, import-linter, ESLint y cobertura en verde.
 - [x] Criterios de aceptación de la especificación verificados.
-- [ ] Entrada en la bitácora, ADR-0010 (hecho), casillas y estado de la funcionalidad (asistente).
-- [ ] Pull Request de `funcionalidad/002-cuentas-y-sesion` hacia `desarrollo` con la integración continua en verde (autora).
+- [x] Entrada en la bitácora, ADR-0010, casillas y estado de la funcionalidad (asistente).
+- [x] Pull Request de `funcionalidad/002-cuentas-y-sesion` hacia `desarrollo` con la integración continua en verde (autora): #3.
