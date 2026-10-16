@@ -42,7 +42,7 @@ Esta funcionalidad crea el registro de auditoría y empieza a usarlo con las acc
 - Registro de las consultas del Administrador: funcionalidad 014.
 - Eliminación automática de las entradas con más de 5 años: funcionalidad 015 (retención de datos).
 - Anonimización de las entradas al eliminarse una cuenta (RNF06 CA5, RN34): funcionalidad 019.
-- Cierre de sesión por inactividad: la sesión vence sola en el servidor, sin una solicitud que permita registrarlo. Queda constancia del último acceso de la sesión.
+- Cierre de sesión por inactividad: la sesión vence sola en el servidor, sin una solicitud que permita registrarlo.
 
 ## Criterios de aceptación
 
