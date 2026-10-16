@@ -20,6 +20,9 @@ Decisiones pendientes de confirmación por la autora del proyecto. Cada cuestió
 | **CP-14** | ¿Qué tipos de commit en español se adoptan? | Ver la convención propuesta a continuación. | RNF20 |
 | **CP-15** | Repositorio existente de metadatos y firma digital. | **Resuelta**: analizado; ver `docs/arquitectura/reutilizacion-repositorio-tif.md`. | RF39, RF40 |
 | **CP-16** | ¿Cuál es la fecha de entrega del proyecto? | Pendiente; necesaria para priorizar los requisitos **Debería** y **Podría**. | Planificación |
+| **CP-17** | ¿Los abogados pueden usar la plataforma como usuarios individuales y las aseguradoras solo como organizaciones? | Propuesta de la autora (2026-10-16): el perfil Abogado puede trabajar como usuario individual; el perfil Aseguradora, dentro de una organización. Se especifica en la funcionalidad 004. | RN01, RF10, RF19 |
+| **CP-18** | ¿Se valida el nombre de la aseguradora contra un catálogo? | Propuesta de la autora (2026-10-16): al registrarse, el nombre de la empresa se busca en un conjunto de datos de aseguradoras habilitadas que aporta la autora. Pendiente: recibir el conjunto de datos, su fuente y su licencia. | RN02, RF01 |
+| **CP-19** | ¿Se verifica que el abogado esté habilitado para ejercer? | Propuesta de la autora (2026-10-16): consultar automáticamente un registro público de profesionales habilitados de la Argentina. Hoy la visión excluye la validación de matrículas; para incorporarla hay que revisar los términos de uso del sitio consultado, la Ley N.° 25.326 y la estabilidad de la fuente, y validarlo con los tutores. | RN02, RF01, visión (Excluido) |
 
 ## Planes propuestos (CP-02)
 
