@@ -1,0 +1,6 @@
+Hola, {{ nombre }}:
+
+{% if aceptada %}{{ invitado }} aceptó la invitación y ya es miembro de {{ organizacion }}.{% else %}{{ invitado }} rechazó la invitación a {{ organizacion }}.{% endif %}
+
+Podés ver los miembros en:
+{{ enlace }}

@@ -4,7 +4,7 @@ Arma cada correo a partir de una plantilla Jinja2 (texto y HTML) y lo entrega
 al enviador configurado. No conoce Flask: recibe el enviador y la dirección
 del frontend por parámetro.
 
-Realiza: RF47 (eventos de cuenta), RNF10 (CA4: textos en español).
+Realiza: RF47 (eventos de cuenta y de organizaciones), RNF10 (CA4: textos en español).
 """
 from pathlib import Path
 
@@ -21,7 +21,7 @@ _entorno = Environment(
 
 
 class ServicioCorreos:
-    """Un método por cada correo que envía la funcionalidad de cuentas."""
+    """Un método por cada correo que envía la plataforma."""
 
     def __init__(self, enviador, url_frontend):
         self.enviador = enviador
@@ -85,4 +85,72 @@ class ServicioCorreos:
         return self._enviar(
             usuario.correo, "Se solicitó cambiar el correo de tu cuenta", "aviso_cambio_correo",
             nombre=usuario.nombre, correo_nuevo=correo_nuevo,
+        )
+
+    # --- Organizaciones (funcionalidad 004) ---
+
+    def _enlace_organizacion(self, organizacion):
+        return f"{self.url_frontend}/organizaciones/{organizacion.id}"
+
+    def enviar_invitacion(self, invitacion, invitante, token, registrado):
+        """Invitación a sumarse a una organización (RF12 CA1 y CA2).
+
+        Args:
+            registrado: True si el correo ya tiene una cuenta; cambia la indicación final.
+        """
+        return self._enviar(
+            invitacion.correo, f"Te invitaron a {invitacion.organizacion.nombre}", "invitacion",
+            invitante=f"{invitante.nombre} {invitante.apellido}",
+            organizacion=invitacion.organizacion.nombre, correo=invitacion.correo,
+            vence=invitacion.vence_en.strftime("%d/%m/%Y"), registrado=registrado,
+            enlace=self._enlace("/invitaciones/responder", token),
+        )
+
+    def enviar_respuesta_invitacion(self, referente, invitacion, aceptada):
+        """Aviso al Referente de que una invitación fue aceptada o rechazada (RF13 CA1)."""
+        accion = "aceptó" if aceptada else "rechazó"
+        return self._enviar(
+            referente.correo, f"{invitacion.correo} {accion} la invitación",
+            "invitacion_respondida",
+            nombre=referente.nombre, invitado=invitacion.correo, aceptada=aceptada,
+            organizacion=invitacion.organizacion.nombre,
+            enlace=self._enlace_organizacion(invitacion.organizacion),
+        )
+
+    def enviar_aviso_desvinculacion(self, usuario, organizacion):
+        """Aviso a quien fue desvinculado de una organización (RF14 CA1)."""
+        return self._enviar(
+            usuario.correo, f"Ya no sos miembro de {organizacion.nombre}", "desvinculacion",
+            nombre=usuario.nombre, organizacion=organizacion.nombre,
+        )
+
+    def enviar_aviso_cambio_referente(self, usuario, organizacion, es_nuevo, nuevo_referente):
+        """Aviso del cambio de Referente al designado y al anterior (RF15 CA2)."""
+        asunto = (
+            f"Ahora sos Referente de {organizacion.nombre}" if es_nuevo
+            else f"Cambió el Referente de {organizacion.nombre}"
+        )
+        return self._enviar(
+            usuario.correo, asunto, "cambio_referente",
+            nombre=usuario.nombre, organizacion=organizacion.nombre, es_nuevo=es_nuevo,
+            nuevo_referente=f"{nuevo_referente.nombre} {nuevo_referente.apellido}",
+            enlace=self._enlace_organizacion(organizacion),
+        )
+
+    def enviar_aviso_abandono(self, referente, organizacion, miembro):
+        """Aviso al Referente de que un miembro abandonó la organización (RF17 CA1)."""
+        return self._enviar(
+            referente.correo, f"{miembro.nombre} {miembro.apellido} abandonó {organizacion.nombre}",
+            "abandono",
+            nombre=referente.nombre, organizacion=organizacion.nombre,
+            miembro=f"{miembro.nombre} {miembro.apellido}",
+            enlace=self._enlace_organizacion(organizacion),
+        )
+
+    def enviar_aviso_eliminacion_organizacion(self, usuario, nombre_organizacion):
+        """Aviso a cada miembro de que la organización fue eliminada (RF18 CA2)."""
+        return self._enviar(
+            usuario.correo, f"Se eliminó la organización {nombre_organizacion}",
+            "organizacion_eliminada",
+            nombre=usuario.nombre, organizacion=nombre_organizacion,
         )

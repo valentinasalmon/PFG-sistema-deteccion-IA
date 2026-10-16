@@ -1,0 +1,10 @@
+Hola:
+
+{{ invitante }} te invitó a sumarte a {{ organizacion }} en la Plataforma de análisis de imágenes.
+
+Para ver la invitación y responderla, abrí este enlace (vence el {{ vence }}):
+{{ enlace }}
+
+{% if registrado %}Vas a tener que iniciar sesión con este correo ({{ correo }}).{% else %}Todavía no tenés una cuenta con este correo ({{ correo }}): desde el enlace podés crearla y, una vez verificada, responder la invitación.{% endif %}
+
+Si no esperabas esta invitación, ignorá este mensaje.

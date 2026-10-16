@@ -37,7 +37,23 @@ PERFIL_EDICION = "perfil.edicion"
 CORREO_SOLICITUD_CAMBIO = "correo.solicitud_cambio"
 CORREO_CAMBIO = "correo.cambio"
 
+# --- Acciones de organizaciones (funcionalidad 004) ---
+ORGANIZACION_CREACION = "organizacion.creacion"
+ORGANIZACION_EDICION = "organizacion.edicion"
+ORGANIZACION_ELIMINACION = "organizacion.eliminacion"
+ORGANIZACION_CAMBIO_REFERENTE = "organizacion.cambio_referente"
+INVITACION_ENVIO = "invitacion.envio"
+INVITACION_REENVIO = "invitacion.reenvio"
+INVITACION_CANCELACION = "invitacion.cancelacion"
+INVITACION_ACEPTACION = "invitacion.aceptacion"
+INVITACION_RECHAZO = "invitacion.rechazo"
+MEMBRESIA_EDICION = "membresia.edicion"
+MEMBRESIA_DESVINCULACION = "membresia.desvinculacion"
+MEMBRESIA_ABANDONO = "membresia.abandono"
+
 TIPO_USUARIO = "usuario"
+TIPO_ORGANIZACION = "organizacion"
+TIPO_INVITACION = "invitacion"
 
 # Fragmentos de claves que nunca se guardan en el detalle (RNF06 CA4).
 FRAGMENTOS_SENSIBLES = (

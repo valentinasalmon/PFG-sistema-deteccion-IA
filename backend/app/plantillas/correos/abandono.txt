@@ -1,0 +1,6 @@
+Hola, {{ nombre }}:
+
+{{ miembro }} abandonó la organización {{ organizacion }}.
+
+Podés ver los miembros actuales en:
+{{ enlace }}
