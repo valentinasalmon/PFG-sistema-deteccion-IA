@@ -23,7 +23,8 @@ Se trabaja por **funcionalidades verticales**, comenzando por un **esqueleto cam
 Fase 0  Preparación del entorno ─────────────────────────────┐
 Fase 1  001 Esqueleto caminante                              │
 Fase 2  002 Cuentas y sesión · 020 Registro · 003 Auditoría  │   Pista paralela:
-Fase 3  004 Organizaciones · 005 Casos · 019 Baja de cuenta  │   010 Red neuronal
+Fase 3  004 Organizaciones · 021 Aseguradoras · 005 Casos    │
+        019 Baja de cuenta                                   │   010 Red neuronal
 Fase 4  006 Imágenes · 007 Motor de análisis + capa 1        │   (entrenamiento en
         008 Informe PDF        ← primer flujo completo  v0.1 │    Colab/Kaggle)
 Fase 5  009 Capa 2 (C2PA) · 011 Capa 3 (ELA) · 012 Capa 4    │
@@ -41,6 +42,7 @@ Fase 9  018 Cierre: usabilidad, QI, documentación final  v1.0
 | 2 | 020 | Registro guiado por pasos | RF01 (interfaz), RNF10 | El registro se completa en 4 pantallas de una pregunta cada una |
 | 2 | 003 | Auditoría | RNF06 | Cada acción relevante queda registrada |
 | 3 | 004 | Organizaciones e invitaciones | RF10 – RF18 | Crear organización, invitar por correo, aceptar, abandonar |
+| 3 | 021 | Organizaciones de aseguradoras | RN36 – RN40 | La aseguradora se registra desde el catálogo de la SSN, el Administrador la aprueba y los empleados se suman por invitación |
 | 3 | 005 | Casos y permisos | RF23 – RF33 | Crear, buscar, editar, compartir, transferir, cerrar, archivar y eliminar casos |
 | 3 | 019 | Eliminación de cuenta y copia de datos | RF08, RF09 | Baja de la cuenta con transferencia de casos y descarga de los datos personales |
 | 4 | 006 | Imágenes | RF34 – RF36 | Carga con validación del formato real, huella SHA-256 y almacenamiento S3 |

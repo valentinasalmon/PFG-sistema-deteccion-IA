@@ -65,4 +65,16 @@ Las reglas de negocio son restricciones del dominio que el sistema debe respetar
 | **RN32** | El Responsable puede prorrogar el plazo de retención por 1 año, indicando un motivo (por ejemplo, juicio en trámite). La prórroga es renovable y queda registrada en la auditoría. **[PROPUESTA]** |
 | **RN33** | Vencido el plazo sin prórroga, el sistema destruye el caso aplicando RN21. |
 | **RN34** | Al eliminarse una cuenta, sus datos personales se suprimen y las entradas del registro de auditoría que la referencian se conservan con el usuario anonimizado. |
-| **RN35** | El Administrador no accede a casos, imágenes ni informes. Solo consulta estadísticas agregadas y listados de usuarios y organizaciones. |
+| **RN35** | El Administrador no accede a casos, imágenes ni informes. Solo consulta estadísticas agregadas y listados de usuarios y organizaciones, con dos excepciones: modificar el plan de una organización (CP-01) y aprobar o rechazar el registro de una aseguradora (RN38). |
+
+## Aseguradoras
+
+Decisión de la autora (CP-17, 2026-10-16), aplicada en la funcionalidad 021.
+
+| ID | Regla |
+|---|---|
+| **RN36** | El perfil Aseguradora solo se obtiene de dos formas: registrando una aseguradora del catálogo de la Superintendencia de Seguros de la Nación (quien la registra queda como Referente) o aceptando la invitación de una aseguradora. |
+| **RN37** | Cada aseguradora del catálogo, identificada por su CUIT, puede tener una sola organización en la plataforma. |
+| **RN38** | Una organización de aseguradora queda pendiente hasta que el Administrador la aprueba; mientras tanto no puede invitar miembros. Si el Administrador la rechaza, se elimina y la cuenta de quien la registró se desactiva. |
+| **RN39** | Una cuenta con perfil Aseguradora que deja de pertenecer a toda aseguradora queda desactivada: no puede iniciar sesión, salvo para aceptar una invitación vigente, que la reactiva. |
+| **RN40** | Solo los usuarios con perfil Abogado pueden crear organizaciones, y solo del tipo Estudio Jurídico. Las organizaciones de aseguradora se crean únicamente al registrar la aseguradora (RN36). |
