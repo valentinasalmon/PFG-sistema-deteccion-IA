@@ -6,7 +6,8 @@
  * abierta. Si cualquier solicitud informa que la sesión venció (por
  * inactividad o duración máxima), borra el usuario y las rutas protegidas
  * redirigen al inicio de sesión. ``motivoSalida`` indica por qué terminó la
- * sesión ('cierre' o 'vencida') para mostrar el aviso correspondiente.
+ * sesión ('cierre', 'vencida' o 'desactivada') para mostrar el aviso
+ * correspondiente.
  *
  * Realiza: RF03, RF04 y CA7, CA12, CA22 de la funcionalidad 002.
  */
@@ -62,6 +63,12 @@ export default function ProveedorSesion({ children }) {
     }
   }, [])
 
+  /** Olvida la sesión que el servidor ya cerró, por ejemplo al desactivarse la cuenta (RN38). */
+  const terminarSesion = useCallback((motivo) => {
+    setMotivoSalida(motivo)
+    setUsuario(null)
+  }, [])
+
   const recargarUsuario = useCallback(async () => {
     const datos = await apiSesion.obtenerSesion()
     setUsuario(datos)
@@ -75,10 +82,11 @@ export default function ProveedorSesion({ children }) {
       motivoSalida,
       iniciarSesion,
       cerrarSesion,
+      terminarSesion,
       recargarUsuario,
       actualizarUsuario: setUsuario,
     }),
-    [usuario, cargando, motivoSalida, iniciarSesion, cerrarSesion, recargarUsuario],
+    [usuario, cargando, motivoSalida, iniciarSesion, cerrarSesion, terminarSesion, recargarUsuario],
   )
 
   return <ContextoSesion.Provider value={valor}>{children}</ContextoSesion.Provider>

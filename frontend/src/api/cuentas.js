@@ -30,3 +30,9 @@ export function solicitarRecuperacion(correo) {
 export function restablecerContrasenia(token, contrasenia) {
   return solicitar('POST', '/api/cuentas/recuperacion/restablecer', { token, contrasenia })
 }
+
+/** Aseguradoras habilitadas por la SSN, para registrar una aseguradora (funcionalidad 021). */
+export async function listarAseguradoras() {
+  const { aseguradoras } = await solicitar('GET', '/api/catalogos/aseguradoras')
+  return aseguradoras
+}

@@ -2,7 +2,8 @@
  * Pantalla "Organizaciones": las organizaciones del usuario con su rol y las
  * invitaciones pendientes a su correo, que puede aceptar o rechazar desde acá.
  *
- * Realiza: RN06; CA2, CA10 y CA13 de la funcionalidad 004 (CU11 3a).
+ * Realiza: RN06, RN39; CA2, CA10 y CA13 de la funcionalidad 004 (CU11 3a);
+ * CA6 y CA17 de la 021.
  */
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
@@ -16,6 +17,7 @@ import Aviso from '../componentes/Aviso.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
 import { useDatos } from '../hooks/useDatos.js'
+import { useSesion } from '../hooks/useSesion.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 
 async function cargarPantalla() {
@@ -99,17 +101,22 @@ export default function PaginaOrganizaciones() {
   // cargarPantalla está definida fuera del componente: no cambia entre renderizados.
   const { datos, error, cargando, recargar } = useDatos(cargarPantalla)
   const { state } = useLocation()
+  const { usuario } = useSesion()
+  // Solo los abogados crean organizaciones, y solo estudios jurídicos (RN39).
+  const puedeCrear = usuario.perfil === 'abogado'
 
   return (
     <>
       <div className="encabezado-pagina">
         <h1>Organizaciones</h1>
-        <Link to="/organizaciones/nueva" className="boton">
-          Crear organización
-        </Link>
+        {puedeCrear && (
+          <Link to="/organizaciones/nueva" className="boton">
+            Crear estudio jurídico
+          </Link>
+        )}
       </div>
       <p className="subtitulo">
-        En una organización podés trabajar en equipo con otras personas de tu estudio o de tu
+        En una organización trabajás en equipo con otras personas de tu estudio jurídico o de tu
         aseguradora.
       </p>
 
@@ -125,8 +132,9 @@ export default function PaginaOrganizaciones() {
             <h2 id="titulo-mis-organizaciones">Tus organizaciones</h2>
             {datos.organizaciones.length === 0 ? (
               <p className="nota">
-                Todavía no pertenecés a ninguna organización. Podés crear una o esperar a que te
-                inviten.
+                {puedeCrear
+                  ? 'Todavía no pertenecés a ninguna organización. Podés crear un estudio jurídico o esperar a que te inviten.'
+                  : 'Todavía no pertenecés a ninguna organización.'}
               </p>
             ) : (
               <ul className="lista-tarjetas">
@@ -138,9 +146,14 @@ export default function PaginaOrganizaciones() {
                       </Link>
                       <span className="tarjeta-item__detalle">{organizacion.tipo_nombre}</span>
                     </div>
-                    <Etiqueta tipo={organizacion.mi_rol === 'referente' ? 'destacada' : 'neutra'}>
-                      {organizacion.mi_rol === 'referente' ? 'Referente' : 'Miembro'}
-                    </Etiqueta>
+                    <div className="acciones-en-linea">
+                      {organizacion.estado === 'pendiente' && (
+                        <Etiqueta tipo="alerta">Pendiente de aprobación</Etiqueta>
+                      )}
+                      <Etiqueta tipo={organizacion.mi_rol === 'referente' ? 'destacada' : 'neutra'}>
+                        {organizacion.mi_rol === 'referente' ? 'Referente' : 'Miembro'}
+                      </Etiqueta>
+                    </div>
                   </li>
                 ))}
               </ul>

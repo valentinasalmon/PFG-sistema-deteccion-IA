@@ -16,6 +16,8 @@ import Cargando from '../componentes/Cargando.jsx'
 const MENSAJES_SALIDA = {
   cierre: 'Cerraste la sesión.',
   vencida: 'Tu sesión venció por seguridad. Volvé a iniciar sesión.',
+  desactivada:
+    'Tu cuenta quedó desactivada porque ya no pertenecés a ninguna aseguradora. Si otra aseguradora te invita, vas a poder ingresar para aceptar la invitación.',
 }
 
 export function RutaProtegida() {
@@ -24,10 +26,11 @@ export function RutaProtegida() {
 
   if (cargando) return <Cargando texto="Verificando la sesión…" />
   if (!usuario) {
-    // Tras un cierre voluntario se vuelve al inicio; si no, a la pantalla pedida.
+    // Tras un cierre voluntario o una desactivación se vuelve al inicio; si
+    // no, a la pantalla pedida.
     const estado =
-      motivoSalida === 'cierre'
-        ? { mensaje: MENSAJES_SALIDA.cierre }
+      motivoSalida === 'cierre' || motivoSalida === 'desactivada'
+        ? { mensaje: MENSAJES_SALIDA[motivoSalida] }
         : { desde: ubicacion.pathname, mensaje: MENSAJES_SALIDA[motivoSalida] }
     return <Navigate to="/iniciar-sesion" replace state={estado} />
   }

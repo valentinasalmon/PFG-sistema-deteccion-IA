@@ -96,6 +96,18 @@ describe('inicio de sesión', () => {
   })
 })
 
+const ASEGURADORAS = [
+  { id: 6, denominacion: 'EL SURCO COMPAÑÍA DE SEGUROS SOCIEDAD ANONIMA', cuit: '30500039430', actividad: 'Seguros Generales' },
+  { id: 25, denominacion: 'SEGUROS GALICIA S.A.', cuit: '30500000127', actividad: 'Seguros Generales' },
+  ...Array.from({ length: 7 }, (_, n) => ({
+    id: 100 + n,
+    denominacion: `OTRA SEGUROS ${n}`,
+    cuit: `3070000000${n}`,
+    actividad: 'Vida',
+  })),
+]
+const CATALOGO = { 'GET /api/catalogos/aseguradoras': { cuerpo: { aseguradoras: ASEGURADORAS } } }
+
 describe('registro por pasos', () => {
   const RESPUESTA_REGISTRO = {
     'POST /api/cuentas/registro': { estado: 201, cuerpo: { mensaje: 'Te enviamos un correo para verificar tu cuenta.' } },
@@ -129,7 +141,7 @@ describe('registro por pasos', () => {
     const grupo = screen.getByRole('group', { name: '¿Cómo vas a usar la plataforma?' })
     expect(grupo).toHaveAccessibleDescription(/no puede cambiarse/)
     expect(screen.getByRole('radio', { name: /Abogado o abogada/ })).toBeInTheDocument()
-    expect(screen.getByRole('radio', { name: /Aseguradora/ })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: /Registrar mi aseguradora/ })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Atrás' })).not.toBeInTheDocument()
   })
 
@@ -146,8 +158,8 @@ describe('registro por pasos', () => {
   it('marca la opción elegida', async () => {
     simularApi()
     const { usuario } = renderizarEn('/registro')
-    await usuario.click(await screen.findByLabelText(/Aseguradora/))
-    expect(screen.getByLabelText(/Aseguradora/).closest('label')).toHaveClass('opcion-tarjeta--elegida')
+    await usuario.click(await screen.findByLabelText(/Registrar mi aseguradora/))
+    expect(screen.getByLabelText(/Registrar mi aseguradora/).closest('label')).toHaveClass('opcion-tarjeta--elegida')
     expect(screen.getByLabelText(/Abogado o abogada/).closest('label')).not.toHaveClass('opcion-tarjeta--elegida')
   })
 
@@ -184,16 +196,32 @@ describe('registro por pasos', () => {
     expect(screen.getByText('Paso 4 de 4')).toBeInTheDocument()
   })
 
-  it('pide la empresa a las aseguradoras (CA4)', async () => {
-    simularApi()
+  it('pide elegir la aseguradora del catálogo de la SSN (CA2 de la 021)', async () => {
+    simularApi(CATALOGO)
     const { usuario } = renderizarEn('/registro')
-    await usuario.click(await screen.findByLabelText(/Aseguradora/))
+    await usuario.click(await screen.findByLabelText(/Registrar mi aseguradora/))
     await siguiente(usuario)
     await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
     await usuario.type(screen.getByLabelText('Apellido'), 'López')
     await siguiente(usuario)
-    expect(screen.getByRole('heading', { name: 'Tu empresa' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Tu aseguradora' })).toBeInTheDocument()
     expect(screen.queryByLabelText(/Colegio/)).not.toBeInTheDocument()
+
+    await siguiente(usuario)
+    expect(screen.getByText('Elegí tu aseguradora del listado.')).toBeInTheDocument()
+
+    const busqueda = await screen.findByLabelText('Buscá tu aseguradora')
+    await usuario.type(busqueda, 'galicia')
+    expect(screen.getByText('1 resultado.')).toBeInTheDocument()
+    await usuario.clear(busqueda)
+    await usuario.type(busqueda, '30500039')
+    expect(screen.getByRole('radio', { name: /EL SURCO/ })).toBeInTheDocument()
+    await usuario.clear(busqueda)
+    await usuario.type(busqueda, 'zzz')
+    expect(screen.getByText(/No encontramos ninguna aseguradora/)).toBeInTheDocument()
+    await usuario.clear(busqueda)
+    await usuario.type(busqueda, 'seguros')
+    expect(screen.getByText(/Hay 9 resultados: mostramos los primeros 8/)).toBeInTheDocument()
   })
 
   it('al volver atrás conserva los datos cargados (CA5)', async () => {
@@ -217,12 +245,18 @@ describe('registro por pasos', () => {
   })
 
   it('crea la cuenta enviando solo el dato del perfil elegido (CA6)', async () => {
-    const { solicitudes } = simularApi(RESPUESTA_REGISTRO)
+    const { solicitudes } = simularApi({ ...RESPUESTA_REGISTRO, ...CATALOGO })
     const { usuario } = renderizarEn('/registro')
-    await llegarAlPaso4(usuario, {
-      perfil: 'Aseguradora',
-      institucion: { etiqueta: 'Empresa', valor: 'Seguros del Sur' },
-    })
+    await usuario.click(await screen.findByLabelText(/Registrar mi aseguradora/))
+    await siguiente(usuario)
+    await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
+    await usuario.type(screen.getByLabelText('Apellido'), 'López')
+    await siguiente(usuario)
+    await usuario.type(await screen.findByLabelText('Buscá tu aseguradora'), 'gali')
+    await usuario.click(screen.getByRole('radio', { name: /SEGUROS GALICIA/ }))
+    await usuario.clear(screen.getByLabelText('Buscá tu aseguradora'))
+    expect(screen.getByRole('radio', { name: /SEGUROS GALICIA/ })).toBeChecked()
+    await siguiente(usuario)
     await completarCuenta(usuario)
     await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
 
@@ -234,18 +268,23 @@ describe('registro por pasos', () => {
       correo: 'ana@ejemplo.com',
       contrasenia: 'Segura12345',
       perfil: 'aseguradora',
-      empresa: 'Seguros del Sur',
+      id_aseguradora: 25,
       acepta_terminos: true,
     })
+    expect(screen.getByText(/el Administrador de la plataforma va a revisar el registro/)).toBeInTheDocument()
   })
 
   it('no envía el colegio si el perfil cambió a Aseguradora (CA6)', async () => {
-    const { solicitudes } = simularApi(RESPUESTA_REGISTRO)
+    const { solicitudes } = simularApi({ ...RESPUESTA_REGISTRO, ...CATALOGO })
     const { usuario } = renderizarEn('/registro')
     await llegarAlPaso4(usuario, { institucion: { etiqueta: 'Colegio', valor: 'CPACF' } })
     for (let i = 0; i < 3; i += 1) await usuario.click(screen.getByRole('button', { name: 'Atrás' }))
-    await usuario.click(screen.getByLabelText(/Aseguradora/))
-    for (let i = 0; i < 3; i += 1) await siguiente(usuario)
+    await usuario.click(screen.getByLabelText(/Registrar mi aseguradora/))
+    await siguiente(usuario)
+    await siguiente(usuario)
+    await usuario.type(await screen.findByLabelText('Buscá tu aseguradora'), 'surco')
+    await usuario.click(screen.getByRole('radio', { name: /EL SURCO/ }))
+    await siguiente(usuario)
     await completarCuenta(usuario)
     await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
 
@@ -253,7 +292,18 @@ describe('registro por pasos', () => {
     const enviado = solicitudes.find((s) => s.ruta === '/api/cuentas/registro').cuerpo
     expect(enviado.perfil).toBe('aseguradora')
     expect(enviado).not.toHaveProperty('colegio')
-    expect(enviado).not.toHaveProperty('empresa')
+    expect(enviado.id_aseguradora).toBe(6)
+  })
+
+  it('si el catálogo no carga, lo informa', async () => {
+    simularApi({ 'GET /api/catalogos/aseguradoras': { estado: 500, cuerpo: { mensaje: 'Ocurrió un error inesperado.' } } })
+    const { usuario } = renderizarEn('/registro')
+    await usuario.click(await screen.findByLabelText(/Registrar mi aseguradora/))
+    await siguiente(usuario)
+    await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
+    await usuario.type(screen.getByLabelText('Apellido'), 'López')
+    await siguiente(usuario)
+    expect(await screen.findByText('Ocurrió un error inesperado.')).toBeInTheDocument()
   })
 
   it('muestra junto a cada campo del paso 4 los errores del backend (CA6, RF01 CA2 y CA4)', async () => {

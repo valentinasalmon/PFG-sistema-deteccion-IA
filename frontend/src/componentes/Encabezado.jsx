@@ -28,6 +28,9 @@ export default function Encabezado() {
           </NavLink>
           <NavLink to="/organizaciones">Organizaciones</NavLink>
           <NavLink to="/perfil">Mi perfil</NavLink>
+          {usuario.rol === 'administrador' && (
+            <NavLink to="/administracion">Administración</NavLink>
+          )}
         </nav>
         <div className="encabezado__usuario">
           <span>
