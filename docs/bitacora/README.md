@@ -22,3 +22,4 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-10 | [Funcionalidad 001: esqueleto caminante](2026-10-10-funcionalidad-001-esqueleto-caminante.md) |
 | 2026-10-11 | [Funcionalidad 002: avance](2026-10-11-funcionalidad-002-avance.md) |
 | 2026-10-16 | [Funcionalidad 002: cuentas y sesión](2026-10-16-funcionalidad-002-cuentas-y-sesion.md) |
+| 2026-10-16 | [Funcionalidad 020: registro guiado por pasos](2026-10-16-funcionalidad-020-registro-por-pasos.md) |

@@ -1,13 +1,16 @@
 /**
  * Pruebas de los componentes de presentación: avisos, campos de formulario,
- * indicador de carga y reglas de contraseña (RNF10 y CA4 de la funcionalidad 002).
+ * indicador de carga y reglas de contraseña (RNF10 y CA4 de la funcionalidad 002),
+ * e indicador de pasos y opción en tarjeta (CA1 y CA8 de la funcionalidad 020).
  */
-import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import Aviso from './Aviso.jsx'
 import AvisoProvisorio from './AvisoProvisorio.jsx'
 import CampoTexto from './CampoTexto.jsx'
 import Cargando from './Cargando.jsx'
+import IndicadorPasos from './IndicadorPasos.jsx'
+import OpcionTarjeta from './OpcionTarjeta.jsx'
 import ReglasContrasenia from './ReglasContrasenia.jsx'
 
 afterEach(() => {
@@ -93,5 +96,48 @@ describe('AvisoProvisorio', () => {
   it('muestra la versión vigente de los textos legales', () => {
     render(<AvisoProvisorio />)
     expect(screen.getByText(/Versión 1.0/)).toHaveTextContent('Texto provisorio')
+  })
+})
+
+describe('IndicadorPasos', () => {
+  it('muestra el paso actual y el avance de la barra', () => {
+    const { container } = render(<IndicadorPasos actual={3} total={4} />)
+    expect(screen.getByText('Paso 3 de 4')).toBeInTheDocument()
+    expect(container.querySelector('.indicador-pasos__avance')).toHaveStyle({ width: '75%' })
+  })
+
+  it('oculta la barra a los lectores de pantalla porque repite el texto', () => {
+    const { container } = render(<IndicadorPasos actual={1} total={4} />)
+    expect(container.querySelector('.indicador-pasos__barra')).toHaveAttribute('aria-hidden', 'true')
+  })
+})
+
+describe('OpcionTarjeta', () => {
+  it('es un botón de opción con su título y su descripción, y avisa al elegirlo', () => {
+    const alCambiar = vi.fn()
+    render(
+      <OpcionTarjeta
+        nombre="perfil"
+        valor="abogado"
+        seleccionada={false}
+        onChange={alCambiar}
+        titulo="Abogado o abogada"
+        descripcion="Para casos judiciales."
+      />,
+    )
+    const opcion = screen.getByRole('radio', { name: /Abogado o abogada/ })
+    expect(opcion).not.toBeChecked()
+    expect(opcion).toHaveAttribute('value', 'abogado')
+    expect(screen.getByText('Para casos judiciales.')).toHaveClass('opcion-tarjeta__descripcion')
+    fireEvent.click(opcion)
+    expect(alCambiar).toHaveBeenCalledTimes(1)
+  })
+
+  it('marca la tarjeta elegida y puede no tener descripción', () => {
+    render(<OpcionTarjeta nombre="perfil" valor="aseguradora" seleccionada onChange={() => {}} titulo="Aseguradora" />)
+    const opcion = screen.getByRole('radio', { name: 'Aseguradora' })
+    expect(opcion).toBeChecked()
+    expect(opcion.closest('label')).toHaveClass('opcion-tarjeta--elegida')
+    expect(document.querySelector('.opcion-tarjeta__descripcion')).toBeNull()
   })
 })

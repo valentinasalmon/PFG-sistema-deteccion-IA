@@ -48,11 +48,22 @@ export function useFormulario(valoresIniciales) {
     }
   }
 
-  /** Muestra un error detectado en el navegador, antes de enviar. */
-  function marcarError(campo, mensaje) {
-    setErrores({ [campo]: mensaje })
-    setError(new ErrorApi(400, { mensaje: 'Revisá los datos marcados.', errores: { [campo]: mensaje } }))
+  /**
+   * Muestra los errores detectados en el navegador, antes de enviar, uno por
+   * campo. Con un objeto vacío borra los errores anteriores.
+   *
+   * @param {Object<string, string>} nuevos mensaje de error de cada campo.
+   */
+  function marcarErrores(nuevos) {
+    setErrores(nuevos)
+    const hayErrores = Object.keys(nuevos).length > 0
+    setError(hayErrores ? new ErrorApi(400, { mensaje: 'Revisá los datos marcados.', errores: nuevos }) : null)
   }
 
-  return { valores, setValores, errores, error, enviando, cambiar, enviar, marcarError }
+  /** Muestra un error detectado en el navegador en un solo campo. */
+  function marcarError(campo, mensaje) {
+    marcarErrores({ [campo]: mensaje })
+  }
+
+  return { valores, setValores, errores, error, enviando, cambiar, enviar, marcarError, marcarErrores }
 }
