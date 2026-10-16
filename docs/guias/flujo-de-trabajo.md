@@ -88,6 +88,14 @@ Ver [docs/funcionalidades/README.md](../funcionalidades/README.md). Ninguna func
 
 ## 5. Trabajo con el asistente de IA
 
-- El asistente explica cada paso y entrega el contenido de los archivos; la autora los crea, ejecuta los comandos y hace los commits.
+- Desde la funcionalidad 002 el trabajo se reparte así (decisión de la autora, 2026-10-10):
+
+  | Quién | Qué hace |
+  |---|---|
+  | Autora | Código central: modelos, servicios, esquemas, rutas, seguridad, cliente de la API, contextos y pantallas. Ramas y Pull Requests. |
+  | Asistente | Pruebas, estilos, plantillas y textos, configuración de herramientas y dependencias, componentes de presentación y documentación de seguimiento, con commits propios que llevan la línea `Co-Authored-By`. |
+
+- Para el código central, el asistente explica cada paso y entrega el contenido de los archivos; la autora los crea, ejecuta los comandos y hace los commits. El asistente verifica cada entrega.
+- La documentación de seguimiento (bitácora, casillas, estados y actualización de la especificación general) la mantiene el asistente con commits propios en la rama de la funcionalidad. Después de cada uno, la autora ejecuta `git pull` antes de seguir trabajando.
 - Al iniciar una sesión, el asistente lee `CLAUDE.md` y la constitución.
 - Comandos disponibles: `/especificar`, `/planificar`, `/tareas`.

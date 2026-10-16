@@ -36,10 +36,14 @@ def test_produccion_con_todas_las_variables(monkeypatch):
     monkeypatch.setenv("CLAVE_SECRETA", "una-clave-segura")
     monkeypatch.setenv("URL_BASE_DATOS", "postgresql+psycopg://u:c@servidor/bd")
     monkeypatch.setenv("URL_REDIS", "redis://servidor:6379/0")
+    monkeypatch.setenv("URL_FRONTEND", "https://plataforma.ejemplo.com")
+    monkeypatch.setenv("SERVIDOR_CORREO", "email-smtp.eu-west-1.amazonaws.com")
+    monkeypatch.setenv("REMITENTE_CORREO", "no-responder@ejemplo.com")
     configuracion = obtener_configuracion("produccion")
     assert isinstance(configuracion, ConfiguracionProduccion)
     assert configuracion.DEBUG is False
     assert configuracion.SECRET_KEY == "una-clave-segura"
+    assert configuracion.SESSION_COOKIE_SECURE is True
 
 
 def test_desarrollo_usa_clave_por_defecto(monkeypatch):

@@ -1,0 +1,6 @@
+Hola, {{ nombre }}:
+
+Gracias por registrarte. Para activar tu cuenta, abrí este enlace (vence en 24 horas):
+{{ enlace }}
+
+Si no creaste esta cuenta, ignorá este mensaje.

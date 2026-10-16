@@ -9,11 +9,16 @@ Realiza: RNF17, RNF22.
 """
 import os
 
+import redis
 from flask import Flask
 
+# Se importan los modelos para que Alembic los detecte al generar migraciones.
+from app import modelos  # noqa: F401  pylint: disable=unused-import
 from app.configuracion import obtener_configuracion
-from app.extensiones import db, migrar
+from app.extensiones import db, migrar, proteccion_csrf, sesiones_servidor
+from app.integraciones.correo import crear_enviador
 from app.rutas import registrar_rutas
+from app.seguridad.autenticacion import configurar_autenticacion
 
 # Carpeta de migraciones de Alembic, ubicada en backend/migraciones (ADR-0008).
 DIRECTORIO_MIGRACIONES = os.path.join(
@@ -39,9 +44,15 @@ def crear_app(nombre_entorno=None):
 
     aplicacion = Flask(__name__)
     aplicacion.config.from_object(configuracion)
+    if aplicacion.config["SESSION_TYPE"] == "redis":
+        aplicacion.config["SESSION_REDIS"] = redis.Redis.from_url(aplicacion.config["URL_REDIS"])
 
     db.init_app(aplicacion)
     migrar.init_app(aplicacion, db, directory=DIRECTORIO_MIGRACIONES)
+    sesiones_servidor.init_app(aplicacion)
+    proteccion_csrf.init_app(aplicacion)
+    configurar_autenticacion(aplicacion)
+    aplicacion.extensions["enviador_correo"] = crear_enviador(aplicacion.config)
 
     registrar_rutas(aplicacion)
     return aplicacion

@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>Alguien intentó crear una cuenta nueva con tu correo electrónico. Tu cuenta no fue modificada.</p>
+<p>Si fuiste vos y no recordás tu contraseña, podés restablecerla.</p>
+{% with texto_boton = "Restablecer contraseña" %}{% include "_boton.html" %}{% endwith %}
+{% endblock %}

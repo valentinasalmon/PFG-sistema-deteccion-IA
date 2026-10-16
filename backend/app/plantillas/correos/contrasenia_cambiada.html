@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>La contraseña de tu cuenta fue cambiada.</p>
+<p>Si no fuiste vos, restablecela de inmediato.</p>
+{% with texto_boton = "Restablecer contraseña" %}{% include "_boton.html" %}{% endwith %}
+{% endblock %}

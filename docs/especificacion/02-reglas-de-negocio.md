@@ -6,7 +6,7 @@ Las reglas de negocio son restricciones del dominio que el sistema debe respetar
 
 | ID | Regla |
 |---|---|
-| **RN01** | Todo usuario tiene exactamente un perfil: **Abogado** o **Aseguradora**. Ambos perfiles tienen las mismas capacidades; el perfil se utiliza para la identificación del solicitante en los informes y para las estadísticas. |
+| **RN01** | Todo usuario tiene exactamente un perfil: **Abogado** o **Aseguradora**. Ambos perfiles tienen las mismas capacidades; el perfil se utiliza para la identificación del solicitante en los informes y para las estadísticas. **El perfil se elige al registrarse y no puede modificarse después** (decisión CP-12). |
 | **RN02** | El perfil Abogado puede declarar opcionalmente el colegio de abogados al que pertenece. El perfil Aseguradora puede declarar opcionalmente la empresa a la que pertenece. Estos datos son declarativos y el sistema no los valida. No se solicitan matrículas ni otros datos de carácter legal. |
 | **RN03** | El correo electrónico es único en el sistema y constituye el identificador de inicio de sesión. |
 | **RN04** | Los datos personales de un usuario solo pueden ser modificados por su titular (derecho de rectificación, Ley N.° 25.326, art. 16). Ningún otro usuario, incluidos el Referente y el Administrador, puede modificarlos. |

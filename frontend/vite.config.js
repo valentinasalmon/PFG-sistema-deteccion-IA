@@ -23,6 +23,8 @@ export default defineConfig({
       provider: 'v8',
       include: ['src/**/*.{js,jsx}'],
       exclude: ['src/main.jsx', 'src/pruebas/**'],
+      // Mínimo exigido por la constitución; la integración continua falla por debajo.
+      thresholds: { lines: 80, functions: 80, branches: 80, statements: 80 },
     },
   },
 })

@@ -1,4 +1,7 @@
 """Capa de modelos: entidades de dominio mapeadas con SQLAlchemy.
 
-Todavía no contiene modelos; se incorporan a partir de la funcionalidad 002.
+Importar los modelos acá permite que Alembic los detecte al generar migraciones.
 """
+from app.modelos.usuario import Usuario
+
+__all__ = ["Usuario"]

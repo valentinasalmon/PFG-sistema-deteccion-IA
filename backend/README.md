@@ -40,7 +40,15 @@ La API queda disponible en `http://localhost:5000`. Para comprobarla: `http://lo
 | `ENTORNO` | `desarrollo`, `pruebas` o `produccion` | — (por defecto `desarrollo`) |
 | `CLAVE_SECRETA` | Clave para firmar sesiones y tokens | producción |
 | `URL_BASE_DATOS` | Conexión a PostgreSQL | desarrollo y producción |
-| `URL_REDIS` | Conexión a Redis | producción |
+| `URL_REDIS` | Conexión a Redis (sesiones y cola de tareas) | producción |
+| `URL_FRONTEND` | Dirección de la interfaz web, para los enlaces de los correos | producción |
+| `SERVIDOR_CORREO` | Servidor SMTP (Mailpit en desarrollo) | producción |
+| `PUERTO_CORREO` | Puerto SMTP | — (por defecto `1025`) |
+| `USUARIO_CORREO`, `CONTRASENIA_CORREO` | Credenciales SMTP (vacías con Mailpit) | — |
+| `USAR_TLS_CORREO` | `si` para cifrar la conexión SMTP | — (por defecto `no`; `si` en producción) |
+| `REMITENTE_CORREO` | Remitente de los correos | producción |
+
+Los correos de desarrollo se ven en Mailpit: `http://localhost:8025`.
 
 El archivo `.env` **nunca** se sube al repositorio.
 

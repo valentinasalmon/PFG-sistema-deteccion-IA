@@ -9,3 +9,13 @@ SQLAlchemy==2.0.54          # ORM y acceso a la base de datos
 psycopg[binary]==3.3.6      # Controlador de PostgreSQL
 redis==6.4.0                # Cliente de Redis (cola de tareas, ADR-0004)
 python-dotenv==1.2.4        # Lectura del archivo .env en desarrollo
+
+
+# --- Funcionalidad 002: cuentas y sesión ---
+Flask-Login==0.6.3          # Usuario de la sesión y @login_required (ADR-0003)
+Flask-Session==0.8.0        # Sesiones guardadas en Redis (ADR-0010)
+cachelib==0.17.0            # Sesiones en memoria durante las pruebas
+Flask-WTF==1.3.0            # Protección CSRF
+bcrypt==5.0.0               # Hash de contraseñas
+pydantic==2.14.0            # Validación de los datos que recibe la API
+email-validator==2.3.0      # Validación del formato de los correos

@@ -29,3 +29,6 @@ backend/modelos_onnx/*
 Thumbs.db
 .idea/
 *.log
+
+# ---- Copias de datos de Redis ----
+dump.rdb

@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>Pediste usar esta dirección como nuevo correo de tu cuenta. Para confirmarlo, abrí el enlace. Vence en 24 horas.</p>
+{% with texto_boton = "Confirmar nuevo correo" %}{% include "_boton.html" %}{% endwith %}
+<p>Si no lo pediste, ignorá este mensaje.</p>
+{% endblock %}

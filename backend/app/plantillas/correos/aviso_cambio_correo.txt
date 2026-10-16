@@ -1,0 +1,5 @@
+Hola, {{ nombre }}:
+
+Se pidió cambiar el correo de tu cuenta a {{ correo_nuevo }}. El cambio se aplica cuando se confirme desde esa dirección.
+
+Si no fuiste vos, cambiá tu contraseña cuanto antes.

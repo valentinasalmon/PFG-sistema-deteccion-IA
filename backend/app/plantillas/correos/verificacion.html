@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>Gracias por registrarte. Para activar tu cuenta, verificá tu correo electrónico. El enlace vence en 24 horas.</p>
+{% with texto_boton = "Verificar mi correo" %}{% include "_boton.html" %}{% endwith %}
+<p>Si no creaste esta cuenta, ignorá este mensaje.</p>
+{% endblock %}
