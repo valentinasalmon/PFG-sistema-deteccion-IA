@@ -1,7 +1,7 @@
 # Especificación: 003 — Auditoría
 
 - **Rama**: `funcionalidad/003-auditoria`
-- **Estado**: En implementación
+- **Estado**: Completada
 - **Requisitos que realiza**: RNF06 (CA1 a CA5, CA7 y CA8, para las acciones de cuenta y sesión); RF03 (CA4); RF07 (CA1, registro en la auditoría)
 - **Reglas de negocio aplicadas**: RN34 (preparación: las entradas se conservan al eliminarse una cuenta)
 - **Casos de uso**: postcondición común de los casos de uso con actor autenticado ("la operación queda registrada en la auditoría"), aplicada a CU01 a CU05
@@ -49,28 +49,28 @@ Esta funcionalidad crea el registro de auditoría y empieza a usarlo con las acc
 Precisados de RNF06 para las acciones de cuenta y sesión.
 
 ### Contenido de las entradas
-- [ ] **CA1**: Dada cualquier acción registrada, entonces su entrada contiene la fecha y hora en UTC, el usuario que actuó (vacío si no había sesión ni cuenta identificable), la dirección IP de origen, la acción, el tipo y el identificador del recurso, el resultado y el detalle.
-- [ ] **CA2**: Dada cualquier entrada, entonces no contiene contraseñas, hashes de contraseñas, tokens de enlaces, identificadores de sesión ni cookies.
+- [x] **CA1**: Dada cualquier acción registrada, entonces su entrada contiene la fecha y hora en UTC, el usuario que actuó (vacío si no había sesión ni cuenta identificable), la dirección IP de origen, la acción, el tipo y el identificador del recurso, el resultado y el detalle.
+- [x] **CA2**: Dada cualquier entrada, entonces no contiene contraseñas, hashes de contraseñas, tokens de enlaces, identificadores de sesión ni cookies.
 
 ### Sesión
-- [ ] **CA3**: Dadas credenciales válidas, cuando se inicia sesión, entonces se registra un inicio de sesión exitoso del usuario.
-- [ ] **CA4**: Dado un intento de inicio de sesión fallido, entonces se registra como fallido con su motivo (contraseña incorrecta, correo inexistente, cuenta bloqueada o sin verificar) y, si el correo no existe, el correo intentado; el mensaje que ve la persona sigue siendo el genérico.
-- [ ] **CA5**: Dados 5 intentos fallidos consecutivos, cuando la cuenta se bloquea, entonces se registra el bloqueo con su vencimiento.
-- [ ] **CA6**: Dado un usuario autenticado, cuando cierra sesión, o cuando su sesión se cierra por superar la duración máxima, entonces se registra el cierre indicando el motivo.
+- [x] **CA3**: Dadas credenciales válidas, cuando se inicia sesión, entonces se registra un inicio de sesión exitoso del usuario.
+- [x] **CA4**: Dado un intento de inicio de sesión fallido, entonces se registra como fallido con su motivo (contraseña incorrecta, correo inexistente, cuenta bloqueada o sin verificar) y, si el correo no existe, el correo intentado; el mensaje que ve la persona sigue siendo el genérico.
+- [x] **CA5**: Dados 5 intentos fallidos consecutivos, cuando la cuenta se bloquea, entonces se registra el bloqueo con su vencimiento.
+- [x] **CA6**: Dado un usuario autenticado, cuando cierra sesión, o cuando su sesión se cierra por superar la duración máxima, entonces se registra el cierre indicando el motivo.
 
 ### Registro, verificación y contraseña
-- [ ] **CA7**: Dado un registro, entonces se registra la creación de la cuenta; dado un registro con un correo ya existente, entonces se registra el intento sin revelarlo en la respuesta.
-- [ ] **CA8**: Dada la verificación del correo o el pedido de reenvío, entonces se registran; dado un enlace vencido, alterado o ya usado, entonces se registra como fallido.
-- [ ] **CA9**: Dada una solicitud de recuperación, entonces se registra con el correo indicado; dado un restablecimiento, entonces se registra como exitoso o, si el enlace no es válido, como fallido.
-- [ ] **CA10**: Dado un cambio de contraseña desde el perfil, entonces se registra como exitoso o, si la contraseña actual es incorrecta, como fallido.
+- [x] **CA7**: Dado un registro, entonces se registra la creación de la cuenta; dado un registro con un correo ya existente, entonces se registra el intento sin revelarlo en la respuesta.
+- [x] **CA8**: Dada la verificación del correo o el pedido de reenvío, entonces se registran; dado un enlace vencido, alterado o ya usado, entonces se registra como fallido.
+- [x] **CA9**: Dada una solicitud de recuperación, entonces se registra con el correo indicado; dado un restablecimiento, entonces se registra como exitoso o, si el enlace no es válido, como fallido.
+- [x] **CA10**: Dado un cambio de contraseña desde el perfil, entonces se registra como exitoso o, si la contraseña actual es incorrecta, como fallido.
 
 ### Perfil y correo
-- [ ] **CA11**: Dada una edición del perfil, entonces se registra el valor anterior y el nuevo de cada campo modificado; dado un intento de cambiar el perfil (Abogado o Aseguradora), entonces se registra como rechazado.
-- [ ] **CA12**: Dada una solicitud de cambio de correo y su confirmación, entonces se registran ambas con el correo anterior y el nuevo.
+- [x] **CA11**: Dada una edición del perfil, entonces se registra el valor anterior y el nuevo de cada campo modificado; dado un intento de cambiar el perfil (Abogado o Aseguradora), entonces se registra como rechazado.
+- [x] **CA12**: Dada una solicitud de cambio de correo y su confirmación, entonces se registran ambas con el correo anterior y el nuevo.
 
 ### Integridad
-- [ ] **CA13**: La aplicación no ofrece ninguna operación para modificar ni eliminar entradas del registro.
-- [ ] **CA14**: Dada una acción cuya entrada de auditoría no puede guardarse, entonces la acción no se aplica y la persona recibe un mensaje de error genérico.
+- [x] **CA13**: La aplicación no ofrece ninguna operación para modificar ni eliminar entradas del registro.
+- [x] **CA14**: Dada una acción cuya entrada de auditoría no puede guardarse, entonces la acción no se aplica y la persona recibe un mensaje de error genérico.
 
 ## Preguntas abiertas
 
