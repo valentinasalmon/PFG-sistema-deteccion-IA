@@ -3,11 +3,11 @@
  *
  * - Pantallas de acceso (solo sin sesión): inicio de sesión, registro y
  *   recuperación de la contraseña.
- * - Pantallas de enlaces recibidos por correo y textos legales: accesibles
- *   con o sin sesión.
+ * - Pantallas de enlaces recibidos por correo (incluida la invitación a una
+ *   organización) y textos legales: accesibles con o sin sesión.
  * - Pantallas internas: requieren sesión (CA22).
  *
- * Realiza: CA22 de la funcionalidad 002.
+ * Realiza: CA22 de la funcionalidad 002; pantallas de la funcionalidad 004.
  */
 import { Route, Routes } from 'react-router'
 import { DisposicionAcceso, DisposicionInterna } from './componentes/Disposiciones.jsx'
@@ -15,8 +15,12 @@ import { RutaProtegida, RutaSoloVisitantes } from './rutas/Rutas.jsx'
 import PaginaConfirmarCorreo from './paginas/PaginaConfirmarCorreo.jsx'
 import PaginaEstado from './paginas/PaginaEstado.jsx'
 import PaginaIniciarSesion from './paginas/PaginaIniciarSesion.jsx'
+import PaginaInvitacion from './paginas/PaginaInvitacion.jsx'
 import PaginaInicio from './paginas/PaginaInicio.jsx'
 import PaginaNoEncontrada from './paginas/PaginaNoEncontrada.jsx'
+import PaginaNuevaOrganizacion from './paginas/PaginaNuevaOrganizacion.jsx'
+import PaginaOrganizacion from './paginas/PaginaOrganizacion.jsx'
+import PaginaOrganizaciones from './paginas/PaginaOrganizaciones.jsx'
 import PaginaPerfil from './paginas/PaginaPerfil.jsx'
 import PaginaPrivacidad from './paginas/PaginaPrivacidad.jsx'
 import PaginaRecuperarContrasenia from './paginas/PaginaRecuperarContrasenia.jsx'
@@ -37,6 +41,7 @@ export default function App() {
         <Route path="/verificar-correo" element={<PaginaVerificarCorreo />} />
         <Route path="/restablecer-contrasenia" element={<PaginaRestablecerContrasenia />} />
         <Route path="/confirmar-correo" element={<PaginaConfirmarCorreo />} />
+        <Route path="/invitaciones/responder" element={<PaginaInvitacion />} />
         <Route path="/terminos" element={<PaginaTerminos />} />
         <Route path="/privacidad" element={<PaginaPrivacidad />} />
         <Route path="/estado" element={<PaginaEstado />} />
@@ -47,6 +52,9 @@ export default function App() {
         <Route element={<DisposicionInterna />}>
           <Route path="/" element={<PaginaInicio />} />
           <Route path="/perfil" element={<PaginaPerfil />} />
+          <Route path="/organizaciones" element={<PaginaOrganizaciones />} />
+          <Route path="/organizaciones/nueva" element={<PaginaNuevaOrganizacion />} />
+          <Route path="/organizaciones/:id" element={<PaginaOrganizacion />} />
         </Route>
       </Route>
     </Routes>

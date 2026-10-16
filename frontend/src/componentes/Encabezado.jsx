@@ -1,6 +1,7 @@
 /**
- * Encabezado de las pantallas internas: nombre de la plataforma, nombre del
- * usuario, acceso al perfil y botón para cerrar sesión.
+ * Encabezado de las pantallas internas: nombre de la plataforma, navegación
+ * (inicio, organizaciones y perfil), nombre del usuario y botón para cerrar
+ * sesión.
  *
  * Realiza: RF04 y CA7, CA11 de la funcionalidad 002.
  */
@@ -25,6 +26,7 @@ export default function Encabezado() {
           <NavLink to="/" end>
             Inicio
           </NavLink>
+          <NavLink to="/organizaciones">Organizaciones</NavLink>
           <NavLink to="/perfil">Mi perfil</NavLink>
         </nav>
         <div className="encabezado__usuario">
