@@ -9,6 +9,9 @@ from app.modelos.entrada_auditoria import EntradaAuditoria
 from app.modelos.usuario import Usuario
 
 CONTRASENIA_VALIDA = "Segura12345"
+# Aseguradoras del catálogo de la SSN usadas en las pruebas (funcionalidad 021).
+ID_SEGUROS_GALICIA = 25
+ID_EL_SURCO = 6
 
 
 @pytest.fixture

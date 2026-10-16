@@ -108,9 +108,9 @@ def test_crear_organizacion_valida_los_datos(ana):
 def test_varias_organizaciones_conservan_las_membresias(ana):
     """CA2: crear otra organización no quita las anteriores (RN06)."""
     _crear_organizacion(ana)
-    _crear_organizacion(ana, nombre="Aseguradora Sur", tipo="aseguradora")
+    _crear_organizacion(ana, nombre="Estudio Abril")
     nombres = [o["nombre"] for o in ana.get("/api/organizaciones").get_json()["organizaciones"]]
-    assert nombres == ["Aseguradora Sur", "Estudio Pérez"]
+    assert nombres == ["Estudio Abril", "Estudio Pérez"]
 
 
 def test_el_referente_edita_y_queda_en_la_auditoria(aplicacion, ana):
