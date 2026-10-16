@@ -47,10 +47,18 @@ La API queda disponible en `http://localhost:5000`. Para comprobarla: `http://lo
 | `USUARIO_CORREO`, `CONTRASENIA_CORREO` | Credenciales SMTP (vacías con Mailpit) | — |
 | `USAR_TLS_CORREO` | `si` para cifrar la conexión SMTP | — (por defecto `no`; `si` en producción) |
 | `REMITENTE_CORREO` | Remitente de los correos | producción |
+| `ADMINISTRADORES` | Correos, separados por comas, que pasan a Administrador al iniciar sesión | — |
 
 Los correos de desarrollo se ven en Mailpit: `http://localhost:8025`.
 
 El archivo `.env` **nunca** se sube al repositorio.
+
+## Administradores
+
+La interfaz nunca ofrece el rol de Administrador. Hay dos formas de darlo a una cuenta ya registrada y verificada:
+
+1. Agregar su correo en `ADMINISTRADORES` dentro de `.env`, reiniciar el servidor y que esa persona inicie sesión.
+2. Desde la terminal: `flask --app wsgi administracion promover <correo>`.
 
 ## Migraciones de la base de datos
 

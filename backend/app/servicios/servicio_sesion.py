@@ -9,6 +9,7 @@ CA6 de la funcionalidad 003.
 """
 from functools import lru_cache
 
+from app.modelos.usuario import ROL_ADMINISTRADOR
 from app.servicios import auditoria, contrasenias
 from app.servicios.errores import CredencialesInvalidas, CuentaDesactivada, CuentaNoVerificada
 from app.utilidades.tiempo import ahora_utc
@@ -110,8 +111,24 @@ class ServicioSesion:
             auditoria.SESION_INICIO, auditoria.EXITOSO, usuario=usuario, recurso=usuario,
             detalle={} if usuario.activo else {"cuenta_desactivada": True},
         )
+        self._promover_si_corresponde(usuario)
         self.repositorio.guardar(usuario)
         return usuario
+
+    def _promover_si_corresponde(self, usuario):
+        """Da el rol de Administrador si el correo figura en ``ADMINISTRADORES``.
+
+        La lista la define quien administra el servidor en la configuración;
+        así el primer Administrador se crea sin usar la terminal. No confirma:
+        se guarda junto con el inicio de sesión.
+        """
+        administradores = self.configuracion.get("ADMINISTRADORES", frozenset())
+        if usuario.correo in administradores and usuario.rol != ROL_ADMINISTRADOR:
+            usuario.rol = ROL_ADMINISTRADOR
+            self.registro.registrar(
+                auditoria.CUENTA_PROMOCION_ADMINISTRADOR, auditoria.EXITOSO, recurso=usuario,
+                detalle={"origen": "configuracion"},
+            )
 
     def _registrar_intento_fallido(self, usuario):
         """Suma un intento fallido y bloquea la cuenta al llegar al límite (RNF01 CA3).
