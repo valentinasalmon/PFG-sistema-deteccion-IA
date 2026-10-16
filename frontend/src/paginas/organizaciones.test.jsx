@@ -138,7 +138,7 @@ describe('mis organizaciones', () => {
 })
 
 describe('crear organización', () => {
-  it('pide el tipo y crea la organización (CA1)', async () => {
+  it('crea un estudio jurídico (CA1; RN40)', async () => {
     const { solicitudes } = apiDeOrganizacion({
       invitaciones: [],
       miembros: [ANA],
@@ -146,12 +146,8 @@ describe('crear organización', () => {
     })
     const { usuario } = renderizarEn('/organizaciones/nueva')
     await usuario.type(await screen.findByLabelText('Nombre'), 'Estudio Pérez')
-    await usuario.click(screen.getByRole('button', { name: 'Crear organización' }))
-    expect(screen.getByText('Elegí el tipo de organización.')).toBeInTheDocument()
-
-    await usuario.click(screen.getByLabelText('Estudio Jurídico'))
     await usuario.type(screen.getByLabelText(/Teléfono/), '11 5555-0000')
-    await usuario.click(screen.getByRole('button', { name: 'Crear organización' }))
+    await usuario.click(screen.getByRole('button', { name: 'Crear estudio jurídico' }))
     expect(await screen.findByText(/Ya podés invitar a tu equipo/)).toBeInTheDocument()
     expect(solicitudes.find((s) => s.metodo === 'POST' && s.ruta === '/api/organizaciones').cuerpo).toEqual({
       nombre: 'Estudio Pérez',
@@ -171,9 +167,8 @@ describe('crear organización', () => {
     })
     const { usuario } = renderizarEn('/organizaciones/nueva')
     await usuario.type(await screen.findByLabelText('Nombre'), 'X')
-    await usuario.click(screen.getByLabelText('Aseguradora'))
     await usuario.type(screen.getByLabelText(/Correo de contacto/), 'mal')
-    await usuario.click(screen.getByRole('button', { name: 'Crear organización' }))
+    await usuario.click(screen.getByRole('button', { name: 'Crear estudio jurídico' }))
     expect(await screen.findByText('El correo electrónico no es válido.')).toBeInTheDocument()
     expect(screen.getByLabelText(/Correo de contacto/)).toHaveAttribute('aria-invalid', 'true')
   })
@@ -318,10 +313,15 @@ describe('pantalla de la organización como Referente', () => {
     })
     const { usuario } = renderizarEn('/organizaciones/3')
     const seccion = (await screen.findByRole('heading', { name: 'Datos de la organización' })).closest('section')
-    await usuario.selectOptions(within(seccion).getByLabelText('Tipo'), 'aseguradora')
+    await usuario.clear(within(seccion).getByLabelText('Nombre'))
+    await usuario.type(within(seccion).getByLabelText('Nombre'), 'Estudio Pérez y Asociados')
     await usuario.click(within(seccion).getByRole('button', { name: 'Guardar los datos' }))
     expect(await screen.findByText('Los datos de la organización fueron actualizados.')).toBeInTheDocument()
-    expect(solicitudes.find((s) => s.metodo === 'PATCH').cuerpo.tipo).toBe('aseguradora')
+    expect(solicitudes.find((s) => s.metodo === 'PATCH').cuerpo).toEqual({
+      nombre: 'Estudio Pérez y Asociados',
+      correo_contacto: '',
+      telefono: '11 5555-0000',
+    })
   })
 
   it('el Referente con otros miembros no puede abandonar (CA19)', async () => {
@@ -420,11 +420,11 @@ describe('enlace de invitación', () => {
     renderizarEn('/invitaciones/responder?token=abc')
     expect(await screen.findByRole('heading', { name: 'Te invitaron a Estudio Pérez' })).toBeInTheDocument()
     expect(screen.getByText('Ana López')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Crear una cuenta' })).toHaveAttribute('href', '/registro?correo=carla%40ejemplo.com')
+    expect(screen.getByRole('link', { name: 'Crear una cuenta' })).toHaveAttribute('href', '/registro?invitacion=abc')
     expect(screen.getByRole('link', { name: 'Iniciar sesión' })).toHaveAttribute('href', '/iniciar-sesion')
   })
 
-  it('crear la cuenta precarga el correo invitado', async () => {
+  it('crear la cuenta precarga el correo invitado, que no se puede cambiar', async () => {
     simularApi(consulta())
     const { usuario } = renderizarEn('/invitaciones/responder?token=abc')
     await usuario.click(await screen.findByRole('link', { name: 'Crear una cuenta' }))
@@ -435,6 +435,8 @@ describe('enlace de invitación', () => {
     await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
     await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
     expect(screen.getByLabelText('Correo electrónico')).toHaveValue('carla@ejemplo.com')
+    expect(screen.getByLabelText('Correo electrónico')).toHaveAttribute('readonly')
+    expect(screen.getByText('Paso 4 de 4')).toBeInTheDocument()
   })
 
   it('iniciar sesión vuelve a la invitación', async () => {

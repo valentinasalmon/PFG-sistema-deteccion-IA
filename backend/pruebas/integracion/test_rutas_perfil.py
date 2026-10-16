@@ -6,7 +6,12 @@ Criterios de aceptación de la funcionalidad 002: CA16 a CA19.
 # pylint: disable=unused-argument,redefined-outer-name
 from datetime import timedelta
 
-from pruebas.conftest import CONTRASENIA_VALIDA, extraer_token, obtener_usuario
+from pruebas.conftest import (
+    CONTRASENIA_VALIDA,
+    ID_SEGUROS_GALICIA,
+    extraer_token,
+    obtener_usuario,
+)
 
 NUEVA = "OtraClave2026"
 
@@ -48,9 +53,9 @@ def test_abogado_no_puede_cargar_empresa(cliente, sesion_iniciada):
 
 def test_aseguradora_no_puede_cargar_colegio(cliente, registrar_y_verificar):
     """RN02: el colegio corresponde solo al perfil Abogado."""
-    registrar_y_verificar(perfil="aseguradora", colegio=None, empresa="Seguros SA")
+    registrar_y_verificar(perfil="aseguradora", colegio=None, id_aseguradora=ID_SEGUROS_GALICIA)
     _iniciar(cliente)
-    assert cliente.get("/api/perfil").get_json()["usuario"]["empresa"] == "Seguros SA"
+    assert cliente.get("/api/perfil").get_json()["usuario"]["empresa"] == "SEGUROS GALICIA S.A."
     respuesta = cliente.patch("/api/perfil", json={"colegio": "CPACF"})
     assert respuesta.status_code == 400
 
@@ -154,6 +159,7 @@ def test_cambio_a_correo_en_uso_se_rechaza(aplicacion, cliente, correos, registr
     otro.post("/api/cuentas/registro", json={
         "nombre": "Beto", "apellido": "Paz", "correo": "beto@ejemplo.com",
         "contrasenia": CONTRASENIA_VALIDA, "perfil": "aseguradora", "acepta_terminos": True,
+        "id_aseguradora": ID_SEGUROS_GALICIA,
     })
     assert cliente.post("/api/perfil/correo/confirmacion", json={"token": token}).status_code == 409
 

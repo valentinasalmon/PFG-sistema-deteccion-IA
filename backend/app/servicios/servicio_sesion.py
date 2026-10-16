@@ -10,13 +10,14 @@ CA6 de la funcionalidad 003.
 from functools import lru_cache
 
 from app.servicios import auditoria, contrasenias
-from app.servicios.errores import CredencialesInvalidas, CuentaNoVerificada
+from app.servicios.errores import CredencialesInvalidas, CuentaDesactivada, CuentaNoVerificada
 from app.utilidades.tiempo import ahora_utc
 
 MENSAJE_CREDENCIALES = "El correo o la contraseña no son correctos."
 
 MOTIVO_CIERRE_MANUAL = "manual"
 MOTIVO_CIERRE_DURACION_MAXIMA = "duracion_maxima"
+MOTIVO_CIERRE_CUENTA_DESACTIVADA = "cuenta_desactivada"
 
 
 @lru_cache(maxsize=4)
@@ -28,15 +29,20 @@ def _hash_ficticio(costo):
 class ServicioSesion:
     """Valida credenciales y mantiene el contador de intentos fallidos."""
 
-    def __init__(self, repositorio, correos, configuracion, registro):
+    def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        self, repositorio, correos, configuracion, registro, organizaciones=None
+    ):
         """
         Args:
             registro: ``ServicioAuditoria`` donde se registra cada intento.
+            organizaciones: ``ServicioOrganizaciones``, para saber si una cuenta
+                desactivada tiene invitaciones vigentes (RN39).
         """
         self.repositorio = repositorio
         self.correos = correos
         self.configuracion = configuracion
         self.registro = registro
+        self.organizaciones = organizaciones
 
     def _registrar_fallo(self, motivo, usuario=None, correo=None):
         """Registra un inicio de sesión fallido con su motivo y lo confirma."""
@@ -59,6 +65,8 @@ class ServicioSesion:
         Raises:
             CredencialesInvalidas: credenciales incorrectas o cuenta bloqueada.
             CuentaNoVerificada: la contraseña es correcta pero falta verificar el correo.
+            CuentaDesactivada: la contraseña es correcta pero la cuenta quedó sin
+                aseguradora y no tiene invitaciones vigentes (RN39).
         """
         usuario = self.repositorio.obtener_por_correo(correo)
         if usuario is None:
@@ -86,8 +94,21 @@ class ServicioSesion:
                 "Tenés que verificar tu correo antes de iniciar sesión. "
                 "Podés pedir que te reenviemos el enlace."
             )
+        if not usuario.activo and not (
+            self.organizaciones and self.organizaciones.tiene_invitaciones_vigentes(usuario.correo)
+        ):
+            self.registro.registrar(
+                auditoria.SESION_INICIO, auditoria.FALLIDO, usuario=usuario, recurso=usuario,
+                detalle={"motivo": "cuenta_desactivada"},
+            )
+            self.repositorio.guardar(usuario)
+            raise CuentaDesactivada(
+                "Tu cuenta está desactivada porque ya no pertenecés a ninguna aseguradora. "
+                "Si otra aseguradora te invita, vas a poder ingresar para aceptar la invitación."
+            )
         self.registro.registrar(
-            auditoria.SESION_INICIO, auditoria.EXITOSO, usuario=usuario, recurso=usuario
+            auditoria.SESION_INICIO, auditoria.EXITOSO, usuario=usuario, recurso=usuario,
+            detalle={} if usuario.activo else {"cuenta_desactivada": True},
         )
         self.repositorio.guardar(usuario)
         return usuario

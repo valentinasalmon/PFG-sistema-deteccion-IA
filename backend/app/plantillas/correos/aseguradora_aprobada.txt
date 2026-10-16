@@ -1,0 +1,6 @@
+Hola, {{ nombre }}:
+
+El Administrador de la plataforma aprobó el registro de {{ organizacion }}. Ya podés invitar a tu equipo para que trabaje dentro de la aseguradora.
+
+Ingresá a la organización en:
+{{ enlace }}

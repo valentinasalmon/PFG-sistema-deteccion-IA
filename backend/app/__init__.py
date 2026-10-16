@@ -14,6 +14,7 @@ from flask import Flask
 
 # Se importan los modelos para que Alembic los detecte al generar migraciones.
 from app import modelos  # noqa: F401  pylint: disable=unused-import
+from app.comandos import registrar_comandos
 from app.configuracion import obtener_configuracion
 from app.extensiones import db, migrar, proteccion_csrf, sesiones_servidor
 from app.integraciones.correo import crear_enviador
@@ -55,4 +56,5 @@ def crear_app(nombre_entorno=None):
     aplicacion.extensions["enviador_correo"] = crear_enviador(aplicacion.config)
 
     registrar_rutas(aplicacion)
+    registrar_comandos(aplicacion)
     return aplicacion

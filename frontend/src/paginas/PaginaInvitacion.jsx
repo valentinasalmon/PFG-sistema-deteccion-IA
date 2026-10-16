@@ -78,7 +78,7 @@ function Respuesta({ invitacion }) {
   )
 }
 
-function Acciones({ invitacion }) {
+function Acciones({ invitacion, token }) {
   const { usuario } = useSesion()
   const { pathname, search } = useLocation()
 
@@ -96,7 +96,7 @@ function Acciones({ invitacion }) {
       <p>Para responder, ingresá con el correo {invitacion.correo}.</p>
       <div className="pasos__acciones">
         <Link
-          to={`/registro?correo=${encodeURIComponent(invitacion.correo)}`}
+          to={`/registro?invitacion=${encodeURIComponent(token)}`}
           className="boton boton--secundario"
         >
           Crear una cuenta
@@ -110,8 +110,9 @@ function Acciones({ invitacion }) {
         </Link>
       </div>
       <p className="nota">
-        Si creás una cuenta, después de verificar tu correo vas a encontrar la invitación en la
-        sección Organizaciones.
+        {invitacion.organizacion.tipo === 'aseguradora'
+          ? 'Si creás una cuenta, al verificar tu correo vas a quedar dentro de la aseguradora.'
+          : 'Si creás una cuenta, después de verificar tu correo vas a encontrar la invitación en la sección Organizaciones.'}
       </p>
     </>
   )
@@ -159,7 +160,7 @@ export default function PaginaInvitacion() {
         <dd>{formatearFecha(invitacion.vence_en)}</dd>
       </dl>
       {invitacion.vigente ? (
-        <Acciones invitacion={invitacion} />
+        <Acciones invitacion={invitacion} token={token} />
       ) : (
         <Aviso tipo="error">
           Esta invitación ya no está vigente: venció, fue cancelada o ya fue respondida. Pedile a

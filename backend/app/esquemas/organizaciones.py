@@ -91,6 +91,8 @@ def organizacion_a_dict(organizacion, membresia, servicio=None):
         "correo_contacto": organizacion.correo_contacto,
         "telefono": organizacion.telefono,
         "mi_rol": membresia.rol,
+        "estado": organizacion.estado,
+        "cuit": organizacion.cuit,
         "creada_en": _fecha(organizacion.creada_en),
     }
     if servicio is not None:
@@ -131,7 +133,40 @@ def invitacion_a_dict(invitacion, momento):
         "organizacion": {
             "id": invitacion.organizacion.id,
             "nombre": invitacion.organizacion.nombre,
+            "tipo": invitacion.organizacion.tipo,
             "tipo_nombre": NOMBRES_TIPO[invitacion.organizacion.tipo],
         },
         "invitante": f"{invitante.nombre} {invitante.apellido}" if invitante else None,
+    }
+
+
+class SolicitudRechazo(EsquemaBase):
+    """Motivo del rechazo de una aseguradora, que se informa a su Referente (CA9 de la 021)."""
+
+    motivo: str = Field(min_length=1, max_length=500)
+
+
+def aseguradora_pendiente_a_dict(organizacion, referente):
+    """Aseguradora pendiente tal como la ve el Administrador (CA7 de la 021)."""
+    usuario = referente.usuario
+    return {
+        "id": organizacion.id,
+        "nombre": organizacion.nombre,
+        "cuit": organizacion.cuit,
+        "creada_en": _fecha(organizacion.creada_en),
+        "referente": {
+            "nombre": f"{usuario.nombre} {usuario.apellido}",
+            "correo": usuario.correo,
+            "verificado": usuario.verificado,
+        },
+    }
+
+
+def aseguradora_de_catalogo_a_dict(aseguradora):
+    """Aseguradora del catálogo de la SSN para elegirla en el registro."""
+    return {
+        "id": aseguradora.id,
+        "denominacion": aseguradora.denominacion,
+        "cuit": aseguradora.cuit,
+        "actividad": aseguradora.actividad,
     }

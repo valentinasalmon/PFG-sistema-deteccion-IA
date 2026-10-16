@@ -5,7 +5,7 @@ Cada membresía indica el rol del usuario en ella: exactamente uno es el
 Referente, que la administra (RN07). Las invitaciones se envían a un correo,
 esté registrado o no, y vencen a los 7 días (RN10).
 
-Realiza: RF10 a RF18; RN06, RN07, RN10, RN11.
+Realiza: RF10 a RF18; RN06, RN07, RN10, RN11, RN37, RN38.
 """
 from app.extensiones import db
 from app.utilidades.tiempo import ahora_utc
@@ -17,6 +17,11 @@ TIPOS_ORGANIZACION = (TIPO_ESTUDIO_JURIDICO, TIPO_ASEGURADORA)
 ROL_REFERENTE = "referente"
 ROL_MIEMBRO = "miembro"
 ROLES_ORGANIZACION = (ROL_REFERENTE, ROL_MIEMBRO)
+
+# Estado de la organización: las aseguradoras esperan la aprobación del Administrador (RN38).
+ORGANIZACION_PENDIENTE = "pendiente"
+ORGANIZACION_ACTIVA = "activa"
+ESTADOS_ORGANIZACION = (ORGANIZACION_PENDIENTE, ORGANIZACION_ACTIVA)
 
 INVITACION_PENDIENTE = "pendiente"
 INVITACION_ACEPTADA = "aceptada"
@@ -37,6 +42,8 @@ class Organizacion(db.Model):  # pylint: disable=too-few-public-methods
     __tablename__ = "organizaciones"
     __table_args__ = (
         db.CheckConstraint(f"tipo IN {TIPOS_ORGANIZACION}", name="ck_organizaciones_tipo"),
+        db.CheckConstraint(f"estado IN {ESTADOS_ORGANIZACION}", name="ck_organizaciones_estado"),
+        db.UniqueConstraint("cuit", name="uq_organizaciones_cuit"),
     )
 
     id = db.Column(db.Integer, primary_key=True)
@@ -45,6 +52,13 @@ class Organizacion(db.Model):  # pylint: disable=too-few-public-methods
     correo_contacto = db.Column(db.String(254), nullable=True)
     telefono = db.Column(db.String(30), nullable=True)
     plan = db.Column(db.String(20), nullable=False)
+    # CUIT de la aseguradora del catálogo de la SSN: una organización por empresa (RN37).
+    cuit = db.Column(db.String(11), nullable=True)
+    estado = db.Column(
+        db.String(20), nullable=False, default=ORGANIZACION_ACTIVA,
+        server_default=ORGANIZACION_ACTIVA,
+    )
+    aprobada_en = db.Column(db.DateTime, nullable=True)
     creada_en = db.Column(db.DateTime, nullable=False, default=ahora_utc)
     actualizada_en = db.Column(db.DateTime, nullable=False, default=ahora_utc, onupdate=ahora_utc)
 
@@ -54,6 +68,16 @@ class Organizacion(db.Model):  # pylint: disable=too-few-public-methods
     invitaciones = db.relationship(
         "Invitacion", back_populates="organizacion", cascade="all, delete-orphan"
     )
+
+    @property
+    def es_aseguradora(self):
+        """True si la organización es una aseguradora del catálogo de la SSN."""
+        return self.tipo == TIPO_ASEGURADORA
+
+    @property
+    def pendiente(self):
+        """True si espera la aprobación del Administrador (RN38)."""
+        return self.estado == ORGANIZACION_PENDIENTE
 
 
 class Membresia(db.Model):  # pylint: disable=too-few-public-methods

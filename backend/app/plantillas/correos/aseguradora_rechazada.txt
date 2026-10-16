@@ -1,0 +1,7 @@
+Hola, {{ nombre }}:
+
+El Administrador de la plataforma no aprobó el registro de {{ organizacion }}.
+
+Motivo: {{ motivo }}
+
+Tu cuenta quedó desactivada. Si trabajás en esa aseguradora, pedile a la persona que la administre que la registre o que te invite.

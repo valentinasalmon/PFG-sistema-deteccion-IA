@@ -6,7 +6,8 @@
  * datos, invita, gestiona invitaciones y miembros, transfiere su rol y
  * elimina la organización.
  *
- * Realiza: RF11 a RF18; CA3, CA8, CA14 a CA20 y CA22 de la funcionalidad 004.
+ * Realiza: RF11 a RF18; CA3, CA8, CA14 a CA20 y CA22 de la funcionalidad 004;
+ * CA6, CA13 y CA18 de la 021.
  */
 import { useCallback, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
@@ -67,7 +68,6 @@ function useAccion(recargar) {
 function SeccionDatos({ organizacion, esReferente, alGuardar }) {
   const { valores, errores, error, enviando, cambiar, enviar } = useFormulario({
     nombre: organizacion.nombre,
-    tipo: organizacion.tipo,
     correo_contacto: organizacion.correo_contacto ?? '',
     telefono: organizacion.telefono ?? '',
   })
@@ -87,14 +87,20 @@ function SeccionDatos({ organizacion, esReferente, alGuardar }) {
     <section className="seccion" aria-labelledby="titulo-datos-organizacion">
       <h2 id="titulo-datos-organizacion">Datos de la organización</h2>
       <dl className="datos-fijos">
+        <dt>Tipo</dt>
+        <dd>{organizacion.tipo_nombre}</dd>
+        {organizacion.cuit && (
+          <>
+            <dt>CUIT</dt>
+            <dd>{organizacion.cuit}</dd>
+          </>
+        )}
         <dt>Plan</dt>
         <dd>
           {organizacion.plan.nombre} · hasta {organizacion.plan.limite_miembros} miembros
         </dd>
         {!esReferente && (
           <>
-            <dt>Tipo</dt>
-            <dd>{organizacion.tipo_nombre}</dd>
             <dt>Correo de contacto</dt>
             <dd>{organizacion.correo_contacto ?? '—'}</dd>
             <dt>Teléfono</dt>
@@ -112,23 +118,14 @@ function SeccionDatos({ organizacion, esReferente, alGuardar }) {
             value={valores.nombre}
             onChange={cambiar}
             error={errores.nombre}
+            readOnly={organizacion.tipo === 'aseguradora'}
+            ayuda={
+              organizacion.tipo === 'aseguradora'
+                ? 'Es la denominación del catálogo de la Superintendencia de Seguros.'
+                : undefined
+            }
             required
           />
-          <div className="campo">
-            <label htmlFor="tipo-organizacion" className="campo__etiqueta">
-              Tipo
-            </label>
-            <select
-              id="tipo-organizacion"
-              name="tipo"
-              className="campo__control"
-              value={valores.tipo}
-              onChange={cambiar}
-            >
-              <option value="estudio_juridico">Estudio Jurídico</option>
-              <option value="aseguradora">Aseguradora</option>
-            </select>
-          </div>
           <div className="formulario__fila">
             <CampoTexto
               etiqueta="Correo de contacto"
@@ -386,6 +383,7 @@ function SeccionInvitaciones({ organizacion, invitaciones, recargar }) {
 
 function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
   const navegar = useNavigate()
+  const { terminarSesion } = useSesion()
   const [error, setError] = useState(null)
   const [confirmacion, setConfirmacion] = useState('')
   const [enviando, setEnviando] = useState(false)
@@ -396,6 +394,11 @@ function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
     setEnviando(true)
     try {
       const respuesta = await accion()
+      // Si la cuenta quedó sin aseguradora, el servidor ya cerró la sesión (RN39).
+      if (respuesta.cuenta_desactivada) {
+        terminarSesion('desactivada')
+        return
+      }
       navegar('/organizaciones', { state: { mensaje: respuesta.mensaje } })
     } catch (errorApi) {
       setError(errorApi.message)
@@ -490,6 +493,13 @@ export default function PaginaOrganizacion() {
       </div>
       <p className="subtitulo">{organizacion.tipo_nombre}</p>
       {state?.mensaje && <Aviso tipo="exito">{state.mensaje}</Aviso>}
+      {organizacion.estado === 'pendiente' && (
+        <Aviso tipo="info">
+          La aseguradora está pendiente de aprobación. El Administrador de la plataforma va a
+          revisar el registro y te avisamos por correo; mientras tanto no podés invitar a tu
+          equipo.
+        </Aviso>
+      )}
 
       <SeccionMiembros
         organizacion={organizacion}
@@ -498,7 +508,7 @@ export default function PaginaOrganizacion() {
         idUsuario={usuario.id}
         recargar={recargar}
       />
-      {esReferente && (
+      {esReferente && organizacion.estado !== 'pendiente' && (
         <SeccionInvitaciones
           organizacion={organizacion}
           invitaciones={invitaciones}
@@ -506,7 +516,7 @@ export default function PaginaOrganizacion() {
         />
       )}
       <SeccionDatos
-        key={organizacion.nombre + organizacion.tipo}
+        key={organizacion.nombre}
         organizacion={organizacion}
         esReferente={esReferente}
         alGuardar={recargar}

@@ -43,6 +43,12 @@ class CuentaNoVerificada(ErrorDominio):
     codigo = "cuenta_no_verificada"
 
 
+class CuentaDesactivada(ErrorDominio):
+    """La cuenta con perfil Aseguradora ya no pertenece a ninguna aseguradora (403, RN39)."""
+
+    codigo = "cuenta_desactivada"
+
+
 class TokenInvalido(ErrorDominio):
     """El enlace recibido por correo está vencido, alterado o ya fue usado (400).
 

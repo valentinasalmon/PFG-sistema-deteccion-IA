@@ -1,32 +1,42 @@
 /**
- * Pantalla de registro de una cuenta nueva, guiada en cuatro pasos.
+ * Pantalla de registro de una cuenta nueva, guiada por pasos.
  *
- * 1. Perfil (Abogado o Aseguradora), que no podrá cambiarse después.
+ * Registro común (4 pasos):
+ * 1. Perfil: "Abogado o abogada" o "Registrar mi aseguradora".
  * 2. Nombre y apellido.
- * 3. Colegio de abogados o empresa, según el perfil, como dato opcional.
+ * 3. Colegio de abogados (opcional) o la aseguradora del catálogo de la SSN
+ *    (obligatoria).
  * 4. Correo, contraseña y aceptación expresa de los Términos de Uso y de la
  *    Política de Privacidad.
+ *
+ * Registro con invitación (``?invitacion=<token>``): el correo viene fijado.
+ * Si invita una aseguradora, el perfil también, y solo quedan los pasos 2 y
+ * 4; al verificar el correo, la persona queda dentro de la aseguradora.
  *
  * Cada paso se valida antes de avanzar y los datos se conservan al volver.
  * El backend valida de forma definitiva al crear la cuenta: si rechaza un
  * dato de un paso anterior, se vuelve a ese paso con el error junto al campo.
- * Al registrarse, la cuenta queda pendiente hasta verificar el correo.
  *
- * Realiza: RF01; RN01, RN02; CA1 a CA5 de la funcionalidad 002, CA1 a CA8
- * de la funcionalidad 020 y CA9 de la 004 (correo precargado); RNF10.
+ * Realiza: RF01; RN01, RN02, RN36; CA1 a CA5 de la funcionalidad 002, CA1 a
+ * CA8 de la 020, CA9 de la 004 y CA1, CA2, CA5, CA10 de la 021; RNF10.
  */
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
-import { registrarCuenta } from '../api/cuentas.js'
+import { listarAseguradoras, registrarCuenta } from '../api/cuentas.js'
+import { consultarInvitacion } from '../api/organizaciones.js'
 import Aviso from '../componentes/Aviso.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
+import Cargando from '../componentes/Cargando.jsx'
 import FormularioReenvio from '../componentes/FormularioReenvio.jsx'
 import IndicadorPasos from '../componentes/IndicadorPasos.jsx'
 import OpcionTarjeta from '../componentes/OpcionTarjeta.jsx'
 import ReglasContrasenia from '../componentes/ReglasContrasenia.jsx'
+import SelectorAseguradora from '../componentes/SelectorAseguradora.jsx'
+import { useDatos } from '../hooks/useDatos.js'
 import { useFormulario } from '../hooks/useFormulario.js'
 
-const TOTAL_PASOS = 4
+const PASOS_COMUNES = ['perfil', 'datos', 'institucion', 'cuenta']
+const PASOS_EMPLEADO = ['datos', 'cuenta']
 
 const VALORES_INICIALES = {
   nombre: '',
@@ -35,105 +45,144 @@ const VALORES_INICIALES = {
   contrasenia: '',
   perfil: '',
   colegio: '',
-  empresa: '',
+  id_aseguradora: null,
   acepta_terminos: false,
 }
 
-/** Paso del formulario en el que se carga cada campo (CA7). */
+/** Paso del formulario en el que se carga cada campo (CA7 de la 020). */
 const PASO_DE_CADA_CAMPO = {
-  perfil: 1,
-  nombre: 2,
-  apellido: 2,
-  colegio: 3,
-  empresa: 3,
-  correo: 4,
-  contrasenia: 4,
-  acepta_terminos: 4,
+  perfil: 'perfil',
+  nombre: 'datos',
+  apellido: 'datos',
+  colegio: 'institucion',
+  empresa: 'institucion',
+  id_aseguradora: 'institucion',
+  correo: 'cuenta',
+  contrasenia: 'cuenta',
+  acepta_terminos: 'cuenta',
 }
 
-/** Arma el cuerpo de la solicitud enviando solo el dato que corresponde al perfil. */
-function armarSolicitud({ colegio, empresa, ...datos }) {
+/** Arma el cuerpo de la solicitud con solo los datos que corresponden. */
+function armarSolicitud({ colegio, id_aseguradora: idAseguradora, ...datos }, token) {
   const solicitud = { ...datos }
+  if (token) solicitud.token_invitacion = token
   if (datos.perfil === 'abogado' && colegio.trim()) solicitud.colegio = colegio
-  if (datos.perfil === 'aseguradora' && empresa.trim()) solicitud.empresa = empresa
+  if (datos.perfil === 'aseguradora' && !token) solicitud.id_aseguradora = idAseguradora
   return solicitud
 }
 
 /**
  * Valida en el navegador los datos obligatorios del paso, para no avanzar
- * con datos faltantes (CA2, CA3). Devuelve el mensaje de error de cada campo.
+ * con datos faltantes. Devuelve el mensaje de error de cada campo.
  */
 function validarPaso(paso, valores) {
   const errores = {}
-  if (paso === 1 && !valores.perfil) {
+  if (paso === 'perfil' && !valores.perfil) {
     errores.perfil = 'Elegí cómo vas a usar la plataforma.'
   }
-  if (paso === 2) {
+  if (paso === 'datos') {
     if (!valores.nombre.trim()) errores.nombre = 'Ingresá tu nombre.'
     if (!valores.apellido.trim()) errores.apellido = 'Ingresá tu apellido.'
+  }
+  if (paso === 'institucion' && valores.perfil === 'aseguradora' && !valores.id_aseguradora) {
+    errores.id_aseguradora = 'Elegí tu aseguradora del listado.'
   }
   return errores
 }
 
-/** Devuelve el primer paso que tiene un campo con error, o null si no hay ninguno. */
-function primerPasoConError(errores) {
-  const pasos = Object.keys(errores)
-    .map((campo) => PASO_DE_CADA_CAMPO[campo])
-    .filter(Boolean)
-  return pasos.length ? Math.min(...pasos) : null
-}
-
-/** Título de cada paso; el del paso 3 depende del perfil elegido. */
+/** Título de cada paso; el de la institución depende del perfil elegido. */
 function tituloDelPaso(paso, perfil) {
-  if (paso === 1) return '¿Cómo vas a usar la plataforma?'
-  if (paso === 2) return 'Tus datos'
-  if (paso === 3) return perfil === 'abogado' ? 'Tu colegio de abogados' : 'Tu empresa'
+  if (paso === 'perfil') return '¿Cómo vas a usar la plataforma?'
+  if (paso === 'datos') return 'Tus datos'
+  if (paso === 'institucion') {
+    return perfil === 'abogado' ? 'Tu colegio de abogados' : 'Tu aseguradora'
+  }
   return 'Tu cuenta'
 }
 
-export default function PaginaRegistro() {
-  // El enlace de una invitación precarga el correo invitado (CU11 3a).
-  const [parametros] = useSearchParams()
-  const { valores, errores, error, enviando, cambiar, enviar, marcarErrores } = useFormulario({
-    ...VALORES_INICIALES,
-    correo: parametros.get('correo') ?? '',
-  })
-  const [paso, setPaso] = useState(1)
+function PasoInstitucion({ valores, errores, cambiar, setValores }) {
+  const { datos: aseguradoras, error, cargando } = useDatos(listarAseguradoras)
+
+  if (valores.perfil === 'abogado') {
+    return (
+      <CampoTexto
+        etiqueta="Colegio de abogados"
+        nombre="colegio"
+        opcional
+        ayuda="Podés dejarlo vacío y completarlo después desde tu perfil."
+        value={valores.colegio}
+        onChange={cambiar}
+        error={errores.colegio}
+      />
+    )
+  }
+  if (cargando) return <Cargando texto="Cargando el listado de aseguradoras…" />
+  if (error) return <Aviso tipo="error">{error.message}</Aviso>
+  return (
+    <>
+      <p className="nota">
+        El listado es el de la Superintendencia de Seguros de la Nación. Vas a quedar como
+        Referente de la aseguradora y el Administrador de la plataforma va a revisar el registro
+        antes de que puedas invitar a tu equipo.
+      </p>
+      <SelectorAseguradora
+        aseguradoras={aseguradoras}
+        elegida={valores.id_aseguradora}
+        onElegir={(id) => setValores((anteriores) => ({ ...anteriores, id_aseguradora: id }))}
+        error={errores.id_aseguradora}
+      />
+    </>
+  )
+}
+
+function FormularioRegistro({ invitacion, token }) {
+  const esEmpleado = invitacion?.organizacion.tipo === 'aseguradora'
+  const pasos = esEmpleado ? PASOS_EMPLEADO : PASOS_COMUNES
+  const { valores, setValores, errores, error, enviando, cambiar, enviar, marcarErrores } =
+    useFormulario({
+      ...VALORES_INICIALES,
+      correo: invitacion?.correo ?? '',
+      perfil: esEmpleado ? 'aseguradora' : '',
+    })
+  const [indice, setIndice] = useState(0)
   const [mensaje, setMensaje] = useState(null)
   const refTitulo = useRef(null)
   const primeraVez = useRef(true)
+  const paso = pasos[indice]
 
   // Al cambiar de paso, el foco pasa al título del paso nuevo para que el
-  // lector de pantalla lo anuncie (CA8). Al abrir la pantalla no se mueve.
+  // lector de pantalla lo anuncie (CA8 de la 020). Al abrir la pantalla no se mueve.
   useEffect(() => {
     if (primeraVez.current) {
       primeraVez.current = false
       return
     }
     refTitulo.current?.focus()
-  }, [paso])
+  }, [indice])
 
   function avanzar(evento) {
     evento.preventDefault()
     const erroresDelPaso = validarPaso(paso, valores)
     marcarErrores(erroresDelPaso)
-    if (Object.keys(erroresDelPaso).length === 0) setPaso(paso + 1)
+    if (Object.keys(erroresDelPaso).length === 0) setIndice(indice + 1)
   }
 
   function volver() {
     marcarErrores({})
-    setPaso(paso - 1)
+    setIndice(indice - 1)
   }
 
   async function crearCuenta(evento) {
     evento.preventDefault()
-    const resultado = await enviar((datos) => registrarCuenta(armarSolicitud(datos)))
+    const resultado = await enviar((datos) => registrarCuenta(armarSolicitud(datos, token)))
     if (resultado.ok) {
       setMensaje(resultado.datos.mensaje)
       return
     }
-    const pasoConError = primerPasoConError(resultado.error.errores)
-    if (pasoConError && pasoConError < paso) setPaso(pasoConError)
+    const indices = Object.keys(resultado.error.errores)
+      .map((campo) => pasos.indexOf(PASO_DE_CADA_CAMPO[campo]))
+      .filter((posicion) => posicion >= 0)
+    if (indices.length && Math.min(...indices) < indice) setIndice(Math.min(...indices))
   }
 
   if (mensaje) {
@@ -145,6 +194,15 @@ export default function PaginaRegistro() {
           El enlace vence en 24 horas. Si no lo encontrás, revisá la carpeta de correo no
           deseado o pedí que te lo enviemos de nuevo.
         </p>
+        {esEmpleado && (
+          <p>Cuando verifiques tu correo, vas a quedar dentro de {invitacion.organizacion.nombre}.</p>
+        )}
+        {!invitacion && valores.perfil === 'aseguradora' && (
+          <p>
+            Después de verificar tu correo, el Administrador de la plataforma va a revisar el
+            registro de la aseguradora. Te avisamos por correo cuando esté aprobada.
+          </p>
+        )}
         <FormularioReenvio correoInicial={valores.correo} />
         <p className="enlaces-secundarios">
           <Link to="/iniciar-sesion">Ir a iniciar sesión</Link>
@@ -153,20 +211,24 @@ export default function PaginaRegistro() {
     )
   }
 
-  const titulo = tituloDelPaso(paso, valores.perfil)
-  const esUltimoPaso = paso === TOTAL_PASOS
+  const esUltimoPaso = indice === pasos.length - 1
 
   return (
     <>
       <h1>Crear una cuenta</h1>
-      <IndicadorPasos actual={paso} total={TOTAL_PASOS} />
+      {invitacion && (
+        <Aviso tipo="info">
+          Te sumás a {invitacion.organizacion.nombre} con la invitación de {invitacion.invitante}.
+        </Aviso>
+      )}
+      <IndicadorPasos actual={indice + 1} total={pasos.length} />
       <h2 id="titulo-paso" ref={refTitulo} tabIndex={-1} className="pasos__titulo">
-        {titulo}
+        {tituloDelPaso(paso, valores.perfil)}
       </h2>
       {error && <Aviso tipo="error">{error.message}</Aviso>}
 
       <form onSubmit={esUltimoPaso ? crearCuenta : avanzar} className="formulario" noValidate>
-        {paso === 1 && (
+        {paso === 'perfil' && (
           <fieldset
             className="opciones-tarjeta"
             aria-labelledby="titulo-paso"
@@ -178,15 +240,15 @@ export default function PaginaRegistro() {
               seleccionada={valores.perfil === 'abogado'}
               onChange={cambiar}
               titulo="Abogado o abogada"
-              descripcion="Para analizar imágenes que vas a presentar o recibir en un caso."
+              descripcion="Trabajás de forma individual. Si querés, después podés crear un estudio jurídico e invitar a tu equipo."
             />
             <OpcionTarjeta
               nombre="perfil"
               valor="aseguradora"
               seleccionada={valores.perfil === 'aseguradora'}
               onChange={cambiar}
-              titulo="Aseguradora"
-              descripcion="Para analizar imágenes de siniestros y reclamos."
+              titulo="Registrar mi aseguradora"
+              descripcion="Para quien va a administrar la cuenta de la empresa. Tus compañeros se suman por invitación."
             />
             <p id="ayuda-perfil" className="campo__ayuda">
               El perfil no puede cambiarse después del registro.
@@ -199,7 +261,7 @@ export default function PaginaRegistro() {
           </fieldset>
         )}
 
-        {paso === 2 && (
+        {paso === 'datos' && (
           <>
             <CampoTexto
               etiqueta="Nombre"
@@ -222,31 +284,16 @@ export default function PaginaRegistro() {
           </>
         )}
 
-        {paso === 3 && valores.perfil === 'abogado' && (
-          <CampoTexto
-            etiqueta="Colegio de abogados"
-            nombre="colegio"
-            opcional
-            ayuda="Podés dejarlo vacío y completarlo después desde tu perfil."
-            value={valores.colegio}
-            onChange={cambiar}
-            error={errores.colegio}
-          />
-        )}
-        {paso === 3 && valores.perfil === 'aseguradora' && (
-          <CampoTexto
-            etiqueta="Empresa"
-            nombre="empresa"
-            autoComplete="organization"
-            opcional
-            ayuda="Podés dejarlo vacío y completarlo después desde tu perfil."
-            value={valores.empresa}
-            onChange={cambiar}
-            error={errores.empresa}
+        {paso === 'institucion' && (
+          <PasoInstitucion
+            valores={valores}
+            errores={errores}
+            cambiar={cambiar}
+            setValores={setValores}
           />
         )}
 
-        {paso === 4 && (
+        {paso === 'cuenta' && (
           <>
             <CampoTexto
               etiqueta="Correo electrónico"
@@ -256,6 +303,8 @@ export default function PaginaRegistro() {
               value={valores.correo}
               onChange={cambiar}
               error={errores.correo}
+              readOnly={Boolean(invitacion)}
+              ayuda={invitacion ? 'Es el correo al que llegó la invitación.' : undefined}
               required
             />
             <CampoTexto
@@ -303,7 +352,7 @@ export default function PaginaRegistro() {
         )}
 
         <div className="pasos__acciones">
-          {paso > 1 && (
+          {indice > 0 && (
             <button type="button" className="boton boton--secundario" onClick={volver}>
               Atrás
             </button>
@@ -327,4 +376,31 @@ export default function PaginaRegistro() {
       </p>
     </>
   )
+}
+
+export default function PaginaRegistro() {
+  const [parametros] = useSearchParams()
+  const token = parametros.get('invitacion')
+  const cargar = useCallback(
+    () => (token ? consultarInvitacion(token) : Promise.resolve(null)),
+    [token],
+  )
+  const { datos: invitacion, error, cargando } = useDatos(cargar)
+
+  if (cargando) return <Cargando texto="Preparando el registro…" />
+  if (error || (invitacion && !invitacion.vigente)) {
+    return (
+      <>
+        <h1>Crear una cuenta</h1>
+        <Aviso tipo="error">
+          {error?.message ??
+            'La invitación ya no está vigente. Pedile a la organización que te invite de nuevo.'}
+        </Aviso>
+        <p className="enlaces-secundarios">
+          <Link to="/registro">Crear una cuenta sin invitación</Link>
+        </p>
+      </>
+    )
+  }
+  return <FormularioRegistro invitacion={invitacion} token={token} />
 }

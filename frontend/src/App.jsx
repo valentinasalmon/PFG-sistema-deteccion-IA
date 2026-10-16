@@ -12,6 +12,7 @@
 import { Route, Routes } from 'react-router'
 import { DisposicionAcceso, DisposicionInterna } from './componentes/Disposiciones.jsx'
 import { RutaProtegida, RutaSoloVisitantes } from './rutas/Rutas.jsx'
+import PaginaAdministracion from './paginas/PaginaAdministracion.jsx'
 import PaginaConfirmarCorreo from './paginas/PaginaConfirmarCorreo.jsx'
 import PaginaEstado from './paginas/PaginaEstado.jsx'
 import PaginaIniciarSesion from './paginas/PaginaIniciarSesion.jsx'
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="/organizaciones" element={<PaginaOrganizaciones />} />
           <Route path="/organizaciones/nueva" element={<PaginaNuevaOrganizacion />} />
           <Route path="/organizaciones/:id" element={<PaginaOrganizacion />} />
+          <Route path="/administracion" element={<PaginaAdministracion />} />
         </Route>
       </Route>
     </Routes>
