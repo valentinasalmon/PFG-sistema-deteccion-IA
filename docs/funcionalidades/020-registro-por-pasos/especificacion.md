@@ -37,14 +37,14 @@ Dividir el registro en pasos cortos, con una pregunta principal por pantalla, ha
 
 ## Criterios de aceptación
 
-- [ ] **CA1**: Dado un visitante en el registro, entonces ve el paso 1 de 4 con la pregunta "¿Cómo vas a usar la plataforma?" y las opciones Abogado y Aseguradora, junto con la aclaración de que el perfil no podrá cambiarse.
-- [ ] **CA2**: Dado el paso 1, cuando el visitante intenta avanzar sin elegir un perfil, entonces no avanza y se indica que debe elegir uno.
-- [ ] **CA3**: Dado el paso 2, cuando el visitante intenta avanzar sin nombre o sin apellido, entonces no avanza y se marca cada campo vacío.
-- [ ] **CA4**: Dado el paso 3, entonces se pide el colegio de abogados si eligió Abogado o la empresa si eligió Aseguradora, como dato opcional que permite avanzar vacío.
-- [ ] **CA5**: Dado cualquier paso posterior al primero, cuando el visitante vuelve atrás, entonces encuentra los datos que había cargado.
-- [ ] **CA6**: Dado el paso 4 completo, cuando el visitante crea la cuenta, entonces se cumplen los criterios de RF01 (CA1 a CA5) y se muestra la confirmación "Revisá tu correo".
-- [ ] **CA7**: Dado un rechazo del sistema por un dato de un paso anterior, entonces se vuelve a ese paso con el error junto al campo.
-- [ ] **CA8**: En todos los pasos se muestra el avance ("Paso N de 4"), y al cambiar de paso el foco pasa al título del paso nuevo.
+- [x] **CA1**: Dado un visitante en el registro, entonces ve el paso 1 de 4 con la pregunta "¿Cómo vas a usar la plataforma?" y las opciones Abogado y Aseguradora, junto con la aclaración de que el perfil no podrá cambiarse.
+- [x] **CA2**: Dado el paso 1, cuando el visitante intenta avanzar sin elegir un perfil, entonces no avanza y se indica que debe elegir uno.
+- [x] **CA3**: Dado el paso 2, cuando el visitante intenta avanzar sin nombre o sin apellido, entonces no avanza y se marca cada campo vacío.
+- [x] **CA4**: Dado el paso 3, entonces se pide el colegio de abogados si eligió Abogado o la empresa si eligió Aseguradora, como dato opcional que permite avanzar vacío.
+- [x] **CA5**: Dado cualquier paso posterior al primero, cuando el visitante vuelve atrás, entonces encuentra los datos que había cargado.
+- [x] **CA6**: Dado el paso 4 completo, cuando el visitante crea la cuenta, entonces se cumplen los criterios de RF01 (CA1 a CA5) y se muestra la confirmación "Revisá tu correo".
+- [x] **CA7**: Dado un rechazo del sistema por un dato de un paso anterior, entonces se vuelve a ese paso con el error junto al campo.
+- [x] **CA8**: En todos los pasos se muestra el avance ("Paso N de 4"), y al cambiar de paso el foco pasa al título del paso nuevo.
 
 ## Preguntas abiertas
 
