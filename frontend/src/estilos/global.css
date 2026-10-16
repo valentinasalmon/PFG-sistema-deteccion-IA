@@ -411,3 +411,107 @@ a {
     display: none;
   }
 }
+
+/* --- Formularios por pasos (funcionalidad 020) --- */
+.indicador-pasos {
+  margin: 0 0 1.25rem;
+}
+
+.indicador-pasos__texto {
+  margin: 0 0 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-texto-secundario);
+}
+
+.indicador-pasos__barra {
+  height: 0.375rem;
+  border-radius: 999px;
+  background: var(--color-primario-suave);
+  overflow: hidden;
+}
+
+.indicador-pasos__avance {
+  height: 100%;
+  background: var(--color-primario);
+  transition: width 0.2s ease-out;
+}
+
+.opciones-tarjeta {
+  display: grid;
+  gap: 0.75rem;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.opcion-tarjeta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-height: 3.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--color-borde-control);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  cursor: pointer;
+}
+
+.opcion-tarjeta:hover {
+  background: var(--color-primario-suave);
+}
+
+.opcion-tarjeta--elegida {
+  border: 2px solid var(--color-primario);
+  background: var(--color-primario-suave);
+}
+
+/* El control nativo queda oculto a la vista pero sigue siendo accesible. */
+.opcion-tarjeta__control {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.opcion-tarjeta:has(.opcion-tarjeta__control:focus-visible) {
+  outline: 3px solid var(--color-foco);
+  outline-offset: 2px;
+}
+
+.opcion-tarjeta__titulo {
+  font-weight: 700;
+}
+
+.opcion-tarjeta__descripcion {
+  color: var(--color-texto-secundario);
+  font-size: 0.875rem;
+}
+
+.pasos__titulo {
+  font-size: 1.25rem;
+  margin: 0 0 1rem;
+}
+
+/* El título recibe el foco por código al cambiar de paso, no con el teclado. */
+.pasos__titulo:focus {
+  outline: none;
+}
+
+.pasos__acciones {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.pasos__acciones .boton:only-child {
+  margin-left: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indicador-pasos__avance {
+    transition: none;
+  }
+}
