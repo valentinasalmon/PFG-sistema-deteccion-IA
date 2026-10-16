@@ -5,6 +5,7 @@ import pytest
 
 from app import crear_app
 from app.extensiones import db
+from app.modelos.entrada_auditoria import EntradaAuditoria
 from app.modelos.usuario import Usuario
 
 CONTRASENIA_VALIDA = "Segura12345"
@@ -54,6 +55,31 @@ def modificar_usuario(  # pylint: disable=redefined-outer-name
         for campo, valor in campos.items():
             setattr(usuario, campo, valor)
         db.session.commit()
+
+
+def entradas_auditoria(aplicacion, accion=None):  # pylint: disable=redefined-outer-name
+    """Entradas de auditoría guardadas, en orden, como diccionarios.
+
+    Args:
+        accion: si se indica, solo las de esa acción.
+    """
+    with aplicacion.app_context():
+        consulta = EntradaAuditoria.query.order_by(EntradaAuditoria.id)
+        if accion is not None:
+            consulta = consulta.filter_by(accion=accion)
+        return [
+            {
+                "fecha": entrada.fecha,
+                "id_usuario": entrada.id_usuario,
+                "ip": entrada.ip,
+                "accion": entrada.accion,
+                "tipo_recurso": entrada.tipo_recurso,
+                "id_recurso": entrada.id_recurso,
+                "resultado": entrada.resultado,
+                "detalle": entrada.detalle,
+            }
+            for entrada in consulta
+        ]
 
 
 @pytest.fixture

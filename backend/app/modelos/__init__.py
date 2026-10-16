@@ -2,6 +2,7 @@
 
 Importar los modelos acá permite que Alembic los detecte al generar migraciones.
 """
+from app.modelos.entrada_auditoria import EntradaAuditoria
 from app.modelos.usuario import Usuario
 
-__all__ = ["Usuario"]
+__all__ = ["EntradaAuditoria", "Usuario"]

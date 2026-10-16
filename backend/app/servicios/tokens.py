@@ -42,9 +42,11 @@ class GestorTokens:
                 token, salt=proposito, max_age=int(vigencia.total_seconds())
             )
         except SignatureExpired as error:
-            raise TokenInvalido("El enlace venció. Solicitá uno nuevo.") from error
+            raise TokenInvalido("El enlace venció. Solicitá uno nuevo.", "vencido") from error
         except BadSignature as error:
-            raise TokenInvalido("El enlace no es válido. Solicitá uno nuevo.") from error
+            raise TokenInvalido(
+                "El enlace no es válido. Solicitá uno nuevo.", "alterado"
+            ) from error
 
 
 def huella_contrasenia(hash_contrasenia):

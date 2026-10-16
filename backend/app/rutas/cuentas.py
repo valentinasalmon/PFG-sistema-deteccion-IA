@@ -15,6 +15,7 @@ from app.esquemas.cuentas import (
     SolicitudRestablecimiento,
     SolicitudToken,
 )
+from app.seguridad.origen import origen_de_la_solicitud
 from app.servicios.fabrica import crear_servicio_cuentas
 
 cuentas_bp = Blueprint("cuentas", __name__, url_prefix="/api/cuentas")
@@ -26,7 +27,9 @@ MENSAJE_GENERICO_CORREO = (
 
 
 def _servicio():
-    return crear_servicio_cuentas(current_app.config, current_app.extensions["enviador_correo"])
+    return crear_servicio_cuentas(
+        current_app.config, current_app.extensions["enviador_correo"], origen_de_la_solicitud()
+    )
 
 
 @cuentas_bp.post("/registro")

@@ -2,10 +2,11 @@
 
 - Recupera el usuario de cada solicitud a partir de la sesión.
 - Responde 401 en JSON cuando falta iniciar sesión (CA22).
-- Cierra la sesión que superó la duración máxima, aunque haya actividad (CA12).
+- Cierra la sesión que superó la duración máxima, aunque haya actividad (CA12),
+  y registra el cierre en la auditoría (CA6 de la 003).
 - Regenera el identificador de sesión al iniciar sesión (RNF01 CA6).
 
-Realiza: RF03, RF04; RNF01 (CA4, CA6).
+Realiza: RF03, RF04; RNF01 (CA4, CA6); RNF06.
 """
 from datetime import datetime
 
@@ -13,7 +14,12 @@ from flask import current_app, jsonify, session
 from flask_login import current_user, login_user, logout_user
 
 from app.extensiones import gestor_sesiones
+from app.seguridad.origen import origen_de_la_solicitud
 from app.servicios.fabrica import crear_servicio_sesion
+from app.servicios.servicio_sesion import (
+    MOTIVO_CIERRE_DURACION_MAXIMA,
+    MOTIVO_CIERRE_MANUAL,
+)
 from app.utilidades.tiempo import ahora_utc
 
 CLAVE_INICIO_SESION = "inicio_sesion"
@@ -35,7 +41,7 @@ def _controlar_duracion_maxima():
     inicio = session.get(CLAVE_INICIO_SESION)
     maximo = current_app.config["DURACION_MAXIMA_SESION"]
     if inicio is None or ahora_utc() - datetime.fromisoformat(inicio) > maximo:
-        cerrar_sesion()
+        cerrar_sesion(MOTIVO_CIERRE_DURACION_MAXIMA)
 
 
 def configurar_autenticacion(aplicacion):
@@ -74,7 +80,15 @@ def renovar_sesion(usuario):
     session[CLAVE_INICIO_SESION] = inicio
 
 
-def cerrar_sesion():
-    """Cierra la sesión y la borra del servidor (CA11)."""
+def cerrar_sesion(motivo=MOTIVO_CIERRE_MANUAL):
+    """Registra el cierre en la auditoría, cierra la sesión y la borra del servidor (CA11).
+
+    El registro va primero: si no puede guardarse, la sesión no se cierra y
+    la persona recibe un error genérico (RNF06 CA8).
+    """
+    servicio = crear_servicio_sesion(
+        current_app.config, current_app.extensions["enviador_correo"], origen_de_la_solicitud()
+    )
+    servicio.registrar_cierre(usuario_actual(), motivo)
     logout_user()
     session.clear()

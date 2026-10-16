@@ -61,7 +61,7 @@ Fase 9  018 Cierre: usabilidad, QI, documentación final  v1.0
 
 ## 3. Ciclo de trabajo de cada funcionalidad
 
-Todas las funcionalidades siguen los mismos pasos. El asistente guía cada uno.
+Todas las funcionalidades siguen los mismos pasos. Desde la 003, el asistente hace los pasos 1 a 7 y la autora revisa y hace el paso 8 (ver el reparto en la [guía de flujo de trabajo](flujo-de-trabajo.md#5-trabajo-con-el-asistente-de-ia)); la columna "Quién" describe el reparto usado hasta la 020.
 
 | Paso | Qué se hace | Quién | Commit típico |
 |---|---|---|---|

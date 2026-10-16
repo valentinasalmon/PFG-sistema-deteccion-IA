@@ -18,13 +18,16 @@ from app.esquemas.cuentas import (
     usuario_a_dict,
 )
 from app.seguridad.autenticacion import renovar_sesion, usuario_actual
+from app.seguridad.origen import origen_de_la_solicitud
 from app.servicios.fabrica import crear_servicio_perfil
 
 perfil_bp = Blueprint("perfil", __name__, url_prefix="/api/perfil")
 
 
 def _servicio():
-    return crear_servicio_perfil(current_app.config, current_app.extensions["enviador_correo"])
+    return crear_servicio_perfil(
+        current_app.config, current_app.extensions["enviador_correo"], origen_de_la_solicitud()
+    )
 
 
 @perfil_bp.get("")
