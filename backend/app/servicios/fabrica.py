@@ -7,10 +7,12 @@ Cada fábrica recibe el ``origen`` de la solicitud (por ahora, la dirección
 IP) para que la auditoría lo registre sin que los servicios conozcan Flask.
 """
 from app.repositorios.repositorio_auditoria import RepositorioAuditoria
+from app.repositorios.repositorio_organizaciones import RepositorioOrganizaciones
 from app.repositorios.repositorio_usuarios import RepositorioUsuarios
 from app.servicios.auditoria import ServicioAuditoria
 from app.servicios.servicio_correos import ServicioCorreos
 from app.servicios.servicio_cuentas import ServicioCuentas
+from app.servicios.servicio_organizaciones import ServicioOrganizaciones
 from app.servicios.servicio_perfil import ServicioPerfil
 from app.servicios.servicio_sesion import ServicioSesion
 from app.servicios.tokens import GestorTokens
@@ -46,6 +48,15 @@ def crear_servicio_perfil(configuracion, enviador, origen=None):
     """Servicio del perfil propio."""
     return ServicioPerfil(
         RepositorioUsuarios(), _correos(configuracion, enviador),
+        GestorTokens(configuracion["SECRET_KEY"]), configuracion,
+        crear_servicio_auditoria(origen),
+    )
+
+
+def crear_servicio_organizaciones(configuracion, enviador, origen=None):
+    """Servicio de organizaciones, invitaciones y membresías."""
+    return ServicioOrganizaciones(
+        RepositorioOrganizaciones(), RepositorioUsuarios(), _correos(configuracion, enviador),
         GestorTokens(configuracion["SECRET_KEY"]), configuracion,
         crear_servicio_auditoria(origen),
     )

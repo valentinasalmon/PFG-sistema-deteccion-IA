@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola:</p>
+<p>{{ invitante }} te invitó a sumarte a <strong>{{ organizacion }}</strong> en la Plataforma de análisis de imágenes.</p>
+<p>La invitación vence el {{ vence }}.</p>
+{% with texto_boton = "Ver la invitación" %}{% include "_boton.html" %}{% endwith %}
+{% if registrado %}<p>Vas a tener que iniciar sesión con este correo ({{ correo }}).</p>{% else %}<p>Todavía no tenés una cuenta con este correo ({{ correo }}): desde el enlace podés crearla y, una vez verificada, responder la invitación.</p>{% endif %}
+<p>Si no esperabas esta invitación, ignorá este mensaje.</p>
+{% endblock %}

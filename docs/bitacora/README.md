@@ -24,3 +24,4 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-16 | [Funcionalidad 002: cuentas y sesión](2026-10-16-funcionalidad-002-cuentas-y-sesion.md) |
 | 2026-10-16 | [Funcionalidad 020: registro guiado por pasos](2026-10-16-funcionalidad-020-registro-por-pasos.md) |
 | 2026-10-16 | [Funcionalidad 003: auditoría](2026-10-16-funcionalidad-003-auditoria.md) |
+| 2026-10-16 | [Funcionalidad 004: organizaciones e invitaciones](2026-10-16-funcionalidad-004-organizaciones.md) |

@@ -1,5 +1,7 @@
 """Pruebas del envío de correo y de la redacción de los mensajes."""
 import smtplib
+from datetime import datetime
+from types import SimpleNamespace
 
 from app.integraciones.correo import Correo, EnviadorMemoria, EnviadorSMTP, crear_enviador
 from app.servicios.servicio_correos import ServicioCorreos
@@ -9,7 +11,14 @@ class UsuarioFalso:  # pylint: disable=too-few-public-methods
     """Usuario mínimo para redactar correos."""
 
     nombre = "Ana"
+    apellido = "López"
     correo = "ana@ejemplo.com"
+
+
+ORGANIZACION = SimpleNamespace(id=7, nombre="Estudio Pérez")
+INVITACION = SimpleNamespace(
+    correo="beto@ejemplo.com", organizacion=ORGANIZACION, vence_en=datetime(2026, 10, 23)
+)
 
 
 def test_correo_de_verificacion_incluye_enlace_al_frontend():
@@ -53,6 +62,20 @@ def test_cada_correo_tiene_su_propio_texto():
         (lambda: servicio.enviar_confirmacion_cambio_correo(usuario, "n@e.com", "t"),
          "nuevo correo"),
         (lambda: servicio.enviar_aviso_cambio_correo(usuario, "n@e.com"), "Se pidió cambiar"),
+        (lambda: servicio.enviar_invitacion(INVITACION, usuario, "t", False), "te invitó"),
+        (lambda: servicio.enviar_respuesta_invitacion(usuario, INVITACION, True),
+         "aceptó la invitación"),
+        (lambda: servicio.enviar_respuesta_invitacion(usuario, INVITACION, False),
+         "rechazó la invitación"),
+        (lambda: servicio.enviar_aviso_desvinculacion(usuario, ORGANIZACION), "te desvinculó"),
+        (lambda: servicio.enviar_aviso_cambio_referente(usuario, ORGANIZACION, True, usuario),
+         "Ahora sos el Referente"),
+        (lambda: servicio.enviar_aviso_cambio_referente(usuario, ORGANIZACION, False, usuario),
+         "Designaste a Ana López"),
+        (lambda: servicio.enviar_aviso_abandono(usuario, ORGANIZACION, usuario),
+         "abandonó la organización"),
+        (lambda: servicio.enviar_aviso_eliminacion_organizacion(usuario, "Estudio Pérez"),
+         "fue eliminada"),
     ]
     for enviar, frase in esperados:
         enviar()

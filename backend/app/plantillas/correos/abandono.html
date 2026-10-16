@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>{{ miembro }} abandonó la organización <strong>{{ organizacion }}</strong>.</p>
+{% with texto_boton = "Ver los miembros" %}{% include "_boton.html" %}{% endwith %}
+{% endblock %}

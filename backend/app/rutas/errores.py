@@ -11,11 +11,13 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.extensiones import db
 
 from app.servicios.errores import (
+    AccesoDenegado,
     ConflictoDatos,
     CredencialesInvalidas,
     CuentaNoVerificada,
     ErrorDominio,
     ErrorValidacion,
+    NoEncontrado,
     TokenInvalido,
 )
 
@@ -24,6 +26,8 @@ CODIGOS_HTTP = {
     TokenInvalido: 400,
     CredencialesInvalidas: 401,
     CuentaNoVerificada: 403,
+    AccesoDenegado: 403,
+    NoEncontrado: 404,
     ConflictoDatos: 409,
 }
 

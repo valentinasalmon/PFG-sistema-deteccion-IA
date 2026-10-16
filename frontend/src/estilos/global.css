@@ -515,3 +515,132 @@ a {
     transition: none;
   }
 }
+
+/* --- Organizaciones (funcionalidad 004) --- */
+.boton--chico {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  min-height: 2.25rem;
+}
+
+/* Rojo con contraste 7,6:1 sobre blanco (texto) y 7,6:1 con texto blanco (fondo). */
+.boton--peligro {
+  background: var(--color-error);
+  border-color: var(--color-error);
+  color: #fff;
+}
+
+.boton--peligro:hover {
+  background: #7f1d1d;
+}
+
+.boton--secundario-peligro {
+  background: var(--color-superficie);
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.boton--secundario-peligro:hover {
+  background: var(--color-error-fondo);
+}
+
+.confirmacion {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.confirmacion__pregunta {
+  font-weight: 600;
+}
+
+.etiqueta {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.etiqueta--destacada {
+  background: var(--color-primario-suave);
+  color: var(--color-primario);
+}
+
+.etiqueta--neutra {
+  background: #f3f4f6;
+  color: var(--color-texto-secundario);
+}
+
+.etiqueta--alerta {
+  background: var(--color-error-fondo);
+  color: var(--color-error);
+}
+
+.encabezado-pagina {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.encabezado-pagina h1 {
+  margin: 0;
+}
+
+.lista-tarjetas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tarjeta-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+.tarjeta-item__principal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.tarjeta-item__titulo {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.tarjeta-item__detalle {
+  color: var(--color-texto-secundario);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.acciones-en-linea {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.zona-riesgo {
+  border: 1px solid var(--color-error);
+}
+
+.zona-riesgo h2 {
+  color: var(--color-error);
+}

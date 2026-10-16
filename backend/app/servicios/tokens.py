@@ -8,6 +8,8 @@ incluye un dato que cambia cuando se usa, y eso lo vuelve de un solo uso
 - Recuperación: incluye una huella del hash de la contraseña; al cambiarla,
   el token deja de coincidir.
 - Cambio de correo: incluye el correo actual; al cambiarlo, deja de coincidir.
+- Invitación a una organización: solo identifica la invitación; su vigencia
+  la decide la base de datos (estado y vencimiento).
 """
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
@@ -16,6 +18,7 @@ from app.servicios.errores import TokenInvalido
 PROPOSITO_VERIFICACION = "verificacion-correo"
 PROPOSITO_RECUPERACION = "recuperacion-contrasenia"
 PROPOSITO_CAMBIO_CORREO = "cambio-correo"
+PROPOSITO_INVITACION = "invitacion-organizacion"
 
 
 class GestorTokens:

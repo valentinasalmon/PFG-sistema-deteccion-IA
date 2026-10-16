@@ -17,7 +17,7 @@ MENSAJES_POR_TIPO = {
     "bool_parsing": "El valor no es válido.",
     "extra_forbidden": "Este campo no está permitido.",
 }
-CAMPOS_CORREO = {"correo", "correo_nuevo"}
+CAMPOS_CORREO = {"correo", "correo_nuevo", "correo_contacto"}
 
 
 def _mensaje(error):

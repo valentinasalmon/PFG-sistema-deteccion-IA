@@ -12,11 +12,11 @@
  * dato de un paso anterior, se vuelve a ese paso con el error junto al campo.
  * Al registrarse, la cuenta queda pendiente hasta verificar el correo.
  *
- * Realiza: RF01; RN01, RN02; CA1 a CA5 de la funcionalidad 002 y CA1 a CA8
- * de la funcionalidad 020; RNF10.
+ * Realiza: RF01; RN01, RN02; CA1 a CA5 de la funcionalidad 002, CA1 a CA8
+ * de la funcionalidad 020 y CA9 de la 004 (correo precargado); RNF10.
  */
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { registrarCuenta } from '../api/cuentas.js'
 import Aviso from '../componentes/Aviso.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
@@ -92,8 +92,12 @@ function tituloDelPaso(paso, perfil) {
 }
 
 export default function PaginaRegistro() {
-  const { valores, errores, error, enviando, cambiar, enviar, marcarErrores } =
-    useFormulario(VALORES_INICIALES)
+  // El enlace de una invitación precarga el correo invitado (CU11 3a).
+  const [parametros] = useSearchParams()
+  const { valores, errores, error, enviando, cambiar, enviar, marcarErrores } = useFormulario({
+    ...VALORES_INICIALES,
+    correo: parametros.get('correo') ?? '',
+  })
   const [paso, setPaso] = useState(1)
   const [mensaje, setMensaje] = useState(null)
   const refTitulo = useRef(null)

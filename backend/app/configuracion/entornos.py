@@ -78,6 +78,17 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
     VIGENCIA_TOKEN_RECUPERACION = timedelta(hours=1)
     VIGENCIA_TOKEN_CAMBIO_CORREO = timedelta(hours=24)
 
+    # --- Organizaciones (funcionalidad 004) ---
+    # Límites de cada plan (CP-02, valores propuestos). Son datos configurables
+    # para poder ajustarlos sin cambiar el código (RF19 CA3); la 014 los pasará
+    # a la base de datos cuando el Administrador pueda cambiar el plan.
+    PLANES = {
+        "basico": {"nombre": "Organización Básico", "miembros": 5},
+        "profesional": {"nombre": "Organización Profesional", "miembros": 25},
+    }
+    PLAN_INICIAL_ORGANIZACION = "basico"
+    VIGENCIA_INVITACION = timedelta(days=7)  # RN10
+
     # --- Términos de Uso y Política de Privacidad vigentes (RNF08 CA1) ---
     VERSION_TERMINOS = "1.0"
 
