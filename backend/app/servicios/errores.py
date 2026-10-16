@@ -41,9 +41,18 @@ class CuentaNoVerificada(ErrorDominio):
 
 
 class TokenInvalido(ErrorDominio):
-    """El enlace recibido por correo está vencido, alterado o ya fue usado (400)."""
+    """El enlace recibido por correo está vencido, alterado o ya fue usado (400).
+
+    Attributes:
+        motivo: ``vencido``, ``alterado`` o ``ya_usado``; se guarda en la
+            auditoría y no se muestra a la persona usuaria.
+    """
 
     codigo = "enlace_invalido"
+
+    def __init__(self, mensaje, motivo="ya_usado"):
+        super().__init__(mensaje)
+        self.motivo = motivo
 
 
 class ConflictoDatos(ErrorDominio):

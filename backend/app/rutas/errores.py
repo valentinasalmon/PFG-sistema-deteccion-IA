@@ -4,8 +4,11 @@ Los servicios lanzan excepciones de dominio sin saber de HTTP; acá se
 convierten en el código de estado y el cuerpo JSON que espera el frontend:
 ``{"mensaje": "...", "codigo": "...", "errores": {...}}``.
 """
-from flask import jsonify
+from flask import current_app, jsonify
 from flask_wtf.csrf import CSRFError
+from sqlalchemy.exc import SQLAlchemyError
+
+from app.extensiones import db
 
 from app.servicios.errores import (
     ConflictoDatos,
@@ -51,9 +54,23 @@ def _metodo_no_permitido(_error):
     return _respuesta("Operación no permitida.", "metodo_no_permitido", 405)
 
 
+def _error_base_de_datos(error):
+    """Deshace la transacción y responde con un mensaje genérico.
+
+    Si una acción o su entrada de auditoría no pudieron guardarse, no se
+    aplica ninguna de las dos (RNF06 CA8) y no se exponen detalles internos.
+    """
+    db.session.rollback()
+    current_app.logger.exception("Error de base de datos: %s", error)
+    return _respuesta(
+        "Ocurrió un error inesperado. Intentá de nuevo.", "error_interno", 500
+    )
+
+
 def registrar_manejadores(aplicacion):
     """Registra los manejadores de errores en la aplicación."""
     aplicacion.register_error_handler(ErrorDominio, _error_dominio)
     aplicacion.register_error_handler(CSRFError, _error_csrf)
+    aplicacion.register_error_handler(SQLAlchemyError, _error_base_de_datos)
     aplicacion.register_error_handler(404, _no_encontrado)
     aplicacion.register_error_handler(405, _metodo_no_permitido)

@@ -12,6 +12,7 @@ from flask_wtf.csrf import generate_csrf
 from app.esquemas import validar
 from app.esquemas.cuentas import SolicitudInicioSesion, usuario_a_dict
 from app.seguridad.autenticacion import cerrar_sesion, iniciar_sesion
+from app.seguridad.origen import origen_de_la_solicitud
 from app.servicios.fabrica import crear_servicio_sesion
 
 sesion_bp = Blueprint("sesion", __name__, url_prefix="/api/sesion")
@@ -27,7 +28,9 @@ def obtener_csrf():
 def iniciar():
     """Valida las credenciales y abre la sesión (RF03)."""
     solicitud = validar(SolicitudInicioSesion, request.get_json(silent=True))
-    servicio = crear_servicio_sesion(current_app.config, current_app.extensions["enviador_correo"])
+    servicio = crear_servicio_sesion(
+        current_app.config, current_app.extensions["enviador_correo"], origen_de_la_solicitud()
+    )
     usuario = servicio.autenticar(solicitud.correo, solicitud.contrasenia)
     iniciar_sesion(usuario)
     return jsonify({"usuario": usuario_a_dict(usuario), "csrf": generate_csrf()})
