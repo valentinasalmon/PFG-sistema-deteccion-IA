@@ -117,11 +117,15 @@ class ServicioCorreos:
             enlace=self._enlace_organizacion(invitacion.organizacion),
         )
 
-    def enviar_aviso_desvinculacion(self, usuario, organizacion):
-        """Aviso a quien fue desvinculado de una organización (RF14 CA1)."""
+    def enviar_aviso_desvinculacion(self, usuario, organizacion, desactivada=False):
+        """Aviso a quien fue desvinculado de una organización (RF14 CA1).
+
+        Args:
+            desactivada: True si la cuenta quedó desactivada por no tener aseguradora (RN38).
+        """
         return self._enviar(
             usuario.correo, f"Ya no sos miembro de {organizacion.nombre}", "desvinculacion",
-            nombre=usuario.nombre, organizacion=organizacion.nombre,
+            nombre=usuario.nombre, organizacion=organizacion.nombre, desactivada=desactivada,
         )
 
     def enviar_aviso_cambio_referente(self, usuario, organizacion, es_nuevo, nuevo_referente):
@@ -147,10 +151,30 @@ class ServicioCorreos:
             enlace=self._enlace_organizacion(organizacion),
         )
 
-    def enviar_aviso_eliminacion_organizacion(self, usuario, nombre_organizacion):
+    def enviar_aviso_eliminacion_organizacion(
+        self, usuario, nombre_organizacion, desactivada=False
+    ):
         """Aviso a cada miembro de que la organización fue eliminada (RF18 CA2)."""
         return self._enviar(
             usuario.correo, f"Se eliminó la organización {nombre_organizacion}",
             "organizacion_eliminada",
-            nombre=usuario.nombre, organizacion=nombre_organizacion,
+            nombre=usuario.nombre, organizacion=nombre_organizacion, desactivada=desactivada,
+        )
+
+    # --- Aseguradoras (funcionalidad 021) ---
+
+    def enviar_aviso_aseguradora_aprobada(self, usuario, organizacion):
+        """Aviso al Referente de que el Administrador aprobó su aseguradora (CA8 de la 021)."""
+        return self._enviar(
+            usuario.correo, f"{organizacion.nombre} ya está aprobada", "aseguradora_aprobada",
+            nombre=usuario.nombre, organizacion=organizacion.nombre,
+            enlace=self._enlace_organizacion(organizacion),
+        )
+
+    def enviar_aviso_aseguradora_rechazada(self, usuario, nombre_organizacion, motivo):
+        """Aviso al Referente de que su aseguradora fue rechazada, con el motivo (CA9)."""
+        return self._enviar(
+            usuario.correo, f"No se aprobó el registro de {nombre_organizacion}",
+            "aseguradora_rechazada",
+            nombre=usuario.nombre, organizacion=nombre_organizacion, motivo=motivo,
         )

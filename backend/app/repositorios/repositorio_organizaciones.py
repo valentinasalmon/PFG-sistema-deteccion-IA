@@ -5,6 +5,8 @@ Realiza: RF10 a RF18.
 from app.extensiones import db
 from app.modelos.organizacion import (
     INVITACION_PENDIENTE,
+    ORGANIZACION_PENDIENTE,
+    TIPO_ASEGURADORA,
     Invitacion,
     Membresia,
     Organizacion,
@@ -97,6 +99,31 @@ class RepositorioOrganizaciones:
             Invitacion.estado == INVITACION_PENDIENTE,
             Invitacion.vence_en > momento,
         ).count()
+
+    def obtener_por_cuit(self, cuit):
+        """Organización registrada para ese CUIT, o None (RN36)."""
+        return Organizacion.query.filter_by(cuit=cuit).first()
+
+    def pendientes_de_aprobacion(self):
+        """Aseguradoras que esperan la aprobación del Administrador (RN37)."""
+        return (
+            Organizacion.query.filter_by(estado=ORGANIZACION_PENDIENTE)
+            .order_by(Organizacion.creada_en)
+            .all()
+        )
+
+    def pertenece_a_otra_aseguradora(self, id_usuario, id_organizacion_excluida):
+        """True si el usuario es miembro de alguna aseguradora distinta de la indicada."""
+        return (
+            Membresia.query.join(Organizacion)
+            .filter(
+                Membresia.id_usuario == id_usuario,
+                Organizacion.tipo == TIPO_ASEGURADORA,
+                Organizacion.id != id_organizacion_excluida,
+            )
+            .first()
+            is not None
+        )
 
     def preparar(self, entidad):
         """Agrega la entidad a la transacción y le asigna identificador, sin confirmar."""

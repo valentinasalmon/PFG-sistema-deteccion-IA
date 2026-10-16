@@ -51,6 +51,13 @@ MEMBRESIA_EDICION = "membresia.edicion"
 MEMBRESIA_DESVINCULACION = "membresia.desvinculacion"
 MEMBRESIA_ABANDONO = "membresia.abandono"
 
+# --- Acciones de aseguradoras (funcionalidad 021) ---
+ORGANIZACION_APROBACION = "organizacion.aprobacion"
+ORGANIZACION_RECHAZO = "organizacion.rechazo"
+CUENTA_DESACTIVACION = "cuenta.desactivacion"
+CUENTA_REACTIVACION = "cuenta.reactivacion"
+CUENTA_PROMOCION_ADMINISTRADOR = "cuenta.promocion_administrador"
+
 TIPO_USUARIO = "usuario"
 TIPO_ORGANIZACION = "organizacion"
 TIPO_INVITACION = "invitacion"

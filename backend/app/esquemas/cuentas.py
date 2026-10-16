@@ -54,6 +54,10 @@ class SolicitudRegistro(EsquemaBase):
     colegio: Optional[str] = TextoInstitucion
     empresa: Optional[str] = TextoInstitucion
     acepta_terminos: bool
+    # Funcionalidad 021: aseguradora elegida del catálogo de la SSN, o el
+    # token de la invitación con la que la persona se suma a una organización.
+    id_aseguradora: Optional[int] = None
+    token_invitacion: Optional[str] = Field(default=None, max_length=500)
 
     _politica = field_validator("contrasenia")(_exigir_politica)
 
@@ -134,6 +138,7 @@ def usuario_a_dict(usuario):
         "correo": usuario.correo,
         "perfil": usuario.perfil,
         "rol": usuario.rol,
+        "activo": usuario.activo,
     }
     if usuario.perfil == PERFIL_ABOGADO:
         datos["colegio"] = usuario.colegio

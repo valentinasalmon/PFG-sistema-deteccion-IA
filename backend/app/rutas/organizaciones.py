@@ -31,9 +31,10 @@ from app.esquemas.organizaciones import (
     miembro_a_dict,
     organizacion_a_dict,
 )
-from app.seguridad.autenticacion import usuario_actual
+from app.seguridad.autenticacion import cerrar_sesion, usuario_actual
 from app.seguridad.origen import origen_de_la_solicitud
 from app.servicios.fabrica import crear_servicio_organizaciones
+from app.servicios.servicio_sesion import MOTIVO_CIERRE_CUENTA_DESACTIVADA
 from app.utilidades.tiempo import ahora_utc
 
 organizaciones_bp = Blueprint("organizaciones", __name__, url_prefix="/api/organizaciones")
@@ -100,8 +101,8 @@ def editar(id_organizacion):
 def eliminar(id_organizacion):
     """Elimina la organización con la confirmación de su nombre (RF18)."""
     solicitud = validar(SolicitudEliminacion, _cuerpo())
-    _servicio().eliminar(id_organizacion, usuario_actual(), solicitud.confirmacion)
-    return jsonify({"mensaje": "La organización fue eliminada."})
+    desactivada = _servicio().eliminar(id_organizacion, usuario_actual(), solicitud.confirmacion)
+    return _respuesta_de_salida("La organización fue eliminada.", True, desactivada)
 
 
 @organizaciones_bp.get("/<int:id_organizacion>/miembros")
@@ -145,14 +146,24 @@ def designar_referente(id_organizacion):
 def abandonar(id_organizacion):
     """El usuario abandona la organización (RF17)."""
     solicitud = validar(SolicitudAbandono, _cuerpo())
-    eliminada = _servicio().abandonar(
+    eliminada, desactivada = _servicio().abandonar(
         id_organizacion, usuario_actual(), solicitud.confirmar_eliminacion
     )
     mensaje = (
         "Abandonaste la organización y, como eras su único miembro, se eliminó."
         if eliminada else "Abandonaste la organización."
     )
-    return jsonify({"mensaje": mensaje, "organizacion_eliminada": eliminada})
+    return _respuesta_de_salida(mensaje, eliminada, desactivada)
+
+
+def _respuesta_de_salida(mensaje, eliminada, desactivada):
+    """Si la cuenta quedó desactivada (RN38), cierra la sesión actual."""
+    if desactivada:
+        cerrar_sesion(MOTIVO_CIERRE_CUENTA_DESACTIVADA)
+        mensaje += " Tu cuenta quedó desactivada porque ya no pertenecés a ninguna aseguradora."
+    return jsonify(
+        {"mensaje": mensaje, "organizacion_eliminada": eliminada, "cuenta_desactivada": desactivada}
+    )
 
 
 @organizaciones_bp.get("/<int:id_organizacion>/invitaciones")

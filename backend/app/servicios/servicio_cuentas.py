@@ -4,12 +4,21 @@ Cada operación queda registrada en la auditoría junto con su resultado. Las
 entradas de las operaciones que cambian datos se confirman en la misma
 transacción que el cambio, y los correos se envían después de confirmar.
 
-Realiza: RF01, RF02, RF05; RN01, RN02, RN03; RNF01 (CA5), RNF08 (CA1);
-RNF06 y CA7 a CA9 de la funcionalidad 003.
+Desde la funcionalidad 021, el perfil Aseguradora solo se obtiene
+registrando una aseguradora del catálogo de la SSN o con la invitación de
+una aseguradora (RN35).
+
+Realiza: RF01, RF02, RF05; RN01, RN02, RN03, RN35; RNF01 (CA5), RNF08 (CA1);
+RNF06 y CA7 a CA9 de la funcionalidad 003; CA3 a CA5 y CA10 a CA12 de la 021.
 """
-from app.modelos.usuario import PERFIL_ABOGADO, PERFIL_ASEGURADORA, Usuario
+from app.modelos.usuario import (
+    PERFIL_ABOGADO,
+    PERFIL_ASEGURADORA,
+    ROL_ADMINISTRADOR,
+    Usuario,
+)
 from app.servicios import auditoria, contrasenias
-from app.servicios.errores import TokenInvalido
+from app.servicios.errores import ErrorValidacion, NoEncontrado, TokenInvalido
 from app.servicios.tokens import (
     PROPOSITO_RECUPERACION,
     PROPOSITO_VERIFICACION,
@@ -18,19 +27,56 @@ from app.servicios.tokens import (
 from app.utilidades.tiempo import ahora_utc
 
 
-class ServicioCuentas:
+class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
     """Ciclo de vida de una cuenta antes de iniciar sesión."""
 
-    def __init__(self, repositorio, correos, tokens, configuracion, registro):
+    def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        self, repositorio, correos, tokens, configuracion, registro,
+        organizaciones=None, catalogo=None,
+    ):
         """
         Args:
             registro: ``ServicioAuditoria`` donde se registra cada operación.
+            organizaciones: ``ServicioOrganizaciones``, para registrar una
+                aseguradora o sumarse con una invitación.
+            catalogo: ``CatalogoAseguradoras`` de la SSN.
         """
         self.repositorio = repositorio
         self.correos = correos
         self.tokens = tokens
         self.configuracion = configuracion
         self.registro = registro
+        self.organizaciones = organizaciones
+        self.catalogo = catalogo
+
+    def _origen_aseguradora(self, solicitud):
+        """Valida de dónde sale el perfil Aseguradora (RN35).
+
+        Returns:
+            ``(invitacion, aseguradora)``: la invitación usada para registrarse
+            o la aseguradora elegida del catálogo; ambas pueden ser None.
+        """
+        invitacion = None
+        if solicitud.token_invitacion:
+            invitacion = self.organizaciones.invitacion_para_registro(
+                solicitud.token_invitacion, solicitud.correo
+            )
+            if invitacion.organizacion.es_aseguradora:
+                solicitud.perfil = PERFIL_ASEGURADORA
+                solicitud.empresa = invitacion.organizacion.nombre
+                return invitacion, None
+        if solicitud.perfil != PERFIL_ASEGURADORA:
+            return invitacion, None
+        aseguradora = (
+            self.catalogo.obtener(solicitud.id_aseguradora)
+            if solicitud.id_aseguradora is not None else None
+        )
+        if aseguradora is None:
+            mensaje = "Elegí tu aseguradora del listado de la Superintendencia de Seguros."
+            raise ErrorValidacion(mensaje, {"id_aseguradora": mensaje})
+        self.organizaciones.exigir_aseguradora_libre(aseguradora)
+        solicitud.empresa = aseguradora.denominacion
+        return invitacion, aseguradora
 
     def registrar(self, solicitud):
         """Crea una cuenta pendiente de verificación y envía el correo de verificación.
@@ -44,6 +90,7 @@ class ServicioCuentas:
             solicitud: ``SolicitudRegistro`` ya validada.
         """
         contrasenias.validar_politica(solicitud.contrasenia)
+        _, aseguradora = self._origen_aseguradora(solicitud)
         existente = self.repositorio.obtener_por_correo(solicitud.correo)
         if existente is not None:
             self.registro.registrar(
@@ -75,6 +122,8 @@ class ServicioCuentas:
             auditoria.CUENTA_REGISTRO, auditoria.EXITOSO, usuario=usuario, recurso=usuario,
             detalle={"perfil": usuario.perfil, "version_terminos": usuario.version_terminos},
         )
+        if aseguradora is not None:
+            self.organizaciones.crear_aseguradora(usuario, aseguradora)
         self.repositorio.guardar(usuario)
         self._enviar_verificacion(usuario)
 
@@ -115,7 +164,12 @@ class ServicioCuentas:
         self.registro.registrar(
             auditoria.CUENTA_VERIFICACION, auditoria.EXITOSO, usuario=usuario, recurso=usuario
         )
+        incorporaciones = (
+            self.organizaciones.incorporar_al_verificar(usuario) if self.organizaciones else []
+        )
         self.repositorio.guardar(usuario)
+        if incorporaciones:
+            self.organizaciones.avisar_incorporaciones(incorporaciones)
 
     def reenviar_verificacion(self, correo):
         """Reenvía el correo de verificación si la cuenta existe y no está verificada.
@@ -200,3 +254,24 @@ class ServicioCuentas:
         )
         self.repositorio.guardar(usuario)
         self.correos.enviar_aviso_contrasenia_cambiada(usuario)
+
+    def promover_administrador(self, correo):
+        """Da el rol de Administrador a una cuenta verificada (funcionalidad 021).
+
+        Solo se usa desde la terminal del servidor (``flask administracion
+        promover``): la interfaz nunca ofrece crear administradores.
+
+        Raises:
+            NoEncontrado: si no hay una cuenta verificada con ese correo.
+        """
+        usuario = self.repositorio.obtener_por_correo(correo)
+        if usuario is None or not usuario.verificado:
+            raise NoEncontrado("No hay una cuenta verificada con ese correo.")
+        if usuario.rol != ROL_ADMINISTRADOR:
+            usuario.rol = ROL_ADMINISTRADOR
+            self.registro.registrar(
+                auditoria.CUENTA_PROMOCION_ADMINISTRADOR, auditoria.EXITOSO, recurso=usuario,
+                detalle={"origen": "terminal"},
+            )
+            self.repositorio.guardar(usuario)
+        return usuario

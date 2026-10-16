@@ -9,11 +9,20 @@ Permisos: quien no es miembro recibe ``NoEncontrado`` (no se revela si la
 organización existe); un Miembro que intenta algo reservado al Referente
 recibe ``AccesoDenegado``.
 
+Desde la funcionalidad 021, las aseguradoras se crean al registrarlas desde
+el catálogo de la SSN, quedan pendientes hasta que el Administrador las
+aprueba, y las cuentas con perfil Aseguradora que se quedan sin aseguradora
+se desactivan.
+
 Realiza: RF10 a RF18 (sin las reglas de casos, que agrega la 005); RN06,
-RN07, RN08, RN10, RN11, RN15; RNF06.
+RN07, RN08, RN10, RN11, RN15, RN35 a RN39; RNF06.
 """
 from app.modelos.organizacion import (
     INVITACION_ACEPTADA,
+    ORGANIZACION_ACTIVA,
+    ORGANIZACION_PENDIENTE,
+    TIPO_ASEGURADORA,
+    TIPO_ESTUDIO_JURIDICO,
     INVITACION_CANCELADA,
     INVITACION_PENDIENTE,
     INVITACION_RECHAZADA,
@@ -23,6 +32,7 @@ from app.modelos.organizacion import (
     Membresia,
     Organizacion,
 )
+from app.modelos.usuario import PERFIL_ABOGADO, PERFIL_ASEGURADORA, ROL_ADMINISTRADOR
 from app.servicios import auditoria
 from app.servicios.errores import (
     AccesoDenegado,
@@ -36,10 +46,14 @@ from app.utilidades.tiempo import ahora_utc
 
 MENSAJE_NO_ENCONTRADA = "La organización no existe o no tenés acceso a ella."
 MENSAJE_SOLO_REFERENTE = "Solo el Referente de la organización puede hacer esto."
-CAMPOS_EDITABLES = ("nombre", "tipo", "correo_contacto", "telefono")
+MENSAJE_SOLO_ADMINISTRADOR = "Solo el Administrador de la plataforma puede hacer esto."
+CAMPOS_EDITABLES = ("nombre", "correo_contacto", "telefono")
 
 
-class ServicioOrganizaciones:  # pylint: disable=too-many-instance-attributes
+# Concentra todas las reglas de la organización (raíz del agregado): separarlas
+# repartiría la misma transacción y los mismos permisos entre varias clases.
+# pylint: disable-next=too-many-instance-attributes,too-many-public-methods
+class ServicioOrganizaciones:
     """Operaciones sobre organizaciones, sus miembros y sus invitaciones."""
 
     def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
@@ -124,6 +138,14 @@ class ServicioOrganizaciones:  # pylint: disable=too-many-instance-attributes
             datos: diccionario con ``nombre``, ``tipo`` y, opcionales,
                 ``correo_contacto`` y ``telefono``.
         """
+        if usuario.perfil != PERFIL_ABOGADO:
+            raise AccesoDenegado(
+                "Las aseguradoras se registran desde el registro de la plataforma; "
+                "sus empleados se suman por invitación."
+            )
+        if datos["tipo"] != TIPO_ESTUDIO_JURIDICO:
+            mensaje = "Solo podés crear organizaciones del tipo Estudio Jurídico."
+            raise ErrorValidacion(mensaje, {"tipo": mensaje})
         organizacion = Organizacion(
             nombre=datos["nombre"], tipo=datos["tipo"],
             correo_contacto=datos.get("correo_contacto") or None,
@@ -148,6 +170,12 @@ class ServicioOrganizaciones:  # pylint: disable=too-many-instance-attributes
         organizacion = self._como_referente(
             id_organizacion, usuario, auditoria.ORGANIZACION_EDICION
         )
+        if cambios.get("tipo") not in (None, organizacion.tipo):
+            mensaje = "El tipo de organización no puede cambiarse."
+            raise ErrorValidacion(mensaje, {"tipo": mensaje})
+        if organizacion.es_aseguradora and cambios.get("nombre") not in (None, organizacion.nombre):
+            mensaje = "El nombre de una aseguradora es el del catálogo de la SSN y no se modifica."
+            raise ErrorValidacion(mensaje, {"nombre": mensaje})
         modificados = {}
         for campo in CAMPOS_EDITABLES:
             if campo not in cambios:
@@ -167,22 +195,61 @@ class ServicioOrganizaciones:  # pylint: disable=too-many-instance-attributes
             self.repositorio.confirmar()
         return organizacion
 
-    def _eliminar(self, organizacion, usuario, avisar):
-        """Elimina la organización con sus membresías e invitaciones (RN09 sin casos)."""
+    def _desactivar_si_corresponde(self, miembro, organizacion, actor):
+        """Desactiva la cuenta si se queda sin aseguradora (RN38).
+
+        Solo aplica al perfil Aseguradora al salir de una aseguradora. Cierra
+        sus sesiones abiertas incrementando la versión de sesión. No confirma:
+        se guarda junto con la acción que la provoca.
+
+        Returns:
+            True si la cuenta quedó desactivada.
+        """
+        if (
+            miembro.perfil != PERFIL_ASEGURADORA or not organizacion.es_aseguradora
+            or self.repositorio.pertenece_a_otra_aseguradora(miembro.id, organizacion.id)
+        ):
+            return False
+        miembro.activo = False
+        miembro.version_sesion += 1
+        self.registro.registrar(
+            auditoria.CUENTA_DESACTIVACION, auditoria.EXITOSO, usuario=actor, recurso=miembro,
+            detalle={"motivo": "sin_aseguradora", "id_organizacion": organizacion.id},
+        )
+        return True
+
+    def _eliminar(self, organizacion, usuario, avisar, motivo="eliminacion"):
+        """Elimina la organización con sus membresías e invitaciones (RN09 sin casos).
+
+        Returns:
+            True si la cuenta de ``usuario`` quedó desactivada (RN38).
+        """
         nombre = organizacion.nombre
-        a_avisar = [m.usuario for m in organizacion.membresias if m.id_usuario != usuario.id]
+        miembros = [m.usuario for m in organizacion.membresias]
         self._auditar(
             auditoria.ORGANIZACION_ELIMINACION, auditoria.EXITOSO, usuario, organizacion,
-            {"nombre": nombre, "miembros": len(organizacion.membresias)},
+            {"nombre": nombre, "miembros": len(miembros), "motivo": motivo},
         )
+        desactivados = {
+            miembro.id for miembro in miembros
+            if self._desactivar_si_corresponde(miembro, organizacion, usuario)
+        }
         self.repositorio.quitar(organizacion)
         self.repositorio.confirmar()
         if avisar:
-            for miembro in a_avisar:
-                self.correos.enviar_aviso_eliminacion_organizacion(miembro, nombre)
+            for miembro in miembros:
+                if miembro.id != usuario.id:
+                    self.correos.enviar_aviso_eliminacion_organizacion(
+                        miembro, nombre, miembro.id in desactivados
+                    )
+        return usuario.id in desactivados
 
     def eliminar(self, id_organizacion, usuario, confirmacion):
-        """Elimina la organización si se escribe su nombre exacto (RF18). Solo el Referente."""
+        """Elimina la organización si se escribe su nombre exacto (RF18). Solo el Referente.
+
+        Returns:
+            True si la cuenta del Referente quedó desactivada (RN38).
+        """
         organizacion = self._como_referente(
             id_organizacion, usuario, auditoria.ORGANIZACION_ELIMINACION
         )
@@ -193,7 +260,7 @@ class ServicioOrganizaciones:  # pylint: disable=too-many-instance-attributes
                 auditoria.ORGANIZACION_ELIMINACION, usuario, organizacion,
                 "confirmacion_incorrecta",
             )
-        self._eliminar(organizacion, usuario, avisar=True)
+        return self._eliminar(organizacion, usuario, avisar=True)
 
     # --- Miembros (RF14, RF15, RF16, RF17) ---
 
@@ -238,9 +305,10 @@ class ServicioOrganizaciones:  # pylint: disable=too-many-instance-attributes
             auditoria.MEMBRESIA_DESVINCULACION, auditoria.EXITOSO, usuario, organizacion,
             {"id_usuario": id_usuario, "correo": desvinculado.correo},
         )
+        desactivada = self._desactivar_si_corresponde(desvinculado, organizacion, usuario)
         self.repositorio.quitar(membresia)
         self.repositorio.confirmar()
-        self.correos.enviar_aviso_desvinculacion(desvinculado, organizacion)
+        self.correos.enviar_aviso_desvinculacion(desvinculado, organizacion, desactivada)
 
     def designar_referente(self, id_organizacion, usuario, id_usuario):
         """Transfiere el rol de Referente a otro miembro (RF15 CA2, RN07)."""
@@ -268,7 +336,9 @@ class ServicioOrganizaciones:  # pylint: disable=too-many-instance-attributes
         """El usuario deja la organización (RF17, RN08).
 
         Returns:
-            True si la organización se eliminó porque era su único miembro.
+            ``(organizacion_eliminada, cuenta_desactivada)``: si la organización
+            se eliminó porque era su único miembro y si la cuenta del usuario
+            quedó desactivada por quedarse sin aseguradora (RN38).
         """
         organizacion, membresia = self._acceso(id_organizacion, usuario)
         if membresia.es_referente:
@@ -294,15 +364,15 @@ class ServicioOrganizaciones:  # pylint: disable=too-many-instance-attributes
                 auditoria.MEMBRESIA_ABANDONO, auditoria.EXITOSO, usuario, organizacion,
                 {"organizacion_eliminada": True},
             )
-            self._eliminar(organizacion, usuario, avisar=False)
-            return True
+            return True, self._eliminar(organizacion, usuario, avisar=False, motivo="abandono")
 
         referente = self.repositorio.referente(organizacion.id).usuario
         self._auditar(auditoria.MEMBRESIA_ABANDONO, auditoria.EXITOSO, usuario, organizacion)
+        desactivada = self._desactivar_si_corresponde(usuario, organizacion, usuario)
         self.repositorio.quitar(membresia)
         self.repositorio.confirmar()
         self.correos.enviar_aviso_abandono(referente, organizacion, usuario)
-        return False
+        return False, desactivada
 
     # --- Invitaciones (RF12, RF13) ---
 
@@ -330,6 +400,15 @@ class ServicioOrganizaciones:  # pylint: disable=too-many-instance-attributes
         correo = correo.strip().lower()
         ahora = ahora_utc()
         detalle = {"correo": correo}
+        if organizacion.pendiente:
+            self._rechazar(
+                ConflictoDatos(
+                    "La aseguradora todavía no fue aprobada por el Administrador de la "
+                    "plataforma. Vas a poder invitar a tu equipo cuando esté aprobada.",
+                    codigo="organizacion_pendiente",
+                ),
+                accion, usuario, organizacion, "organizacion_pendiente", detalle,
+            )
         if self.repositorio.es_miembro_por_correo(organizacion.id, correo):
             mensaje = "Esa persona ya es miembro de la organización."
             self._rechazar(
@@ -461,17 +540,175 @@ class ServicioOrganizaciones:  # pylint: disable=too-many-instance-attributes
                 {**detalle, "estado": invitacion.estado},
             )
 
-        invitacion.respondida_en = ahora_utc()
         if aceptar:
-            invitacion.estado = INVITACION_ACEPTADA
-            if self.repositorio.membresia(organizacion.id, usuario.id) is None:
-                organizacion.membresias.append(
-                    Membresia(id_usuario=usuario.id, rol=ROL_MIEMBRO, cargo=invitacion.cargo)
-                )
+            self._incorporar(invitacion, usuario)
         else:
+            invitacion.respondida_en = ahora_utc()
             invitacion.estado = INVITACION_RECHAZADA
-        self._auditar(accion, auditoria.EXITOSO, usuario, organizacion, detalle)
+            self._auditar(accion, auditoria.EXITOSO, usuario, organizacion, detalle)
         self.repositorio.confirmar()
-        referente = self.repositorio.referente(organizacion.id)
-        self.correos.enviar_respuesta_invitacion(referente.usuario, invitacion, aceptar)
+        self._avisar_respuesta(invitacion, aceptar)
         return organizacion
+
+    def _incorporar(self, invitacion, usuario):
+        """Suma al usuario como Miembro y, si estaba desactivado, lo reactiva (RN38).
+
+        No confirma: se guarda junto con la operación que la provoca.
+        """
+        organizacion = invitacion.organizacion
+        invitacion.respondida_en = ahora_utc()
+        invitacion.estado = INVITACION_ACEPTADA
+        if self.repositorio.membresia(organizacion.id, usuario.id) is None:
+            organizacion.membresias.append(
+                Membresia(id_usuario=usuario.id, rol=ROL_MIEMBRO, cargo=invitacion.cargo)
+            )
+        self._auditar(
+            auditoria.INVITACION_ACEPTACION, auditoria.EXITOSO, usuario, organizacion,
+            {"id_invitacion": invitacion.id},
+        )
+        if not usuario.activo:
+            usuario.activo = True
+            self.registro.registrar(
+                auditoria.CUENTA_REACTIVACION, auditoria.EXITOSO, usuario=usuario,
+                recurso=usuario, detalle={"id_organizacion": organizacion.id},
+            )
+
+    def _avisar_respuesta(self, invitacion, aceptada):
+        referente = self.repositorio.referente(invitacion.id_organizacion)
+        self.correos.enviar_respuesta_invitacion(referente.usuario, invitacion, aceptada)
+
+    def tiene_invitaciones_vigentes(self, correo):
+        """True si el correo tiene invitaciones pendientes y vigentes (RN38)."""
+        return bool(self.repositorio.invitaciones_pendientes_de_correo(correo, ahora_utc()))
+
+    def incorporar_al_verificar(self, usuario):
+        """Acepta las invitaciones vigentes de aseguradoras al verificar el correo (CA11 de la 021).
+
+        Quien crea su cuenta desde la invitación de una aseguradora queda
+        dentro de ella sin otro paso. No confirma: la verificación del correo
+        confirma todo junto.
+
+        Returns:
+            Las invitaciones aceptadas, para avisar a sus Referentes después de confirmar.
+        """
+        aceptadas = [
+            invitacion for invitacion in self.pendientes_de(usuario)
+            if invitacion.organizacion.es_aseguradora
+            and usuario.perfil == PERFIL_ASEGURADORA
+        ]
+        for invitacion in aceptadas:
+            self._incorporar(invitacion, usuario)
+        return aceptadas
+
+    def avisar_incorporaciones(self, invitaciones):
+        """Avisa a cada Referente que su invitación fue aceptada."""
+        for invitacion in invitaciones:
+            self._avisar_respuesta(invitacion, True)
+
+    def invitacion_para_registro(self, token, correo):
+        """Valida la invitación usada para registrarse (CA10 y CA12 de la 021).
+
+        Raises:
+            TokenInvalido: si el enlace no es válido.
+            ConflictoDatos: si la invitación ya no está vigente.
+            ErrorValidacion: si el correo no es el invitado.
+        """
+        invitacion = self.consultar_invitacion(token)
+        if not invitacion.vigente(ahora_utc()):
+            raise ConflictoDatos(
+                "La invitación ya no está vigente.", codigo="invitacion_no_vigente"
+            )
+        if invitacion.correo != correo.strip().lower():
+            mensaje = f"Tenés que registrarte con el correo invitado: {invitacion.correo}."
+            raise ErrorValidacion(mensaje, {"correo": mensaje})
+        return invitacion
+
+    # --- Aseguradoras (funcionalidad 021) ---
+
+    def exigir_aseguradora_libre(self, aseguradora):
+        """Rechaza registrar una aseguradora que ya tiene organización (RN36).
+
+        Raises:
+            ConflictoDatos: con la indicación de pedir una invitación.
+        """
+        if self.repositorio.obtener_por_cuit(aseguradora.cuit) is not None:
+            mensaje = (
+                f"{aseguradora.denominacion} ya está registrada en la plataforma. Pedile a su "
+                "Referente que te invite."
+            )
+            raise ConflictoDatos(
+                mensaje, {"id_aseguradora": mensaje}, codigo="aseguradora_registrada"
+            )
+
+    def crear_aseguradora(self, usuario, aseguradora):
+        """Crea la organización de una aseguradora del catálogo con el usuario como Referente.
+
+        Queda pendiente de aprobación (RN37). No confirma: se guarda junto con
+        el registro de la cuenta.
+
+        Raises:
+            ConflictoDatos: si esa aseguradora ya está registrada (RN36).
+        """
+        self.exigir_aseguradora_libre(aseguradora)
+        organizacion = Organizacion(
+            nombre=aseguradora.denominacion, tipo=TIPO_ASEGURADORA, cuit=aseguradora.cuit,
+            plan=self.configuracion["PLAN_INICIAL_ORGANIZACION"], estado=ORGANIZACION_PENDIENTE,
+        )
+        organizacion.membresias.append(Membresia(id_usuario=usuario.id, rol=ROL_REFERENTE))
+        self.repositorio.preparar(organizacion)
+        self._auditar(
+            auditoria.ORGANIZACION_CREACION, auditoria.EXITOSO, usuario, organizacion,
+            {"nombre": organizacion.nombre, "tipo": organizacion.tipo, "cuit": organizacion.cuit,
+             "plan": organizacion.plan, "estado": organizacion.estado, "origen": "registro"},
+        )
+        return organizacion
+
+    def _exigir_administrador(self, usuario):
+        if usuario.rol != ROL_ADMINISTRADOR:
+            raise AccesoDenegado(MENSAJE_SOLO_ADMINISTRADOR)
+
+    def pendientes_de_aprobacion(self, usuario):
+        """Aseguradoras pendientes con su Referente (CA7 de la 021). Solo el Administrador."""
+        self._exigir_administrador(usuario)
+        return [
+            (organizacion, self.repositorio.referente(organizacion.id))
+            for organizacion in self.repositorio.pendientes_de_aprobacion()
+        ]
+
+    def _pendiente(self, id_organizacion):
+        organizacion = self.repositorio.obtener(id_organizacion)
+        if organizacion is None or not organizacion.pendiente:
+            raise NoEncontrado("La aseguradora no existe o ya fue revisada.")
+        return organizacion
+
+    def aprobar(self, usuario, id_organizacion):
+        """Aprueba una aseguradora pendiente y avisa a su Referente (CA8 de la 021)."""
+        self._exigir_administrador(usuario)
+        organizacion = self._pendiente(id_organizacion)
+        organizacion.estado = ORGANIZACION_ACTIVA
+        organizacion.aprobada_en = ahora_utc()
+        self._auditar(
+            auditoria.ORGANIZACION_APROBACION, auditoria.EXITOSO, usuario, organizacion,
+            {"cuit": organizacion.cuit},
+        )
+        self.repositorio.confirmar()
+        referente = self.repositorio.referente(organizacion.id).usuario
+        self.correos.enviar_aviso_aseguradora_aprobada(referente, organizacion)
+        return organizacion
+
+    def rechazar(self, usuario, id_organizacion, motivo):
+        """Rechaza una aseguradora pendiente: se elimina y su Referente se desactiva (CA9).
+
+        Se avisa al Referente con el motivo. Así la empresa queda libre para
+        que la registre quien corresponda.
+        """
+        self._exigir_administrador(usuario)
+        organizacion = self._pendiente(id_organizacion)
+        referente = self.repositorio.referente(organizacion.id).usuario
+        nombre = organizacion.nombre
+        self._auditar(
+            auditoria.ORGANIZACION_RECHAZO, auditoria.EXITOSO, usuario, organizacion,
+            {"cuit": organizacion.cuit, "motivo": motivo},
+        )
+        self._eliminar(organizacion, usuario, avisar=False, motivo="rechazo")
+        self.correos.enviar_aviso_aseguradora_rechazada(referente, nombre, motivo)

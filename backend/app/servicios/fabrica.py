@@ -6,6 +6,7 @@ integraciones (RNF17) y las pruebas pueden armar los servicios con dobles.
 Cada fábrica recibe el ``origen`` de la solicitud (por ahora, la dirección
 IP) para que la auditoría lo registre sin que los servicios conozcan Flask.
 """
+from app.repositorios.catalogo_aseguradoras import CatalogoAseguradoras
 from app.repositorios.repositorio_auditoria import RepositorioAuditoria
 from app.repositorios.repositorio_organizaciones import RepositorioOrganizaciones
 from app.repositorios.repositorio_usuarios import RepositorioUsuarios
@@ -33,6 +34,8 @@ def crear_servicio_cuentas(configuracion, enviador, origen=None):
         RepositorioUsuarios(), _correos(configuracion, enviador),
         GestorTokens(configuracion["SECRET_KEY"]), configuracion,
         crear_servicio_auditoria(origen),
+        crear_servicio_organizaciones(configuracion, enviador, origen),
+        CatalogoAseguradoras(),
     )
 
 
@@ -41,7 +44,13 @@ def crear_servicio_sesion(configuracion, enviador, origen=None):
     return ServicioSesion(
         RepositorioUsuarios(), _correos(configuracion, enviador), configuracion,
         crear_servicio_auditoria(origen),
+        crear_servicio_organizaciones(configuracion, enviador, origen),
     )
+
+
+def crear_catalogo_aseguradoras():
+    """Catálogo de aseguradoras de la SSN (CP-18)."""
+    return CatalogoAseguradoras()
 
 
 def crear_servicio_perfil(configuracion, enviador, origen=None):

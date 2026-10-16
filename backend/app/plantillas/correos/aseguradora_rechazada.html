@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>El Administrador de la plataforma no aprobó el registro de <strong>{{ organizacion }}</strong>.</p>
+<p><strong>Motivo:</strong> {{ motivo }}</p>
+<p>Tu cuenta quedó desactivada. Si trabajás en esa aseguradora, pedile a la persona que la administre que la registre o que te invite.</p>
+{% endblock %}
