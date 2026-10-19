@@ -45,7 +45,7 @@ if [ ! -f "$PRINCIPAL/terraform.tfvars" ]; then
   cp "$PRINCIPAL/terraform.tfvars.ejemplo" "$PRINCIPAL/terraform.tfvars"
   fallar "Se creó $PRINCIPAL/terraform.tfvars. Abrilo con 'nano $PRINCIPAL/terraform.tfvars', poné tus correos y los de los tutores, guardá y volvé a ejecutar este script."
 fi
-if grep -q "ejemplo.com" "$PRINCIPAL/terraform.tfvars"; then
+if grep -v "^[[:space:]]*#" "$PRINCIPAL/terraform.tfvars" | grep -q "ejemplo.com"; then
   fallar "terraform.tfvars todavía tiene correos de ejemplo. Editalo con 'nano $PRINCIPAL/terraform.tfvars' y volvé a ejecutar este script."
 fi
 grep -E "^(correo|administradores)" "$PRINCIPAL/terraform.tfvars"
