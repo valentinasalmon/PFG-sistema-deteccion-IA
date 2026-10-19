@@ -37,6 +37,9 @@ Técnicas: *temperature scaling* para calibrar la probabilidad, error de calibra
 - Desde el entorno del asistente no se puede acceder a Hugging Face: los nombres de columnas de cada conjunto se dejan en la configuración y se confirman en Kaggle (sección 4 del cuaderno y tarea T25).
 - En la prueba de integración, con grupos chicos, el redondeo de la partición desbalancea las clases y el modelo diminuto no siempre alcanza AUC 0,90: la prueba usa tolerancias propias, porque verifica que las etapas se conecten y no la calidad del modelo, que se mide en Kaggle.
 
+- **Token expuesto en la primera ejecución en Kaggle**: el cuaderno ponía el *token* de GitHub dentro de la URL de `git clone`; al fallar el clon (el *token* no tenía acceso al repositorio), Python imprimió el comando completo con el *token*. Se revocó el *token* y se corrigió el cuaderno: ahora el *token* viaja en una variable de entorno de configuración de git (cabecera de autorización), nunca en la URL, y los errores se muestran sin él. Lección: ninguna credencial va en argumentos de comandos.
+- En Kaggle, la primera ejecución falló por tener internet desactivado (error de resolución de nombres al leer los secretos).
+
 ## Pendientes
 
 - E03, E04 y E05 (autora): repositorio privado de modelos en Hugging Face, conjunto propio y *token* de GitHub en Kaggle.
