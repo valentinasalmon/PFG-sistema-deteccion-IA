@@ -35,7 +35,7 @@ implementación siguiendo tareas.md, con pruebas
 | 007 | Motor de análisis y capa 1 (metadatos) | 4 | RF38, RF39, RF43, RF46 | Pendiente |
 | 008 | Informe PDF e historial | 4 | RF44, RF45 | Pendiente |
 | 009 | Capa 2 (C2PA) | 5 | RF40 | Pendiente |
-| 010 | [Red neuronal: ciclo de vida, entrenamiento y exportación](010-red-neuronal/especificacion.md) (pista paralela) | 2 – 5 | RNF24 | Planificada |
+| 010 | [Red neuronal: ciclo de vida, entrenamiento y exportación](010-red-neuronal/especificacion.md) (pista paralela) | 2 – 5 | RNF24 | En curso |
 | 011 | Capa 3 (ELA) | 5 | RF41 | Pendiente |
 | 012 | Capa 4 (ONNX) | 5 | RF42 | Pendiente |
 | 013 | Notificaciones y panel principal | 6 | RF47, RF48 | Pendiente |
