@@ -5,7 +5,7 @@
 1. Se integró `desarrollo` en la rama de la funcionalidad 010. Los ADR de la red neuronal se renumeraron a 0012 y 0013 porque 0010 y 0011 ya existían; se unieron los `.gitignore`.
 2. Se implementaron las tareas T01 a T22: el paquete `red_neuronal/clasificador/` con todas las etapas del ciclo de vida (obtener, validar, preparar, entrenar, exportar, evaluar, publicar), su línea de comandos y la integración continua propia (`.github/workflows/red_neuronal.yml`).
 3. Se escribió el cuaderno de la prueba de concepto (T23) para ejecutar en Kaggle.
-4. Calidad: 176 pruebas, cobertura del 99 %, flake8 sin errores y pylint 10/10. La integración continua corre en Python 3.11 y 3.12.
+4. Calidad: 176 pruebas, cobertura del 99 %, flake8 sin errores y pylint 10/10. La integración continua corre en Python 3.12 (backend) y 3.13 (versión de Kaggle, detectada al ejecutar el cuaderno).
 
 ## Decisiones tomadas
 

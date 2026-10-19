@@ -183,7 +183,7 @@ Ninguna. La organización por etapas de `red_neuronal/` no contradice la arquite
 | El modelo aprende atajos (formato, tamaño, temática) en lugar de huellas de generación | Normalización JPEG y de tamaños para ambas clases (CA5); evaluación por generador; revisión de errores en el cuaderno de exploración |
 | Algún conjunto requiere aceptar términos o deja de estar disponible | Verificación en `01_exploracion_datos` antes del entrenamiento; las fuentes son intercambiables (Strategy) |
 | Cuota de GPU de Kaggle (unas 30 h por semana) | Prueba de concepto para estimar tiempos; puntos de control por época para retomar; recortes de 224 px |
-| Diferencias entre la versión de Python o de bibliotecas de Kaggle y la del backend | El paquete de inferencia solo depende de numpy, Pillow y onnxruntime; versión de *opset* fija; integración continua con Python 3.11 y 3.12 |
+| Diferencias entre la versión de Python o de bibliotecas de Kaggle y la del backend | El paquete de inferencia solo depende de numpy, Pillow y onnxruntime; versión de *opset* fija; integración continua con Python 3.12 (backend) y 3.13 (imagen de Kaggle) |
 | Desempeño bajo frente a generadores comerciales no vistos | Se mide y se declara en la ficha (CA11 a CA13); disparador de reentrenamiento (CA18) |
 | Fuga de datos personales del conjunto propio | Kaggle Dataset privado; `.gitignore`; nunca se usa en entrenamiento |
 | Licencias no comerciales | Registradas en la ficha; reentrenamiento si se comercializa (pregunta abierta de la especificación) |

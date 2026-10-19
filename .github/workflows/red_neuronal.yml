@@ -1,8 +1,8 @@
 # Integración continua del clasificador (funcionalidad 010, CA20).
 #
 # Corre análisis estático y pruebas sin GPU ni descarga de datos cada vez que
-# cambia red_neuronal/ o este archivo. Se prueba en Python 3.11 (versión de la
-# imagen de Kaggle) y 3.12 (versión del backend en Ubuntu 24.04).
+# cambia red_neuronal/ o este archivo. Se prueba en Python 3.12 (versión del
+# backend en Ubuntu 24.04) y 3.13 (versión de la imagen actual de Kaggle).
 # Realiza: RNF19, RNF20.
 name: Red neuronal
 
@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.11", "3.12"]
+        python: ["3.12", "3.13"]
     defaults:
       run:
         working-directory: red_neuronal

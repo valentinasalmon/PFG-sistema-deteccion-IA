@@ -35,7 +35,7 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
   - Archivos: `red_neuronal/pruebas/conftest.py`
   - Verificación: `pytest` ejecuta una prueba trivial que usa las *fixtures*.
   - Commit: `pruebas(clasificador): agregar fixtures de imagenes sinteticas`
-- [x] **T04** — Integración continua: el *workflow* ejecuta flake8, pylint y pytest con cobertura ≥ 80 % sobre Python 3.11 y 3.12, solo cuando cambian `red_neuronal/` o el propio *workflow*. PyTorch se instala en su versión para CPU.
+- [x] **T04** — Integración continua: el *workflow* ejecuta flake8, pylint y pytest con cobertura ≥ 80 % sobre Python 3.12 (backend) y 3.13 (Kaggle), solo cuando cambian `red_neuronal/` o el propio *workflow*. PyTorch se instala en su versión para CPU.
   - Archivos: `.github/workflows/red_neuronal.yml`
   - Verificación: subir la rama; la pestaña *Actions* de GitHub muestra el *workflow* en verde.
   - Commit: `integracion(clasificador): agregar workflow de calidad`
