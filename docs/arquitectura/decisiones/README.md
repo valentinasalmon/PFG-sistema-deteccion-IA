@@ -24,3 +24,4 @@ Un ADR (*Architecture Decision Record*) documenta una decisión de arquitectura 
 | [0010](0010-sesiones-en-redis-y-enlaces-firmados.md) | Sesiones del servidor en Redis y enlaces firmados sin estado | Aceptada |
 | [0011](0011-auditoria-en-la-misma-transaccion.md) | Registro de auditoría en la misma transacción que la acción | Aceptada |
 | [0012](0012-almacenamiento-de-imagenes-intercambiable.md) | Almacenamiento de imágenes intercambiable (S3 y carpeta local) | Aceptada |
+| [0013](0013-cola-de-analisis-intercambiable.md) | Cola de análisis intercambiable (RQ, hilo y sincrónica) | Aceptada |
