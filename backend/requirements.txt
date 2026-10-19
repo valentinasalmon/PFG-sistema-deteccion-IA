@@ -22,3 +22,7 @@ email-validator==2.3.0      # Validación del formato de los correos
 
 # --- Funcionalidad 019: copia de datos personales (y luego el informe de la 008) ---
 weasyprint==70.0            # HTML y CSS a PDF; requiere Pango del sistema (ADR-0009)
+
+# --- Funcionalidad 006: imágenes de los casos ---
+Pillow==13.0.0              # Dimensiones, verificación y miniaturas de JPEG y PNG
+boto3==1.43.114             # Almacenamiento en Amazon S3 (producción)
