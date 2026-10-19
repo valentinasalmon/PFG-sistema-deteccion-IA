@@ -32,6 +32,7 @@ entrenamiento = [
     "torchvision>=0.17",
     "timm>=1.0",
     "onnx>=1.16",
+    "onnxscript>=0.2",
     "scikit-learn>=1.4",
     "datasets>=2.19",
     "huggingface_hub>=0.23",

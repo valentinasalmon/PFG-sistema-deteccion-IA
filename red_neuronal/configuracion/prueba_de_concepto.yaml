@@ -42,7 +42,7 @@ entrenamiento:
   precision_mixta: true
 
 exportacion:
-  opset: 17
+  opset: 18
   tolerancia: 0.001
 
 compuerta:

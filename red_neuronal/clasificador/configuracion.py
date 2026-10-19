@@ -130,7 +130,7 @@ class ConfiguracionEntrenamiento(_Esquema):
 class ConfiguracionExportacion(_Esquema):
     """Parámetros de la exportación a ONNX (CA14)."""
 
-    opset: int = Field(default=17, ge=13)
+    opset: int = Field(default=18, ge=18, description="Mínimo del exportador de torch.export.")
     tolerancia: float = Field(default=1e-3, gt=0)
 
 
