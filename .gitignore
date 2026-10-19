@@ -42,3 +42,4 @@ backend/almacenamiento_local/
 *.tfstate.*
 terraform.tfvars
 backend.hcl
+plan.tfplan

@@ -44,6 +44,16 @@ aws configure
 aws sts get-caller-identity   # debe mostrar tu número de cuenta
 ```
 
+## Atajo: un solo comando para los pasos 3 y 4
+
+Con las herramientas instaladas y `aws configure` hecho, este script hace los pasos 3 y 4 desde cualquier carpeta. Verifica las credenciales, crea el bucket del estado si falta, arma `backend.hcl` y controla `terraform.tfvars`. Si falta algo, explica qué hacer.
+
+```bash
+cd ~/PFG-sistema-deteccion-IA
+git checkout funcionalidad/017-infraestructura-aws && git pull
+bash infraestructura/scripts/crear_infraestructura_aws.sh
+```
+
 ## Paso 3. Crear el bucket del estado de Terraform (una sola vez)
 
 ```bash
