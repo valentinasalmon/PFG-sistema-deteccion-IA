@@ -29,3 +29,4 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-19 | [Funcionalidad 005: casos y permisos](2026-10-19-funcionalidad-005-casos.md) |
 | 2026-10-19 | [Funcionalidad 019: eliminación de cuenta y copia de datos](2026-10-19-funcionalidad-019-baja-de-cuenta.md) |
 | 2026-10-19 | [Funcionalidad 010: especificación y plan de la red neuronal](2026-10-19-especificacion-red-neuronal.md) |
+| 2026-10-19 | [Funcionalidad 010: pipeline del clasificador implementado](2026-10-19-funcionalidad-010-pipeline.md) |

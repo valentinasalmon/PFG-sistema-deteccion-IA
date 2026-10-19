@@ -144,10 +144,11 @@ Las versiones exactas se fijan en `pyproject.toml` y en un archivo de restriccio
 | onnxruntime | base | Inferencia en CPU (RNF24 CA1); la misma que usará el backend |
 | torch, torchvision | entrenamiento | Entrenamiento y aumentaciones |
 | timm | entrenamiento | EfficientNet-B0 preentrenada con una interfaz única para comparar arquitecturas |
-| onnx | entrenamiento | Exportación y escritura de metadatos |
+| onnx | entrenamiento | Escritura de metadatos y guardado del modelo en un único archivo |
+| onnxscript | entrenamiento | Requerido por el exportador de `torch.export`, el predeterminado desde PyTorch 2.9 (el anterior está obsoleto) |
 | scikit-learn | entrenamiento | Métricas, curva ROC y matriz de confusión |
 | datasets, huggingface_hub | entrenamiento | Lectura en *streaming* de los conjuntos públicos y registro de modelos |
-| mlflow | entrenamiento | Seguimiento de experimentos (CA9) |
+| mlflow | entrenamiento | Seguimiento de experimentos (CA9), con base SQLite local |
 | pydantic, PyYAML | entrenamiento | Configuración validada (CA8) |
 | pandas | entrenamiento | Lectura y análisis de manifiestos |
 | matplotlib | entrenamiento | Curvas ROC y matrices de confusión para la ficha |
