@@ -200,7 +200,7 @@ Toda acción relevante queda registrada con fines de trazabilidad legal. No se i
 - **CA1:** Cada envío al repositorio ejecuta en GitHub Actions el análisis estático, las pruebas, la medición de cobertura y la verificación de los mensajes de commit.
 - **CA2:** Una integración no puede fusionarse si alguna verificación falla o la cobertura baja del umbral.
 - **CA3:** Los mensajes de commit siguen la especificación Conventional Commits con tipos y descripciones en español (por ejemplo, `funcionalidad(casos): agregar filtro por estado`), validados automáticamente.
-- **CA4:** El despliegue continuo está **[A DEFINIR]** (ver CP-06).
+- **CA4:** Cada integración en `main` que pasa las verificaciones se despliega automáticamente en la EC2; si la versión nueva no responde, se restablece la anterior (CP-06, ADR-0016).
 
 ### RNF21 — Idioma del código y de la documentación
 **Prioridad:** Debe
