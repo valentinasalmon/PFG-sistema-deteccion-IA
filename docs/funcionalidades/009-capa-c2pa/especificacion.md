@@ -1,7 +1,7 @@
 # Especificación: 009 — Capa 2 (credenciales de contenido C2PA)
 
 - **Rama**: `funcionalidad/009-capa-c2pa`
-- **Estado**: En desarrollo
+- **Estado**: Completada (pendiente de revisión de la autora en el Pull Request)
 - **Requisitos que realiza**: RF40; RF43 (CA1 a CA4, para esta capa); RNF23 (CA1)
 - **Reglas de negocio aplicadas**: RN26, RN27, RN28, RN29
 - **Casos de uso**: la parte de CU28 que ejecuta la capa 2
@@ -68,14 +68,14 @@ Sus resultados guardados mostraban la firma de OpenAI como "no confiable". La re
 
 ## Criterios de aceptación
 
-- [ ] **CA1**: Dado un manifiesto con firma confiable que declara generación por IA, entonces el nivel es 100 % y la conclusión lo presenta como el indicio más fuerte del sistema (RF40 CA1, RN28).
-- [ ] **CA2**: Dado un manifiesto con firmante no reconocido, archivo modificado después de firmarse o credenciales no válidas, entonces se informa como anomalía con el detalle de la validación, y una declaración de IA en ese manifiesto no lleva el nivel al máximo (RF40 CA2).
-- [ ] **CA3**: Dada una imagen sin manifiesto, entonces se informa "Sin credenciales de contenido" con nivel 0 y la aclaración de que su ausencia no constituye evidencia de autenticidad (RF40 CA3, RN28).
-- [ ] **CA4**: Dado un manifiesto válido, entonces se informan el firmante, la herramienta declarada y las acciones registradas (RF40 CA4).
-- [ ] **CA5**: Dado un manifiesto ilegible o una falla de la biblioteca, entonces se informa como anomalía o como "No disponible" con el motivo, y las demás capas siguen (RN26).
-- [ ] **CA6**: La conclusión es un indicio con la recomendación de consultar a un profesional, sin términos de veredicto (RN27), y el resultado registra las versiones de la capa, de c2pa-python y de la lista de confianza (RN29).
-- [ ] **CA7**: La capa aparece en la pantalla del análisis y en el informe PDF, con su recuadro "¿Qué significa?" (RNF23 CA1).
-- [ ] **CA8**: Con las imágenes de prueba de canales del repositorio anterior, la capa reproduce lo esperado:
+- [x] **CA1**: Dado un manifiesto con firma confiable que declara generación por IA, entonces el nivel es 100 % y la conclusión lo presenta como el indicio más fuerte del sistema (RF40 CA1, RN28).
+- [x] **CA2**: Dado un manifiesto con firmante no reconocido, archivo modificado después de firmarse o credenciales no válidas, entonces se informa como anomalía con el detalle de la validación, y una declaración de IA en ese manifiesto no lleva el nivel al máximo (RF40 CA2).
+- [x] **CA3**: Dada una imagen sin manifiesto, entonces se informa "Sin credenciales de contenido" con nivel 0 y la aclaración de que su ausencia no constituye evidencia de autenticidad (RF40 CA3, RN28).
+- [x] **CA4**: Dado un manifiesto válido, entonces se informan el firmante, la herramienta declarada y las acciones registradas (RF40 CA4).
+- [x] **CA5**: Dado un manifiesto ilegible o una falla de la biblioteca, entonces se informa como anomalía o como "No disponible" con el motivo, y las demás capas siguen (RN26).
+- [x] **CA6**: La conclusión es un indicio con la recomendación de consultar a un profesional, sin términos de veredicto (RN27), y el resultado registra las versiones de la capa, de c2pa-python y de la lista de confianza (RN29).
+- [x] **CA7**: La capa aparece en la pantalla del análisis y en el informe PDF, con su recuadro "¿Qué significa?" (RNF23 CA1).
+- [x] **CA8**: Con las imágenes de prueba de canales del repositorio anterior, la capa reproduce lo esperado:
   - Firma confiable en el original, en el envío como documento de WhatsApp y en el correo electrónico.
   - Sin credenciales en la foto de WhatsApp y en la captura de pantalla.
 
