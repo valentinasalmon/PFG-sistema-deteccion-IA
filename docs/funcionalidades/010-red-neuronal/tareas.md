@@ -21,15 +21,15 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
 
 ## Fase B — Base del paquete
 
-- [ ] **T01** — Crear el `.gitignore` de la raíz: datos, modelos, `backend/modelos_onnx/`, `mlruns/`, `.env`, entornos virtuales, cachés de Python y de Node, y archivos de Jupyter temporales.
+- [x] **T01** — Crear el `.gitignore` de la raíz: datos, modelos, `backend/modelos_onnx/`, `mlruns/`, `.env`, entornos virtuales, cachés de Python y de Node, y archivos de Jupyter temporales.
   - Archivos: `.gitignore`
   - Verificación: crear `red_neuronal/datos/prueba.jpg` y `red_neuronal/modelos/prueba.onnx`; `git status` no los muestra. Borrarlos.
   - Commit: `tarea(repositorio): agregar gitignore`
-- [ ] **T02** — Crear el paquete instalable: `pyproject.toml` con dependencias base (numpy, Pillow, onnxruntime), extra `[entrenamiento]` y extra `[desarrollo]`, configuración de flake8 (vía `setup.cfg` o `.flake8`), pylint, pytest y cobertura; `clasificador/__init__.py` con la versión del paquete; eliminar los `.gitkeep` reemplazados.
+- [x] **T02** — Crear el paquete instalable: `pyproject.toml` con dependencias base (numpy, Pillow, onnxruntime), extra `[entrenamiento]` y extra `[desarrollo]`, configuración de flake8 (vía `setup.cfg` o `.flake8`), pylint, pytest y cobertura; `clasificador/__init__.py` con la versión del paquete; eliminar los `.gitkeep` reemplazados.
   - Archivos: `red_neuronal/pyproject.toml`, `red_neuronal/.flake8`, `red_neuronal/clasificador/__init__.py`, `red_neuronal/pruebas/__init__.py`, `red_neuronal/pruebas/conftest.py`
   - Verificación: `python -m venv .venv && source .venv/bin/activate && pip install -e ".[entrenamiento,desarrollo]"` termina sin errores y `python -c "import clasificador; print(clasificador.__version__)"` imprime la versión.
   - Commit: `construccion(clasificador): crear paquete instalable`
-- [ ] **T03** — Crear los generadores de datos de prueba en `conftest.py`: *fixtures* que crean en una carpeta temporal imágenes reales y sintéticas simuladas (ruido y figuras con Pillow), en varios formatos y tamaños, y un manifiesto mínimo.
+- [x] **T03** — Crear los generadores de datos de prueba en `conftest.py`: *fixtures* que crean en una carpeta temporal imágenes reales y sintéticas simuladas (ruido y figuras con Pillow), en varios formatos y tamaños, y un manifiesto mínimo.
   - Archivos: `red_neuronal/pruebas/conftest.py`
   - Verificación: `pytest` ejecuta una prueba trivial que usa las *fixtures*.
   - Commit: `pruebas(clasificador): agregar fixtures de imagenes sinteticas`
