@@ -158,7 +158,9 @@ def validar(
 def exigir_valido(resultado: ResultadoValidacion) -> None:
     """Detiene el pipeline si la validación encontró errores."""
     if not resultado.es_valido:
+        cantidad = len(resultado.errores)
         detalle = "\n  - ".join(resultado.errores)
         raise ErrorValidacionDatos(
-            f"la validación encontró {len(resultado.errores)} errores:\n  - {detalle}"
+            f"la validación encontró {cantidad} {'error' if cantidad == 1 else 'errores'}:"
+            f"\n  - {detalle}"
         )

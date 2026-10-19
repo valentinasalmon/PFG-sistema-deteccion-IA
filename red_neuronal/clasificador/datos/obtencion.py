@@ -26,20 +26,23 @@ class ErrorObtencion(Exception):
 
 
 def obtener_de_fuente(
-    fuente: FuenteDatos, raiz_destino: Path, cantidades: dict[int, int]
+    fuente: FuenteDatos, raiz_destino: Path, cantidades: dict[int, int] | None = None
 ) -> list[RegistroImagen]:
     """Guarda imágenes de una fuente hasta completar la cantidad por clase.
 
-    Las imágenes repetidas dentro de la fuente (misma huella) se saltean,
-    para que el conjunto no tenga duplicados desde el origen.
+    Con ``cantidades=None`` se toman todas las imágenes de la fuente (se usa
+    para el conjunto propio, que se evalúa completo). Las imágenes repetidas
+    dentro de la fuente (misma huella) se saltean, para que el conjunto no
+    tenga duplicados desde el origen.
     """
-    pendientes = Counter(cantidades)
+    todas = cantidades is None
+    pendientes = Counter(cantidades or {})
     vistas: set[str] = set()
     registros = []
     for ejemplo in fuente.iterar():
-        if sum(pendientes.values()) == 0:
+        if not todas and sum(pendientes.values()) == 0:
             break
-        if pendientes[ejemplo.clase] <= 0:
+        if not todas and pendientes[ejemplo.clase] <= 0:
             continue
         ruta_relativa = Path("crudo") / fuente.nombre / f"{len(registros):07d}{ejemplo.extension}"
         destino = Path(raiz_destino) / ruta_relativa

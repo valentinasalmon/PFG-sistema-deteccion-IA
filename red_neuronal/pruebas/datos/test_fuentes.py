@@ -202,3 +202,9 @@ def test_la_etapa_obtener_recorre_todas_las_fuentes(carpeta_propia, tmp_path):
     registros = obtener(configuracion, tmp_path / "salida", semilla=0)
     assert len(registros) == 4
     assert {r.fuente for r in registros} == {"propio"}
+
+
+def test_obtener_todas_las_imagenes_sin_cantidades(carpeta_propia, tmp_path):
+    """Con cantidades=None se toma la fuente completa, sin error de agotamiento."""
+    fuente = FuenteCarpetaLocal(_config_local(carpeta_propia))
+    assert len(obtener_de_fuente(fuente, tmp_path / "todas", cantidades=None)) == 4
