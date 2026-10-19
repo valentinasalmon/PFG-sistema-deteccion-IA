@@ -8,10 +8,11 @@
  * recargar la página. No hay un puntaje que combine capas (RN27).
  *
  * Cada análisis finalizado ofrece descargar su informe PDF o, si no se pudo
- * generar, volver a generarlo (funcionalidad 008).
+ * generar, volver a generarlo (funcionalidad 008). La capa de credenciales de
+ * contenido muestra además el estado de su firma (funcionalidad 009).
  *
- * Realiza: RF43, RF44, RF46; CA5 a CA7 y CA12 a CA14 de la funcionalidad 007;
- * CA6 de la 008.
+ * Realiza: RF40, RF43, RF44, RF46; CA5 a CA7 y CA12 a CA14 de la funcionalidad
+ * 007; CA6 de la 008; CA7 de la 009.
  */
 import { useCallback, useEffect, useState } from 'react'
 import { listarAnalisis, obtenerAnalisis } from '../api/analisis.js'
@@ -24,7 +25,14 @@ import Etiqueta from './Etiqueta.jsx'
 
 export const INTERVALO_DE_CONSULTA = 2000
 
-const TITULOS_CAPA = { metadatos: 'Metadatos' }
+const TITULOS_CAPA = { metadatos: 'Metadatos', c2pa: 'Credenciales de contenido (C2PA)' }
+const TITULOS_TABLA = { metadatos: 'Metadatos extraídos', c2pa: 'Datos de las credenciales' }
+const ESTADOS_FIRMA = {
+  confiable: 'Firma confiable',
+  firmante_no_reconocido: 'Firmante no reconocido',
+  contenido_modificado: 'Modificada después de firmarse',
+  firma_invalida: 'Credenciales no válidas',
+}
 const NOMBRES_SEVERIDAD = {
   directo: 'Directo',
   fuerte: 'Fuerte',
@@ -57,6 +65,15 @@ function Progreso({ analisis }) {
   )
 }
 
+function EstadoDeLaFirma({ detalle }) {
+  if (detalle?.sin_credenciales) return <Etiqueta tipo="neutra">Sin credenciales</Etiqueta>
+  const estado = detalle?.estado_firma
+  if (!ESTADOS_FIRMA[estado]) return null
+  return (
+    <Etiqueta tipo={estado === 'confiable' ? 'neutra' : 'alerta'}>{ESTADOS_FIRMA[estado]}</Etiqueta>
+  )
+}
+
 function ResultadoDeCapa({ resultado }) {
   const titulo = TITULOS_CAPA[resultado.capa] ?? resultado.capa
   if (resultado.estado === 'no_disponible') {
@@ -69,7 +86,9 @@ function ResultadoDeCapa({ resultado }) {
   }
   return (
     <div className="resultado-capa">
-      <h4>{titulo}</h4>
+      <h4>
+        {titulo} {resultado.capa === 'c2pa' && <EstadoDeLaFirma detalle={resultado.detalle} />}
+      </h4>
       <div className="nivel-indicio">
         <label htmlFor={`nivel-${resultado.capa}-${resultado.version}`}>Nivel de indicio</label>
         <meter
@@ -98,7 +117,7 @@ function ResultadoDeCapa({ resultado }) {
       )}
       {resultado.detalle?.tabla?.length > 0 && (
         <details>
-          <summary>Metadatos extraídos</summary>
+          <summary>{TITULOS_TABLA[resultado.capa] ?? 'Datos extraídos'}</summary>
           <dl className="datos-fijos">
             {resultado.detalle.tabla.map((fila) => (
               <div key={fila.campo} className="datos-fijos__fila">
