@@ -33,7 +33,7 @@ implementación siguiendo tareas.md, con pruebas
 | 005 | Casos y permisos | 3 | RF23 – RF33 | Completado |
 | 006 | Carga de imágenes, huella y almacenamiento | 4 | RF34 – RF36 | Completado |
 | 007 | Motor de análisis y capa 1 (metadatos) | 4 | RF38, RF39, RF43, RF46 | Completado |
-| 008 | Informe PDF e historial | 4 | RF44, RF45 | Pendiente |
+| 008 | Informe PDF e historial | 4 | RF44, RF45 | Completado |
 | 009 | Capa 2 (C2PA) | 5 | RF40 | Pendiente |
 | 010 | Red neuronal: entrenamiento y exportación (pista paralela) | 2 – 5 | RNF24 | Pendiente |
 | 011 | Capa 3 (ELA) | 5 | RF41 | Pendiente |

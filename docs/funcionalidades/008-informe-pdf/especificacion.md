@@ -1,7 +1,7 @@
 # Especificación: 008 — Informe PDF e historial
 
 - **Rama**: `funcionalidad/008-informe-pdf`
-- **Estado**: Aprobada (por el asistente, según el reparto del 2026-10-16; pendiente de revisión de la autora en el Pull Request)
+- **Estado**: Completada (pendiente de revisión de la autora en el Pull Request)
 - **Requisitos que realiza**: RF44, RF45; RNF07 (CA3); completa RF29 CA1 (reabrir un caso con informes) y RN24 (imágenes de un informe)
 - **Reglas de negocio aplicadas**: RN21, RN24, RN25, RN27, RN29
 - **Casos de uso**: CU28 (generación del informe) y CU29
@@ -59,19 +59,19 @@ Con el informe se completa el primer flujo de punta a punta: crear el caso, carg
 ## Criterios de aceptación
 
 ### Generar
-- [ ] **CA1**: Dado un análisis finalizado, entonces se genera un informe PDF y se guarda; el caso pasa a Analizado y el correo avisa que el informe está disponible (RF44 CA3).
-- [ ] **CA2**: El informe contiene los datos del caso y de quién lo pidió, la fecha y la hora, por cada imagen su vista reducida, su huella y el estado del sello, por cada capa el nivel, las anomalías y la conclusión, las versiones y la sección de limitaciones (RF44 CA1, RNF07 CA3, RN29).
-- [ ] **CA3**: Cada capa tiene un recuadro "¿Qué significa?" en lenguaje no técnico, y el informe no usa términos de veredicto (RF44 CA2, RN27).
-- [ ] **CA4**: Un informe guardado no se modifica: un análisis nuevo genera un informe nuevo y los anteriores se conservan, con la huella de cada PDF (RF44 CA4, RN25).
-- [ ] **CA5**: Una imagen incluida en un informe no se puede eliminar, y un caso con informes vuelve a Analizado al reabrirlo (RN24, RF29 CA1).
-- [ ] **CA6**: Si no se puede generar el informe, el análisis queda finalizado igual y el informe se puede volver a generar.
+- [x] **CA1**: Dado un análisis finalizado, entonces se genera un informe PDF y se guarda; el caso pasa a Analizado y el correo avisa que el informe está disponible (RF44 CA3).
+- [x] **CA2**: El informe contiene los datos del caso y de quién lo pidió, la fecha y la hora, por cada imagen su vista reducida, su huella y el estado del sello, por cada capa el nivel, las anomalías y la conclusión, las versiones y la sección de limitaciones (RF44 CA1, RNF07 CA3, RN29).
+- [x] **CA3**: Cada capa tiene un recuadro "¿Qué significa?" en lenguaje no técnico, y el informe no usa términos de veredicto (RF44 CA2, RN27).
+- [x] **CA4**: Un informe guardado no se modifica: un análisis nuevo genera un informe nuevo y los anteriores se conservan, con la huella de cada PDF (RF44 CA4, RN25).
+- [x] **CA5**: Una imagen incluida en un informe no se puede eliminar, y un caso con informes vuelve a Analizado al reabrirlo (RN24, RF29 CA1).
+- [x] **CA6**: Si no se puede generar el informe, el análisis queda finalizado igual y el informe se puede volver a generar.
 
 ### Historial y descarga
-- [ ] **CA7**: Dado un usuario con permiso sobre el caso, entonces ve los informes del más reciente al más antiguo, con fecha, solicitante e imágenes incluidas (RF45 CA1).
-- [ ] **CA8**: La descarga verifica el permiso, queda en la auditoría y usa un enlace firmado que vence a los 5 minutos; sin permiso, el caso no existe (RF45 CA2, RNF05).
+- [x] **CA7**: Dado un usuario con permiso sobre el caso, entonces ve los informes del más reciente al más antiguo, con fecha, solicitante e imágenes incluidas (RF45 CA1).
+- [x] **CA8**: La descarga verifica el permiso, queda en la auditoría y usa un enlace firmado que vence a los 5 minutos; sin permiso, el caso no existe (RF45 CA2, RNF05).
 
 ### Eliminación
-- [ ] **CA9**: Al eliminar un caso, una organización o una cuenta, se borran los PDF de sus informes y la auditoría guarda sus huellas (RN21).
+- [x] **CA9**: Al eliminar un caso, una organización o una cuenta, se borran los PDF de sus informes y la auditoría guarda sus huellas (RN21).
 
 ## Preguntas abiertas
 
