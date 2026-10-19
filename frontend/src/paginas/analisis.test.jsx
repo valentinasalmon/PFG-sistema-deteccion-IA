@@ -208,6 +208,65 @@ describe('progreso y resultados', () => {
     expect(within(analisis).getByText(/no se combinan en un puntaje único/)).toBeInTheDocument()
   })
 
+  it('muestra la capa de credenciales con el estado de la firma (009 CA4, CA7)', async () => {
+    const credenciales = {
+      capa: 'c2pa',
+      estado: 'completado',
+      nivel: 100,
+      conclusion: 'La imagen tiene credenciales de contenido con firma confiable. Es el indicio más fuerte.',
+      motivo: null,
+      version: '1.0 (c2pa-python 0.38.0, lista de confianza abc/def)',
+      detalle: {
+        tabla: [{ campo: 'Firmante', valor: 'OpenAI OpCo, LLC · OpenAI Media Service' }],
+        sin_credenciales: false,
+        estado_firma: 'confiable',
+      },
+      anomalias: [{ campo: 'Origen declarado (C2PA)', valor: 'x', descripcion: 'Declaran IA.', severidad: 'directo' }],
+    }
+    const sinCredenciales = {
+      ...credenciales,
+      nivel: 0,
+      conclusion: 'Sin credenciales de contenido.',
+      detalle: { tabla: [], sin_credenciales: true, estado_firma: null },
+      anomalias: [],
+    }
+    api({
+      historial: [RESUMEN],
+      detalle: {
+        ...DETALLE,
+        imagenes: [
+          { ...DETALLE.imagenes[0], resultados: [RESULTADO, credenciales] },
+          { id_imagen: 2, nombre: 'lateral.png', huella: 'b', integridad: 'verificada', resultados: [sinCredenciales] },
+        ],
+      },
+    })
+    renderizarEn('/casos/7')
+
+    const analisis = await screen.findByRole('region', { name: 'Análisis' })
+    expect(await within(analisis).findByRole('heading', { name: 'Credenciales de contenido (C2PA) Firma confiable' })).toBeInTheDocument()
+    expect(within(analisis).getByText('100 %')).toBeInTheDocument()
+    expect(within(analisis).getByText('Datos de las credenciales')).toBeInTheDocument()
+    expect(within(analisis).getByText('OpenAI OpCo, LLC · OpenAI Media Service')).toBeInTheDocument()
+    expect(within(analisis).getByRole('heading', { name: 'Credenciales de contenido (C2PA) Sin credenciales' })).toBeInTheDocument()
+    expect(within(analisis).getByText('Sin credenciales de contenido.')).toBeInTheDocument()
+  })
+
+  it('marca como alerta una firma que no se pudo confirmar', async () => {
+    api({
+      historial: [RESUMEN],
+      detalle: {
+        ...DETALLE,
+        imagenes: [{
+          ...DETALLE.imagenes[0],
+          resultados: [{ ...RESULTADO, capa: 'c2pa', nivel: 55, detalle: { tabla: [], estado_firma: 'contenido_modificado' } }],
+        }],
+      },
+    })
+    renderizarEn('/casos/7')
+
+    expect(await screen.findByText('Modificada después de firmarse')).toBeInTheDocument()
+  })
+
   it('informa una capa no disponible y una imagen alterada (CA4, CA13)', async () => {
     api({
       historial: [RESUMEN],

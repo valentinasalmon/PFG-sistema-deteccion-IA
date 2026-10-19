@@ -520,7 +520,8 @@ class CapaC2PA(CapaAnalisis):
             return ResultadoCapa(
                 nivel=0,
                 anomalias=[Anomalia(
-                    "Manifiesto C2PA", "ausente", SIN_CREDENCIALES, SEVERIDAD_NEUTRO,
+                    "Manifiesto C2PA", "ausente",
+                    "No se encontró un manifiesto C2PA en el archivo.", SEVERIDAD_NEUTRO,
                 )],
                 conclusion=f"{SIN_CREDENCIALES} {RECOMENDACION}",
                 detalle={"tabla": [], "sin_credenciales": True, "estado_firma": None},
