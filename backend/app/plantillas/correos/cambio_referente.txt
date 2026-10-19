@@ -1,0 +1,6 @@
+Hola, {{ nombre }}:
+
+{% if es_nuevo %}Ahora sos el Referente de {{ organizacion }}: podés editar sus datos, invitar y gestionar a sus miembros.{% else %}Designaste a {{ nuevo_referente }} como Referente de {{ organizacion }}. Seguís siendo miembro de la organización.{% endif %}
+
+Podés ver la organización en:
+{{ enlace }}

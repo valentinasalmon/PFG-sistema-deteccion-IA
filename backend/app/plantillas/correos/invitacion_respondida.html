@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>{% if aceptada %}{{ invitado }} aceptó la invitación y ya es miembro de <strong>{{ organizacion }}</strong>.{% else %}{{ invitado }} rechazó la invitación a <strong>{{ organizacion }}</strong>.{% endif %}</p>
+{% with texto_boton = "Ver los miembros" %}{% include "_boton.html" %}{% endwith %}
+{% endblock %}

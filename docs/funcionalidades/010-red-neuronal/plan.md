@@ -1,6 +1,6 @@
 # Plan técnico: 010 — Red neuronal: ciclo de vida, entrenamiento y exportación
 
-Referencia: [especificacion.md](especificacion.md) · Guía conceptual: [ciclo de vida de la red neuronal](../../guias/ciclo-de-vida-red-neuronal.md) · Decisiones: [ADR-0010](../../arquitectura/decisiones/0010-ciclo-de-vida-y-mlops-del-clasificador.md), [ADR-0011](../../arquitectura/decisiones/0011-arquitectura-y-contrato-de-inferencia-del-clasificador.md).
+Referencia: [especificacion.md](especificacion.md) · Guía conceptual: [ciclo de vida de la red neuronal](../../guias/ciclo-de-vida-red-neuronal.md) · Decisiones: [ADR-0012](../../arquitectura/decisiones/0012-ciclo-de-vida-y-mlops-del-clasificador.md), [ADR-0013](../../arquitectura/decisiones/0013-arquitectura-y-contrato-de-inferencia-del-clasificador.md).
 
 ## Resumen de la solución
 
@@ -8,7 +8,7 @@ El clasificador se construye como un **paquete de Python** (`red_neuronal/clasif
 
 El modelo es una red convolucional **EfficientNet-B0** preentrenada en ImageNet, ajustada por transferencia de aprendizaje como clasificador binario (real / sintética). Se entrena con aumentaciones que simulan la recompresión por mensajería y se **calibra** con *temperature scaling* para que la salida pueda leerse como una probabilidad. Se exporta a ONNX con la calibración y la sigmoide incluidas en el grafo, de modo que el backend recibe directamente la probabilidad.
 
-El preprocesamiento de inferencia (recortes, normalización y promedio) vive en un subpaquete **sin dependencias de PyTorch** (`clasificador.inferencia`), que usan tanto la evaluación como el backend de la funcionalidad 012. Hay **una sola implementación** del contrato de entrada del modelo, y esa coincidencia se prueba automáticamente. Las herramientas de MLOps son: Kaggle Datasets privados para las versiones de datos, MLflow para el seguimiento de experimentos y un repositorio privado de Hugging Face Hub como registro de modelos (ver ADR-0010).
+El preprocesamiento de inferencia (recortes, normalización y promedio) vive en un subpaquete **sin dependencias de PyTorch** (`clasificador.inferencia`), que usan tanto la evaluación como el backend de la funcionalidad 012. Hay **una sola implementación** del contrato de entrada del modelo, y esa coincidencia se prueba automáticamente. Las herramientas de MLOps son: Kaggle Datasets privados para las versiones de datos, MLflow para el seguimiento de experimentos y un repositorio privado de Hugging Face Hub como registro de modelos (ver ADR-0012).
 
 ## Capas afectadas
 
@@ -95,7 +95,7 @@ class Prediccion:
 | `exportar` | `exportar(punto_control, destino) -> Path` | Punto de control | `modelo.onnx` con metadatos | La diferencia con PyTorch supera 0,001 (`ErrorExportacion`) |
 | `publicar` | `publicar(directorio_version, registro) -> str` | Modelo, métricas, ficha y manifiesto | Versión publicada | La compuerta rechaza (`ErrorCompuerta`, con la lista de criterios incumplidos) |
 
-### Contrato de inferencia (compartido con el backend, ver ADR-0011)
+### Contrato de inferencia (compartido con el backend, ver ADR-0013)
 
 ```python
 class PredictorOnnx:

@@ -1,0 +1,6 @@
+Hola, {{ nombre }}:
+
+La contraseña de tu cuenta fue cambiada.
+
+Si no fuiste vos, restablecela de inmediato en:
+{{ enlace }}

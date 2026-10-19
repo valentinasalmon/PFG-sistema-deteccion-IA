@@ -22,8 +22,9 @@ Se trabaja por **funcionalidades verticales**, comenzando por un **esqueleto cam
 ```
 Fase 0  Preparación del entorno ─────────────────────────────┐
 Fase 1  001 Esqueleto caminante                              │
-Fase 2  002 Cuentas y sesión · 003 Auditoría                 │   Pista paralela:
-Fase 3  004 Organizaciones · 005 Casos y permisos            │   010 Red neuronal
+Fase 2  002 Cuentas y sesión · 020 Registro · 003 Auditoría  │   Pista paralela:
+Fase 3  004 Organizaciones · 021 Aseguradoras · 005 Casos    │
+        019 Baja de cuenta                                   │   010 Red neuronal
 Fase 4  006 Imágenes · 007 Motor de análisis + capa 1        │   (entrenamiento en
         008 Informe PDF        ← primer flujo completo  v0.1 │    Colab/Kaggle)
 Fase 5  009 Capa 2 (C2PA) · 011 Capa 3 (ELA) · 012 Capa 4    │
@@ -37,10 +38,13 @@ Fase 9  018 Cierre: usabilidad, QI, documentación final  v1.0
 |---|---|---|---|---|
 | 0 | — | Preparación del entorno | — | Herramientas instaladas, repositorio clonado, ramas `main` y `desarrollo` creadas |
 | 1 | 001 | Esqueleto caminante | RNF17 – RNF22 | `docker compose up` levanta los servicios; el frontend muestra "API conectada"; la integración continua pasa en verde |
-| 2 | 002 | Cuentas y sesión | RF01 – RF09 | Registro, verificación de correo, inicio y cierre de sesión, recuperación de contraseña, perfil |
+| 2 | 002 | Cuentas y sesión | RF01 – RF07 | Registro, verificación de correo, inicio y cierre de sesión, recuperación y cambio de contraseña, perfil |
+| 2 | 020 | Registro guiado por pasos | RF01 (interfaz), RNF10 | El registro se completa en 4 pantallas de una pregunta cada una |
 | 2 | 003 | Auditoría | RNF06 | Cada acción relevante queda registrada |
 | 3 | 004 | Organizaciones e invitaciones | RF10 – RF18 | Crear organización, invitar por correo, aceptar, abandonar |
+| 3 | 021 | Organizaciones de aseguradoras | RN36 – RN40 | La aseguradora se registra desde el catálogo de la SSN, el Administrador la aprueba y los empleados se suman por invitación |
 | 3 | 005 | Casos y permisos | RF23 – RF33 | Crear, buscar, editar, compartir, transferir, cerrar, archivar y eliminar casos |
+| 3 | 019 | Eliminación de cuenta y copia de datos | RF08, RF09 | Baja de la cuenta con transferencia de casos y descarga de los datos personales |
 | 4 | 006 | Imágenes | RF34 – RF36 | Carga con validación del formato real, huella SHA-256 y almacenamiento S3 |
 | 4 | 007 | Motor de análisis y capa 1 | RF38, RF39, RF43, RF46 | Botón "Analizar", cola en segundo plano, progreso y resultado de metadatos |
 | 4 | 008 | Informe PDF e historial | RF44, RF45 | Descarga del PDF con la capa 1 → **versión v0.1** |
@@ -59,7 +63,7 @@ Fase 9  018 Cierre: usabilidad, QI, documentación final  v1.0
 
 ## 3. Ciclo de trabajo de cada funcionalidad
 
-Todas las funcionalidades siguen los mismos pasos. El asistente guía cada uno.
+Todas las funcionalidades siguen los mismos pasos. Desde la 003, el asistente hace los pasos 1 a 7 y la autora revisa y hace el paso 8 (ver el reparto en la [guía de flujo de trabajo](flujo-de-trabajo.md#5-trabajo-con-el-asistente-de-ia)); la columna "Quién" describe el reparto usado hasta la 020.
 
 | Paso | Qué se hace | Quién | Commit típico |
 |---|---|---|---|
@@ -69,7 +73,7 @@ Todas las funcionalidades siguen los mismos pasos. El asistente guía cada uno.
 | 4 | `/tareas`: lista de pasos ejecutables | Ambas | `documentacion(NNN): agregar tareas` |
 | 5 | Implementación tarea por tarea: el asistente entrega cada archivo documentado; la autora lo crea, lo ejecuta y hace el commit | Ambas | `funcionalidad(...)`, `pruebas(...)` |
 | 6 | Verificación: pruebas, flake8, pylint, cobertura, ESLint y prueba manual en el navegador | Autora | — |
-| 7 | Bitácora y ADR (si hubo decisiones) | Ambas | `documentacion(bitacora): registrar funcionalidad NNN` |
+| 7 | Bitácora, casillas de tareas y criterios, estado de la funcionalidad y ADR si hubo decisiones | Asistente (commit en la rama de la funcionalidad; la autora hace `git pull`) | `documentacion(bitacora): registrar funcionalidad NNN` |
 | 8 | Pull Request hacia `desarrollo`, revisión de la integración continua y *merge* | Autora | — |
 
 Al alcanzar un hito (v0.1, v0.2, v0.3, v1.0) se abre un Pull Request de `desarrollo` hacia `main` y se crea la etiqueta de versión:

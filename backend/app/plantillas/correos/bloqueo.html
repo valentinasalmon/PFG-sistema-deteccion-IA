@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>Detectamos varios intentos fallidos de inicio de sesión en tu cuenta. Por seguridad, quedó bloqueada durante {{ minutos }} minutos.</p>
+<p>Si no fuiste vos, te recomendamos restablecer tu contraseña.</p>
+{% with texto_boton = "Restablecer contraseña" %}{% include "_boton.html" %}{% endwith %}
+{% endblock %}

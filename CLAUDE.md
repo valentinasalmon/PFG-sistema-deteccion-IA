@@ -10,9 +10,13 @@ Este archivo forma parte del **arnés** del proyecto: define cómo debe trabajar
 
 ## Forma de trabajo con la autora
 
-- La autora crea los archivos, las ramas y los commits por su cuenta. El agente **explica qué hacer paso a paso**, entrega el contenido de cada archivo y verifica el resultado; solo modifica el repositorio cuando se le pide explícitamente.
-- Cada paso indica: qué archivo crear y dónde, su contenido completo, por qué existe, qué rama usar y el mensaje de commit sugerido.
-- Ante una decisión técnica, el agente **propone la mejor opción y la justifica** desde la ingeniería de software; pregunta solo cuando la decisión depende de la autora (costos, plazos, criterios de la cátedra) o cuando falta información que no puede obtener por sí mismo.
+- **Reparto del trabajo** (decisión de la autora, 2026-10-16, reemplaza la del 2026-10-10):
+  - **El agente** escribe y sube con commits propios todo el trabajo de cada funcionalidad: especificación, plan, tareas, código del backend y del frontend, pruebas, estilos, textos, configuración y documentación de seguimiento. Crea las ramas `funcionalidad/NNN-nombre` desde `desarrollo`. Cada commit del agente lleva la línea `Co-Authored-By` que identifica la asistencia de IA; nunca se quita ni se oculta.
+  - **La autora** revisa el trabajo, abre los Pull Requests hacia `desarrollo`, los integra y toma las decisiones importantes: alcance del producto, cuestiones legales y de privacidad, cambios de arquitectura con impacto grande y todo lo que deba validarse con los tutores.
+  - El agente no pregunta por detalles que pueda resolver con la especificación y la constitución: decide, lo deja registrado en la bitácora con su justificación y avisa a la autora cuando una funcionalidad está lista para su Pull Request.
+- Ante una decisión importante (ver la lista anterior), el agente no la toma: la registra como cuestión abierta en `docs/especificacion/06-cuestiones-abiertas.md` con una propuesta provisoria y sigue con lo que no dependa de ella.
+- **Documentación de seguimiento a cargo del agente**: la entrada de bitácora, el marcado de casillas en `tareas.md` y `especificacion.md`, el estado de cada funcionalidad y la actualización de la especificación general ante decisiones nuevas.
+- En cada mensaje se indica en qué rama debe estar la autora y si corresponde o no abrir un Pull Request.
 
 ## Reglas de código
 

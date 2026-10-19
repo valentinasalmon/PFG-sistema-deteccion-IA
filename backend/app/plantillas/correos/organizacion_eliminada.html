@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>La organización <strong>{{ organizacion }}</strong> fue eliminada por su Referente. Ya no forma parte de la plataforma.</p>
+<p>{% if desactivada %}Como ya no pertenecés a ninguna aseguradora, tu cuenta quedó desactivada. Si otra aseguradora te invita, vas a poder volver a ingresar para aceptar la invitación.{% else %}Tu cuenta y tu espacio personal siguen disponibles.{% endif %}</p>
+{% endblock %}

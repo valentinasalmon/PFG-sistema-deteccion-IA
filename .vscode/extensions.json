@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "ms-vscode-remote.remote-wsl",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.flake8",
+    "ms-python.pylint",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "editorconfig.editorconfig",
+    "ms-azuretools.vscode-docker",
+    "eamodio.gitlens"
+  ]
+}

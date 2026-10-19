@@ -1,0 +1,6 @@
+Hola, {{ nombre }}:
+
+Alguien intentó crear una cuenta nueva con tu correo electrónico. Tu cuenta no fue modificada.
+
+Si fuiste vos y no recordás tu contraseña, podés restablecerla en:
+{{ enlace }}

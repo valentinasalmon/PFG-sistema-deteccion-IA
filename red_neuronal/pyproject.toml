@@ -1,7 +1,7 @@
 # Paquete del clasificador de imágenes sintéticas (capa 4).
 # Plan técnico: docs/funcionalidades/010-red-neuronal/plan.md
 #
-# Grupos de dependencias (ADR-0011):
+# Grupos de dependencias (ADR-0013):
 #   base           -> solo inferencia (numpy, Pillow, onnxruntime). Es lo que
 #                     instala el backend: no arrastra PyTorch al servidor.
 #   [entrenamiento] -> pipeline completo (PyTorch, timm, MLflow, etc.).

@@ -54,7 +54,7 @@ def crear_imagen_sintetica(ancho: int, alto: int, semilla: int) -> Image.Image:
 
 
 # Formatos y tamaños variados a propósito: la preparación de datos debe
-# normalizarlos (CA5) y el preprocesamiento debe tolerarlos (ADR-0011).
+# normalizarlos (CA5) y el preprocesamiento debe tolerarlos (ADR-0013).
 _VARIANTES = [
     ("png", (320, 240)),
     ("jpg", (256, 256)),

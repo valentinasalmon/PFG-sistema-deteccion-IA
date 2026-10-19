@@ -1,0 +1,24 @@
+# Dependencias de ejecución del backend.
+# Versiones fijadas para que todos los entornos (desarrollo, integración continua
+# y producción) usen exactamente las mismas.
+
+Flask==3.1.3                # Framework web
+Flask-SQLAlchemy==3.1.1     # Integración de SQLAlchemy (ORM) con Flask
+Flask-Migrate==4.1.0        # Migraciones de esquema con Alembic (ADR-0008)
+SQLAlchemy==2.0.54          # ORM y acceso a la base de datos
+psycopg[binary]==3.3.6      # Controlador de PostgreSQL
+redis==6.4.0                # Cliente de Redis (cola de tareas, ADR-0004)
+python-dotenv==1.2.4        # Lectura del archivo .env en desarrollo
+
+
+# --- Funcionalidad 002: cuentas y sesión ---
+Flask-Login==0.6.3          # Usuario de la sesión y @login_required (ADR-0003)
+Flask-Session==0.8.0        # Sesiones guardadas en Redis (ADR-0010)
+cachelib==0.17.0            # Sesiones en memoria durante las pruebas
+Flask-WTF==1.3.0            # Protección CSRF
+bcrypt==5.0.0               # Hash de contraseñas
+pydantic==2.14.0            # Validación de los datos que recibe la API
+email-validator==2.3.0      # Validación del formato de los correos
+
+# --- Funcionalidad 019: copia de datos personales (y luego el informe de la 008) ---
+weasyprint==70.0            # HTML y CSS a PDF; requiere Pango del sistema (ADR-0009)

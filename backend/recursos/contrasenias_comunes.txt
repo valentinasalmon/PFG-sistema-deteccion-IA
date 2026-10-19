@@ -1,0 +1,58 @@
+# Contraseñas comunes que cumplen la longitud mínima y tienen letras y números,
+# pero que igual se rechazan por ser fáciles de adivinar (RNF01 CA2).
+# Fuente parcial: SecLists, 10k-most-common (licencia MIT); de sus 10.000
+# entradas solo 5 cumplen la política base. Se completa con variantes
+# frecuentes en español y en Argentina. Una contraseña por línea, en minúsculas.
+quant4307s
+postov1000
+charlie123
+primetime21
+1q2w3e4r5t
+1q2w3e4r5t6y
+password123
+password1234
+password12345
+contrasena1
+contrasena123
+contraseña1
+contraseña123
+abc1234567
+abcd123456
+a123456789
+1234567890a
+qwerty12345
+qwertyuiop1
+qwerty123456
+asdfghjkl1
+zxcvbnm123
+admin12345
+admin123456
+administrador1
+usuario12345
+bienvenido1
+bienvenido123
+holamundo1
+argentina1
+argentina123
+argentina2022
+buenosaires1
+bocajuniors1
+riverplate1
+racingclub1
+sanlorenzo1
+independiente1
+messi101010
+maradona10
+teamo123456
+tequiero123
+iloveyou123
+welcome123
+letmein1234
+monkey12345
+dragon12345
+football123
+baseball123
+sunshine123
+princess123
+superman123
+batman12345

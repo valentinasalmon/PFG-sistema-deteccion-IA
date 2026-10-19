@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>Desde tu cuenta se generó una copia de tus datos personales. Los enlaces de descarga vencen a los 15 minutos y solo funcionan con tu sesión iniciada.</p>
+<p>Si no fuiste vos, cambiá tu contraseña de inmediato.</p>
+{% with texto_boton = "Restablecer contraseña" %}{% include "_boton.html" %}{% endwith %}
+{% endblock %}
