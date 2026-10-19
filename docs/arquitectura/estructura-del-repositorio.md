@@ -60,7 +60,7 @@ Las carpetas vacías contienen un archivo `.gitkeep`, que solo existe para que G
 
 | Ruta | Contenido |
 |---|---|
-| `cuadernos/` | Cuadernos de Jupyter de exploración y entrenamiento (Colab o Kaggle). |
+| `cuadernos/` | Cuadernos de Jupyter que orquestan el pipeline en Kaggle; la lógica vive en `scripts/`. |
 | `scripts/` | Scripts reproducibles: preparación de datos, entrenamiento, evaluación y exportación a ONNX. |
 | `datos/` | Conjuntos de datos. **Ignorado por Git**. |
 | `modelos/` | Pesos entrenados y modelos exportados. **Ignorado por Git**. |
