@@ -32,3 +32,6 @@ Thumbs.db
 
 # ---- Copias de datos de Redis ----
 dump.rdb
+
+# ---- Imágenes de casos guardadas en desarrollo (NUNCA subir) ----
+backend/almacenamiento_local/

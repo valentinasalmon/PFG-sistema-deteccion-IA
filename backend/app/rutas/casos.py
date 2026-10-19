@@ -52,7 +52,8 @@ MENSAJES_ESTADO = {
 
 def _servicio():
     return crear_servicio_casos(
-        current_app.config, current_app.extensions["enviador_correo"], origen_de_la_solicitud()
+        current_app.config, current_app.extensions["enviador_correo"], origen_de_la_solicitud(),
+        current_app.extensions["almacenamiento"],
     )
 
 

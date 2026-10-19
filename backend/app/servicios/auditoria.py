@@ -73,12 +73,20 @@ CUENTA_ELIMINACION = "cuenta.eliminacion"
 CUENTA_COPIA_SOLICITUD = "cuenta.copia_solicitud"
 CUENTA_COPIA_DESCARGA = "cuenta.copia_descarga"
 
+# --- Acciones de imágenes (funcionalidad 006) ---
+IMAGEN_CARGA = "imagen.carga"
+IMAGEN_DESCARGA = "imagen.descarga"
+IMAGEN_ELIMINACION = "imagen.eliminacion"
+
 TIPO_USUARIO = "usuario"
 TIPO_CASO = "caso"
 TIPO_ORGANIZACION = "organizacion"
 TIPO_INVITACION = "invitacion"
 
 # Fragmentos de claves que nunca se guardan en el detalle (RNF06 CA4).
+# "huella" y "hash" se refieren a la contraseña. La huella SHA-256 de una
+# imagen no es secreta y sí debe quedar en la auditoría (RN21, RF36): se
+# registra con la clave "sha256".
 FRAGMENTOS_SENSIBLES = (
     "contrasenia", "password", "hash", "huella", "token", "cookie", "csrf",
     "id_sesion", "identificador_sesion",

@@ -81,6 +81,9 @@ class Caso(db.Model):  # pylint: disable=too-few-public-methods
     responsable = db.relationship("Usuario", foreign_keys=[id_responsable])
     destinatario_transferencia = db.relationship("Usuario", foreign_keys=[transferencia_a])
     accesos = db.relationship("AccesoCaso", back_populates="caso", cascade="all, delete-orphan")
+    imagenes = db.relationship(
+        "Imagen", back_populates="caso", cascade="all, delete-orphan", order_by="Imagen.id"
+    )
 
     @property
     def es_personal(self):

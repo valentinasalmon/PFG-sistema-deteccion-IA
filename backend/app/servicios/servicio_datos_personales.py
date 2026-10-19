@@ -36,10 +36,7 @@ class ServicioDatosPersonales:
                 organizaciones de un solo miembro con las mismas reglas (RN09).
             registro: ``ServicioAuditoria`` donde se registra cada operación.
         """
-        self.usuarios = repositorios["usuarios"]
-        self.membresias = repositorios["organizaciones"]
-        self.casos = repositorios["casos"]
-        self.actividad = repositorios["auditoria"]
+        self.repositorios = repositorios
         self.organizaciones = organizaciones
         self.correos = correos
         self.tokens = tokens
@@ -100,12 +97,12 @@ class ServicioDatosPersonales:
         """Reúne los datos de la persona y arma el documento (RF09 CA1, CA3)."""
         return copia_de_datos.armar_copia({
             "usuario": usuario,
-            "membresias": self.membresias.membresias_de_usuario(usuario.id),
-            "invitaciones": self.membresias.invitaciones_pendientes_de_correo(
+            "membresias": self.repositorios["organizaciones"].membresias_de_usuario(usuario.id),
+            "invitaciones": self.repositorios["organizaciones"].invitaciones_pendientes_de_correo(
                 usuario.correo, ahora_utc()
             ),
-            "casos": self.casos.casos_a_cargo(usuario.id),
-            "actividad": self.actividad.de_usuario(usuario.id),
+            "casos": self.repositorios["casos"].casos_a_cargo(usuario.id),
+            "actividad": self.repositorios["auditoria"].de_usuario(usuario.id),
             "generada_en": ahora_utc(),
         })
 
@@ -124,15 +121,15 @@ class ServicioDatosPersonales:
               que se eliminan con sus casos (RN08, RN09).
         """
         referente_de, a_eliminar = [], []
-        for membresia in self.membresias.membresias_de_usuario(usuario.id):
+        for membresia in self.repositorios["organizaciones"].membresias_de_usuario(usuario.id):
             organizacion = membresia.organizacion
-            if self.membresias.cantidad_de_miembros(organizacion.id) == 1:
+            if self.repositorios["organizaciones"].cantidad_de_miembros(organizacion.id) == 1:
                 a_eliminar.append(organizacion)
             elif membresia.es_referente:
                 referente_de.append(organizacion)
         excluidas = {organizacion.id for organizacion in a_eliminar}
         casos = [
-            caso for caso in self.casos.casos_a_cargo(usuario.id)
+            caso for caso in self.repositorios["casos"].casos_a_cargo(usuario.id)
             if caso.id_organizacion not in excluidas
         ]
         return {"casos": casos, "referente_de": referente_de, "a_eliminar": a_eliminar}
@@ -185,8 +182,9 @@ class ServicioDatosPersonales:
             auditoria.CUENTA_ELIMINACION, auditoria.EXITOSO, usuario=usuario, recurso=usuario,
             detalle={"organizaciones_eliminadas": len(eliminadas)},
         )
-        self.usuarios.eliminar(usuario)
-        self.casos.confirmar()
+        self.repositorios["usuarios"].eliminar(usuario)
+        self.repositorios["casos"].confirmar()
+        self.organizaciones.borrar_archivos_pendientes()
         self.correos.enviar_confirmacion_eliminacion_cuenta(correo, nombre, eliminadas)
 
     def _quitar_dependencias(self, usuario):
@@ -196,12 +194,13 @@ class ServicioDatosPersonales:
         base; se quitan explícitamente para que la sesión del ORM no conserve
         objetos que ya no existen.
         """
-        for membresia in self.membresias.membresias_de_usuario(usuario.id):
-            self.membresias.quitar(membresia)
-        for acceso in self.casos.accesos_de_usuario(usuario.id):
-            self.casos.quitar(acceso)
-        for invitacion in self.membresias.invitaciones_de_correo(usuario.correo):
-            self.membresias.quitar(invitacion)
-        for caso in self.casos.transferencias_para(usuario.id):
+        for membresia in self.repositorios["organizaciones"].membresias_de_usuario(usuario.id):
+            self.repositorios["organizaciones"].quitar(membresia)
+        for acceso in self.repositorios["casos"].accesos_de_usuario(usuario.id):
+            self.repositorios["casos"].quitar(acceso)
+        organizaciones = self.repositorios["organizaciones"]
+        for invitacion in organizaciones.invitaciones_de_correo(usuario.correo):
+            organizaciones.quitar(invitacion)
+        for caso in self.repositorios["casos"].transferencias_para(usuario.id):
             caso.transferencia_a = None
             caso.transferencia_en = None
