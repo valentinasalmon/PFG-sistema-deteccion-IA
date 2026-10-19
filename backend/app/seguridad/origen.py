@@ -3,9 +3,9 @@
 Los servicios no conocen Flask (RNF17): las rutas arman este diccionario y
 lo pasan a la fábrica de servicios.
 
-Detrás de Nginx (funcionalidad 017), ``remote_addr`` es la dirección del
-proxy; allí se configurará ``ProxyFix`` con la cantidad exacta de proxies
-para obtener la dirección real sin aceptar cabeceras falsificadas.
+Detrás de Nginx (funcionalidad 017), ``crear_app`` aplica ``ProxyFix`` con la
+cantidad exacta de proxies (``PROXIES_DE_CONFIANZA``), así ``remote_addr`` es
+la dirección real del cliente y no se aceptan cabeceras falsificadas.
 
 Realiza: RNF06 (CA2, dirección IP de origen).
 """
