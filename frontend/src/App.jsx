@@ -7,12 +7,15 @@
  *   organización) y textos legales: accesibles con o sin sesión.
  * - Pantallas internas: requieren sesión (CA22).
  *
- * Realiza: CA22 de la funcionalidad 002; pantallas de la funcionalidad 004.
+ * Realiza: CA22 de la funcionalidad 002; pantallas de las funcionalidades 004
+ * y 005.
  */
 import { Route, Routes } from 'react-router'
 import { DisposicionAcceso, DisposicionInterna } from './componentes/Disposiciones.jsx'
 import { RutaProtegida, RutaSoloVisitantes } from './rutas/Rutas.jsx'
 import PaginaAdministracion from './paginas/PaginaAdministracion.jsx'
+import PaginaCaso from './paginas/PaginaCaso.jsx'
+import PaginaCasos from './paginas/PaginaCasos.jsx'
 import PaginaConfirmarCorreo from './paginas/PaginaConfirmarCorreo.jsx'
 import PaginaEstado from './paginas/PaginaEstado.jsx'
 import PaginaIniciarSesion from './paginas/PaginaIniciarSesion.jsx'
@@ -20,6 +23,7 @@ import PaginaInvitacion from './paginas/PaginaInvitacion.jsx'
 import PaginaInicio from './paginas/PaginaInicio.jsx'
 import PaginaNoEncontrada from './paginas/PaginaNoEncontrada.jsx'
 import PaginaNuevaOrganizacion from './paginas/PaginaNuevaOrganizacion.jsx'
+import PaginaNuevoCaso from './paginas/PaginaNuevoCaso.jsx'
 import PaginaOrganizacion from './paginas/PaginaOrganizacion.jsx'
 import PaginaOrganizaciones from './paginas/PaginaOrganizaciones.jsx'
 import PaginaPerfil from './paginas/PaginaPerfil.jsx'
@@ -53,6 +57,9 @@ export default function App() {
         <Route element={<DisposicionInterna />}>
           <Route path="/" element={<PaginaInicio />} />
           <Route path="/perfil" element={<PaginaPerfil />} />
+          <Route path="/casos" element={<PaginaCasos />} />
+          <Route path="/casos/nuevo" element={<PaginaNuevoCaso />} />
+          <Route path="/casos/:id" element={<PaginaCaso />} />
           <Route path="/organizaciones" element={<PaginaOrganizaciones />} />
           <Route path="/organizaciones/nueva" element={<PaginaNuevaOrganizacion />} />
           <Route path="/organizaciones/:id" element={<PaginaOrganizacion />} />
