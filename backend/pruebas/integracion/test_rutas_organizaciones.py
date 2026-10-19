@@ -11,30 +11,9 @@ import pytest
 from app.extensiones import db
 from app.modelos.organizacion import Invitacion, Membresia
 from app.utilidades.tiempo import ahora_utc
-from pruebas.conftest import CONTRASENIA_VALIDA, datos_registro, entradas_auditoria, extraer_token
+from pruebas.conftest import entradas_auditoria, extraer_token
 
 ORGANIZACION = {"nombre": "Estudio Pérez", "tipo": "estudio_juridico", "telefono": "11 5555-0000"}
-
-
-@pytest.fixture
-def cuenta(aplicacion, correos):
-    """Crea una cuenta verificada y devuelve un cliente con su sesión iniciada."""
-
-    def _crear(correo, nombre="Ana", perfil="abogado"):
-        cliente = aplicacion.test_client()
-        cliente.post(
-            "/api/cuentas/registro",
-            json=datos_registro(correo=correo, nombre=nombre, perfil=perfil),
-        )
-        token = extraer_token(next(c for c in reversed(correos) if c.destinatario == correo))
-        cliente.post("/api/cuentas/verificacion", json={"token": token})
-        respuesta = cliente.post(
-            "/api/sesion", json={"correo": correo, "contrasenia": CONTRASENIA_VALIDA}
-        )
-        cliente.id_usuario = respuesta.get_json()["usuario"]["id"]
-        return cliente
-
-    return _crear
 
 
 @pytest.fixture
