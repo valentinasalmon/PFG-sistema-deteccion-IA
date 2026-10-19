@@ -2,8 +2,9 @@
  * Pantalla de un caso: datos, estado, accesos, transferencia y eliminación.
  *
  * Solo se muestran las acciones que el permiso habilita, según la lista
- * ``acciones`` que calcula el backend (RF24 CA1, RN20). Las imágenes, los
- * análisis y los informes se agregan en las funcionalidades 006 a 008.
+ * ``acciones`` que calcula el backend (RF24 CA1, RN20). Las imágenes están
+ * en ``SeccionImagenes`` (006); los análisis y los informes se agregan en
+ * las funcionalidades 007 y 008.
  *
  * Realiza: RF24, RF25, RF27 a RF33; CA4, CA7 a CA19 de la funcionalidad 005.
  */
@@ -28,6 +29,7 @@ import CampoSeleccion from '../componentes/CampoSeleccion.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
+import SeccionImagenes from '../componentes/SeccionImagenes.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useFormulario } from '../hooks/useFormulario.js'
 import { OPCIONES_NIVEL, OPCIONES_TIPO, tipoDeEtiquetaDeEstado } from '../utilidades/casos.js'
@@ -457,10 +459,8 @@ export default function PaginaCaso() {
           await recargar()
         }}
       />
-      <section className="seccion seccion--vacia" aria-labelledby="titulo-imagenes">
-        <h2 id="titulo-imagenes">Imágenes e informes</h2>
-        <p>La carga de imágenes y los análisis estarán disponibles próximamente.</p>
-      </section>
+      {/* Se vuelve a montar al cambiar el estado: cerrar o reabrir cambia qué se puede hacer. */}
+      <SeccionImagenes key={caso.estado} idCaso={caso.id} />
       <SeccionEstado caso={caso} ejecutar={ejecutar} />
       {caso.espacio.tipo === 'organizacion' && (
         <SeccionAccesos caso={caso} accesos={accesos} miembros={miembros} ejecutar={ejecutar} />

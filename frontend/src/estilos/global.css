@@ -708,3 +708,93 @@ textarea.campo__control {
 .lista-simple li {
   margin-bottom: 0.25rem;
 }
+
+/* Imágenes de un caso (funcionalidad 006) */
+.carga-imagenes {
+  margin-bottom: 1.25rem;
+}
+
+.carga-imagenes .nota {
+  margin: 0.5rem 0 0;
+}
+
+.carga-imagenes input[type='file']:focus-visible + .boton {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 2px;
+}
+
+.carga-imagenes input[type='file']:disabled + .boton {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.resultados-carga {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  font-size: 0.875rem;
+}
+
+.resultados-carga li {
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radio);
+  margin-bottom: 0.25rem;
+  overflow-wrap: anywhere;
+}
+
+.resultado--ok {
+  background: var(--color-exito-fondo);
+  color: var(--color-exito);
+}
+
+.resultado--error {
+  background: var(--color-error-fondo);
+  color: var(--color-error);
+}
+
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.tarjeta-imagen {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  overflow: hidden;
+}
+
+.tarjeta-imagen__vista {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  background: var(--color-fondo);
+}
+
+.tarjeta-imagen__vista img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.tarjeta-imagen__datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  min-width: 0;
+}
+
+.huella {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.75rem;
+  color: var(--color-texto-secundario);
+  overflow-wrap: anywhere;
+}
