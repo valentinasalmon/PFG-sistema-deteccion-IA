@@ -19,7 +19,7 @@ from PIL import Image
 from app.extensiones import db
 from app.modelos.imagen import Imagen
 from app.servicios import servicio_imagenes
-from pruebas.conftest import CONTRASENIA_VALIDA, entradas_auditoria
+from pruebas.conftest import CONTRASENIA_VALIDA, crear_estudio, entradas_auditoria
 
 CASO = {
     "espacio": "personal", "tipo": "automovilistico", "fecha_hecho": "2026-09-01",
@@ -75,14 +75,7 @@ def caso(ana):
 @pytest.fixture
 def estudio(ana, beto):
     """Estudio de Ana con Beto como miembro; devuelve su id."""
-    id_org = ana.post(
-        "/api/organizaciones", json={"nombre": "Estudio Pérez", "tipo": "estudio_juridico"}
-    ).get_json()["organizacion"]["id"]
-    id_inv = ana.post(
-        f"/api/organizaciones/{id_org}/invitaciones", json={"correo": "beto@ejemplo.com"}
-    ).get_json()["invitacion"]["id"]
-    beto.post(f"/api/invitaciones/{id_inv}/aceptacion")
-    return id_org
+    return crear_estudio(ana, beto, "beto@ejemplo.com")
 
 
 def _compartir(ana, beto, id_caso, nivel):
