@@ -7,7 +7,7 @@ exportación a ONNX, compuerta de promoción, registro e inferencia.
 El subpaquete ``clasificador.inferencia`` no depende de PyTorch y es el
 que reutiliza el backend; el resto requiere el extra ``[entrenamiento]``.
 
-Realiza: RNF24, RF42 (preparación). Ver ADR-0012 y ADR-0013.
+Realiza: RNF24, RF42 (preparación). Ver ADR-0014 y ADR-0015.
 """
 
 # Versión del código del paquete. No confundir con la versión de un modelo

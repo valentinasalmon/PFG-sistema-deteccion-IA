@@ -1,7 +1,7 @@
 """Línea de comandos del pipeline: ``python -m clasificador <etapa>``.
 
 Cada subcomando ejecuta una etapa del ciclo de vida con una configuración
-YAML. Los cuadernos de Kaggle solo llaman a estos comandos (ADR-0012).
+YAML. Los cuadernos de Kaggle solo llaman a estos comandos (ADR-0014).
 
 Ejemplos::
 

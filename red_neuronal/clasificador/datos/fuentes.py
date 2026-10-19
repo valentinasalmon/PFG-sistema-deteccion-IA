@@ -12,7 +12,7 @@ Implementaciones:
 - ``FuenteHuggingFace``: conjuntos públicos leídos en *streaming*.
 - ``FuenteCarpetaLocal``: el conjunto propio (CA12, CA13) y las pruebas.
 
-Realiza: CA2 y CA12 de la funcionalidad 010. Ver ADR-0012.
+Realiza: CA2 y CA12 de la funcionalidad 010. Ver ADR-0014.
 """
 
 import io

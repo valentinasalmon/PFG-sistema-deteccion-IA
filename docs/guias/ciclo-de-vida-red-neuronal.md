@@ -1,6 +1,6 @@
 # Ciclo de vida de la red neuronal
 
-Guía conceptual para entender cómo se construye, se publica y se mantiene el clasificador de la capa 4. Explica cada etapa del ciclo de vida, los flujos entre herramientas y las prácticas de MLOps que se aplican. La especificación de esta funcionalidad está en [docs/funcionalidades/010-red-neuronal/especificacion.md](../funcionalidades/010-red-neuronal/especificacion.md) y el diseño técnico en su [plan.md](../funcionalidades/010-red-neuronal/plan.md); las herramientas elegidas se justifican en [ADR-0012](../arquitectura/decisiones/0012-ciclo-de-vida-y-mlops-del-clasificador.md) y [ADR-0013](../arquitectura/decisiones/0013-arquitectura-y-contrato-de-inferencia-del-clasificador.md).
+Guía conceptual para entender cómo se construye, se publica y se mantiene el clasificador de la capa 4. Explica cada etapa del ciclo de vida, los flujos entre herramientas y las prácticas de MLOps que se aplican. La especificación de esta funcionalidad está en [docs/funcionalidades/010-red-neuronal/especificacion.md](../funcionalidades/010-red-neuronal/especificacion.md) y el diseño técnico en su [plan.md](../funcionalidades/010-red-neuronal/plan.md); las herramientas elegidas se justifican en [ADR-0014](../arquitectura/decisiones/0014-ciclo-de-vida-y-mlops-del-clasificador.md) y [ADR-0015](../arquitectura/decisiones/0015-arquitectura-y-contrato-de-inferencia-del-clasificador.md).
 
 ## 1. Por qué un modelo necesita un ciclo de vida
 

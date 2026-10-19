@@ -117,7 +117,7 @@ class ConfiguracionDatos(_Esquema):
 
 
 class ConfiguracionEntrenamiento(_Esquema):
-    """Hiperparámetros del entrenamiento (ADR-0013)."""
+    """Hiperparámetros del entrenamiento (ADR-0015)."""
 
     arquitectura: str = "efficientnet_b0"
     preentrenado: bool = True

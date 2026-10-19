@@ -33,7 +33,7 @@ Thumbs.db
 # ---- Copias de datos de Redis ----
 dump.rdb
 
-# ---- Red neuronal: modelos, experimentos y credenciales (ADR-0012) ----
+# ---- Red neuronal: modelos, experimentos y credenciales (ADR-0014) ----
 mlruns/
 mlartifacts/
 *.onnx

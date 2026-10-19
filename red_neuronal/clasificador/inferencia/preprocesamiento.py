@@ -1,4 +1,4 @@
-"""Contrato de entrada del clasificador (ADR-0013).
+"""Contrato de entrada del clasificador (ADR-0015).
 
 Pasos, en este orden:
 

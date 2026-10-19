@@ -10,7 +10,7 @@ partición de validación: no cambia qué imagen tiene más puntaje que otra
 El error de calibración esperado (ECE) mide cuánto se aleja la confianza
 del modelo de su tasa real de aciertos; se informa antes y después.
 
-Realiza: RF42 CA1, RN27; CA11 de la funcionalidad 010. Ver ADR-0013.
+Realiza: RF42 CA1, RN27; CA11 de la funcionalidad 010. Ver ADR-0015.
 """
 
 import numpy as np

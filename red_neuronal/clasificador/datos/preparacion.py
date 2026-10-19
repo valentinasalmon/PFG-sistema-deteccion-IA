@@ -43,7 +43,7 @@ def normalizar_imagen(
 ) -> None:
     """Convierte una imagen a RGB, la redimensiona y la guarda como JPEG.
 
-    La conversión a RGB es la misma que usa la inferencia (ADR-0013): la
+    La conversión a RGB es la misma que usa la inferencia (ADR-0015): la
     transparencia se compone sobre fondo blanco.
     """
     with Image.open(origen) as abierta:

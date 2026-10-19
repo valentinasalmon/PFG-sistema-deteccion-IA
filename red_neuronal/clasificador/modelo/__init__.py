@@ -1,4 +1,4 @@
-"""Arquitecturas del clasificador (ADR-0013).
+"""Arquitecturas del clasificador (ADR-0015).
 
 Realiza: RF42, RNF24 CA1.
 """
