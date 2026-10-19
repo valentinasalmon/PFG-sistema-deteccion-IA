@@ -47,6 +47,10 @@ class ConfiguracionFuente(_Esquema):
     columna_clase: str | None = None
     valores_sinteticos: list[str] = Field(default_factory=list)
     columna_generador: str | None = None
+    excluir: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description="Filas a descartar por columna, p. ej. {'nsfw_flag': ['True']}.",
+    )
     # Carpeta local
     ruta: Path | None = None
     # Cantidades

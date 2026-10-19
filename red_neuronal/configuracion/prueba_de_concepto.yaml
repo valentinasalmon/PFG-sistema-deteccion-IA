@@ -3,8 +3,9 @@
 # Objetivo: recorrer el pipeline completo con pocas imágenes para validar el
 # diseño y medir tiempos. No se exige umbral de desempeño.
 #
-# IMPORTANTE: los nombres de columnas de Community Forensics se confirman con
-# el cuaderno 01_exploracion_datos (tarea T25) antes de ejecutar esta receta.
+# Columnas confirmadas en Kaggle el 2026-10-19 con el esquema del conjunto:
+# image_data (bytes), label (1 = sintética), model_name, nsfw_flag, subset,
+# real_source, architecture.
 nombre: prueba_de_concepto
 semilla: 42
 directorio_trabajo: /kaggle/working/trabajo
@@ -16,10 +17,12 @@ datos:
       conjunto: OwensLab/CommunityForensics-Small
       revision: main            # se fija a un commit concreto en la receta v1
       division: train
-      columna_imagen: image_data   # a confirmar en T25
-      columna_clase: label         # a confirmar en T25
-      valores_sinteticos: ["1"]    # a confirmar en T25
-      columna_generador: model_name  # a confirmar en T25
+      columna_imagen: image_data
+      columna_clase: label
+      valores_sinteticos: ["1"]
+      columna_generador: model_name
+      excluir:
+        nsfw_flag: ["True"]   # contenido explícito: no se usa
       cantidad_reales: 5000
       cantidad_sinteticas: 5000
       licencia: "Investigación no comercial (a verificar en T25)"

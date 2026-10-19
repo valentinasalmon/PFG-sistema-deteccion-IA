@@ -136,7 +136,20 @@ class FuenteHuggingFace(FuenteDatos):
         if hasattr(filas, "shuffle"):
             filas = filas.shuffle(seed=self.semilla, buffer_size=self.tamanio_bufer)
         for fila in filas:
+            if self._excluida(fila):
+                continue
             yield self._convertir(fila)
+
+    def _excluida(self, fila: dict) -> bool:
+        """Indica si la fila cumple algún criterio de exclusión de la receta.
+
+        Se usa, por ejemplo, para descartar imágenes marcadas como contenido
+        explícito, que no deben formar parte del entrenamiento.
+        """
+        return any(
+            str(fila.get(columna)) in valores
+            for columna, valores in self.configuracion.excluir.items()
+        )
 
     def _convertir(self, fila: dict) -> EjemploCrudo:
         config = self.configuracion

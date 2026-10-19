@@ -208,3 +208,14 @@ def test_obtener_todas_las_imagenes_sin_cantidades(carpeta_propia, tmp_path):
     """Con cantidades=None se toma la fuente completa, sin error de agotamiento."""
     fuente = FuenteCarpetaLocal(_config_local(carpeta_propia))
     assert len(obtener_de_fuente(fuente, tmp_path / "todas", cantidades=None)) == 4
+
+
+def test_hugging_face_excluye_filas_por_columna():
+    """Las filas marcadas (por ejemplo, contenido explícito) se descartan."""
+    filas = _filas()
+    for fila in filas:
+        fila["nsfw_flag"] = fila["id"] in (1, 2)
+    fuente = FuenteHuggingFace(
+        _config_hf(excluir={"nsfw_flag": ["True"]}), semilla=0, cargador=lambda _: filas
+    )
+    assert len(list(fuente.iterar())) == 4
