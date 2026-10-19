@@ -12,6 +12,7 @@ from app.repositorios.repositorio_analisis import RepositorioAnalisis
 from app.repositorios.repositorio_auditoria import RepositorioAuditoria
 from app.repositorios.repositorio_casos import RepositorioCasos
 from app.repositorios.repositorio_imagenes import RepositorioImagenes
+from app.repositorios.repositorio_informes import RepositorioInformes
 from app.repositorios.repositorio_organizaciones import RepositorioOrganizaciones
 from app.repositorios.repositorio_usuarios import RepositorioUsuarios
 from app.servicios.auditoria import ServicioAuditoria
@@ -21,6 +22,7 @@ from app.servicios.servicio_correos import ServicioCorreos
 from app.servicios.servicio_cuentas import ServicioCuentas
 from app.servicios.servicio_datos_personales import ServicioDatosPersonales
 from app.servicios.servicio_imagenes import ArchivosDeCasos, ServicioImagenes
+from app.servicios.servicio_informes import ServicioInformes
 from app.servicios.servicio_organizaciones import ServicioOrganizaciones
 from app.servicios.servicio_perfil import ServicioPerfil
 from app.servicios.servicio_sesion import ServicioSesion
@@ -75,7 +77,9 @@ def crear_servicio_perfil(configuracion, enviador, origen=None):
 
 
 def _archivos(almacenamiento):
-    return ArchivosDeCasos(RepositorioImagenes(), almacenamiento) if almacenamiento else None
+    if not almacenamiento:
+        return None
+    return ArchivosDeCasos(RepositorioImagenes(), almacenamiento, RepositorioInformes())
 
 
 def crear_servicio_organizaciones(configuracion, enviador, origen=None, almacenamiento=None):
@@ -127,6 +131,15 @@ def crear_servicio_analisis(configuracion, enviador, almacenamiento, cola, orige
         {
             "capas": crear_capas(configuracion), "cola": cola, "trabajo": TRABAJO_ANALISIS,
             "almacenamiento": almacenamiento,
+            "informes": crear_servicio_informes(configuracion, enviador, almacenamiento, origen),
         },
         _correos(configuracion, enviador), configuracion, crear_servicio_auditoria(origen),
+    )
+
+
+def crear_servicio_informes(configuracion, enviador, almacenamiento, origen=None):
+    """Servicio de informes PDF (funcionalidad 008)."""
+    return ServicioInformes(
+        RepositorioInformes(), crear_servicio_casos(configuracion, enviador, origen),
+        almacenamiento, configuracion, crear_servicio_auditoria(origen),
     )

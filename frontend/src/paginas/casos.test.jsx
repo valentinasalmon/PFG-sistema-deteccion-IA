@@ -74,6 +74,7 @@ function apiDeCaso({ caso = CASO, accesos = [ACCESO], extra = {} } = {}) {
     'GET /api/organizaciones/3/miembros': { cuerpo: { miembros: MIEMBROS } },
     'GET /api/casos/7/imagenes': { cuerpo: SIN_IMAGENES },
     'GET /api/casos/7/analisis': { cuerpo: { analisis: [] } },
+    'GET /api/casos/7/informes': { cuerpo: { informes: [] } },
     ...extra,
   })
 }
@@ -190,6 +191,7 @@ describe('transferencias de casos personales (CA18)', () => {
         },
         'GET /api/casos/9/imagenes': { cuerpo: SIN_IMAGENES },
         'GET /api/casos/9/analisis': { cuerpo: { analisis: [] } },
+        'GET /api/casos/9/informes': { cuerpo: { informes: [] } },
         'GET /api/casos/9': {
           cuerpo: {
             caso: { ...CASO, id: 9, numero: 'CASO-2026-000009', espacio: { tipo: 'personal', id: null, nombre: 'Personal' } },
@@ -239,6 +241,7 @@ describe('nuevo caso', () => {
       'GET /api/casos/7': { cuerpo: { caso: CASO, accesos: [] } },
       'GET /api/casos/7/imagenes': { cuerpo: SIN_IMAGENES },
       'GET /api/casos/7/analisis': { cuerpo: { analisis: [] } },
+      'GET /api/casos/7/informes': { cuerpo: { informes: [] } },
       'GET /api/organizaciones/3/miembros': { cuerpo: { miembros: MIEMBROS } },
     })
     const { usuario } = renderizarEn('/casos/nuevo')

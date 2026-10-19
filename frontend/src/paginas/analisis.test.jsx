@@ -95,6 +95,7 @@ function api({ caso = CASO, imagenes = IMAGENES, historial = [], detalle = DETAL
     'GET /api/casos/7/imagenes': { cuerpo: imagenes },
     'GET /api/casos/7/analisis': respuesta(historial, 'analisis'),
     'GET /api/casos/7/analisis/5': respuesta(detalle, 'analisis'),
+    'GET /api/casos/7/informes': { cuerpo: { informes: [] } },
     ...extra,
   })
 }

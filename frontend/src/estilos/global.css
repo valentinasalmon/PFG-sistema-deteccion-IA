@@ -892,3 +892,12 @@ textarea.campo__control {
 .datos-fijos__fila {
   display: contents;
 }
+
+/* Informes (funcionalidad 008) */
+.acciones-informe {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}

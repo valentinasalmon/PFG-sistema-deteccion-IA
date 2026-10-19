@@ -1,6 +1,6 @@
 """Entrada y salida JSON de los análisis.
 
-Realiza: RF38, RF43, RF46; RNF04 (CA1).
+Realiza: RF38, RF43, RF45, RF46; RNF04 (CA1).
 """
 from typing import List
 
@@ -69,10 +69,25 @@ def _resultado_a_dict(resultado):
     }
 
 
+def informe_a_dict(informe):
+    """Informe PDF para el historial (RF45 CA1)."""
+    analisis = informe.analisis
+    return {
+        "id": informe.id,
+        "id_analisis": informe.id_analisis,
+        "generado_en": _fecha(informe.generado_en),
+        "solicitante": _solicitante(analisis),
+        "imagenes": [incluida.nombre for incluida in analisis.imagenes],
+        "huella": informe.huella,
+        "tamanio": informe.tamanio,
+    }
+
+
 def analisis_a_dict(analisis):
-    """Análisis completo, con los resultados de cada capa por imagen (RF43)."""
+    """Análisis completo, con los resultados de cada capa por imagen (RF43) y su informe."""
     datos = analisis_resumen_a_dict(analisis)
     datos["versiones"] = analisis.versiones
+    datos["informe"] = informe_a_dict(analisis.informe) if analisis.informe else None
     datos["imagenes"] = [
         {
             "id_imagen": incluida.id_imagen,

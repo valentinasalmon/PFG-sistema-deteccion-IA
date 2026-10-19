@@ -7,10 +7,15 @@
  * un análisis está en curso, consulta su progreso cada pocos segundos sin
  * recargar la página. No hay un puntaje que combine capas (RN27).
  *
- * Realiza: RF43, RF46; CA5 a CA7 y CA12 a CA14 de la funcionalidad 007.
+ * Cada análisis finalizado ofrece descargar su informe PDF o, si no se pudo
+ * generar, volver a generarlo (funcionalidad 008).
+ *
+ * Realiza: RF43, RF44, RF46; CA5 a CA7 y CA12 a CA14 de la funcionalidad 007;
+ * CA6 de la 008.
  */
 import { useCallback, useEffect, useState } from 'react'
 import { listarAnalisis, obtenerAnalisis } from '../api/analisis.js'
+import { descargarInforme, regenerarInforme } from '../api/informes.js'
 import { useDatos } from '../hooks/useDatos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 import Aviso from './Aviso.jsx'
@@ -127,7 +132,59 @@ function Resultados({ analisis }) {
   ))
 }
 
-function Detalle({ idCaso, idAnalisis, alTerminar }) {
+function AccionesDelInforme({ idCaso, analisis, puedeGenerar, alGenerar }) {
+  const [error, setError] = useState(null)
+  const [enviando, setEnviando] = useState(false)
+
+  async function ejecutar(accion) {
+    setError(null)
+    setEnviando(true)
+    try {
+      await accion()
+    } catch (errorApi) {
+      setError(errorApi.message)
+    } finally {
+      setEnviando(false)
+    }
+  }
+
+  return (
+    <div className="acciones-informe">
+      {error && <Aviso tipo="error">{error}</Aviso>}
+      {analisis.informe ? (
+        <button
+          type="button"
+          className="boton"
+          disabled={enviando}
+          onClick={() => ejecutar(() => descargarInforme(idCaso, analisis.informe.id))}
+        >
+          Descargar el informe PDF
+        </button>
+      ) : (
+        <>
+          <Aviso tipo="info">No se pudo generar el informe PDF de este análisis.</Aviso>
+          {puedeGenerar && (
+            <button
+              type="button"
+              className="boton boton--secundario"
+              disabled={enviando}
+              onClick={() =>
+                ejecutar(async () => {
+                  await regenerarInforme(idCaso, analisis.id)
+                  await alGenerar()
+                })
+              }
+            >
+              {enviando ? 'Generando…' : 'Generar el informe'}
+            </button>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar }) {
   const cargar = useCallback(() => obtenerAnalisis(idCaso, idAnalisis), [idCaso, idAnalisis])
   const { datos: analisis, error, recargar } = useDatos(cargar)
   const enCurso = Boolean(analisis?.en_curso)
@@ -154,12 +211,25 @@ function Detalle({ idCaso, idAnalisis, alTerminar }) {
       {analisis.estado === 'fallido' && (
         <Aviso tipo="error">El análisis no pudo completarse: {analisis.motivo_falla}</Aviso>
       )}
-      {analisis.estado === 'finalizado' && <Resultados analisis={analisis} />}
+      {analisis.estado === 'finalizado' && (
+        <>
+          <AccionesDelInforme
+            idCaso={idCaso}
+            analisis={analisis}
+            puedeGenerar={puedeGenerar}
+            alGenerar={async () => {
+              await recargar()
+              await alTerminar()
+            }}
+          />
+          <Resultados analisis={analisis} />
+        </>
+      )}
     </>
   )
 }
 
-export default function SeccionAnalisis({ idCaso, alTerminar }) {
+export default function SeccionAnalisis({ idCaso, puedeGenerar = false, alTerminar }) {
   const cargar = useCallback(() => listarAnalisis(idCaso), [idCaso])
   const { datos: historial, error } = useDatos(cargar)
   const [elegido, setElegido] = useState(null)
@@ -201,7 +271,13 @@ export default function SeccionAnalisis({ idCaso, alTerminar }) {
           ))}
         </ul>
       )}
-      <Detalle key={idElegido} idCaso={idCaso} idAnalisis={idElegido} alTerminar={alTerminar} />
+      <Detalle
+        key={idElegido}
+        idCaso={idCaso}
+        idAnalisis={idElegido}
+        puedeGenerar={puedeGenerar}
+        alTerminar={alTerminar}
+      />
     </section>
   )
 }

@@ -7,8 +7,10 @@ cada capa por separado (si una falla, queda "No disponible" y las demás
 siguen: RN26) y confirma después de cada paso para que la pantalla muestre
 el progreso (RF46). Este servicio no conoce Flask ni la cola concreta.
 
-Realiza: RF38, RF39 (orquestación), RF43, RF46; RN19, RN25 a RN27, RN29;
-RNF07 (CA2).
+Al terminar genera el informe PDF (funcionalidad 008).
+
+Realiza: RF38, RF39 (orquestación), RF43, RF44 (CA3), RF46; RN19, RN25 a
+RN27, RN29; RNF07 (CA2).
 """
 import hashlib
 import logging
@@ -62,8 +64,9 @@ class ServicioAnalisis:
             imagenes: ``RepositorioImagenes``.
             ejecucion: diccionario con ``capas`` (lista de ``CapaAnalisis``),
                 ``almacenamiento`` (de donde se leen los originales), ``cola``
-                (implementación de ``app.integraciones.cola``) y ``trabajo``
-                (ruta de importación de la función que procesa un análisis).
+                (implementación de ``app.integraciones.cola``), ``trabajo``
+                (ruta de importación de la función que procesa un análisis) e
+                ``informes`` (``ServicioInformes``, que genera el PDF).
             registro: ``ServicioAuditoria``.
         """
         self.repositorio = repositorio
@@ -235,8 +238,26 @@ class ServicioAnalisis:
             ],
         )
 
+    def _generar_informe(self, analisis):
+        """Genera el informe PDF (008); si falla, el análisis igual finaliza (CA6 de la 008).
+
+        Returns:
+            True si el informe quedó generado.
+        """
+        analisis.capa_actual = "Informe PDF"
+        self._avanzar(analisis)
+        try:
+            self.ejecucion["informes"].generar(analisis)
+            return True
+        except Exception:  # pylint: disable=broad-exception-caught
+            registro_log.exception("No se pudo generar el informe del análisis %s", analisis.id)
+            self.repositorio.descartar()
+            return False
+
     def _finalizar(self, analisis):
-        """Análisis Finalizado, caso Analizado, auditoría y correo (CA7)."""
+        """Informe, análisis Finalizado, caso Analizado, auditoría y correo (CA7)."""
+        con_informe = self._generar_informe(analisis)
+        analisis = self.repositorio.obtener(analisis.id)
         caso = analisis.caso
         analisis.estado = ESTADO_FINALIZADO
         analisis.capa_actual = None
@@ -247,12 +268,12 @@ class ServicioAnalisis:
         self._auditar(
             auditoria.ANALISIS_FINALIZACION, auditoria.EXITOSO, analisis.solicitante, caso,
             {"id_analisis": analisis.id, "imagenes": len(analisis.imagenes),
-             "integridad_alterada": alteradas},
+             "integridad_alterada": alteradas, "informe": con_informe},
         )
         self._avanzar(analisis)
         if analisis.solicitante:
             self.correos.enviar_aviso_analisis_finalizado(
-                analisis.solicitante, caso, len(analisis.imagenes)
+                analisis.solicitante, caso, len(analisis.imagenes), con_informe
             )
 
     def _fallar(self, id_analisis, motivo):

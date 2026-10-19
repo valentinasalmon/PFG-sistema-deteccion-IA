@@ -84,6 +84,10 @@ ANALISIS_FINALIZACION = "analisis.finalizacion"
 ANALISIS_FALLA = "analisis.falla"
 ANALISIS_INTEGRIDAD = "analisis.integridad"
 
+# --- Acciones de informes (funcionalidad 008) ---
+INFORME_GENERACION = "informe.generacion"
+INFORME_DESCARGA = "informe.descarga"
+
 TIPO_USUARIO = "usuario"
 TIPO_CASO = "caso"
 TIPO_ORGANIZACION = "organizacion"

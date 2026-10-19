@@ -2,6 +2,7 @@
 {% block contenido %}
 <p>Hola, {{ nombre }}:</p>
 <p>Terminó el análisis de {{ cantidad }} imagen(es) del caso <strong>{{ numero }}</strong>. Podés ver los resultados de cada capa en la pantalla del caso.</p>
+{% if con_informe %}<p>El informe PDF ya está disponible para descargar.</p>{% else %}<p>No se pudo generar el informe PDF: podés volver a generarlo desde la pantalla del caso.</p>{% endif %}
 {% with texto_boton = "Ver los resultados" %}{% include "_boton.html" %}{% endwith %}
 <p style="font-size:13px;color:#6b7280;">Los resultados son indicios y no constituyen una conclusión definitiva. Ante cualquier duda, consultá con un perito especializado.</p>
 {% endblock %}

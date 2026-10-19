@@ -1,5 +1,5 @@
 """Pruebas del formato de fechas de la copia de datos personales (funcionalidad 019)."""
-from app.informes.copia_de_datos import _formatear  # pylint: disable=protected-access
+from app.informes.plantillas import formatear_iso as _formatear
 
 
 def test_formatea_fechas_con_y_sin_hora():

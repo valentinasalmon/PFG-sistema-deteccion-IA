@@ -6,10 +6,11 @@ from app.modelos.analisis import Analisis, AnalisisImagen, Anomalia, ResultadoCa
 from app.modelos.caso import AccesoCaso, Caso
 from app.modelos.entrada_auditoria import EntradaAuditoria
 from app.modelos.imagen import Imagen
+from app.modelos.informe import Informe
 from app.modelos.organizacion import Invitacion, Membresia, Organizacion
 from app.modelos.usuario import Usuario
 
 __all__ = [
     "AccesoCaso", "Analisis", "AnalisisImagen", "Anomalia", "Caso", "EntradaAuditoria",
-    "Imagen", "Invitacion", "Membresia", "Organizacion", "ResultadoCapa", "Usuario",
+    "Imagen", "Informe", "Invitacion", "Membresia", "Organizacion", "ResultadoCapa", "Usuario",
 ]
