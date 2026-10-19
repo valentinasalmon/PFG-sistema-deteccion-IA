@@ -37,17 +37,26 @@ class ArchivosDeCasos:
     después de confirmar la base.
     """
 
-    def __init__(self, repositorio, almacenamiento):
+    def __init__(self, repositorio, almacenamiento, informes=None):
+        """
+        Args:
+            repositorio: ``RepositorioImagenes``.
+            informes: ``RepositorioInformes``, para borrar también los PDF (008).
+        """
         self.repositorio = repositorio
         self.almacenamiento = almacenamiento
+        self.informes = informes
         self.pendientes = []
 
     def preparar(self, casos):
-        """Anota los archivos de los casos y devuelve sus huellas para la auditoría."""
-        imagenes = self.repositorio.de_casos([caso.id for caso in casos])
+        """Anota los archivos de los casos (imágenes y PDF) y devuelve sus huellas."""
+        ids = [caso.id for caso in casos]
+        imagenes = self.repositorio.de_casos(ids)
+        informes = self.informes.de_casos(ids) if self.informes else []
         for imagen in imagenes:
             self.pendientes.extend((imagen.clave, imagen.clave_miniatura))
-        return [imagen.huella for imagen in imagenes]
+        self.pendientes.extend(informe.clave for informe in informes)
+        return [imagen.huella for imagen in imagenes] + [informe.huella for informe in informes]
 
     def borrar_pendientes(self):
         """Borra los archivos anotados; una falla queda en el log y no se propaga."""

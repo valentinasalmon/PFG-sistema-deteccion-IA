@@ -1,6 +1,6 @@
 Hola, {{ nombre }}:
 
-Terminó el análisis de {{ cantidad }} imagen(es) del caso {{ numero }}. Podés ver los resultados de cada capa en la pantalla del caso:
+Terminó el análisis de {{ cantidad }} imagen(es) del caso {{ numero }}. {% if con_informe %}El informe PDF ya está disponible para descargar.{% else %}No se pudo generar el informe PDF: podés volver a generarlo desde la pantalla del caso.{% endif %} Podés ver los resultados de cada capa en la pantalla del caso:
 {{ enlace }}
 
 Los resultados son indicios y no constituyen una conclusión definitiva. Ante cualquier duda, consultá con un perito especializado.

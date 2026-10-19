@@ -47,6 +47,8 @@ class Imagen(db.Model):  # pylint: disable=too-few-public-methods
         db.Integer, db.ForeignKey("usuarios.id", ondelete="SET NULL"), nullable=True
     )
     cargada_en = db.Column(db.DateTime, nullable=False, default=ahora_utc)
+    # Una imagen incluida en un informe generado ya no puede eliminarse (RN24).
+    en_informe = db.Column(db.Boolean, nullable=False, default=False, server_default=db.false())
 
     caso = db.relationship("Caso", back_populates="imagenes")
     usuario = db.relationship("Usuario")
@@ -55,12 +57,3 @@ class Imagen(db.Model):  # pylint: disable=too-few-public-methods
     def tipo_mime(self):
         """Tipo MIME según el formato real del contenido."""
         return TIPOS_MIME[self.formato]
-
-    @property
-    def en_informe(self):
-        """True si la imagen forma parte de un informe generado (RN24).
-
-        Los informes llegan con la funcionalidad 008; hasta entonces ninguna
-        imagen está en un informe y todas pueden eliminarse.
-        """
-        return False

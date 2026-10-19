@@ -62,6 +62,9 @@ class Analisis(db.Model):  # pylint: disable=too-few-public-methods
         "AnalisisImagen", back_populates="analisis", cascade="all, delete-orphan",
         order_by="AnalisisImagen.orden",
     )
+    informe = db.relationship(
+        "Informe", back_populates="analisis", uselist=False, cascade="all, delete-orphan"
+    )
 
     @property
     def en_curso(self):
