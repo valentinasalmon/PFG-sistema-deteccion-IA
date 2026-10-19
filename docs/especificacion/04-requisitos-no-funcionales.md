@@ -235,5 +235,5 @@ Toda acción relevante queda registrada con fines de trazabilidad legal. No se i
 
 - **CA1:** El modelo se entrena en PyTorch mediante transferencia de aprendizaje, se exporta a ONNX y se ejecuta en producción con ONNX Runtime en CPU.
 - **CA2:** El entrenamiento es reproducible: se documentan el conjunto de datos, la partición, los hiperparámetros, la semilla y la versión del modelo.
-- **CA3:** El desempeño se reporta sobre un conjunto de prueba independiente con exactitud, precisión, exhaustividad, F1 y área bajo la curva ROC; el umbral mínimo de aceptación es **[A DEFINIR]** (ver CP-07).
+- **CA3:** El desempeño se reporta sobre un conjunto de prueba independiente con exactitud, precisión, exhaustividad, F1 y área bajo la curva ROC; el umbral mínimo de aceptación es un **área bajo la curva ROC ≥ 0,90** sobre el conjunto de prueba de generadores conocidos (ver CP-07). El desempeño frente a generadores no vistos y a imágenes recomprimidas se reporta por separado, sin umbral obligatorio.
 - **CA4:** Cada informe registra la versión del modelo utilizada.
