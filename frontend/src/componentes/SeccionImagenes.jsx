@@ -7,9 +7,14 @@
  * se informa el resultado de cada uno. Las vistas previas usan enlaces
  * firmados que vencen a los 5 minutos; si una vence, se puede recargar.
  *
- * Realiza: RF34 (CA1 a CA5), RF35, RF36; CA1 a CA9 de la funcionalidad 006.
+ * También permite elegir imágenes y pedir su análisis: por defecto quedan
+ * elegidas las que todavía no se analizaron (CU27).
+ *
+ * Realiza: RF34 (CA1 a CA5), RF35, RF36, RF38 (CA1, CA2); CA1 a CA9 de la
+ * funcionalidad 006 y CA1, CA2 de la 007.
  */
 import { useCallback, useId, useState } from 'react'
+import { solicitarAnalisis } from '../api/analisis.js'
 import { cargarImagen, eliminarImagen, enlaceDeDescarga, listarImagenes } from '../api/imagenes.js'
 import { useDatos } from '../hooks/useDatos.js'
 import { abrirDescarga, formatearTamanio } from '../utilidades/archivos.js'
@@ -95,11 +100,19 @@ function Carga({ idCaso, tamanioMaximo, alTerminar }) {
   )
 }
 
-function TarjetaImagen({ imagen, puedeModificar, alDescargar, alEliminar, alVencerVistaPrevia }) {
+function TarjetaImagen({
+  imagen,
+  puedeModificar,
+  elegida,
+  alElegir,
+  alDescargar,
+  alEliminar,
+  alVencerVistaPrevia,
+}) {
   const [sinVistaPrevia, setSinVistaPrevia] = useState(false)
 
   return (
-    <li className="tarjeta-imagen">
+    <li className={`tarjeta-imagen${elegida ? ' tarjeta-imagen--elegida' : ''}`}>
       <div className="tarjeta-imagen__vista">
         {sinVistaPrevia ? (
           <button
@@ -120,6 +133,13 @@ function TarjetaImagen({ imagen, puedeModificar, alDescargar, alEliminar, alVenc
       </div>
       <div className="tarjeta-imagen__datos">
         <span className="tarjeta-item__titulo">{imagen.nombre}</span>
+        {imagen.analizada && <span className="tarjeta-item__detalle">Ya analizada</span>}
+        {puedeModificar && (
+          <label className="opcion">
+            <input type="checkbox" checked={elegida} onChange={alElegir} />
+            Incluir en el análisis
+          </label>
+        )}
         <span className="tarjeta-item__detalle">
           {imagen.formato} · {imagen.ancho} × {imagen.alto} px · {formatearTamanio(imagen.tamanio)}
         </span>
@@ -156,10 +176,75 @@ function TarjetaImagen({ imagen, puedeModificar, alDescargar, alEliminar, alVenc
   )
 }
 
-export default function SeccionImagenes({ idCaso }) {
+function BarraAnalisis({ cantidad, total, alElegirTodas, alAnalizar }) {
+  const [enviando, setEnviando] = useState(false)
+
+  async function analizar() {
+    setEnviando(true)
+    await alAnalizar()
+    setEnviando(false)
+  }
+
+  return (
+    <div className="barra-analisis">
+      <button
+        type="button"
+        className="boton"
+        onClick={analizar}
+        disabled={cantidad === 0 || enviando}
+      >
+        {enviando ? 'Pidiendo el análisis…' : `Analizar (${cantidad})`}
+      </button>
+      <button
+        type="button"
+        className="boton boton--secundario boton--chico"
+        onClick={() => alElegirTodas(true)}
+      >
+        Elegir todas
+      </button>
+      <button
+        type="button"
+        className="boton boton--secundario boton--chico"
+        onClick={() => alElegirTodas(false)}
+      >
+        Ninguna
+      </button>
+      <span className="nota">
+        {cantidad} de {total} elegidas
+      </span>
+    </div>
+  )
+}
+
+export default function SeccionImagenes({ idCaso, alSolicitarAnalisis }) {
   const cargar = useCallback(() => listarImagenes(idCaso), [idCaso])
   const { datos, error, cargando, recargar } = useDatos(cargar)
   const [aviso, setAviso] = useState(null)
+  // Sin elección propia, quedan elegidas las imágenes que todavía no se analizaron.
+  const [eleccion, setEleccion] = useState(null)
+  const imagenes = datos?.imagenes ?? []
+  const elegidas = new Set(
+    (eleccion ?? imagenes.filter((imagen) => !imagen.analizada).map((imagen) => imagen.id)).filter(
+      (id) => imagenes.some((imagen) => imagen.id === id),
+    ),
+  )
+
+  function alternar(id) {
+    const nuevas = new Set(elegidas)
+    if (nuevas.has(id)) nuevas.delete(id)
+    else nuevas.add(id)
+    setEleccion([...nuevas])
+  }
+
+  async function analizar() {
+    setAviso(null)
+    try {
+      await solicitarAnalisis(idCaso, [...elegidas])
+      await alSolicitarAnalisis()
+    } catch (errorApi) {
+      setAviso({ tipo: 'error', texto: errorApi.errores?.imagenes ?? errorApi.message })
+    }
+  }
 
   async function ejecutar(accion, exito) {
     setAviso(null)
@@ -184,6 +269,14 @@ export default function SeccionImagenes({ idCaso }) {
           {datos.puede_modificar && (
             <Carga idCaso={idCaso} tamanioMaximo={datos.tamanio_maximo} alTerminar={recargar} />
           )}
+          {datos.puede_modificar && imagenes.length > 0 && (
+            <BarraAnalisis
+              cantidad={elegidas.size}
+              total={imagenes.length}
+              alElegirTodas={(todas) => setEleccion(todas ? imagenes.map((i) => i.id) : [])}
+              alAnalizar={analizar}
+            />
+          )}
           {datos.imagenes.length === 0 ? (
             <p className="nota">Todavía no hay imágenes en este caso.</p>
           ) : (
@@ -193,6 +286,8 @@ export default function SeccionImagenes({ idCaso }) {
                   key={imagen.id}
                   imagen={imagen}
                   puedeModificar={datos.puede_modificar}
+                  elegida={elegidas.has(imagen.id)}
+                  alElegir={() => alternar(imagen.id)}
                   alVencerVistaPrevia={recargar}
                   alDescargar={() =>
                     ejecutar(async () => abrirDescarga(await enlaceDeDescarga(idCaso, imagen.id)))
@@ -207,9 +302,6 @@ export default function SeccionImagenes({ idCaso }) {
               ))}
             </ul>
           )}
-          <p className="nota">
-            El análisis de las imágenes y los informes estarán disponibles próximamente.
-          </p>
         </>
       )}
     </section>
