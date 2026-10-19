@@ -37,7 +37,7 @@ Se agregan a la especificación general (`02-reglas-de-negocio.md`). RN35 suma u
 **Aprobación por el Administrador**
 - El Administrador ve las aseguradoras pendientes con su CUIT, denominación y la persona que las registró, y las aprueba o rechaza indicando un motivo.
 - Se avisa por correo a quien la registró.
-- Las cuentas de Administrador se crean desde la terminal del servidor (`flask administracion promover <correo>`), nunca desde la interfaz.
+- Las cuentas de Administrador nunca se crean desde la interfaz: las designa quien administra el servidor, con la variable de configuración `ADMINISTRADORES` (la cuenta pasa a Administrador al iniciar sesión) o desde la terminal (`flask administracion promover <correo>`).
 
 **Cuentas desactivadas**
 - Se desactivan según RN39 y se cierran sus sesiones abiertas.
@@ -86,6 +86,9 @@ Se agregan a la especificación general (`02-reglas-de-negocio.md`). RN35 suma u
 ### Creación de organizaciones
 - [x] **CA17**: Dado un usuario con perfil Aseguradora, entonces no puede crear organizaciones; dado un abogado, solo puede crear organizaciones del tipo Estudio Jurídico (RN40).
 - [x] **CA18**: Dada una aseguradora, cuando su Referente edita los datos, entonces puede cambiar el contacto pero no el nombre ni el tipo.
+
+### Administradores
+- [x] **CA20**: Dada una cuenta verificada cuyo correo figura en `ADMINISTRADORES`, cuando inicia sesión, entonces pasa a Administrador y queda registrado en la auditoría; un correo que no figura no cambia de rol.
 
 ### Auditoría
 - [x] **CA19**: El registro de una aseguradora, su aprobación o rechazo y cada desactivación o reactivación de una cuenta quedan en la auditoría.

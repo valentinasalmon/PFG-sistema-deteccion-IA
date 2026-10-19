@@ -17,6 +17,8 @@ Variables de entorno:
     CONTRASENIA_CORREO   Contraseña SMTP (vacía en desarrollo).
     USAR_TLS_CORREO      "si" para cifrar la conexión SMTP con STARTTLS.
     REMITENTE_CORREO     Dirección que figura como remitente.
+    ADMINISTRADORES      Correos separados por comas que reciben el rol de
+                         Administrador al iniciar sesión (funcionalidad 021).
 
 Realiza: RNF01, RNF02, RNF03 (CA3), RNF22.
 """
@@ -109,6 +111,13 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
         self.USUARIO_CORREO = os.getenv("USUARIO_CORREO", "")
         self.CONTRASENIA_CORREO = os.getenv("CONTRASENIA_CORREO", "")
         self.USAR_TLS_CORREO = os.getenv("USAR_TLS_CORREO", "no").lower() == "si"
+        # Quien administra el servidor designa a los administradores; la
+        # interfaz nunca ofrece ese rol (funcionalidad 021).
+        self.ADMINISTRADORES = frozenset(
+            correo.strip().lower()
+            for correo in os.getenv("ADMINISTRADORES", "").split(",")
+            if correo.strip()
+        )
         self.REMITENTE_CORREO = os.getenv(
             "REMITENTE_CORREO", "Plataforma de análisis de imágenes <no-responder@localhost>"
         )
@@ -164,6 +173,7 @@ class ConfiguracionPruebas(ConfiguracionBase):
         self.SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
         self.URL_REDIS = "redis://localhost:6379/15"
         self.URL_FRONTEND = "http://frontend.prueba"
+        self.ADMINISTRADORES = frozenset()
         self.SESSION_CACHELIB = SimpleCache()
 
 

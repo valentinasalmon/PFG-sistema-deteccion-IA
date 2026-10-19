@@ -458,3 +458,40 @@ def test_auditoria_de_aseguradoras(aplicacion, administrador, rita, eva, galicia
     with aplicacion.app_context():
         administradores = Usuario.query.filter_by(rol="administrador").count()
     assert administradores == 1
+
+
+# --- Administrador inicial por configuración ---
+
+def test_un_correo_de_administradores_pasa_a_administrador_al_iniciar_sesion(
+    aplicacion, cliente, registrar_y_verificar
+):
+    """Sin terminal: el correo configurado en ADMINISTRADORES recibe el rol al ingresar."""
+    registrar_y_verificar()
+    aplicacion.config["ADMINISTRADORES"] = frozenset({"ana@ejemplo.com"})
+    respuesta = _iniciar(cliente, "  ANA@ejemplo.com ")
+    assert respuesta.get_json()["usuario"]["rol"] == "administrador"
+    assert cliente.get("/api/administracion/aseguradoras-pendientes").status_code == 200
+    entrada = entradas_auditoria(aplicacion, "cuenta.promocion_administrador")[-1]
+    assert entrada["detalle"] == {"origen": "configuracion"}
+    _iniciar(cliente, "ana@ejemplo.com")
+    assert len(entradas_auditoria(aplicacion, "cuenta.promocion_administrador")) == 1
+
+
+def test_un_correo_fuera_de_administradores_no_cambia_de_rol(
+    aplicacion, cliente, registrar_y_verificar
+):
+    """Solo los correos configurados reciben el rol."""
+    registrar_y_verificar()
+    aplicacion.config["ADMINISTRADORES"] = frozenset({"otra@ejemplo.com"})
+    assert _iniciar(cliente, "ana@ejemplo.com").get_json()["usuario"]["rol"] == "usuario"
+
+
+def test_la_lista_de_administradores_se_lee_del_entorno(monkeypatch):
+    """ADMINISTRADORES admite varios correos separados por comas."""
+    # pylint: disable-next=import-outside-toplevel
+    from app.configuracion.entornos import ConfiguracionDesarrollo
+    monkeypatch.setenv("ADMINISTRADORES", " Ana@Ejemplo.com, ,beto@ejemplo.com ")
+    monkeypatch.setenv("URL_BASE_DATOS", "sqlite://")
+    assert ConfiguracionDesarrollo().ADMINISTRADORES == frozenset(
+        {"ana@ejemplo.com", "beto@ejemplo.com"}
+    )

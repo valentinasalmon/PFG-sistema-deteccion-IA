@@ -48,3 +48,7 @@ Cifras: backend con 195 pruebas, cobertura del 99 %, flake8 sin errores, pylint 
 - **Autora**: revisar y abrir el Pull Request de `funcionalidad/021-organizaciones-de-aseguradoras` hacia `desarrollo`. Confirmar la licencia del conjunto de datos de la SSN (CP-18). Crear el primer Administrador en cada entorno con `flask --app wsgi administracion promover <correo>`.
 - **014**: tablero completo de administración.
 - Siguiente: **005, Casos y permisos**, que debe completar las reglas de casos pendientes de la 004.
+
+## Actualización: Administrador sin usar la terminal
+
+La autora no pudo crear el primer Administrador con `flask administracion promover`: primero faltaba traer la 021 a su copia local y después hubo un error de tipeo en el correo. Para que no dependa de la terminal, se agregó la variable `ADMINISTRADORES` en `backend/.env`: los correos que figuran ahí pasan a Administrador al iniciar sesión, y queda registrado en la auditoría con origen `configuracion` (CA20). El comando de terminal sigue disponible. Se verificó con 3 pruebas nuevas (198 en total) y contra el servidor real con PostgreSQL.
