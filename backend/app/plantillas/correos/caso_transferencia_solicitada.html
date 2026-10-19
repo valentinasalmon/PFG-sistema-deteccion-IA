@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>{{ solicitante }} quiere transferirte el caso <strong>{{ numero }}</strong>. Si lo aceptás, pasa a tu espacio personal y quedás como Responsable.</p>
+{% with texto_boton = "Ver la solicitud" %}{% include "_boton.html" %}{% endwith %}
+{% endblock %}

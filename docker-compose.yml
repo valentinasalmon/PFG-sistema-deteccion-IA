@@ -1,0 +1,53 @@
+# Servicios de apoyo para el entorno de DESARROLLO local (RNF22, ADR-0009).
+# Uso:   docker compose up -d      (levantar)
+#        docker compose ps         (ver estado)
+#        docker compose down       (detener; los datos se conservan en volúmenes)
+#
+# En producción NO se usa este archivo (ver infraestructura/).
+# El almacenamiento compatible con S3 se incorpora en la funcionalidad 006.
+
+name: sistema-deteccion
+
+services:
+  # Base de datos principal
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: sistema
+      POSTGRES_PASSWORD: sistema
+      POSTGRES_DB: sistema_deteccion
+    ports:
+      - "5432:5432"
+    volumes:
+      - datos_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sistema -d sistema_deteccion"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Cola de tareas en segundo plano (ADR-0004)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Servidor de correo de prueba: captura los correos sin enviarlos
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Bandeja web: http://localhost:8025
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  datos_postgres:

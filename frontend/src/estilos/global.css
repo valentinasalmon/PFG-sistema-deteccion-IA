@@ -1,0 +1,903 @@
+/*
+ * Estilos globales de la interfaz.
+ *
+ * Paleta sobria (azul institucional y grises) pensada para un uso
+ * profesional. Los colores de texto cumplen un contraste mínimo de 4,5:1
+ * (WCAG 2.1 AA) y todos los controles muestran el foco del teclado (RNF10).
+ */
+:root {
+  --color-primario: #1e3a5f;
+  --color-primario-hover: #16304f;
+  --color-primario-suave: #e8eef6;
+  --color-texto: #1f2937;
+  --color-texto-secundario: #4b5563;
+  --color-borde: #d1d5db;
+  /* Contorno de los controles: contraste 4,8:1 sobre blanco (WCAG 1.4.11 pide 3:1). */
+  --color-borde-control: #6b7280;
+  --color-fondo: #f5f7fa;
+  --color-superficie: #ffffff;
+  --color-exito: #166534;
+  --color-exito-fondo: #dcfce7;
+  --color-error: #991b1b;
+  --color-error-fondo: #fee2e2;
+  --color-info: #1e40af;
+  --color-info-fondo: #dbeafe;
+  --color-foco: #2563eb;
+  --radio: 0.5rem;
+  --sombra: 0 1px 3px rgb(0 0 0 / 8%), 0 4px 12px rgb(0 0 0 / 4%);
+
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-texto);
+  background: var(--color-fondo);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.75rem;
+  line-height: 1.25;
+  margin: 0 0 1rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin: 0 0 0.75rem;
+}
+
+a {
+  color: var(--color-primario);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-foco);
+  outline-offset: 2px;
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.saltar-al-contenido {
+  position: absolute;
+  left: -999px;
+}
+
+.saltar-al-contenido:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 10;
+  padding: 0.5rem 1rem;
+  background: var(--color-superficie);
+}
+
+/* --- Disposiciones --- */
+.disposicion {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.disposicion__principal {
+  flex: 1;
+  width: 100%;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.disposicion--acceso {
+  align-items: center;
+  padding: 2rem 1rem 0;
+}
+
+.tarjeta-acceso {
+  width: 100%;
+  max-width: 32rem;
+  padding: 2rem;
+  background: var(--color-superficie);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+
+.tarjeta-acceso__marca {
+  margin: 0 0 1.5rem;
+  font-weight: 700;
+  color: var(--color-primario);
+  letter-spacing: 0.02em;
+}
+
+/* --- Encabezado --- */
+.encabezado {
+  background: var(--color-primario);
+  color: #fff;
+}
+
+.encabezado__contenido {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+
+.encabezado__marca {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.encabezado__navegacion {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
+.encabezado__navegacion a {
+  color: #dbe4f0;
+  text-decoration: none;
+  padding: 0.25rem 0;
+}
+
+.encabezado__navegacion a.active {
+  color: #fff;
+  border-bottom: 2px solid #fff;
+}
+
+.encabezado__usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.encabezado .boton--secundario {
+  color: #fff;
+  border-color: rgb(255 255 255 / 60%);
+  background: transparent;
+}
+
+.encabezado :focus-visible {
+  outline-color: #fff;
+}
+
+/* --- Pie --- */
+.pie {
+  width: 100%;
+  max-width: 56rem;
+  margin: 2rem auto 0;
+  padding: 1.5rem 1rem;
+  color: var(--color-texto-secundario);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.pie__enlaces {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* --- Formularios --- */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.formulario--compacto {
+  margin: 0.5rem 0 1.5rem;
+}
+
+.formulario__fila {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.campo--grupo {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.campo__etiqueta {
+  font-weight: 600;
+  padding: 0;
+}
+
+.campo__opcional,
+.campo__ayuda {
+  font-weight: 400;
+  color: var(--color-texto-secundario);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.campo__control {
+  font: inherit;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--color-borde-control);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  color: inherit;
+}
+
+.campo__control--error {
+  border-color: var(--color-error);
+}
+
+.campo__error {
+  margin: 0;
+  color: var(--color-error);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.opcion {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  cursor: pointer;
+}
+
+.opcion input {
+  margin-top: 0.3rem;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.reglas {
+  list-style: none;
+  margin: -0.5rem 0 0;
+  padding: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.reglas__item--cumplida {
+  color: var(--color-exito);
+}
+
+/* --- Botones --- */
+.boton {
+  display: inline-block;
+  font: inherit;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  padding: 0.625rem 1.25rem;
+  border: 1px solid var(--color-primario);
+  border-radius: var(--radio);
+  background: var(--color-primario);
+  color: #fff;
+  cursor: pointer;
+}
+
+.boton:hover {
+  background: var(--color-primario-hover);
+}
+
+.boton:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.boton--secundario {
+  background: var(--color-superficie);
+  color: var(--color-primario);
+}
+
+.boton--secundario:hover {
+  background: var(--color-primario-suave);
+}
+
+/* --- Avisos y textos --- */
+.aviso {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radio);
+  margin: 0 0 1rem;
+  font-weight: 600;
+}
+
+.aviso--exito,
+.aviso--ok {
+  color: var(--color-exito);
+  background: var(--color-exito-fondo);
+}
+
+.aviso--error {
+  color: var(--color-error);
+  background: var(--color-error-fondo);
+}
+
+.aviso--info {
+  color: var(--color-info);
+  background: var(--color-info-fondo);
+}
+
+.subtitulo,
+.nota,
+.cargando {
+  color: var(--color-texto-secundario);
+}
+
+.nota {
+  font-size: 0.875rem;
+}
+
+.enlaces-secundarios {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.seccion {
+  background: var(--color-superficie);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 1.5rem;
+  margin: 0 0 1.5rem;
+}
+
+.seccion--vacia {
+  color: var(--color-texto-secundario);
+}
+
+.datos-fijos {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.25rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.datos-fijos dt {
+  font-weight: 600;
+}
+
+.datos-fijos dd {
+  margin: 0;
+  /* Los correos largos se cortan en lugar de desbordar en un celular. */
+  overflow-wrap: anywhere;
+}
+
+.texto-legal h2 {
+  margin-top: 1.5rem;
+}
+
+/* --- Página de estado --- */
+.lista-componentes {
+  list-style: none;
+  padding: 0;
+}
+
+.lista-componentes li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+@media (width <= 32rem) {
+  .tarjeta-acceso {
+    padding: 1.5rem 1rem;
+  }
+
+  .encabezado__usuario span {
+    display: none;
+  }
+}
+
+/* --- Formularios por pasos (funcionalidad 020) --- */
+.indicador-pasos {
+  margin: 0 0 1.25rem;
+}
+
+.indicador-pasos__texto {
+  margin: 0 0 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-texto-secundario);
+}
+
+.indicador-pasos__barra {
+  height: 0.375rem;
+  border-radius: 999px;
+  background: var(--color-primario-suave);
+  overflow: hidden;
+}
+
+.indicador-pasos__avance {
+  height: 100%;
+  background: var(--color-primario);
+  transition: width 0.2s ease-out;
+}
+
+.opciones-tarjeta {
+  display: grid;
+  gap: 0.75rem;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.opcion-tarjeta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-height: 3.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--color-borde-control);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  cursor: pointer;
+}
+
+.opcion-tarjeta:hover {
+  background: var(--color-primario-suave);
+}
+
+.opcion-tarjeta--elegida {
+  border: 2px solid var(--color-primario);
+  background: var(--color-primario-suave);
+}
+
+/* El control nativo queda oculto a la vista pero sigue siendo accesible. */
+.opcion-tarjeta__control {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.opcion-tarjeta:has(.opcion-tarjeta__control:focus-visible) {
+  outline: 3px solid var(--color-foco);
+  outline-offset: 2px;
+}
+
+.opcion-tarjeta__titulo {
+  font-weight: 700;
+}
+
+.opcion-tarjeta__descripcion {
+  color: var(--color-texto-secundario);
+  font-size: 0.875rem;
+}
+
+.pasos__titulo {
+  font-size: 1.25rem;
+  margin: 0 0 1rem;
+}
+
+/* El título recibe el foco por código al cambiar de paso, no con el teclado. */
+.pasos__titulo:focus {
+  outline: none;
+}
+
+.pasos__acciones {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.pasos__acciones .boton:only-child {
+  margin-left: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indicador-pasos__avance {
+    transition: none;
+  }
+}
+
+/* --- Organizaciones (funcionalidad 004) --- */
+.boton--chico {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  min-height: 2.25rem;
+}
+
+/* Rojo con contraste 7,6:1 sobre blanco (texto) y 7,6:1 con texto blanco (fondo). */
+.boton--peligro {
+  background: var(--color-error);
+  border-color: var(--color-error);
+  color: #fff;
+}
+
+.boton--peligro:hover {
+  background: #7f1d1d;
+}
+
+.boton--secundario-peligro {
+  background: var(--color-superficie);
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.boton--secundario-peligro:hover {
+  background: var(--color-error-fondo);
+}
+
+.confirmacion {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.confirmacion__pregunta {
+  font-weight: 600;
+}
+
+.etiqueta {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.etiqueta--destacada {
+  background: var(--color-primario-suave);
+  color: var(--color-primario);
+}
+
+.etiqueta--neutra {
+  background: #f3f4f6;
+  color: var(--color-texto-secundario);
+}
+
+.etiqueta--alerta {
+  background: var(--color-error-fondo);
+  color: var(--color-error);
+}
+
+.encabezado-pagina {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.encabezado-pagina h1 {
+  margin: 0;
+}
+
+.lista-tarjetas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tarjeta-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+.tarjeta-item__principal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.tarjeta-item__titulo {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.tarjeta-item__detalle {
+  color: var(--color-texto-secundario);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.acciones-en-linea {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.zona-riesgo {
+  border: 1px solid var(--color-error);
+}
+
+.zona-riesgo h2 {
+  color: var(--color-error);
+}
+
+/* --- Casos (funcionalidad 005) --- */
+.paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.filtros .campo {
+  margin-bottom: 0;
+}
+
+textarea.campo__control {
+  resize: vertical;
+  min-height: 6rem;
+  font: inherit;
+}
+
+.resumen-estados {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.resumen-estados li {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+.resumen-estados__cantidad {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.resumen-estados a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.campo__control--chico {
+  width: auto;
+  min-width: 12rem;
+  padding: 0.35rem 0.5rem;
+}
+
+/* Mi perfil: pendientes antes de eliminar la cuenta (funcionalidad 019) */
+.lista-simple {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+}
+
+.lista-simple li {
+  margin-bottom: 0.25rem;
+}
+
+/* Imágenes de un caso (funcionalidad 006) */
+.carga-imagenes {
+  margin-bottom: 1.25rem;
+}
+
+.carga-imagenes .nota {
+  margin: 0.5rem 0 0;
+}
+
+.carga-imagenes input[type='file']:focus-visible + .boton {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 2px;
+}
+
+.carga-imagenes input[type='file']:disabled + .boton {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.resultados-carga {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  font-size: 0.875rem;
+}
+
+.resultados-carga li {
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radio);
+  margin-bottom: 0.25rem;
+  overflow-wrap: anywhere;
+}
+
+.resultado--ok {
+  background: var(--color-exito-fondo);
+  color: var(--color-exito);
+}
+
+.resultado--error {
+  background: var(--color-error-fondo);
+  color: var(--color-error);
+}
+
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.tarjeta-imagen {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  overflow: hidden;
+}
+
+.tarjeta-imagen__vista {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  background: var(--color-fondo);
+}
+
+.tarjeta-imagen__vista img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.tarjeta-imagen__datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  min-width: 0;
+}
+
+.huella {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.75rem;
+  color: var(--color-texto-secundario);
+  overflow-wrap: anywhere;
+}
+
+/* Análisis (funcionalidad 007) */
+.barra-analisis {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tarjeta-imagen--elegida {
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 1px var(--color-primario);
+}
+
+.progreso-analisis {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radio);
+  background: var(--color-info-fondo);
+}
+
+.progreso-analisis .nota {
+  margin: 0.25rem 0 0;
+}
+
+.historial-analisis {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.resultado-imagen {
+  border-top: 1px solid var(--color-borde);
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.resultado-imagen h3 {
+  margin: 0 0 0.5rem;
+  overflow-wrap: anywhere;
+}
+
+.resultado-capa {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+.resultado-capa h4 {
+  margin: 0 0 0.5rem;
+}
+
+.nivel-indicio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.nivel-indicio meter {
+  flex: 1 1 8rem;
+  max-width: 16rem;
+  height: 1rem;
+}
+
+.lista-anomalias {
+  margin: 0 0 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.lista-anomalias li {
+  margin-bottom: 0.35rem;
+}
+
+.resultado-capa details {
+  margin-bottom: 0.5rem;
+}
+
+.resultado-capa summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.datos-fijos__fila {
+  display: contents;
+}
+
+/* Informes (funcionalidad 008) */
+.acciones-informe {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}

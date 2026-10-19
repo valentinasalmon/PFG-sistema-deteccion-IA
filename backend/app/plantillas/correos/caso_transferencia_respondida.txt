@@ -1,0 +1,3 @@
+Hola, {{ nombre }}:
+
+{% if aceptada %}{{ receptor }} aceptó el caso {{ numero }} y ahora es su Responsable.{% else %}{{ receptor }} rechazó la transferencia del caso {{ numero }}. Seguís siendo su Responsable.{% endif %}

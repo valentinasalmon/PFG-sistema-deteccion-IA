@@ -32,9 +32,10 @@ Las carpetas vacías contienen un archivo `.gitkeep`, que solo existe para que G
 | `app/informes/` | Dominio | Construcción del informe PDF (WeasyPrint). |
 | `app/plantillas/correos/` | Presentación | Plantillas Jinja2 de los correos electrónicos. |
 | `app/plantillas/informes/` | Presentación | Plantillas Jinja2 (HTML + CSS) del informe PDF. |
+| `app/comandos.py` | Entrada | Comandos de terminal (`flask administracion promover`); como las rutas, solo usan la fábrica de servicios. |
 | `app/utilidades/` | Transversal | Funciones auxiliares sin dependencias de dominio (fechas, hashes, formatos). |
 | `migraciones/` | Datos | Migraciones de esquema con Alembic (Flask-Migrate). |
-| `recursos/catalogos/` | Datos | Catálogo versionado de textos de conclusiones y explicaciones (RNF23). |
+| `recursos/catalogos/` | Datos | Catálogos versionados: aseguradoras de la SSN (021) y, más adelante, textos de conclusiones y explicaciones (RNF23). Cada archivo documenta su fuente en el README de la carpeta. |
 | `recursos/confianza_c2pa/` | Datos | Lista de confianza de C2PA (certificados raíz en PEM). |
 | `modelos_onnx/` | Datos | Modelo ONNX de la capa 4. **Ignorado por Git**: se descarga o copia en cada entorno. |
 | `pruebas/unitarias/` | Pruebas | Pruebas de servicios, repositorios, capas y utilidades. |
@@ -49,10 +50,10 @@ Las carpetas vacías contienen un archivo `.gitkeep`, que solo existe para que G
 | `public/` | Archivos estáticos servidos tal cual (ícono, etc.). |
 | `src/api/` | Cliente HTTP y funciones por recurso (casos, imágenes, organizaciones). Único lugar que conoce las URL de la API. |
 | `src/componentes/` | Componentes reutilizables de interfaz (botones, tablas, formularios, diálogos). |
-| `src/paginas/` | Una carpeta por pantalla (inicio, casos, detalle de caso, organización, perfil, administración). |
-| `src/rutas/` | Definición de la navegación y rutas protegidas por sesión y rol. |
+| `src/paginas/` | Un archivo por pantalla (inicio, casos, detalle de caso, organización, perfil, administración) y sus pruebas. |
+| `src/rutas/` | Guardas de navegación: rutas protegidas por sesión (y por rol desde la 014). La tabla de rutas está en `src/App.jsx`. |
 | `src/contextos/` | Estado global de React (sesión del usuario). |
-| `src/hooks/` | Hooks propios (consultas, formularios, progreso de análisis). |
+| `src/hooks/` | Hooks propios (sesión, formularios, acciones de enlaces y, más adelante, progreso de análisis). |
 | `src/estilos/` | Estilos globales y variables de diseño. |
 | `src/utilidades/` | Formateo de fechas, textos y validaciones del lado del cliente. |
 

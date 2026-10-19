@@ -1,0 +1,6 @@
+Hola, {{ nombre }}:
+
+Pediste usar esta dirección como nuevo correo de tu cuenta. Para confirmarlo, abrí este enlace (vence en 24 horas):
+{{ enlace }}
+
+Si no lo pediste, ignorá este mensaje.

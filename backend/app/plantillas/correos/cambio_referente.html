@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>{% if es_nuevo %}Ahora sos el Referente de <strong>{{ organizacion }}</strong>: podés editar sus datos, invitar y gestionar a sus miembros.{% else %}Designaste a {{ nuevo_referente }} como Referente de <strong>{{ organizacion }}</strong>. Seguís siendo miembro de la organización.{% endif %}</p>
+{% with texto_boton = "Ver la organización" %}{% include "_boton.html" %}{% endwith %}
+{% endblock %}

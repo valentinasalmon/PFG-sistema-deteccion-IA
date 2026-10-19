@@ -1,0 +1,6 @@
+Hola, {{ nombre }}:
+
+{% if cambio == "otorgado" %}Te compartieron el caso {{ numero }} con permiso de {{ nivel }}.{% elif cambio == "modificado" %}Tu permiso sobre el caso {{ numero }} ahora es de {{ nivel }}.{% else %}Ya no tenés acceso al caso {{ numero }}.{% endif %}
+{% if cambio != "revocado" %}
+Podés verlo en:
+{{ enlace }}{% endif %}

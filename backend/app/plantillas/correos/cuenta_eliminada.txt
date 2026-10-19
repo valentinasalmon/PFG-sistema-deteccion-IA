@@ -1,0 +1,7 @@
+Hola, {{ nombre }}:
+
+Tu cuenta fue eliminada. Suprimimos tus datos personales y cerramos todas tus sesiones.
+{% if organizaciones %}
+También se eliminaron las organizaciones de las que eras el único miembro, con sus casos: {{ organizaciones | join(", ") }}.
+{% endif %}
+El registro de actividad se conserva sin identificarte, como explica la Política de Privacidad.

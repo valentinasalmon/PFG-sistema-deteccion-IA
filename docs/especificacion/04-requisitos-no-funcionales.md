@@ -75,7 +75,9 @@ Toda acción relevante queda registrada con fines de trazabilidad legal. No se i
 - **CA3:** El registro es de solo inserción: la aplicación no dispone de operaciones para modificar ni eliminar entradas.
 - **CA4:** El registro no almacena contraseñas, tokens ni el contenido de imágenes o informes.
 - **CA5:** Al eliminarse una cuenta, sus entradas se conservan con el usuario anonimizado.
-- **CA6:** El plazo de conservación de la auditoría es **[A DEFINIR]** (ver CP-05).
+- **CA6:** Las entradas se conservan durante **5 años** y luego se eliminan (decisión CP-05).
+- **CA7:** Los intentos de inicio de sesión fallidos registran el correo intentado, aunque no corresponda a ninguna cuenta, para poder detectar ataques.
+- **CA8:** Si una entrada no puede guardarse, la acción que la origina se cancela: no hay acciones sin rastro en la auditoría.
 
 ### RNF07 — Integridad de la evidencia
 **Prioridad:** Debe · **Reglas:** RN23, RN29

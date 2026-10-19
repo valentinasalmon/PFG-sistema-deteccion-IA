@@ -88,6 +88,14 @@ Ver [docs/funcionalidades/README.md](../funcionalidades/README.md). Ninguna func
 
 ## 5. Trabajo con el asistente de IA
 
-- El asistente explica cada paso y entrega el contenido de los archivos; la autora los crea, ejecuta los comandos y hace los commits.
+- Desde la funcionalidad 003 el trabajo se reparte así (decisión de la autora, 2026-10-16; en la 002 y la 020 la autora escribía el código central):
+
+  | Quién | Qué hace |
+  |---|---|
+  | Asistente | Todo el trabajo de cada funcionalidad: especificación, plan, tareas, código del backend y del frontend, pruebas, estilos, textos, configuración y documentación de seguimiento. Crea las ramas y sube commits propios con la línea `Co-Authored-By`. |
+  | Autora | Revisión, Pull Requests e integración en `desarrollo`, y las decisiones importantes: alcance, cuestiones legales y de privacidad, cambios grandes de arquitectura y lo que deba validarse con los tutores. |
+
+- El asistente registra en la bitácora cada decisión que toma y su justificación, para que la autora pueda revisarla y revertirla.
+- Las decisiones importantes que surgen durante el trabajo se registran como cuestiones abiertas con una propuesta provisoria, sin bloquear el resto.
 - Al iniciar una sesión, el asistente lee `CLAUDE.md` y la constitución.
 - Comandos disponibles: `/especificar`, `/planificar`, `/tareas`.

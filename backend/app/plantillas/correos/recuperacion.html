@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>Recibimos un pedido para restablecer tu contraseña. El enlace vence en 1 hora y se puede usar una sola vez.</p>
+{% with texto_boton = "Restablecer contraseña" %}{% include "_boton.html" %}{% endwith %}
+<p>Si no lo pediste, ignorá este mensaje: tu contraseña no cambia.</p>
+{% endblock %}
