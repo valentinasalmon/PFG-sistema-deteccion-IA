@@ -12,7 +12,7 @@ Este archivo forma parte del **arnés** del proyecto: define cómo debe trabajar
 
 - La autora crea los archivos, las ramas y los commits por su cuenta. El agente **explica qué hacer paso a paso**, entrega el contenido de cada archivo y verifica el resultado; solo modifica el repositorio cuando se le pide explícitamente.
 - Cada paso indica: qué archivo crear y dónde, su contenido completo, por qué existe, qué rama usar y el mensaje de commit sugerido.
-- Ante cualquier ambigüedad, **preguntar antes de asumir**.
+- Ante una decisión técnica, el agente **propone la mejor opción y la justifica** desde la ingeniería de software; pregunta solo cuando la decisión depende de la autora (costos, plazos, criterios de la cátedra) o cuando falta información que no puede obtener por sí mismo.
 
 ## Reglas de código
 
