@@ -102,6 +102,12 @@ En producción se usa un bucket privado de S3 con cifrado y versionado (`ALMACEN
 
 La capa de metadatos usa **ExifTool**, que se instala con el sistema (`sudo apt install libimage-exiftool-perl`; el script de entorno de WSL ya lo incluye). Si no está, la capa figura como "No disponible" y el resto del análisis sigue.
 
+La capa de credenciales de contenido (C2PA) usa **c2pa-python**, que se instala con `pip install -r requirements.txt`. Verifica las firmas con la lista de confianza de C2PA guardada en `recursos/confianza_c2pa/`; ese README explica cómo actualizarla. Para correr también la prueba con las imágenes de canales del TIF, que no se suben al repositorio:
+
+```bash
+IMAGENES_CANALES_TIF=/ruta/al/TIF/tests/imagenes_prueba pytest pruebas/unitarias/test_capa_c2pa.py
+```
+
 En desarrollo, los análisis corren en un hilo del mismo servidor (`COLA_ANALISIS=hilo`): no hace falta levantar nada más. Para probar la cola real de producción (ADR-0013):
 
 ```bash
@@ -118,5 +124,6 @@ source .venv/bin/activate && python trabajador.py
 | `/api/salud` responde 503 con `base_de_datos: error` | Verificar que PostgreSQL esté levantado: `docker compose ps` |
 | `ErrorConfiguracion: Faltan variables de entorno` | Crear el archivo `.env` a partir de `.env.ejemplo` |
 | La capa de metadatos aparece "No disponible: ExifTool no está instalado" | `sudo apt install libimage-exiftool-perl` |
+| La capa de credenciales aparece "No disponible: c2pa-python no está instalada" | Con el entorno virtual activo: `pip install -r requirements.txt` |
 | `ModuleNotFoundError` | Activar el entorno virtual: `source .venv/bin/activate` |
 | `error: externally-managed-environment` al usar `pip`, o `flask: command not found` | El entorno virtual no está activo (el prompt no empieza con `(.venv)`): `source .venv/bin/activate` y repetir el comando |

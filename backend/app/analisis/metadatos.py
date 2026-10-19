@@ -30,6 +30,10 @@ from app.analisis.base import (
     CapaAnalisis,
     CapaNoDisponible,
     ResultadoCapa,
+    anomalias_principales,
+    calcular_nivel,
+    describir_intensidad,
+    texto_acotado,
 )
 from app.analisis.dispositivos import fecha_de_lanzamiento
 
@@ -85,15 +89,6 @@ NOTA_C2PA = (
     "validez de su firma se verifica en la capa de credenciales de contenido."
 )
 
-# --- Nivel de indicio (documentado en el plan de la 007) ---
-
-BASES = {
-    SEVERIDAD_DIRECTO: 90, SEVERIDAD_FUERTE: 70, SEVERIDAD_MODERADO: 45,
-    SEVERIDAD_DEBIL: 20, SEVERIDAD_NEUTRO: 0,
-}
-INCREMENTO_POR_ANOMALIA = 10
-NIVEL_MAXIMO = 90  # el máximo del sistema corresponde a C2PA (RN28)
-
 # Campos de la tabla de metadatos relevantes (RF39 CA4): etiqueta y claves posibles.
 CAMPOS_TABLA = (
     ("Fabricante", ("Make",)),
@@ -113,15 +108,7 @@ CAMPOS_TABLA = (
     ("Generador declarado (C2PA)", CAMPOS_C2PA_SOFTWARE),
     ("Descripción", ("ImageDescription", "Description")),
 )
-LARGO_MAXIMO_VALOR = 300
-
-
-def _texto(valor):
-    """Texto acotado; ExifTool puede devolver números o estructuras (regresión del TIF)."""
-    if isinstance(valor, (dict, list)):
-        valor = json.dumps(valor, ensure_ascii=False)
-    texto = str(valor).strip()
-    return texto if len(texto) <= LARGO_MAXIMO_VALOR else texto[:LARGO_MAXIMO_VALOR] + "…"
+_texto = texto_acotado
 
 
 @lru_cache(maxsize=4)
@@ -389,12 +376,8 @@ class CapaMetadatos(CapaAnalisis):
 
     @staticmethod
     def calcular_nivel(anomalias):
-        """Nivel de indicio de 0 a 90 (método documentado en el plan de la 007)."""
-        if not anomalias:
-            return 0
-        bases = sorted((BASES[a.severidad] for a in anomalias), reverse=True)
-        adicionales = sum(1 for base in bases[1:] if base >= BASES[SEVERIDAD_MODERADO])
-        return min(NIVEL_MAXIMO, bases[0] + INCREMENTO_POR_ANOMALIA * adicionales)
+        """Nivel de indicio de 0 a 90 (método común, ver ``base.calcular_nivel``)."""
+        return calcular_nivel(anomalias)
 
     @staticmethod
     def redactar_conclusion(nivel, anomalias, sin_metadatos):
@@ -412,13 +395,8 @@ class CapaMetadatos(CapaAnalisis):
                 "contrastarla con las demás capas."
             )
         else:
-            principales = sorted(anomalias, key=lambda a: BASES[a.severidad], reverse=True)[:2]
-            if nivel >= BASES[SEVERIDAD_FUERTE]:
-                intensidad = "indicios fuertes"
-            elif nivel >= BASES[SEVERIDAD_MODERADO]:
-                intensidad = "indicios moderados"
-            else:
-                intensidad = "indicios débiles"
+            principales = anomalias_principales(anomalias)
+            intensidad = describir_intensidad(nivel)
             texto = (
                 f"Los metadatos presentan {intensidad} de edición, generación o "
                 "inconsistencias. " + " ".join(a.descripcion for a in principales)

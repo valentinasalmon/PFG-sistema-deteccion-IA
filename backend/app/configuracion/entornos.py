@@ -26,6 +26,8 @@ Variables de entorno:
     S3_ENDPOINT          Dirección de un servicio compatible con S3 (opcional).
     S3_CIFRADO           Cifrado del lado del servidor (por defecto, AES256).
     RUTA_EXIFTOOL        Ejecutable de ExifTool (por defecto, "exiftool" del sistema).
+    CARPETA_CONFIANZA_C2PA  Carpeta con la lista de confianza de C2PA (por defecto,
+                         ``recursos/confianza_c2pa`` del backend).
     COLA_ANALISIS        "hilo" (desarrollo), "rq" (producción) o "sincronica".
 
 Realiza: RNF01, RNF02, RNF03 (CA1, CA3), RNF22.
@@ -41,6 +43,7 @@ from cachelib import SimpleCache
 # Carpeta de las imágenes en desarrollo: está en .gitignore y nunca se sube
 # al repositorio (constitución: nada de imágenes de casos reales).
 DIRECTORIO_ALMACENAMIENTO_LOCAL = Path(__file__).resolve().parents[2] / "almacenamiento_local"
+CARPETA_CONFIANZA = Path(__file__).resolve().parents[2] / "recursos" / "confianza_c2pa"
 
 
 class ErrorConfiguracion(Exception):
@@ -163,6 +166,9 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
         self.S3_CIFRADO = os.getenv("S3_CIFRADO", "AES256") or None
         # Análisis: ExifTool del sistema y cola "hilo" (desarrollo), "rq" o "sincronica".
         self.RUTA_EXIFTOOL = os.getenv("RUTA_EXIFTOOL", "exiftool")
+        self.CARPETA_CONFIANZA_C2PA = os.getenv("CARPETA_CONFIANZA_C2PA", "") or str(
+            CARPETA_CONFIANZA
+        )
         self.COLA_ANALISIS = os.getenv("COLA_ANALISIS", "hilo")
 
     def validar(self):

@@ -36,12 +36,12 @@ Sus resultados guardados mostraban la firma de OpenAI como "no confiable". La re
   - **Confiable**: la firma es válida y el firmante está en la lista de confianza.
   - **Firmante no reconocido**: la firma es válida, pero el firmante no está en la lista.
   - **Archivo modificado después de firmarse**: la imagen o el manifiesto no coinciden con lo que se firmó.
-  - **Firma inválida**: por ejemplo, un certificado vencido o revocado.
+  - **No válidas**: la firma o el manifiesto no superan la validación; por ejemplo, un certificado vencido o revocado, o una acción que no coincide con el resto del manifiesto.
 
 **Hallazgos**
 - **Declaración de IA**: el manifiesto declara que el contenido fue generado o compuesto con IA, según el vocabulario IPTC.
 - **Ediciones registradas**: el manifiesto registra acciones de edición, como recortes, filtros, ajustes de color o contenido agregado o quitado.
-- **Problemas de la firma**: firmante no reconocido, archivo modificado después de firmarse o firma inválida, con el detalle de la validación.
+- **Problemas de la firma**: firmante no reconocido, archivo modificado después de firmarse o credenciales no válidas, con el detalle de la validación.
 - **Credenciales dañadas**: el archivo tiene un manifiesto que no se puede leer.
 - Cada hallazgo pesa según el estado de la firma: un dato con firma confiable pesa más que uno con firma no reconocida o inválida.
 
@@ -69,7 +69,7 @@ Sus resultados guardados mostraban la firma de OpenAI como "no confiable". La re
 ## Criterios de aceptación
 
 - [ ] **CA1**: Dado un manifiesto con firma confiable que declara generación por IA, entonces el nivel es 100 % y la conclusión lo presenta como el indicio más fuerte del sistema (RF40 CA1, RN28).
-- [ ] **CA2**: Dado un manifiesto con firmante no reconocido, archivo modificado después de firmarse o firma inválida, entonces se informa como anomalía con el detalle de la validación, y una declaración de IA en ese manifiesto no lleva el nivel al máximo (RF40 CA2).
+- [ ] **CA2**: Dado un manifiesto con firmante no reconocido, archivo modificado después de firmarse o credenciales no válidas, entonces se informa como anomalía con el detalle de la validación, y una declaración de IA en ese manifiesto no lleva el nivel al máximo (RF40 CA2).
 - [ ] **CA3**: Dada una imagen sin manifiesto, entonces se informa "Sin credenciales de contenido" con nivel 0 y la aclaración de que su ausencia no constituye evidencia de autenticidad (RF40 CA3, RN28).
 - [ ] **CA4**: Dado un manifiesto válido, entonces se informan el firmante, la herramienta declarada y las acciones registradas (RF40 CA4).
 - [ ] **CA5**: Dado un manifiesto ilegible o una falla de la biblioteca, entonces se informa como anomalía o como "No disponible" con el motivo, y las demás capas siguen (RN26).
