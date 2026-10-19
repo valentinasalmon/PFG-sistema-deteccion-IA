@@ -45,3 +45,6 @@ kaggle.json
 *.egg-info/
 build/
 .ipynb_checkpoints/
+
+# ---- Imágenes de casos guardadas en desarrollo (NUNCA subir) ----
+backend/almacenamiento_local/

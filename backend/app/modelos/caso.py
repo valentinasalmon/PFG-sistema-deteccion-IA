@@ -81,6 +81,17 @@ class Caso(db.Model):  # pylint: disable=too-few-public-methods
     responsable = db.relationship("Usuario", foreign_keys=[id_responsable])
     destinatario_transferencia = db.relationship("Usuario", foreign_keys=[transferencia_a])
     accesos = db.relationship("AccesoCaso", back_populates="caso", cascade="all, delete-orphan")
+    imagenes = db.relationship(
+        "Imagen", back_populates="caso", cascade="all, delete-orphan", order_by="Imagen.id"
+    )
+    analisis = db.relationship(
+        "Analisis", back_populates="caso", cascade="all, delete-orphan",
+        order_by="Analisis.id.desc()",
+    )
+    informes = db.relationship(
+        "Informe", back_populates="caso", cascade="all, delete-orphan",
+        order_by="Informe.id.desc()",
+    )
 
     @property
     def es_personal(self):
@@ -89,12 +100,8 @@ class Caso(db.Model):  # pylint: disable=too-few-public-methods
 
     @property
     def tiene_informes(self):
-        """True si el caso tiene informes generados.
-
-        Los informes llegan con la funcionalidad 008; hasta entonces ningún
-        caso los tiene y reabrir siempre vuelve a Borrador (RF29 CA1).
-        """
-        return False
+        """True si el caso tiene informes generados: al reabrirlo vuelve a Analizado (RF29 CA1)."""
+        return bool(self.informes)
 
 
 class AccesoCaso(db.Model):  # pylint: disable=too-few-public-methods

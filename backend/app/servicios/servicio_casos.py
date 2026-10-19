@@ -53,7 +53,7 @@ class ServicioCasos:  # pylint: disable=too-many-public-methods
     """Operaciones sobre casos y sus accesos."""
 
     def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        self, repositorio, organizaciones, usuarios, correos, registro
+        self, repositorio, organizaciones, usuarios, correos, registro, archivos=None
     ):
         """
         Args:
@@ -61,12 +61,15 @@ class ServicioCasos:  # pylint: disable=too-many-public-methods
             organizaciones: ``RepositorioOrganizaciones``, para membresías.
             usuarios: ``RepositorioUsuarios``, para transferir casos personales.
             registro: ``ServicioAuditoria``.
+            archivos: ``ArchivosDeCasos``, que borra las imágenes de los casos
+                eliminados (RN21).
         """
         self.repositorio = repositorio
         self.organizaciones = organizaciones
         self.usuarios = usuarios
         self.correos = correos
         self.registro = registro
+        self.archivos = archivos
 
     # --- Permisos ---
 
@@ -119,6 +122,14 @@ class ServicioCasos:  # pylint: disable=too-many-public-methods
             )
             self._rechazar(AccesoDenegado(mensaje), accion, usuario, caso, "permiso_insuficiente")
         return caso, permiso
+
+    def caso_con_permiso(self, id_caso, usuario, minimo, accion=None):
+        """Devuelve ``(caso, permiso)`` si el usuario alcanza el permiso mínimo.
+
+        Lo usan los servicios que trabajan dentro de un caso, como las
+        imágenes, para aplicar los mismos permisos (RN20, RNF05).
+        """
+        return self._caso(id_caso, usuario, minimo, accion)
 
     @staticmethod
     def _tocar(caso):
@@ -518,8 +529,8 @@ class ServicioCasos:  # pylint: disable=too-many-public-methods
     def eliminar(self, id_caso, usuario, confirmacion):
         """Elimina el caso de forma definitiva escribiendo su número (RF32, RN21).
 
-        La auditoría conserva la constancia; las huellas de las imágenes se
-        agregarán con la funcionalidad 006.
+        La auditoría conserva la constancia y las huellas de las imágenes, cuyos
+        archivos se borran del almacenamiento después de confirmar.
         """
         accion = auditoria.CASO_ELIMINACION
         caso, _ = self._caso(id_caso, usuario, PERMISO_RESPONSABLE, accion)
@@ -539,9 +550,12 @@ class ServicioCasos:  # pylint: disable=too-many-public-methods
             )
         avisar = self._con_acceso(caso)
         numero = caso.numero
-        self._auditar(accion, auditoria.EXITOSO, usuario, caso, {"huellas_eliminadas": []})
+        huellas = self.archivos.preparar([caso]) if self.archivos else []
+        self._auditar(accion, auditoria.EXITOSO, usuario, caso, {"sha256_eliminados": huellas})
         self.repositorio.quitar(caso)
         self.repositorio.confirmar()
+        if self.archivos:
+            self.archivos.borrar_pendientes()
         for destinatario in avisar:
             self.correos.enviar_aviso_caso_eliminado(destinatario, numero, usuario)
 

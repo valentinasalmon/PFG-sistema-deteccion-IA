@@ -263,3 +263,20 @@ class ServicioCorreos:  # pylint: disable=too-many-public-methods
             correo, "Tu cuenta fue eliminada", "cuenta_eliminada",
             nombre=nombre, organizaciones=organizaciones,
         )
+
+    def enviar_aviso_analisis_finalizado(self, usuario, caso, cantidad, con_informe=True):
+        """Aviso a quien pidió el análisis de que terminó y su informe está listo (RF44 CA3)."""
+        return self._enviar(
+            usuario.correo, f"Terminó el análisis del caso {caso.numero}", "analisis_finalizado",
+            nombre=usuario.nombre, numero=caso.numero, cantidad=cantidad,
+            con_informe=con_informe, enlace=self._enlace_caso(caso),
+        )
+
+    def enviar_aviso_analisis_fallido(self, usuario, caso, motivo):
+        """Aviso a quien pidió el análisis de que no pudo completarse (RF46 CA2)."""
+        return self._enviar(
+            usuario.correo, f"No se pudo completar el análisis del caso {caso.numero}",
+            "analisis_fallido",
+            nombre=usuario.nombre, numero=caso.numero, motivo=motivo,
+            enlace=self._enlace_caso(caso),
+        )

@@ -42,7 +42,8 @@ organizaciones_bp = Blueprint("organizaciones", __name__, url_prefix="/api/organ
 
 def _servicio():
     return crear_servicio_organizaciones(
-        current_app.config, current_app.extensions["enviador_correo"], origen_de_la_solicitud()
+        current_app.config, current_app.extensions["enviador_correo"], origen_de_la_solicitud(),
+        current_app.extensions["almacenamiento"],
     )
 
 

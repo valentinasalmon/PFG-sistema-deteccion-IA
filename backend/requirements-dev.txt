@@ -7,3 +7,5 @@ flake8==7.4.1               # Estilo de código (PEP 8)
 pylint==4.1.2               # Análisis estático
 import-linter==2.15         # Verificación de la arquitectura en capas (RNF17)
 pre-commit==4.6.2           # Ganchos de Git (validación de commits)
+moto[s3]==5.2.4             # S3 simulado para probar el almacenamiento (funcionalidad 006)
+cryptography==50.0.2        # Certificados de prueba para firmar imágenes con C2PA (funcionalidad 009)

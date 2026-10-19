@@ -71,7 +71,9 @@ async function leerCuerpo(respuesta) {
 
 async function enviar(metodo, ruta, datos) {
   const cabeceras = { Accept: 'application/json' }
-  if (datos !== undefined) cabeceras['Content-Type'] = 'application/json'
+  // Un FormData (archivos) lo arma el navegador, con su propio Content-Type.
+  const esFormulario = datos instanceof FormData
+  if (datos !== undefined && !esFormulario) cabeceras['Content-Type'] = 'application/json'
   if (METODOS_QUE_MODIFICAN.has(metodo)) cabeceras['X-CSRFToken'] = await obtenerTokenCsrf()
 
   let respuesta
@@ -80,7 +82,7 @@ async function enviar(metodo, ruta, datos) {
       method: metodo,
       headers: cabeceras,
       credentials: 'same-origin',
-      body: datos === undefined ? undefined : JSON.stringify(datos),
+      body: datos === undefined || esFormulario ? datos : JSON.stringify(datos),
     })
   } catch {
     throw new ErrorApi(0, {
@@ -96,7 +98,8 @@ async function enviar(metodo, ruta, datos) {
  *
  * @param {string} metodo GET, POST, PATCH o DELETE.
  * @param {string} ruta por ejemplo, '/api/sesion'.
- * @param {Object} [datos] cuerpo a enviar como JSON.
+ * @param {Object | FormData} [datos] cuerpo a enviar como JSON, o un FormData
+ *   con archivos.
  * @returns {Promise<Object>} el cuerpo JSON de la respuesta.
  * @throws {ErrorApi} si la respuesta no es exitosa.
  */

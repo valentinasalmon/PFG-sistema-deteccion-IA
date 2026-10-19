@@ -73,12 +73,30 @@ CUENTA_ELIMINACION = "cuenta.eliminacion"
 CUENTA_COPIA_SOLICITUD = "cuenta.copia_solicitud"
 CUENTA_COPIA_DESCARGA = "cuenta.copia_descarga"
 
+# --- Acciones de imágenes (funcionalidad 006) ---
+IMAGEN_CARGA = "imagen.carga"
+IMAGEN_DESCARGA = "imagen.descarga"
+IMAGEN_ELIMINACION = "imagen.eliminacion"
+
+# --- Acciones de análisis (funcionalidad 007) ---
+ANALISIS_SOLICITUD = "analisis.solicitud"
+ANALISIS_FINALIZACION = "analisis.finalizacion"
+ANALISIS_FALLA = "analisis.falla"
+ANALISIS_INTEGRIDAD = "analisis.integridad"
+
+# --- Acciones de informes (funcionalidad 008) ---
+INFORME_GENERACION = "informe.generacion"
+INFORME_DESCARGA = "informe.descarga"
+
 TIPO_USUARIO = "usuario"
 TIPO_CASO = "caso"
 TIPO_ORGANIZACION = "organizacion"
 TIPO_INVITACION = "invitacion"
 
 # Fragmentos de claves que nunca se guardan en el detalle (RNF06 CA4).
+# "huella" y "hash" se refieren a la contraseña. La huella SHA-256 de una
+# imagen no es secreta y sí debe quedar en la auditoría (RN21, RF36): se
+# registra con la clave "sha256".
 FRAGMENTOS_SENSIBLES = (
     "contrasenia", "password", "hash", "huella", "token", "cookie", "csrf",
     "id_sesion", "identificador_sesion",
@@ -157,3 +175,16 @@ class ServicioAuditoria:
         if confirmar:
             self.repositorio.confirmar()
         return entrada
+
+    def registrar_en_caso(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        self, accion, resultado, usuario, caso, detalle=None, confirmar=False
+    ):
+        """Registra una acción sobre un caso, con el caso como recurso y su número en el detalle.
+
+        La usan los servicios que trabajan dentro de un caso (imágenes y
+        análisis) para que todas sus entradas tengan la misma forma.
+        """
+        return self.registrar(
+            accion, resultado, usuario=usuario, recurso=(TIPO_CASO, caso.id),
+            detalle={"numero": caso.numero, **(detalle or {})}, confirmar=confirmar,
+        )
