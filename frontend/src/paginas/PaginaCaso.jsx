@@ -149,7 +149,7 @@ function SeccionEstado({ caso, ejecutar }) {
     <section className="seccion" aria-labelledby="titulo-estado">
       <h2 id="titulo-estado">Estado</h2>
       <p className="nota">
-        Cerrar deja el caso en solo lectura y comienza el plazo de retención de 2 años; al
+        Cerrar deja el caso en solo lectura y comienza el plazo de retención de 5 años; al
         reabrirlo, el plazo se detiene.
       </p>
       <div className="acciones-en-linea">

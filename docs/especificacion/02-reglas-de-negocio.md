@@ -60,7 +60,7 @@ Las reglas de negocio son restricciones del dominio que el sistema debe respetar
 
 | ID | Regla |
 |---|---|
-| **RN30** | Los datos de un caso se conservan durante **2 años contados desde que el caso pasa a Cerrado o Archivado**. Reabrir el caso detiene el cómputo; al volver a cerrarse o archivarse, el plazo comienza nuevamente. |
+| **RN30** | Los datos de un caso se conservan durante **5 años contados desde que el caso pasa a Cerrado o Archivado**, el plazo genérico de prescripción del Código Civil y Comercial (art. 2560), el mismo que se adoptó para la auditoría (CP-05). Reabrir el caso detiene el cómputo; al volver a cerrarse o archivarse, el plazo comienza nuevamente. |
 | **RN31** | Treinta días antes del vencimiento del plazo de retención se notifica al Responsable por correo y en el panel. |
 | **RN32** | El Responsable puede prorrogar el plazo de retención por 1 año, indicando un motivo (por ejemplo, juicio en trámite). La prórroga es renovable y queda registrada en la auditoría. **[PROPUESTA]** |
 | **RN33** | Vencido el plazo sin prórroga, el sistema destruye el caso aplicando RN21. |
