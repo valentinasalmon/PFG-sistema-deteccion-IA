@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>{% if cambio == "otorgado" %}Te compartieron el caso <strong>{{ numero }}</strong> con permiso de {{ nivel }}.{% elif cambio == "modificado" %}Tu permiso sobre el caso <strong>{{ numero }}</strong> ahora es de {{ nivel }}.{% else %}Ya no tenés acceso al caso <strong>{{ numero }}</strong>.{% endif %}</p>
+{% if cambio != "revocado" %}{% with texto_boton = "Ver el caso" %}{% include "_boton.html" %}{% endwith %}{% endif %}
+{% endblock %}

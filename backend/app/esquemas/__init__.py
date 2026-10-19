@@ -16,6 +16,12 @@ MENSAJES_POR_TIPO = {
     "bool_type": "El valor no es válido.",
     "bool_parsing": "El valor no es válido.",
     "extra_forbidden": "Este campo no está permitido.",
+    "date_type": "La fecha no es válida.",
+    "date_parsing": "La fecha no es válida.",
+    "date_from_datetime_parsing": "La fecha no es válida.",
+    "date_from_datetime_inexact": "La fecha no es válida.",
+    "int_parsing": "El valor no es válido.",
+    "greater_than_equal": "El valor no es válido.",
 }
 CAMPOS_CORREO = {"correo", "correo_nuevo", "correo_contacto"}
 

@@ -101,6 +101,7 @@ def organizacion_a_dict(organizacion, membresia, servicio=None):
             "nombre": servicio.nombre_del_plan(organizacion),
             "limite_miembros": servicio.limite_de_miembros(organizacion),
         }
+        datos["cantidad_casos"] = servicio.cantidad_de_casos(organizacion)
     return datos
 
 

@@ -1,0 +1,6 @@
+Hola, {{ nombre }}:
+
+{{ solicitante }} quiere transferirte el caso {{ numero }}. Si lo aceptás, pasa a tu espacio personal y quedás como Responsable.
+
+Podés aceptarlo o rechazarlo desde la lista de casos:
+{{ enlace }}

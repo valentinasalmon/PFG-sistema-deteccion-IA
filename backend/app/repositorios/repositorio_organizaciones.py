@@ -3,6 +3,7 @@
 Realiza: RF10 a RF18.
 """
 from app.extensiones import db
+from app.repositorios.base import RepositorioBase
 from app.modelos.organizacion import (
     INVITACION_PENDIENTE,
     ORGANIZACION_PENDIENTE,
@@ -14,7 +15,7 @@ from app.modelos.organizacion import (
 from app.modelos.usuario import Usuario
 
 
-class RepositorioOrganizaciones:
+class RepositorioOrganizaciones(RepositorioBase):
     """Consultas y persistencia de las organizaciones y sus miembros."""
 
     def obtener(self, id_organizacion):
@@ -124,17 +125,3 @@ class RepositorioOrganizaciones:
             .first()
             is not None
         )
-
-    def preparar(self, entidad):
-        """Agrega la entidad a la transacción y le asigna identificador, sin confirmar."""
-        db.session.add(entidad)
-        db.session.flush()
-        return entidad
-
-    def quitar(self, entidad):
-        """Marca la entidad para eliminarla al confirmar."""
-        db.session.delete(entidad)
-
-    def confirmar(self):
-        """Confirma la transacción en curso (la acción y su entrada de auditoría)."""
-        db.session.commit()

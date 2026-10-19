@@ -20,3 +20,18 @@ export function formatearFecha(texto) {
     year: 'numeric',
   })
 }
+
+/**
+ * Fecha calendario sin hora (por ejemplo, la fecha del hecho) en formato
+ * dd/mm/aaaa. No se convierte de zona horaria: es el mismo día en todas.
+ */
+export function formatearDia(texto) {
+  if (!texto) return '—'
+  const [anio, mes, dia] = texto.slice(0, 10).split('-')
+  return `${dia}/${mes}/${anio}`
+}
+
+/** Fecha de hoy en formato aaaa-mm-dd, en la hora de Argentina (para los campos de fecha). */
+export function hoyIso() {
+  return new Date().toLocaleDateString('en-CA', { timeZone: ZONA_HORARIA })
+}
