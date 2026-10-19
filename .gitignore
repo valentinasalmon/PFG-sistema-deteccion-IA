@@ -1,0 +1,61 @@
+# =============================================================================
+# Archivos que nunca se suben al repositorio.
+# Motivos: secretos (constitución, sección 4), imágenes y modelos entrenados
+# (CLAUDE.md, ADR-0010) y archivos generados que se reconstruyen localmente.
+# =============================================================================
+
+# --- Secretos y configuración local -----------------------------------------
+.env
+.env.*
+!.env.ejemplo
+*.pem
+*.key
+kaggle.json
+
+# --- Red neuronal: datos, modelos y experimentos (ADR-0010) -----------------
+red_neuronal/datos/*
+!red_neuronal/datos/.gitkeep
+red_neuronal/modelos/*
+!red_neuronal/modelos/.gitkeep
+mlruns/
+mlartifacts/
+*.onnx
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# --- Backend: modelo ONNX descargado en cada entorno --------------------------
+backend/modelos_onnx/*
+!backend/modelos_onnx/.gitkeep
+
+# --- Python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.mypy_cache/
+.ruff_cache/
+
+# --- Jupyter -----------------------------------------------------------------
+.ipynb_checkpoints/
+
+# --- Node y frontend ---------------------------------------------------------
+node_modules/
+frontend/dist/
+frontend/coverage/
+
+# --- Sistema operativo y editores --------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+*.swp
