@@ -29,6 +29,8 @@ Este archivo forma parte del **arnés** del proyecto: define cómo debe trabajar
 flake8 app/ && pylint app/ && pytest --cov=app --cov-fail-under=80
 # frontend
 npm run lint && npm run test
+# red neuronal (desde red_neuronal/)
+flake8 clasificador/ && pylint clasificador/ && pytest --cov=clasificador --cov-fail-under=80
 ```
 
 ## Commits
