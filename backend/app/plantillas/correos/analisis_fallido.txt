@@ -1,0 +1,6 @@
+Hola, {{ nombre }}:
+
+El análisis del caso {{ numero }} no pudo completarse: {{ motivo }}
+
+El caso volvió a su estado anterior y podés pedir el análisis de nuevo:
+{{ enlace }}

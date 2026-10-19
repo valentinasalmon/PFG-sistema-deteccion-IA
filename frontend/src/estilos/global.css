@@ -798,3 +798,97 @@ textarea.campo__control {
   color: var(--color-texto-secundario);
   overflow-wrap: anywhere;
 }
+
+/* Análisis (funcionalidad 007) */
+.barra-analisis {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tarjeta-imagen--elegida {
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 1px var(--color-primario);
+}
+
+.progreso-analisis {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radio);
+  background: var(--color-info-fondo);
+}
+
+.progreso-analisis .nota {
+  margin: 0.25rem 0 0;
+}
+
+.historial-analisis {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.resultado-imagen {
+  border-top: 1px solid var(--color-borde);
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.resultado-imagen h3 {
+  margin: 0 0 0.5rem;
+  overflow-wrap: anywhere;
+}
+
+.resultado-capa {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+.resultado-capa h4 {
+  margin: 0 0 0.5rem;
+}
+
+.nivel-indicio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.nivel-indicio meter {
+  flex: 1 1 8rem;
+  max-width: 16rem;
+  height: 1rem;
+}
+
+.lista-anomalias {
+  margin: 0 0 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.lista-anomalias li {
+  margin-bottom: 0.35rem;
+}
+
+.resultado-capa details {
+  margin-bottom: 0.5rem;
+}
+
+.resultado-capa summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.datos-fijos__fila {
+  display: contents;
+}

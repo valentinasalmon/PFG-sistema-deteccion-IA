@@ -87,9 +87,8 @@ class ServicioImagenes:
 
     def _auditar(self, accion, resultado, usuario, caso, detalle, confirmar=False):
         # pylint: disable=too-many-arguments,too-many-positional-arguments
-        return self.registro.registrar(
-            accion, resultado, usuario=usuario, recurso=(auditoria.TIPO_CASO, caso.id),
-            detalle={"numero": caso.numero, **detalle}, confirmar=confirmar,
+        return self.registro.registrar_en_caso(
+            accion, resultado, usuario, caso, detalle, confirmar
         )
 
     def _rechazar(self, error, accion, usuario, caso, detalle):
@@ -230,6 +229,10 @@ class ServicioImagenes:
         """Devuelve ``(caso, permiso, imágenes)`` si el usuario tiene algún permiso."""
         caso, permiso = self.casos.caso_con_permiso(id_caso, usuario, NIVEL_LECTURA)
         return caso, permiso, self.repositorio.de_caso(caso.id)
+
+    def analizadas(self, imagenes):
+        """Ids de las imágenes que ya se analizaron, para elegir por defecto las demás."""
+        return self.repositorio.analizadas([imagen.id for imagen in imagenes])
 
     def enlace_miniatura(self, imagen):
         """Enlace firmado de corta duración a la vista previa (RF35 CA2)."""

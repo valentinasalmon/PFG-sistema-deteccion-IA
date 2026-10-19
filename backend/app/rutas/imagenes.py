@@ -33,8 +33,11 @@ def listar(id_caso):
     """Imágenes del caso, el límite del plan y si el usuario puede cargar o eliminar."""
     servicio = _servicio()
     caso, permiso, imagenes = servicio.listar(id_caso, usuario_actual())
+    analizadas = servicio.analizadas(imagenes)
     return jsonify({
-        "imagenes": [imagen_a_dict(i, servicio.enlace_miniatura(i)) for i in imagenes],
+        "imagenes": [
+            imagen_a_dict(i, servicio.enlace_miniatura(i), i.id in analizadas) for i in imagenes
+        ],
         "limite": servicio.limite_de_imagenes(caso),
         "tamanio_maximo": current_app.config["TAMANIO_MAXIMO_IMAGEN"],
         "puede_modificar": servicio.puede_modificar(caso, permiso),

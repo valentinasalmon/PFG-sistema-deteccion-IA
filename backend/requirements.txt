@@ -26,3 +26,6 @@ weasyprint==70.0            # HTML y CSS a PDF; requiere Pango del sistema (ADR-
 # --- Funcionalidad 006: imágenes de los casos ---
 Pillow==13.0.0              # Dimensiones, verificación y miniaturas de JPEG y PNG
 boto3==1.43.114             # Almacenamiento en Amazon S3 (producción)
+
+# --- Funcionalidad 007: motor de análisis ---
+rq==2.12.0                  # Cola de trabajos sobre Redis (ADR-0004); requiere ExifTool del sistema

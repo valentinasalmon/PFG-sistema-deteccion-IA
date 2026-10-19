@@ -84,6 +84,10 @@ class Caso(db.Model):  # pylint: disable=too-few-public-methods
     imagenes = db.relationship(
         "Imagen", back_populates="caso", cascade="all, delete-orphan", order_by="Imagen.id"
     )
+    analisis = db.relationship(
+        "Analisis", back_populates="caso", cascade="all, delete-orphan",
+        order_by="Analisis.id.desc()",
+    )
 
     @property
     def es_personal(self):

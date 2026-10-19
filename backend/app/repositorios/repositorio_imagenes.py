@@ -3,6 +3,7 @@
 Realiza: RF34 a RF36; RN21.
 """
 from app.extensiones import db
+from app.modelos.analisis import ESTADO_FINALIZADO, Analisis, AnalisisImagen
 from app.modelos.imagen import Imagen
 from app.repositorios.base import RepositorioBase
 
@@ -31,3 +32,19 @@ class RepositorioImagenes(RepositorioBase):
         if not ids_casos:
             return []
         return Imagen.query.filter(Imagen.id_caso.in_(ids_casos)).all()
+
+    def analizadas(self, ids_imagenes):
+        """Ids de las imágenes que ya forman parte de un análisis finalizado (CU27 paso 1)."""
+        if not ids_imagenes:
+            return set()
+        filas = (
+            db.session.query(AnalisisImagen.id_imagen)
+            .join(Analisis)
+            .filter(
+                AnalisisImagen.id_imagen.in_(ids_imagenes),
+                Analisis.estado == ESTADO_FINALIZADO,
+            )
+            .distinct()
+            .all()
+        )
+        return {fila[0] for fila in filas}

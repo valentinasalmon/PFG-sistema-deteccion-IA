@@ -7,12 +7,15 @@ Cada fábrica recibe el ``origen`` de la solicitud (por ahora, la dirección
 IP) para que la auditoría lo registre sin que los servicios conozcan Flask.
 """
 from app.repositorios.catalogo_aseguradoras import CatalogoAseguradoras
+from app.analisis.registro import crear_capas
+from app.repositorios.repositorio_analisis import RepositorioAnalisis
 from app.repositorios.repositorio_auditoria import RepositorioAuditoria
 from app.repositorios.repositorio_casos import RepositorioCasos
 from app.repositorios.repositorio_imagenes import RepositorioImagenes
 from app.repositorios.repositorio_organizaciones import RepositorioOrganizaciones
 from app.repositorios.repositorio_usuarios import RepositorioUsuarios
 from app.servicios.auditoria import ServicioAuditoria
+from app.servicios.servicio_analisis import ServicioAnalisis
 from app.servicios.servicio_casos import ServicioCasos
 from app.servicios.servicio_correos import ServicioCorreos
 from app.servicios.servicio_cuentas import ServicioCuentas
@@ -22,6 +25,10 @@ from app.servicios.servicio_organizaciones import ServicioOrganizaciones
 from app.servicios.servicio_perfil import ServicioPerfil
 from app.servicios.servicio_sesion import ServicioSesion
 from app.servicios.tokens import GestorTokens
+
+
+# Trabajo de la cola que procesa un análisis, por su ruta de importación (ADR-0013).
+TRABAJO_ANALISIS = "app.tareas.analisis.ejecutar_analisis"
 
 
 def _correos(configuracion, enviador):
@@ -109,4 +116,17 @@ def crear_servicio_datos_personales(configuracion, enviador, origen=None, almace
         crear_servicio_organizaciones(configuracion, enviador, origen, almacenamiento),
         _correos(configuracion, enviador), GestorTokens(configuracion["SECRET_KEY"]),
         configuracion, crear_servicio_auditoria(origen),
+    )
+
+
+def crear_servicio_analisis(configuracion, enviador, almacenamiento, cola, origen=None):
+    """Servicio de análisis de imágenes (funcionalidad 007)."""
+    return ServicioAnalisis(
+        RepositorioAnalisis(), crear_servicio_casos(configuracion, enviador, origen),
+        RepositorioImagenes(),
+        {
+            "capas": crear_capas(configuracion), "cola": cola, "trabajo": TRABAJO_ANALISIS,
+            "almacenamiento": almacenamiento,
+        },
+        _correos(configuracion, enviador), configuracion, crear_servicio_auditoria(origen),
     )
