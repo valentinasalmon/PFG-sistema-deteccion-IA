@@ -7,6 +7,7 @@
     @page {
       size: A4;
       margin: 2cm 1.8cm 2.2cm;
+      @top-center { content: "{{ informe.leyenda }}"; font-family: "DejaVu Sans", Arial, sans-serif; font-size: 7.5pt; color: #991b1b; }
       @bottom-left { content: "Caso {{ informe.caso.numero }} · Informe generado el {{ generado_en | hora_argentina }}"; font-family: "DejaVu Sans", Arial, sans-serif; font-size: 7.5pt; color: #6b7280; }
       @bottom-right { content: "Página " counter(page) " de " counter(pages); font-family: "DejaVu Sans", Arial, sans-serif; font-size: 7.5pt; color: #6b7280; }
     }

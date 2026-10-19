@@ -64,6 +64,7 @@ def test_el_informe_tiene_todos_los_datos_pedidos():
         "Nivel de indicio: 90 %", "Photoshop", "Adobe Photoshop 25.0",
         "Plataforma", "0.2.0", "Capa 1 · Metadatos", "1.0 (ExifTool 12.76)", "WeasyPrint",
         "Limitaciones y advertencia legal", "perito especializado",
+        "Este informe no constituye un dictamen pericial. Consulte a un profesional especializado.",
     ):
         assert texto in html, texto
 
