@@ -46,7 +46,8 @@ export default function PaginaPrivacidad() {
       <p>
         Este registro se usa solo con fines de seguridad y de trazabilidad legal, no puede
         modificarse y se conserva durante cinco años. Si eliminás tu cuenta, los registros se
-        conservan sin identificarte.
+        conservan sin vincularse a ella; los que guardan un correo electrónico (por ejemplo, un
+        intento de inicio de sesión fallido) lo conservan hasta que se cumplen esos cinco años.
       </p>
 
       <h2>5. Seguridad</h2>
@@ -66,6 +67,12 @@ export default function PaginaPrivacidad() {
         Podés acceder a tus datos, rectificarlos y solicitar su supresión, conforme a la Ley N.°
         25.326 de Protección de los Datos Personales. La Agencia de Acceso a la Información
         Pública es el órgano de control de esa ley.
+      </p>
+      <p>
+        Desde "Mi perfil" podés corregir tus datos, descargar una copia de ellos (en PDF y en
+        JSON) y eliminar tu cuenta. Al eliminarla se suprimen tus datos personales de inmediato;
+        antes tenés que transferir o eliminar los casos a tu cargo y designar otro Referente en
+        las organizaciones que administrás.
       </p>
     </article>
   )
