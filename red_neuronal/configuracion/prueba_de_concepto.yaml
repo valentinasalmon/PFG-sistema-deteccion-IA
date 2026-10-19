@@ -1,0 +1,49 @@
+# Configuración de la prueba de concepto (funcionalidad 010, CA1).
+#
+# Objetivo: recorrer el pipeline completo con pocas imágenes para validar el
+# diseño y medir tiempos. No se exige umbral de desempeño.
+#
+# IMPORTANTE: los nombres de columnas de Community Forensics se confirman con
+# el cuaderno 01_exploracion_datos (tarea T25) antes de ejecutar esta receta.
+nombre: prueba_de_concepto
+semilla: 42
+directorio_trabajo: /kaggle/working/trabajo
+
+datos:
+  fuentes:
+    - nombre: community_forensics
+      tipo: hugging_face
+      conjunto: OwensLab/CommunityForensics-Small
+      revision: main            # se fija a un commit concreto en la receta v1
+      division: train
+      columna_imagen: image_data   # a confirmar en T25
+      columna_clase: label         # a confirmar en T25
+      valores_sinteticos: ["1"]    # a confirmar en T25
+      columna_generador: model_name  # a confirmar en T25
+      cantidad_reales: 5000
+      cantidad_sinteticas: 5000
+      licencia: "Investigación no comercial (a verificar en T25)"
+  generadores_reservados: []
+  proporciones:
+    entrenamiento: 0.8
+    validacion: 0.1
+    prueba: 0.1
+  calidad_jpeg: [75, 95]
+  lado_menor: [256, 512]
+
+entrenamiento:
+  arquitectura: efficientnet_b0
+  preentrenado: true
+  epocas: 3
+  tamanio_lote: 64
+  tasa_aprendizaje: 0.0003
+  paciencia: 2
+  trabajadores_carga: 2
+  precision_mixta: true
+
+exportacion:
+  opset: 17
+  tolerancia: 0.001
+
+compuerta:
+  auc_minimo: 0.90
