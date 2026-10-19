@@ -25,6 +25,8 @@ Variables de entorno:
     S3_REGION            Región de AWS del bucket (por defecto, sa-east-1).
     S3_ENDPOINT          Dirección de un servicio compatible con S3 (opcional).
     S3_CIFRADO           Cifrado del lado del servidor (por defecto, AES256).
+    RUTA_EXIFTOOL        Ejecutable de ExifTool (por defecto, "exiftool" del sistema).
+    COLA_ANALISIS        "hilo" (desarrollo), "rq" (producción) o "sincronica".
 
 Realiza: RNF01, RNF02, RNF03 (CA1, CA3), RNF22.
 """
@@ -115,6 +117,11 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
     VIGENCIA_ENLACE_ARCHIVO = timedelta(minutes=5)  # RF35 CA2
     LADO_MINIATURA = 480  # píxeles del lado mayor de la vista previa
 
+    # --- Análisis (funcionalidad 007) ---
+    # Un análisis en curso que no avanza en este tiempo se considera
+    # interrumpido y queda Fallido (RF46 CA2).
+    TIEMPO_MAXIMO_SIN_AVANCE = timedelta(minutes=15)
+
     # --- Términos de Uso y Política de Privacidad vigentes (RNF08 CA1) ---
     VERSION_TERMINOS = "1.0"
 
@@ -154,6 +161,9 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
         self.S3_REGION = os.getenv("S3_REGION", "sa-east-1")
         self.S3_ENDPOINT = os.getenv("S3_ENDPOINT", "")
         self.S3_CIFRADO = os.getenv("S3_CIFRADO", "AES256") or None
+        # Análisis: ExifTool del sistema y cola "hilo" (desarrollo), "rq" o "sincronica".
+        self.RUTA_EXIFTOOL = os.getenv("RUTA_EXIFTOOL", "exiftool")
+        self.COLA_ANALISIS = os.getenv("COLA_ANALISIS", "hilo")
 
     def validar(self):
         """Verifica que existan todas las variables obligatorias del entorno.
@@ -210,6 +220,7 @@ class ConfiguracionPruebas(ConfiguracionBase):  # pylint: disable=too-many-insta
         self.SESSION_CACHELIB = SimpleCache()
         # Cada aplicación de prueba usa su propia carpeta temporal.
         self.ALMACENAMIENTO = "local"
+        self.COLA_ANALISIS = "sincronica"
         self.DIRECTORIO_ALMACENAMIENTO = tempfile.mkdtemp(prefix="almacenamiento-pruebas-")
 
 
@@ -229,6 +240,7 @@ class ConfiguracionProduccion(ConfiguracionBase):
     )
 
     def __init__(self):
-        """En producción, las imágenes siempre van a S3 (RNF03)."""
+        """En producción, las imágenes van a S3 (RNF03) y los análisis a RQ (ADR-0004)."""
         super().__init__()
         self.ALMACENAMIENTO = "s3"  # pylint: disable=invalid-name
+        self.COLA_ANALISIS = "rq"  # pylint: disable=invalid-name

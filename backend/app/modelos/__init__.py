@@ -2,6 +2,7 @@
 
 Importar los modelos acá permite que Alembic los detecte al generar migraciones.
 """
+from app.modelos.analisis import Analisis, AnalisisImagen, Anomalia, ResultadoCapa
 from app.modelos.caso import AccesoCaso, Caso
 from app.modelos.entrada_auditoria import EntradaAuditoria
 from app.modelos.imagen import Imagen
@@ -9,6 +10,6 @@ from app.modelos.organizacion import Invitacion, Membresia, Organizacion
 from app.modelos.usuario import Usuario
 
 __all__ = [
-    "AccesoCaso", "Caso", "EntradaAuditoria", "Imagen", "Invitacion", "Membresia", "Organizacion",
-    "Usuario",
+    "AccesoCaso", "Analisis", "AnalisisImagen", "Anomalia", "Caso", "EntradaAuditoria",
+    "Imagen", "Invitacion", "Membresia", "Organizacion", "ResultadoCapa", "Usuario",
 ]

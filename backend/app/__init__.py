@@ -18,6 +18,7 @@ from app.comandos import registrar_comandos
 from app.configuracion import obtener_configuracion
 from app.extensiones import db, migrar, proteccion_csrf, sesiones_servidor
 from app.integraciones.almacenamiento import crear_almacenamiento
+from app.integraciones.cola import crear_cola
 from app.integraciones.correo import crear_enviador
 from app.rutas import registrar_rutas
 from app.seguridad.autenticacion import configurar_autenticacion
@@ -56,6 +57,7 @@ def crear_app(nombre_entorno=None):
     configurar_autenticacion(aplicacion)
     aplicacion.extensions["enviador_correo"] = crear_enviador(aplicacion.config)
     aplicacion.extensions["almacenamiento"] = crear_almacenamiento(aplicacion.config)
+    aplicacion.extensions["cola_analisis"] = crear_cola(aplicacion)
 
     registrar_rutas(aplicacion)
     registrar_comandos(aplicacion)
