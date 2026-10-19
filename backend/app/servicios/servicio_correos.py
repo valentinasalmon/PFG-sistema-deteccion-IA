@@ -20,8 +20,12 @@ _entorno = Environment(
 )
 
 
-class ServicioCorreos:
-    """Un método por cada correo que envía la plataforma."""
+class ServicioCorreos:  # pylint: disable=too-many-public-methods
+    """Un método por cada correo que envía la plataforma.
+
+    Tiene muchos métodos públicos a propósito: cada correo tiene el suyo, con
+    su asunto y sus datos, y así cada aviso se encuentra y se prueba por nombre.
+    """
 
     def __init__(self, enviador, url_frontend):
         self.enviador = enviador
@@ -241,4 +245,21 @@ class ServicioCorreos:
             usuario.correo, f"Se eliminó el caso {numero}", "caso_eliminado",
             nombre=usuario.nombre, numero=numero,
             responsable=f"{responsable.nombre} {responsable.apellido}",
+        )
+
+    def enviar_aviso_copia_de_datos(self, usuario):
+        """Aviso de que se generó una copia de los datos personales, sin enlace (RF09 CA2)."""
+        return self._enviar(
+            usuario.correo, "Se generó una copia de tus datos", "copia_de_datos",
+            nombre=usuario.nombre, enlace=f"{self.url_frontend}/recuperar-contrasenia",
+        )
+
+    def enviar_confirmacion_eliminacion_cuenta(self, correo, nombre, organizaciones):
+        """Confirmación a la dirección de la cuenta eliminada (RF08 CA4).
+
+        Recibe el correo y el nombre sueltos porque la cuenta ya no existe.
+        """
+        return self._enviar(
+            correo, "Tu cuenta fue eliminada", "cuenta_eliminada",
+            nombre=nombre, organizaciones=organizaciones,
         )

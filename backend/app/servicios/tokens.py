@@ -8,6 +8,8 @@ incluye un dato que cambia cuando se usa, y eso lo vuelve de un solo uso
 - Recuperación: incluye una huella del hash de la contraseña; al cambiarla,
   el token deja de coincidir.
 - Cambio de correo: incluye el correo actual; al cambiarlo, deja de coincidir.
+- Copia de datos personales: vence a los 15 minutos y además exige la
+  sesión de la misma persona, así el enlace solo no alcanza (RF09 CA2).
 - Invitación a una organización: solo identifica la invitación; su vigencia
   la decide la base de datos (estado y vencimiento).
 """
@@ -19,6 +21,7 @@ PROPOSITO_VERIFICACION = "verificacion-correo"
 PROPOSITO_RECUPERACION = "recuperacion-contrasenia"
 PROPOSITO_CAMBIO_CORREO = "cambio-correo"
 PROPOSITO_INVITACION = "invitacion-organizacion"
+PROPOSITO_COPIA_DATOS = "copia-datos-personales"
 
 
 class GestorTokens:

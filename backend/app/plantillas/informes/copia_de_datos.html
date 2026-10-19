@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <title>Copia de tus datos personales</title>
+  <style>
+    @page { size: A4; margin: 2cm 1.8cm; @bottom-right { content: "Página " counter(page) " de " counter(pages); font-size: 8pt; color: #6b7280; } }
+    body { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 9.5pt; color: #1f2937; line-height: 1.4; }
+    h1 { font-size: 16pt; color: #1e3a5f; margin: 0 0 4pt; }
+    h2 { font-size: 11.5pt; color: #1e3a5f; border-bottom: 1px solid #d1d5db; padding-bottom: 3pt; margin: 18pt 0 6pt; }
+    .nota { color: #4b5563; font-size: 8.5pt; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 3pt 5pt; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+    th { background: #f3f4f6; font-weight: bold; }
+    .datos td:first-child { width: 35%; color: #4b5563; }
+    .vacio { color: #6b7280; font-style: italic; }
+  </style>
+</head>
+<body>
+  <h1>Copia de tus datos personales</h1>
+  <p class="nota">
+    Generada el {{ copia.generada_en | fecha }} (hora UTC). Contiene los datos que la plataforma
+    guarda sobre vos, conforme al derecho de acceso de la Ley N.° 25.326 (art. 14). No incluye
+    datos de otras personas ni el contenido de los casos.
+  </p>
+
+  <h2>Cuenta</h2>
+  <table class="datos">
+    <tr><td>Nombre</td><td>{{ copia.cuenta.nombre }} {{ copia.cuenta.apellido }}</td></tr>
+    <tr><td>Correo electrónico</td><td>{{ copia.cuenta.correo }}</td></tr>
+    <tr><td>Perfil</td><td>{{ copia.cuenta.perfil }}</td></tr>
+    {% if copia.cuenta.colegio %}<tr><td>Colegio de abogados</td><td>{{ copia.cuenta.colegio }}</td></tr>{% endif %}
+    {% if copia.cuenta.empresa %}<tr><td>Empresa</td><td>{{ copia.cuenta.empresa }}</td></tr>{% endif %}
+    <tr><td>Rol en la plataforma</td><td>{{ copia.cuenta.rol }}</td></tr>
+    <tr><td>Cuenta activa</td><td>{{ "Sí" if copia.cuenta.activa else "No" }}</td></tr>
+    <tr><td>Creada</td><td>{{ copia.cuenta.creada_en | fecha }}</td></tr>
+    <tr><td>Correo verificado</td><td>{{ copia.cuenta.correo_verificado_en | fecha }}</td></tr>
+  </table>
+
+  <h2>Consentimiento</h2>
+  <table class="datos">
+    <tr><td>Versión de los términos aceptada</td><td>{{ copia.consentimiento.version_terminos }}</td></tr>
+    <tr><td>Aceptados el</td><td>{{ copia.consentimiento.aceptado_en | fecha }}</td></tr>
+  </table>
+
+  <h2>Organizaciones</h2>
+  {% if copia.organizaciones %}
+  <table>
+    <tr><th>Nombre</th><th>Tipo</th><th>Rol</th><th>Cargo</th><th>Desde</th></tr>
+    {% for o in copia.organizaciones %}
+    <tr><td>{{ o.nombre }}</td><td>{{ o.tipo }}</td><td>{{ o.rol }}</td><td>{{ o.cargo or "—" }}</td><td>{{ o.incorporado_en | fecha }}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="vacio">No pertenecés a ninguna organización.</p>{% endif %}
+
+  <h2>Invitaciones pendientes</h2>
+  {% if copia.invitaciones_pendientes %}
+  <table>
+    <tr><th>Organización</th><th>Cargo</th><th>Recibida</th><th>Vence</th></tr>
+    {% for i in copia.invitaciones_pendientes %}
+    <tr><td>{{ i.organizacion }}</td><td>{{ i.cargo or "—" }}</td><td>{{ i.recibida_en | fecha }}</td><td>{{ i.vence_en | fecha }}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="vacio">No tenés invitaciones pendientes.</p>{% endif %}
+
+  <h2>Casos a tu cargo</h2>
+  {% if copia.casos_a_cargo %}
+  <table>
+    <tr><th>Número</th><th>Tipo</th><th>Estado</th><th>Espacio</th><th>Fecha del hecho</th><th>Creado</th></tr>
+    {% for c in copia.casos_a_cargo %}
+    <tr><td>{{ c.numero }}</td><td>{{ c.tipo }}</td><td>{{ c.estado }}</td><td>{{ c.espacio }}</td><td>{{ c.fecha_hecho | fecha }}</td><td>{{ c.creado_en | fecha }}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="vacio">No sos Responsable de ningún caso.</p>{% endif %}
+
+  <h2>Actividad registrada</h2>
+  <p class="nota">Acciones de tu cuenta guardadas en el registro de auditoría, con la dirección IP de origen (hora UTC).</p>
+  {% if copia.actividad %}
+  <table>
+    <tr><th>Fecha</th><th>Acción</th><th>Resultado</th><th>Dirección IP</th></tr>
+    {% for a in copia.actividad %}
+    <tr><td>{{ a.fecha | fecha }}</td><td>{{ a.accion }}</td><td>{{ a.resultado }}</td><td>{{ a.ip or "—" }}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="vacio">No hay actividad registrada.</p>{% endif %}
+</body>
+</html>

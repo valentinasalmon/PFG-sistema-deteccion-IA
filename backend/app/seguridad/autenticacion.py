@@ -92,3 +92,13 @@ def cerrar_sesion(motivo=MOTIVO_CIERRE_MANUAL):
     servicio.registrar_cierre(usuario_actual(), motivo)
     logout_user()
     session.clear()
+
+
+def terminar_sesion_de_cuenta_eliminada():
+    """Cierra la sesión de una cuenta que acaba de eliminarse (RF08 CA3).
+
+    No registra el cierre: la eliminación ya quedó en la auditoría. Las demás
+    sesiones de la cuenta dejan de valer solas, porque la cuenta ya no existe.
+    """
+    logout_user()
+    session.clear()

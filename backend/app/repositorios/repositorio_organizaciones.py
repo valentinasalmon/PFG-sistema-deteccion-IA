@@ -93,6 +93,10 @@ class RepositorioOrganizaciones(RepositorioBase):
             .all()
         )
 
+    def invitaciones_de_correo(self, correo):
+        """Todas las invitaciones dirigidas a un correo, en cualquier estado (RF08 CA3)."""
+        return Invitacion.query.filter_by(correo=correo).all()
+
     def cantidad_de_invitaciones_vigentes(self, id_organizacion, momento):
         """Invitaciones pendientes y no vencidas: cuentan para el límite del plan."""
         return Invitacion.query.filter(

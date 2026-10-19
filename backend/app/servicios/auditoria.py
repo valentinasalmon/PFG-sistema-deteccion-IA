@@ -68,6 +68,11 @@ CASO_ACCESO_REVOCACION = "caso.acceso_revocacion"
 CASO_TRANSFERENCIA = "caso.transferencia"
 CASO_ELIMINACION = "caso.eliminacion"
 
+# --- Acciones de datos personales (funcionalidad 019) ---
+CUENTA_ELIMINACION = "cuenta.eliminacion"
+CUENTA_COPIA_SOLICITUD = "cuenta.copia_solicitud"
+CUENTA_COPIA_DESCARGA = "cuenta.copia_descarga"
+
 TIPO_USUARIO = "usuario"
 TIPO_CASO = "caso"
 TIPO_ORGANIZACION = "organizacion"

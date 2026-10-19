@@ -79,6 +79,7 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
     VIGENCIA_TOKEN_VERIFICACION = timedelta(hours=24)
     VIGENCIA_TOKEN_RECUPERACION = timedelta(hours=1)
     VIGENCIA_TOKEN_CAMBIO_CORREO = timedelta(hours=24)
+    VIGENCIA_COPIA_DATOS = timedelta(minutes=15)  # RF09 CA2
 
     # --- Organizaciones (funcionalidad 004) ---
     # Límites de cada plan (CP-02, valores propuestos). Son datos configurables
