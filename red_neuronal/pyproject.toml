@@ -1,0 +1,96 @@
+# Paquete del clasificador de imágenes sintéticas (capa 4).
+# Plan técnico: docs/funcionalidades/010-red-neuronal/plan.md
+#
+# Grupos de dependencias (ADR-0011):
+#   base           -> solo inferencia (numpy, Pillow, onnxruntime). Es lo que
+#                     instala el backend: no arrastra PyTorch al servidor.
+#   [entrenamiento] -> pipeline completo (PyTorch, timm, MLflow, etc.).
+#   [desarrollo]    -> herramientas de calidad (RNF19).
+#
+# Las versiones mínimas son las probadas; las exactas de cada ejecución en
+# Kaggle quedan registradas en MLflow y en la ficha del modelo (RNF24 CA2).
+
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clasificador"
+dynamic = ["version"]
+description = "Clasificador de imágenes sintéticas: entrenamiento, evaluación, exportación a ONNX e inferencia."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "Pillow>=10.0",
+    "onnxruntime>=1.18",
+]
+
+[project.optional-dependencies]
+entrenamiento = [
+    "torch>=2.2",
+    "torchvision>=0.17",
+    "timm>=1.0",
+    "onnx>=1.16",
+    "scikit-learn>=1.4",
+    "datasets>=2.19",
+    "huggingface_hub>=0.23",
+    "mlflow>=2.12",
+    "pydantic>=2.6",
+    "PyYAML>=6.0",
+    "pandas>=2.1",
+    "matplotlib>=3.8",
+    "Jinja2>=3.1",
+]
+desarrollo = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "flake8>=7.0",
+    "pylint>=3.1",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "clasificador.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["clasificador*"]
+
+[tool.setuptools.package-data]
+clasificador = ["plantillas/*.j2"]
+
+# --- Pruebas -----------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["pruebas"]
+python_files = ["test_*.py"]
+addopts = "-ra --strict-markers"
+
+[tool.coverage.run]
+source = ["clasificador"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+# --- Análisis estático (RNF19 CA3: pylint >= 8,5) -----------------------------
+[tool.pylint.main]
+fail-under = 8.5
+# torch y onnxruntime son extensiones en C: pylint no puede inspeccionarlas.
+extension-pkg-allow-list = ["torch", "onnxruntime", "numpy"]
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint.basic]
+# Nombres cortos habituales en código numérico (lotes, tensores, ejes).
+good-names = ["i", "j", "x", "y", "n", "df", "ax", "_"]
+
+[tool.pylint."messages control"]
+# too-few-public-methods: las interfaces Strategy y las entidades tienen
+# pocos métodos por diseño.
+disable = ["too-few-public-methods"]

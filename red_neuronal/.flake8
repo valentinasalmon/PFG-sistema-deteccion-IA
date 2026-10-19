@@ -1,0 +1,5 @@
+# Configuración de flake8 (no admite pyproject.toml). Misma longitud de
+# línea que pylint para que ambas herramientas coincidan.
+[flake8]
+max-line-length = 100
+exclude = .venv,build,dist,cuadernos
