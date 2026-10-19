@@ -21,3 +21,5 @@ Un ADR (*Architecture Decision Record*) documenta una decisión de arquitectura 
 | [0007](0007-idioma-espaniol.md) | Español en código, commits y ramas | Aceptada |
 | [0008](0008-migraciones-con-alembic.md) | Migraciones de esquema con Alembic | Aceptada |
 | [0009](0009-desarrollo-en-wsl2.md) | Entorno de desarrollo en WSL2 con Ubuntu | Aceptada |
+| [0010](0010-ciclo-de-vida-y-mlops-del-clasificador.md) | Ciclo de vida y herramientas de MLOps del clasificador | Aceptada |
+| [0011](0011-arquitectura-y-contrato-de-inferencia-del-clasificador.md) | Arquitectura y contrato de inferencia del clasificador | Aceptada |
