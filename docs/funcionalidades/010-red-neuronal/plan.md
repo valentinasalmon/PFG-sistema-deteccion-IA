@@ -130,7 +130,7 @@ Archivos y almacenes:
 | Receta de cada conjunto (fuentes, revisión de cada conjunto de Hugging Face, cantidades, semilla) | `red_neuronal/configuracion/datos_vN.yaml` en Git | Git |
 | Imágenes preparadas + `manifiesto.csv` | Kaggle Dataset **privado** `pfg-datos-entrenamiento` | Versiones del Kaggle Dataset; su huella queda en la ficha |
 | Conjunto propio (CA12, CA13) | Kaggle Dataset **privado** `pfg-conjunto-propio` | Versiones del Kaggle Dataset |
-| Ejecuciones de entrenamiento | MLflow (almacén de archivos `mlruns/` en la salida de Kaggle, empaquetado junto con cada versión publicada) | Identificador de ejecución en la ficha |
+| Ejecuciones de entrenamiento | MLflow (base SQLite `mlruns/mlflow.db` y artefactos en la salida de Kaggle, empaquetados junto con cada versión publicada) | Identificador de ejecución en la ficha |
 | Modelos publicados | Repositorio privado de Hugging Face Hub, una etiqueta `vMAJOR.MINOR.PATCH` por versión | Etiquetas de Git del Hub, inmutables |
 | Fichas del modelo | `red_neuronal/informes/<version>/ficha.md` en Git | Git |
 

@@ -22,7 +22,7 @@ El clasificador de la capa 4 se entrena fuera del servidor (Kaggle, con GPU grat
 | Alternativa | Ventajas | Desventajas |
 |---|---|---|
 | Weights & Biases | Tablero en línea; muy simple desde Kaggle | Servicio privativo; cuenta externa |
-| **MLflow (almacén de archivos)** | Código abierto y estándar; sin cuenta; se puede autoalojar en el futuro | Sin servidor compartido: los registros se empaquetan con cada versión y se consultan localmente con `mlflow ui` |
+| **MLflow (base SQLite local)** | Código abierto y estándar; sin cuenta ni servidor; se puede autoalojar en el futuro | Sin servidor compartido: los registros se empaquetan con cada versión y se consultan localmente con `mlflow ui` |
 | Archivos JSON propios | Mínimo | Reinventa una herramienta existente; sin comparación visual |
 
 ### Registro de modelos
@@ -38,7 +38,7 @@ El clasificador de la capa 4 se entrena fuera del servidor (Kaggle, con GPU grat
 
 - **Nivel 1 de madurez de MLOps**: pipeline automatizado por etapas, reentrenamiento a pedido y compuerta de promoción automática. El nivel 2 (reentrenamiento disparado por datos de producción) queda fuera de alcance.
 - **Datos**: la receta de cada conjunto (fuentes, revisiones, cantidades y semilla) se versiona en Git. Las imágenes preparadas y su manifiesto se guardan como Kaggle Dataset privado, y la huella del manifiesto se registra en la ficha del modelo.
-- **Experimentos**: MLflow con almacén de archivos, detrás de la interfaz `RegistradorExperimentos`.
+- **Experimentos**: MLflow con una base SQLite local (`mlflow.db` y carpeta `artefactos/` en un único directorio), detrás de la interfaz `RegistradorExperimentos`. No se usa el almacén de archivos planos porque MLflow lo dejó en modo de mantenimiento.
 - **Modelos**: repositorio privado de Hugging Face Hub con una etiqueta inmutable `vMAJOR.MINOR.PATCH` por versión, detrás de la interfaz `RegistroModelos`. Solo se publica lo que aprueba la compuerta.
 - **Lógica en un paquete de Python probado**; los cuadernos solo orquestan.
 
