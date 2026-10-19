@@ -153,7 +153,7 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
   - Archivos: `docs/guias/protocolo-conjunto-propio.md`
   - Verificación: la autora puede seguirlo sin preguntas (E04).
   - Commit: `documentacion(guias): agregar protocolo del conjunto propio`
-- [ ] **T27** — Receta de datos versión 1 a partir de la exploración: fuentes, revisiones fijas, cantidades por generador y clase, generadores reservados como no vistos y semilla.
+- [ ] **T27** — Receta de datos versión 1 a partir de la exploración: fuentes, revisiones fijas, cantidades por generador y clase, generadores reservados como no vistos y semilla. Para Community Forensics, muestreo **por archivos** elegidos al azar de cada clase (ver la bitácora del 2026-10-19).
   - Archivos: `red_neuronal/configuracion/datos_v1.yaml`, `red_neuronal/configuracion/entrenamiento_v1.yaml`
   - Verificación: `python -m clasificador validar` sobre una muestra pequeña de la receta pasa.
   - Commit: `funcionalidad(clasificador): agregar receta de datos v1`

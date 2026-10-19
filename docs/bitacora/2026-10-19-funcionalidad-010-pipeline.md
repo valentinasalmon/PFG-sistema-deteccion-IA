@@ -32,6 +32,25 @@
 
 Técnicas: *temperature scaling* para calibrar la probabilidad, error de calibración esperado (ECE), cinco recortes sin reescalar, aumentaciones de recompresión JPEG y reducción de tamaño, partición estratificada por generador, parada temprana y puntos de control reanudables.
 
+## Inventario de Community Forensics (versión *Small*)
+
+Relevado en Kaggle leyendo solo las columnas livianas de los 186 archivos Parquet:
+
+| Dato | Valor |
+|---|---|
+| Imágenes | 556 541 (278 096 reales y 278 445 sintéticas) |
+| Archivos | 186; las reales están en 93 archivos propios, sin mezclarse con las sintéticas |
+| Generadores distintos | 4 782, unos 52 por archivo |
+| Subconjuntos | `Systematic` (198 257) y `Manual` (80 188) para las sintéticas; `Real` para las reales. **No incluye generadores comerciales** |
+| Arquitecturas | difusión latente 207 581, GAN 57 397, difusión en píxeles 7 251, otras 6 216 |
+| Contenido explícito (`nsfw_flag`) | 2 576 imágenes: **se excluyen** con el filtro `excluir` de la receta |
+| Columnas usadas | `image_data` (bytes), `label` (1 = sintética), `model_name` |
+
+Consecuencias:
+
+- Los generadores comerciales (ChatGPT, Gemini, Midjourney) deben venir de los otros conjuntos de la receta y del conjunto propio.
+- Para la receta v1 se muestrea **por archivos** (archivos elegidos al azar de cada clase) en lugar de por filas: en Parquet, leer una imagen obliga a descargar la columna de imágenes completa del archivo.
+
 ## Problemas encontrados y cómo se resolvieron
 
 - Desde el entorno del asistente no se puede acceder a Hugging Face: los nombres de columnas de cada conjunto se dejan en la configuración y se confirman en Kaggle (sección 4 del cuaderno y tarea T25).
