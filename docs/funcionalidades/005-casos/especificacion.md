@@ -1,7 +1,7 @@
 # Especificación: 005 — Casos y permisos
 
 - **Rama**: `funcionalidad/005-casos`
-- **Estado**: Aprobada (por el asistente, según el reparto del 2026-10-16; pendiente de revisión de la autora en el Pull Request)
+- **Estado**: Completada (pendiente de revisión de la autora en el Pull Request)
 - **Requisitos que realiza**: RF23 a RF33; completa RF14 CA2, RF17 CA2 y RF18 de la funcionalidad 004; RNF05 (sin revelar casos ajenos); RNF06 (acciones de casos)
 - **Reglas de negocio aplicadas**: RN09, RN12, RN13, RN14, RN16, RN17, RN18 (sin las transiciones de análisis), RN19, RN20, RN21 (sin imágenes todavía), RN30 (fecha de vencimiento), RN36 a RN40
 - **Casos de uso**: CU18 a CU24
@@ -50,42 +50,42 @@ El caso es la unidad de trabajo de la plataforma: agrupa las imágenes de un sin
 ## Criterios de aceptación
 
 ### Crear y consultar
-- [ ] **CA1**: Dados datos válidos, cuando se crea el caso, entonces recibe un número `CASO-AAAA-NNNNNN` único, el estado Borrador y al creador como Responsable (RF23 CA1, RN16).
-- [ ] **CA2**: Dada una fecha del hecho futura, entonces se rechaza (RF23 CA2).
-- [ ] **CA3**: Dado un espacio que es una organización de la que el usuario no es miembro, o que está pendiente de aprobación, entonces se rechaza; dado un usuario con perfil Aseguradora, entonces no puede crear casos en el espacio personal (RF23 CA3).
-- [ ] **CA4**: Dado un usuario con algún permiso, cuando consulta el caso, entonces ve el detalle y solo las acciones que su permiso habilita; sin permiso, el sistema responde como si el caso no existiera (RF24).
-- [ ] **CA5**: Dado el listado, entonces muestra los casos propios y compartidos, paginados, por última actualización y sin los archivados; nunca incluye casos sin permiso (RF26 CA1, CA4).
-- [ ] **CA6**: Dado un filtro por estado Archivado, entonces se muestran los archivados; dada una búsqueda por expediente, entonces la coincidencia es parcial y no distingue mayúsculas ni acentos; además se filtra por número, tipo, espacio y fechas (RF26 CA2, CA3).
+- [x] **CA1**: Dados datos válidos, cuando se crea el caso, entonces recibe un número `CASO-AAAA-NNNNNN` único, el estado Borrador y al creador como Responsable (RF23 CA1, RN16).
+- [x] **CA2**: Dada una fecha del hecho futura, entonces se rechaza (RF23 CA2).
+- [x] **CA3**: Dado un espacio que es una organización de la que el usuario no es miembro, o que está pendiente de aprobación, entonces se rechaza; dado un usuario con perfil Aseguradora, entonces no puede crear casos en el espacio personal (RF23 CA3).
+- [x] **CA4**: Dado un usuario con algún permiso, cuando consulta el caso, entonces ve el detalle y solo las acciones que su permiso habilita; sin permiso, el sistema responde como si el caso no existiera (RF24).
+- [x] **CA5**: Dado el listado, entonces muestra los casos propios y compartidos, paginados, por última actualización y sin los archivados; nunca incluye casos sin permiso (RF26 CA1, CA4).
+- [x] **CA6**: Dado un filtro por estado Archivado, entonces se muestran los archivados; dada una búsqueda por expediente, entonces la coincidencia es parcial y no distingue mayúsculas ni acentos; además se filtra por número, tipo, espacio y fechas (RF26 CA2, CA3).
 
 ### Editar y estados
-- [ ] **CA7**: Dado un Responsable o Colaborador y un caso en Borrador o Analizado, cuando edita los datos, entonces se guardan y la auditoría registra el valor anterior y el nuevo; el Lector no puede editar y el número no se modifica (RF25 CA1, CA3; RN20).
-- [ ] **CA8**: Dado un caso Cerrado o Archivado, entonces no se puede editar (RF25 CA2, RN19).
-- [ ] **CA9**: Dado el Responsable, cuando cierra un caso en Borrador o Analizado, entonces pasa a Cerrado y se muestra el vencimiento de la retención a 2 años (RF27 CA1, RN30).
-- [ ] **CA10**: Dado un caso Cerrado, cuando se archiva, entonces pasa a Archivado y sale del listado por defecto; al desarchivarlo vuelve a Cerrado sin reiniciar el plazo (RF28).
-- [ ] **CA11**: Dado un caso Cerrado o Archivado, cuando se reabre, entonces pasa a Borrador (o a Analizado si tiene informes) y se elimina la fecha de vencimiento (RF29).
-- [ ] **CA12**: Toda transición que no respeta RN18, o que intenta alguien que no es el Responsable, se rechaza.
+- [x] **CA7**: Dado un Responsable o Colaborador y un caso en Borrador o Analizado, cuando edita los datos, entonces se guardan y la auditoría registra el valor anterior y el nuevo; el Lector no puede editar y el número no se modifica (RF25 CA1, CA3; RN20).
+- [x] **CA8**: Dado un caso Cerrado o Archivado, entonces no se puede editar (RF25 CA2, RN19).
+- [x] **CA9**: Dado el Responsable, cuando cierra un caso en Borrador o Analizado, entonces pasa a Cerrado y se muestra el vencimiento de la retención a 2 años (RF27 CA1, RN30).
+- [x] **CA10**: Dado un caso Cerrado, cuando se archiva, entonces pasa a Archivado y sale del listado por defecto; al desarchivarlo vuelve a Cerrado sin reiniciar el plazo (RF28).
+- [x] **CA11**: Dado un caso Cerrado o Archivado, cuando se reabre, entonces pasa a Borrador (o a Analizado si tiene informes) y se elimina la fecha de vencimiento (RF29).
+- [x] **CA12**: Toda transición que no respeta RN18, o que intenta alguien que no es el Responsable, se rechaza.
 
 ### Compartir
-- [ ] **CA13**: Dado un caso de organización, cuando el Responsable lo comparte con un miembro, entonces ese miembro obtiene el permiso elegido y recibe un aviso (RF30 CA1).
-- [ ] **CA14**: Dado un caso compartido con toda la organización, entonces los miembros actuales y futuros tienen el permiso mientras pertenezcan a ella; si alguien tiene dos permisos, prevalece el más alto (RF30 CA2, CA3).
-- [ ] **CA15**: Dado un caso personal, entonces no se puede compartir; dado un usuario que no es miembro de la organización del caso, entonces no puede ser destinatario (RF30 CA4, CA5; RN13).
-- [ ] **CA16**: Dado un acceso, cuando el Responsable lo revoca o cambia su nivel, entonces se aplica en la siguiente solicitud y se avisa al afectado (RF31).
+- [x] **CA13**: Dado un caso de organización, cuando el Responsable lo comparte con un miembro, entonces ese miembro obtiene el permiso elegido y recibe un aviso (RF30 CA1).
+- [x] **CA14**: Dado un caso compartido con toda la organización, entonces los miembros actuales y futuros tienen el permiso mientras pertenezcan a ella; si alguien tiene dos permisos, prevalece el más alto (RF30 CA2, CA3).
+- [x] **CA15**: Dado un caso personal, entonces no se puede compartir; dado un usuario que no es miembro de la organización del caso, entonces no puede ser destinatario (RF30 CA4, CA5; RN13).
+- [x] **CA16**: Dado un acceso, cuando el Responsable lo revoca o cambia su nivel, entonces se aplica en la siguiente solicitud y se avisa al afectado (RF31).
 
 ### Transferir
-- [ ] **CA17**: Dado un caso de organización, cuando se transfiere a otro miembro, entonces el destinatario pasa a Responsable y el anterior conserva Colaboración, salvo que indique lo contrario; se avisa a ambos (RF33 CA1, CA3).
-- [ ] **CA18**: Dado un caso personal, cuando se transfiere a otro usuario registrado, entonces el destinatario debe aceptarlo y, al aceptar, el caso pasa a su espacio personal; puede rechazarlo y el Responsable puede cancelar la solicitud (RF33 CA2).
+- [x] **CA17**: Dado un caso de organización, cuando se transfiere a otro miembro, entonces el destinatario pasa a Responsable y el anterior conserva Colaboración, salvo que indique lo contrario; se avisa a ambos (RF33 CA1, CA3).
+- [x] **CA18**: Dado un caso personal, cuando se transfiere a otro usuario registrado, entonces el destinatario debe aceptarlo y, al aceptar, el caso pasa a su espacio personal; puede rechazarlo y el Responsable puede cancelar la solicitud (RF33 CA2).
 
 ### Eliminar
-- [ ] **CA19**: Dado el Responsable, cuando elimina un caso escribiendo su número exacto, entonces el caso y sus accesos se eliminan, la auditoría conserva la constancia y se avisa a quienes tenían acceso; con otro número no se elimina (RF32 CA1 a CA3).
-- [ ] **CA20**: Dado un caso En análisis, entonces no se puede cerrar ni eliminar (RF27 CA2, RF32 CA4).
+- [x] **CA19**: Dado el Responsable, cuando elimina un caso escribiendo su número exacto, entonces el caso y sus accesos se eliminan, la auditoría conserva la constancia y se avisa a quienes tenían acceso; con otro número no se elimina (RF32 CA1 a CA3).
+- [x] **CA20**: Dado un caso En análisis, entonces no se puede cerrar ni eliminar (RF27 CA2, RF32 CA4).
 
 ### Reglas de la 004
-- [ ] **CA21**: Dado un miembro Responsable de casos de la organización, cuando intenta abandonarla, entonces se le exige transferirlos antes (RF17 CA2).
-- [ ] **CA22**: Dado un miembro desvinculado, entonces sus casos de la organización pasan al Referente y pierde todos sus accesos a casos de la organización (RF14 CA2, RN14).
-- [ ] **CA23**: Dada la eliminación de una organización, entonces la confirmación informa cuántos casos se eliminarán y se eliminan junto con ella (RF18, RN09).
+- [x] **CA21**: Dado un miembro Responsable de casos de la organización, cuando intenta abandonarla, entonces se le exige transferirlos antes (RF17 CA2).
+- [x] **CA22**: Dado un miembro desvinculado, entonces sus casos de la organización pasan al Referente y pierde todos sus accesos a casos de la organización (RF14 CA2, RN14).
+- [x] **CA23**: Dada la eliminación de una organización, entonces la confirmación informa cuántos casos se eliminarán y se eliminan junto con ella (RF18, RN09).
 
 ### Auditoría
-- [ ] **CA24**: Cada operación sobre casos, exitosa o rechazada, queda en la auditoría con el caso como recurso.
+- [x] **CA24**: Cada operación sobre casos, exitosa o rechazada, queda en la auditoría con el caso como recurso.
 
 ## Preguntas abiertas
 
