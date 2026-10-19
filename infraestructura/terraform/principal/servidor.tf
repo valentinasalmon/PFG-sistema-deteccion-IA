@@ -1,17 +1,11 @@
 # Servidor: una EC2 con Ubuntu 24.04 que corre Nginx, Gunicorn, el trabajador
 # de RQ, PostgreSQL y Redis (ADR-0005, RNF22 CA3).
 
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720108477"] # Canonical
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
-  }
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
+# Imagen vigente de Ubuntu 24.04 publicada por Canonical. Se toma del
+# parámetro público que Canonical mantiene en cada región, más estable que
+# buscar la imagen por su nombre.
+data "aws_ssm_parameter" "ubuntu" {
+  name = "/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id"
 }
 
 # La IP fija se crea antes que la EC2 porque el dominio provisorio
@@ -22,7 +16,7 @@ resource "aws_eip" "servidor" {
 }
 
 resource "aws_instance" "servidor" {
-  ami                    = data.aws_ami.ubuntu.id
+  ami                    = nonsensitive(data.aws_ssm_parameter.ubuntu.value)
   instance_type          = var.tipo_instancia
   subnet_id              = data.aws_subnets.por_defecto.ids[0]
   vpc_security_group_ids = [aws_security_group.servidor.id]
