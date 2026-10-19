@@ -27,6 +27,7 @@ from PIL import Image
 
 from clasificador.configuracion import ConfiguracionDatos, ConfiguracionProporciones
 from clasificador.datos.manifiesto import RegistroImagen, huella_archivo
+from clasificador.inferencia.preprocesamiento import convertir_a_rgb
 
 
 def _generador_aleatorio(semilla: int, clave: str) -> np.random.Generator:
@@ -42,15 +43,11 @@ def normalizar_imagen(
 ) -> None:
     """Convierte una imagen a RGB, la redimensiona y la guarda como JPEG.
 
-    La transparencia se compone sobre fondo blanco para no introducir un
-    borde negro que solo tendrían las imágenes con canal alfa.
+    La conversión a RGB es la misma que usa la inferencia (ADR-0013): la
+    transparencia se compone sobre fondo blanco.
     """
-    with Image.open(origen) as imagen:
-        if imagen.mode in ("RGBA", "LA", "P"):
-            imagen = imagen.convert("RGBA")
-            fondo = Image.new("RGBA", imagen.size, (255, 255, 255, 255))
-            imagen = Image.alpha_composite(fondo, imagen)
-        imagen = imagen.convert("RGB")
+    with Image.open(origen) as abierta:
+        imagen = convertir_a_rgb(abierta)
         ancho, alto = imagen.size
         escala = lado_menor / min(ancho, alto)
         nuevo_tamanio = (max(1, round(ancho * escala)), max(1, round(alto * escala)))
