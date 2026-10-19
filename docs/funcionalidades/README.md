@@ -31,7 +31,7 @@ implementación siguiendo tareas.md, con pruebas
 | 003 | Auditoría | 2 | RNF06 | Completado |
 | 004 | Organizaciones e invitaciones | 3 | RF10 – RF18 (sin las reglas de casos) | Completado |
 | 005 | Casos y permisos | 3 | RF23 – RF33 | Completado |
-| 006 | Carga de imágenes, huella y almacenamiento | 4 | RF34 – RF36 | Pendiente |
+| 006 | Carga de imágenes, huella y almacenamiento | 4 | RF34 – RF36 | Completado |
 | 007 | Motor de análisis y capa 1 (metadatos) | 4 | RF38, RF39, RF43, RF46 | Pendiente |
 | 008 | Informe PDF e historial | 4 | RF44, RF45 | Pendiente |
 | 009 | Capa 2 (C2PA) | 5 | RF40 | Pendiente |

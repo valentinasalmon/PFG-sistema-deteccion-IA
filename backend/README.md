@@ -88,9 +88,15 @@ Los mismos controles se ejecutan en la integración continua en cada Pull Reques
 | `app/servicios/` | Lógica de negocio, sin dependencias de Flask |
 | `app/repositorios/` | Acceso a la base de datos |
 | `app/modelos/` | Entidades de SQLAlchemy |
-| `app/integraciones/` | Adaptadores a servicios externos (Redis, y luego S3, SES y BFA) |
+| `app/integraciones/` | Adaptadores a servicios externos (Redis, correo, almacenamiento S3 o local; luego BFA) |
 | `migraciones/` | Migraciones de Alembic |
 | `pruebas/` | Pruebas unitarias, de integración y de arquitectura |
+
+## Imágenes de los casos
+
+En desarrollo, las imágenes se guardan en `backend/almacenamiento_local/` (variable `ALMACENAMIENTO=local`). Esa carpeta está en `.gitignore`: **nunca** se sube al repositorio. Para probar, usá imágenes propias o generadas, nunca de casos reales.
+
+En producción se usa un bucket privado de S3 con cifrado y versionado (`ALMACENAMIENTO=s3`, `S3_BUCKET`, `S3_REGION`). Las pruebas del adaptador de S3 usan `moto`, que lo simula sin conectarse a AWS.
 
 ## Problemas frecuentes
 
@@ -99,3 +105,4 @@ Los mismos controles se ejecutan en la integración continua en cada Pull Reques
 | `/api/salud` responde 503 con `base_de_datos: error` | Verificar que PostgreSQL esté levantado: `docker compose ps` |
 | `ErrorConfiguracion: Faltan variables de entorno` | Crear el archivo `.env` a partir de `.env.ejemplo` |
 | `ModuleNotFoundError` | Activar el entorno virtual: `source .venv/bin/activate` |
+| `error: externally-managed-environment` al usar `pip`, o `flask: command not found` | El entorno virtual no está activo (el prompt no empieza con `(.venv)`): `source .venv/bin/activate` y repetir el comando |

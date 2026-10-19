@@ -57,7 +57,8 @@ class ServicioOrganizaciones:
     """Operaciones sobre organizaciones, sus miembros y sus invitaciones."""
 
     def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        self, repositorio, usuarios, correos, tokens, configuracion, registro, casos=None
+        self, repositorio, usuarios, correos, tokens, configuracion, registro, casos=None,
+        archivos=None,
     ):
         """
         Args:
@@ -66,8 +67,11 @@ class ServicioOrganizaciones:
             registro: ``ServicioAuditoria``.
             casos: ``RepositorioCasos``, para aplicar a los casos de la
                 organización las reglas de salida y eliminación (funcionalidad 005).
+            archivos: ``ArchivosDeCasos``, que borra las imágenes de los casos
+                que se eliminan con la organización (RN21, funcionalidad 006).
         """
         self.casos = casos
+        self.archivos = archivos
         self.repositorio = repositorio
         self.usuarios = usuarios
         self.correos = correos
@@ -232,7 +236,8 @@ class ServicioOrganizaciones:
         self._auditar(
             auditoria.ORGANIZACION_ELIMINACION, auditoria.EXITOSO, usuario, organizacion,
             {"nombre": nombre, "miembros": len(miembros), "motivo": motivo,
-             "casos_eliminados": self.cantidad_de_casos(organizacion)},
+             "casos_eliminados": self.cantidad_de_casos(organizacion),
+             "sha256_eliminados": self._preparar_archivos(organizacion)},
         )
         desactivados = {
             miembro.id for miembro in miembros
@@ -240,6 +245,7 @@ class ServicioOrganizaciones:
         }
         self._quitar_con_casos(organizacion)
         self.repositorio.confirmar()
+        self.borrar_archivos_pendientes()
         if avisar:
             for miembro in miembros:
                 if miembro.id != usuario.id:
@@ -247,6 +253,17 @@ class ServicioOrganizaciones:
                         miembro, nombre, miembro.id in desactivados
                     )
         return usuario.id in desactivados
+
+    def _preparar_archivos(self, organizacion):
+        """Anota los archivos de los casos de la organización y devuelve sus huellas (RN21)."""
+        if not (self.archivos and self.casos):
+            return []
+        return self.archivos.preparar(self.casos.casos_de_organizacion(organizacion.id))
+
+    def borrar_archivos_pendientes(self):
+        """Borra del almacenamiento los archivos de los casos ya eliminados (RN21)."""
+        if self.archivos:
+            self.archivos.borrar_pendientes()
 
     def _quitar_con_casos(self, organizacion):
         """Suma a la transacción la eliminación de la organización y sus casos (RN09, RF18)."""
@@ -258,12 +275,14 @@ class ServicioOrganizaciones:
         """Elimina la organización de la que ``usuario`` es el único miembro, en su baja.
 
         No confirma: la baja confirma todo junto, así no queda una baja a
-        medias si algo falla (RN08, RN09; CU06 2c).
+        medias si algo falla (RN08, RN09; CU06 2c). Después de confirmar, la
+        baja llama a ``borrar_archivos_pendientes``.
         """
         self._auditar(
             auditoria.ORGANIZACION_ELIMINACION, auditoria.EXITOSO, usuario, organizacion,
             {"nombre": organizacion.nombre, "miembros": 1, "motivo": "baja_de_cuenta",
-             "casos_eliminados": self.cantidad_de_casos(organizacion)},
+             "casos_eliminados": self.cantidad_de_casos(organizacion),
+             "sha256_eliminados": self._preparar_archivos(organizacion)},
         )
         self._quitar_con_casos(organizacion)
 

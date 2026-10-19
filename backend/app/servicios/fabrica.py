@@ -9,6 +9,7 @@ IP) para que la auditoría lo registre sin que los servicios conozcan Flask.
 from app.repositorios.catalogo_aseguradoras import CatalogoAseguradoras
 from app.repositorios.repositorio_auditoria import RepositorioAuditoria
 from app.repositorios.repositorio_casos import RepositorioCasos
+from app.repositorios.repositorio_imagenes import RepositorioImagenes
 from app.repositorios.repositorio_organizaciones import RepositorioOrganizaciones
 from app.repositorios.repositorio_usuarios import RepositorioUsuarios
 from app.servicios.auditoria import ServicioAuditoria
@@ -16,6 +17,7 @@ from app.servicios.servicio_casos import ServicioCasos
 from app.servicios.servicio_correos import ServicioCorreos
 from app.servicios.servicio_cuentas import ServicioCuentas
 from app.servicios.servicio_datos_personales import ServicioDatosPersonales
+from app.servicios.servicio_imagenes import ArchivosDeCasos, ServicioImagenes
 from app.servicios.servicio_organizaciones import ServicioOrganizaciones
 from app.servicios.servicio_perfil import ServicioPerfil
 from app.servicios.servicio_sesion import ServicioSesion
@@ -65,24 +67,37 @@ def crear_servicio_perfil(configuracion, enviador, origen=None):
     )
 
 
-def crear_servicio_organizaciones(configuracion, enviador, origen=None):
+def _archivos(almacenamiento):
+    return ArchivosDeCasos(RepositorioImagenes(), almacenamiento) if almacenamiento else None
+
+
+def crear_servicio_organizaciones(configuracion, enviador, origen=None, almacenamiento=None):
     """Servicio de organizaciones, invitaciones y membresías."""
     return ServicioOrganizaciones(
         RepositorioOrganizaciones(), RepositorioUsuarios(), _correos(configuracion, enviador),
         GestorTokens(configuracion["SECRET_KEY"]), configuracion,
-        crear_servicio_auditoria(origen), RepositorioCasos(),
+        crear_servicio_auditoria(origen), RepositorioCasos(), _archivos(almacenamiento),
     )
 
 
-def crear_servicio_casos(configuracion, enviador, origen=None):
+def crear_servicio_casos(configuracion, enviador, origen=None, almacenamiento=None):
     """Servicio de casos y accesos (funcionalidad 005)."""
     return ServicioCasos(
         RepositorioCasos(), RepositorioOrganizaciones(), RepositorioUsuarios(),
         _correos(configuracion, enviador), crear_servicio_auditoria(origen),
+        _archivos(almacenamiento),
     )
 
 
-def crear_servicio_datos_personales(configuracion, enviador, origen=None):
+def crear_servicio_imagenes(configuracion, enviador, almacenamiento, origen=None):
+    """Servicio de imágenes de los casos (funcionalidad 006)."""
+    return ServicioImagenes(
+        RepositorioImagenes(), crear_servicio_casos(configuracion, enviador, origen),
+        almacenamiento, configuracion, crear_servicio_auditoria(origen),
+    )
+
+
+def crear_servicio_datos_personales(configuracion, enviador, origen=None, almacenamiento=None):
     """Servicio de copia de datos y eliminación de la cuenta (funcionalidad 019)."""
     return ServicioDatosPersonales(
         {
@@ -91,7 +106,7 @@ def crear_servicio_datos_personales(configuracion, enviador, origen=None):
             "casos": RepositorioCasos(),
             "auditoria": RepositorioAuditoria(),
         },
-        crear_servicio_organizaciones(configuracion, enviador, origen),
+        crear_servicio_organizaciones(configuracion, enviador, origen, almacenamiento),
         _correos(configuracion, enviador), GestorTokens(configuracion["SECRET_KEY"]),
         configuracion, crear_servicio_auditoria(origen),
     )

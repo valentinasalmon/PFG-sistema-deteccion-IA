@@ -1,5 +1,6 @@
 """Accesorios (fixtures) compartidos por todas las pruebas de pytest."""
 import re
+import shutil
 
 import pytest
 
@@ -32,6 +33,8 @@ def aplicacion():
         db.drop_all()
         # Cierra las conexiones para no dejar bases en memoria abiertas.
         db.engine.dispose()
+    # Borra la carpeta temporal de las imágenes de esta aplicación (006).
+    shutil.rmtree(app.config["DIRECTORIO_ALMACENAMIENTO"], ignore_errors=True)
 
 
 def obtener_usuario(aplicacion, correo="ana@ejemplo.com"):  # pylint: disable=redefined-outer-name

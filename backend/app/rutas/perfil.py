@@ -42,7 +42,8 @@ def _servicio():
 
 def _servicio_datos():
     return crear_servicio_datos_personales(
-        current_app.config, current_app.extensions["enviador_correo"], origen_de_la_solicitud()
+        current_app.config, current_app.extensions["enviador_correo"], origen_de_la_solicitud(),
+        current_app.extensions["almacenamiento"],
     )
 
 
