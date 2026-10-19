@@ -7,8 +7,8 @@
     @page {
       size: A4;
       margin: 2cm 1.8cm 2.2cm;
-      @bottom-left { content: "Caso {{ informe.caso.numero }} · Informe generado el {{ generado_en | hora_argentina }}"; font-size: 7.5pt; color: #6b7280; }
-      @bottom-right { content: "Página " counter(page) " de " counter(pages); font-size: 7.5pt; color: #6b7280; }
+      @bottom-left { content: "Caso {{ informe.caso.numero }} · Informe generado el {{ generado_en | hora_argentina }}"; font-family: "DejaVu Sans", Arial, sans-serif; font-size: 7.5pt; color: #6b7280; }
+      @bottom-right { content: "Página " counter(page) " de " counter(pages); font-family: "DejaVu Sans", Arial, sans-serif; font-size: 7.5pt; color: #6b7280; }
     }
     body { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 9.5pt; color: #1f2937; line-height: 1.45; }
     h1 { font-size: 17pt; color: #1e3a5f; margin: 0 0 2pt; }

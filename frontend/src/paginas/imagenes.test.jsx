@@ -58,6 +58,7 @@ function api(listado = LISTADO, extra = {}) {
     'GET /api/casos/7': { cuerpo: { caso: CASO, accesos: [] } },
     'GET /api/casos/7/imagenes': typeof listado === 'function' ? listado : { cuerpo: listado },
     'GET /api/casos/7/analisis': { cuerpo: { analisis: [] } },
+    'GET /api/casos/7/informes': { cuerpo: { informes: [] } },
     ...extra,
   })
 }

@@ -101,6 +101,7 @@ class ServicioInformes:
                 codigo="informe_no_regenerable",
             )
         informe = self.generar(analisis)
+        caso.actualizado_en = ahora_utc()
         self.repositorio.confirmar()
         return informe
 
