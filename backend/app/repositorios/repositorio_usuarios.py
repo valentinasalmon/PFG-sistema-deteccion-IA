@@ -33,3 +33,14 @@ class RepositorioUsuarios:
         db.session.add(usuario)
         db.session.commit()
         return usuario
+
+    def eliminar(self, usuario):
+        """Suma a la transacción la eliminación de la cuenta, sin confirmarla (RF08).
+
+        La base pone en vacío el usuario de sus entradas de auditoría
+        (``ON DELETE SET NULL``), que así quedan anonimizadas (RN34). Antes
+        envía a la base lo pendiente, como la entrada de auditoría de la
+        eliminación, para que se inserte cuando la cuenta todavía existe.
+        """
+        db.session.flush()
+        db.session.delete(usuario)

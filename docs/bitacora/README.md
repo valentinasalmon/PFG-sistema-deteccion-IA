@@ -27,3 +27,4 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-16 | [Funcionalidad 004: organizaciones e invitaciones](2026-10-16-funcionalidad-004-organizaciones.md) |
 | 2026-10-16 | [Funcionalidad 021: organizaciones de aseguradoras](2026-10-16-funcionalidad-021-aseguradoras.md) |
 | 2026-10-19 | [Funcionalidad 005: casos y permisos](2026-10-19-funcionalidad-005-casos.md) |
+| 2026-10-19 | [Funcionalidad 019: eliminación de cuenta y copia de datos](2026-10-19-funcionalidad-019-baja-de-cuenta.md) |

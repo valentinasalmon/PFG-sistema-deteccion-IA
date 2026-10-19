@@ -6,7 +6,7 @@
  * abierta. Si cualquier solicitud informa que la sesión venció (por
  * inactividad o duración máxima), borra el usuario y las rutas protegidas
  * redirigen al inicio de sesión. ``motivoSalida`` indica por qué terminó la
- * sesión ('cierre', 'vencida' o 'desactivada') para mostrar el aviso
+ * sesión ('cierre', 'vencida', 'desactivada' o 'eliminada') para mostrar el aviso
  * correspondiente.
  *
  * Realiza: RF03, RF04 y CA7, CA12, CA22 de la funcionalidad 002.

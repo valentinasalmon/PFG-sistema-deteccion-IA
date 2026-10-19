@@ -238,10 +238,7 @@ class ServicioOrganizaciones:
             miembro.id for miembro in miembros
             if self._desactivar_si_corresponde(miembro, organizacion, usuario)
         }
-        # Los casos de la organización se eliminan con ella (RN09, RF18 CA2).
-        for caso in self.casos.casos_de_organizacion(organizacion.id) if self.casos else []:
-            self.repositorio.quitar(caso)
-        self.repositorio.quitar(organizacion)
+        self._quitar_con_casos(organizacion)
         self.repositorio.confirmar()
         if avisar:
             for miembro in miembros:
@@ -250,6 +247,25 @@ class ServicioOrganizaciones:
                         miembro, nombre, miembro.id in desactivados
                     )
         return usuario.id in desactivados
+
+    def _quitar_con_casos(self, organizacion):
+        """Suma a la transacción la eliminación de la organización y sus casos (RN09, RF18)."""
+        for caso in self.casos.casos_de_organizacion(organizacion.id) if self.casos else []:
+            self.repositorio.quitar(caso)
+        self.repositorio.quitar(organizacion)
+
+    def eliminar_por_baja(self, organizacion, usuario):
+        """Elimina la organización de la que ``usuario`` es el único miembro, en su baja.
+
+        No confirma: la baja confirma todo junto, así no queda una baja a
+        medias si algo falla (RN08, RN09; CU06 2c).
+        """
+        self._auditar(
+            auditoria.ORGANIZACION_ELIMINACION, auditoria.EXITOSO, usuario, organizacion,
+            {"nombre": organizacion.nombre, "miembros": 1, "motivo": "baja_de_cuenta",
+             "casos_eliminados": self.cantidad_de_casos(organizacion)},
+        )
+        self._quitar_con_casos(organizacion)
 
     def eliminar(self, id_organizacion, usuario, confirmacion):
         """Elimina la organización si se escribe su nombre exacto (RF18). Solo el Referente.

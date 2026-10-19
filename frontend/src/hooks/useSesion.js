@@ -4,7 +4,7 @@
  * @returns {{
  *   usuario: Object | null,
  *   cargando: boolean,
- *   motivoSalida: 'cierre' | 'vencida' | 'desactivada' | null,
+ *   motivoSalida: 'cierre' | 'vencida' | 'desactivada' | 'eliminada' | null,
  *   iniciarSesion: (correo: string, contrasenia: string) => Promise<Object>,
  *   cerrarSesion: () => Promise<void>,
  *   terminarSesion: (motivo: string) => void,

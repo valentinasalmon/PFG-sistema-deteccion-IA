@@ -19,3 +19,6 @@ Flask-WTF==1.3.0            # Protección CSRF
 bcrypt==5.0.0               # Hash de contraseñas
 pydantic==2.14.0            # Validación de los datos que recibe la API
 email-validator==2.3.0      # Validación del formato de los correos
+
+# --- Funcionalidad 019: copia de datos personales (y luego el informe de la 008) ---
+weasyprint==70.0            # HTML y CSS a PDF; requiere Pango del sistema (ADR-0009)

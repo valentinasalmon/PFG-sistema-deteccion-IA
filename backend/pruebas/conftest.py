@@ -140,3 +140,27 @@ def sesion_iniciada(cliente, registrar_y_verificar):  # pylint: disable=redefine
     )
     assert respuesta.status_code == 200
     return datos
+
+
+@pytest.fixture
+def cuenta(aplicacion, correos):  # pylint: disable=redefined-outer-name
+    """Crea una cuenta verificada y devuelve un cliente con su sesión iniciada.
+
+    El cliente lleva ``id_usuario`` para que las pruebas puedan referirse a la cuenta.
+    """
+
+    def _crear(correo, nombre="Ana", perfil="abogado"):
+        cliente_cuenta = aplicacion.test_client()
+        cliente_cuenta.post(
+            "/api/cuentas/registro",
+            json=datos_registro(correo=correo, nombre=nombre, perfil=perfil),
+        )
+        token = extraer_token(next(c for c in reversed(correos) if c.destinatario == correo))
+        cliente_cuenta.post("/api/cuentas/verificacion", json={"token": token})
+        respuesta = cliente_cuenta.post(
+            "/api/sesion", json={"correo": correo, "contrasenia": CONTRASENIA_VALIDA}
+        )
+        cliente_cuenta.id_usuario = respuesta.get_json()["usuario"]["id"]
+        return cliente_cuenta
+
+    return _crear

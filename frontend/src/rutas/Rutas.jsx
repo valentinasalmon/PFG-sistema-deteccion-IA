@@ -18,7 +18,10 @@ const MENSAJES_SALIDA = {
   vencida: 'Tu sesión venció por seguridad. Volvé a iniciar sesión.',
   desactivada:
     'Tu cuenta quedó desactivada porque ya no pertenecés a ninguna aseguradora. Si otra aseguradora te invita, vas a poder ingresar para aceptar la invitación.',
+  eliminada: 'Tu cuenta fue eliminada. Te enviamos una confirmación por correo.',
 }
+
+const SALIDAS_AL_INICIO = new Set(['cierre', 'desactivada', 'eliminada'])
 
 export function RutaProtegida() {
   const { usuario, cargando, motivoSalida } = useSesion()
@@ -26,12 +29,11 @@ export function RutaProtegida() {
 
   if (cargando) return <Cargando texto="Verificando la sesión…" />
   if (!usuario) {
-    // Tras un cierre voluntario o una desactivación se vuelve al inicio; si
-    // no, a la pantalla pedida.
-    const estado =
-      motivoSalida === 'cierre' || motivoSalida === 'desactivada'
-        ? { mensaje: MENSAJES_SALIDA[motivoSalida] }
-        : { desde: ubicacion.pathname, mensaje: MENSAJES_SALIDA[motivoSalida] }
+    // Tras un cierre voluntario, una desactivación o una eliminación de la
+    // cuenta se vuelve al inicio; si no, a la pantalla pedida.
+    const estado = SALIDAS_AL_INICIO.has(motivoSalida)
+      ? { mensaje: MENSAJES_SALIDA[motivoSalida] }
+      : { desde: ubicacion.pathname, mensaje: MENSAJES_SALIDA[motivoSalida] }
     return <Navigate to="/iniciar-sesion" replace state={estado} />
   }
   return <Outlet />

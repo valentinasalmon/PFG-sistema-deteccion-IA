@@ -81,9 +81,12 @@ def test_registrar_sin_origen_ni_recurso_y_confirmando():
 
 
 def test_el_repositorio_solo_permite_agregar():
-    """CA13: no hay operaciones públicas para modificar ni eliminar entradas."""
+    """CA13: no hay operaciones públicas para modificar ni eliminar entradas.
+
+    La única consulta, ``de_usuario``, es de lectura (copia de datos, funcionalidad 019).
+    """
     publicos = {nombre for nombre in dir(RepositorioAuditoria) if not nombre.startswith("_")}
-    assert publicos == {"agregar", "confirmar"}
+    assert publicos == {"agregar", "confirmar", "de_usuario"}
 
 
 @pytest.fixture

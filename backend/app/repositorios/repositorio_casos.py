@@ -98,6 +98,14 @@ class RepositorioCasos(RepositorioBase):
             id_responsable=id_usuario, id_organizacion=id_organizacion
         ).all()
 
+    def casos_a_cargo(self, id_usuario):
+        """Todos los casos de los que el usuario es Responsable, por número (RF08 CA1)."""
+        return Caso.query.filter_by(id_responsable=id_usuario).order_by(Caso.numero).all()
+
+    def accesos_de_usuario(self, id_usuario):
+        """Accesos individuales del usuario a casos de cualquier organización."""
+        return AccesoCaso.query.filter_by(id_usuario=id_usuario).all()
+
     def cantidad_de_organizacion(self, id_organizacion):
         """Cantidad de casos de la organización (RF18 CA1)."""
         return Caso.query.filter_by(id_organizacion=id_organizacion).count()

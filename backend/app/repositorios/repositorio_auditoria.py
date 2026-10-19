@@ -7,10 +7,11 @@ agregar entradas: no hay operaciones para modificarlas ni eliminarlas
 Realiza: RNF06 (CA3, CA8).
 """
 from app.extensiones import db
+from app.modelos.entrada_auditoria import EntradaAuditoria
 
 
 class RepositorioAuditoria:
-    """Agrega entradas a la transacción en curso."""
+    """Agrega entradas a la transacción en curso y consulta las de un usuario."""
 
     def agregar(self, entrada):
         """Suma la entrada a la transacción en curso, sin confirmarla.
@@ -28,3 +29,14 @@ class RepositorioAuditoria:
         rechazado, y la entrada debe guardarse antes de informar el error.
         """
         db.session.commit()
+
+    def de_usuario(self, id_usuario):
+        """Entradas de las acciones del usuario, de la más antigua a la más reciente.
+
+        Se usan para la copia de sus datos personales (RF09).
+        """
+        return (
+            EntradaAuditoria.query.filter_by(id_usuario=id_usuario)
+            .order_by(EntradaAuditoria.fecha, EntradaAuditoria.id)
+            .all()
+        )

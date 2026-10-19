@@ -22,24 +22,6 @@ CASO = {
 
 
 @pytest.fixture
-def cuenta(aplicacion, correos):
-    """Crea una cuenta verificada y devuelve un cliente con su sesión iniciada."""
-
-    def _crear(correo, nombre="Ana"):
-        cliente = aplicacion.test_client()
-        cliente.post("/api/cuentas/registro", json=datos_registro(correo=correo, nombre=nombre))
-        token = extraer_token(next(c for c in reversed(correos) if c.destinatario == correo))
-        cliente.post("/api/cuentas/verificacion", json={"token": token})
-        respuesta = cliente.post(
-            "/api/sesion", json={"correo": correo, "contrasenia": CONTRASENIA_VALIDA}
-        )
-        cliente.id_usuario = respuesta.get_json()["usuario"]["id"]
-        return cliente
-
-    return _crear
-
-
-@pytest.fixture
 def ana(cuenta):
     """Referente del estudio."""
     return cuenta("ana@ejemplo.com")
