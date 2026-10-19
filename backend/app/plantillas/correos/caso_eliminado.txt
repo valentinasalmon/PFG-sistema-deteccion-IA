@@ -1,0 +1,3 @@
+Hola, {{ nombre }}:
+
+{{ responsable }} eliminó el caso {{ numero }}. Sus datos ya no están disponibles en la plataforma.

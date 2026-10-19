@@ -58,7 +58,18 @@ CUENTA_DESACTIVACION = "cuenta.desactivacion"
 CUENTA_REACTIVACION = "cuenta.reactivacion"
 CUENTA_PROMOCION_ADMINISTRADOR = "cuenta.promocion_administrador"
 
+# --- Acciones de casos (funcionalidad 005) ---
+CASO_CREACION = "caso.creacion"
+CASO_EDICION = "caso.edicion"
+CASO_CAMBIO_ESTADO = "caso.cambio_estado"
+CASO_COMPARTIR = "caso.compartir"
+CASO_ACCESO_MODIFICACION = "caso.acceso_modificacion"
+CASO_ACCESO_REVOCACION = "caso.acceso_revocacion"
+CASO_TRANSFERENCIA = "caso.transferencia"
+CASO_ELIMINACION = "caso.eliminacion"
+
 TIPO_USUARIO = "usuario"
+TIPO_CASO = "caso"
 TIPO_ORGANIZACION = "organizacion"
 TIPO_INVITACION = "invitacion"
 

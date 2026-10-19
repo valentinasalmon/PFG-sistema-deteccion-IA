@@ -57,14 +57,17 @@ class ServicioOrganizaciones:
     """Operaciones sobre organizaciones, sus miembros y sus invitaciones."""
 
     def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        self, repositorio, usuarios, correos, tokens, configuracion, registro
+        self, repositorio, usuarios, correos, tokens, configuracion, registro, casos=None
     ):
         """
         Args:
             repositorio: ``RepositorioOrganizaciones``.
             usuarios: ``RepositorioUsuarios``, para saber si un correo está registrado.
             registro: ``ServicioAuditoria``.
+            casos: ``RepositorioCasos``, para aplicar a los casos de la
+                organización las reglas de salida y eliminación (funcionalidad 005).
         """
+        self.casos = casos
         self.repositorio = repositorio
         self.usuarios = usuarios
         self.correos = correos
@@ -228,12 +231,16 @@ class ServicioOrganizaciones:
         miembros = [m.usuario for m in organizacion.membresias]
         self._auditar(
             auditoria.ORGANIZACION_ELIMINACION, auditoria.EXITOSO, usuario, organizacion,
-            {"nombre": nombre, "miembros": len(miembros), "motivo": motivo},
+            {"nombre": nombre, "miembros": len(miembros), "motivo": motivo,
+             "casos_eliminados": self.cantidad_de_casos(organizacion)},
         )
         desactivados = {
             miembro.id for miembro in miembros
             if self._desactivar_si_corresponde(miembro, organizacion, usuario)
         }
+        # Los casos de la organización se eliminan con ella (RN09, RF18 CA2).
+        for caso in self.casos.casos_de_organizacion(organizacion.id) if self.casos else []:
+            self.repositorio.quitar(caso)
         self.repositorio.quitar(organizacion)
         self.repositorio.confirmar()
         if avisar:
@@ -305,10 +312,42 @@ class ServicioOrganizaciones:
             auditoria.MEMBRESIA_DESVINCULACION, auditoria.EXITOSO, usuario, organizacion,
             {"id_usuario": id_usuario, "correo": desvinculado.correo},
         )
+        self._reasignar_casos(organizacion, desvinculado, usuario)
         desactivada = self._desactivar_si_corresponde(desvinculado, organizacion, usuario)
         self.repositorio.quitar(membresia)
         self.repositorio.confirmar()
         self.correos.enviar_aviso_desvinculacion(desvinculado, organizacion, desactivada)
+
+    def cantidad_de_casos(self, organizacion):
+        """Cantidad de casos de la organización (RF18 CA1)."""
+        return self.casos.cantidad_de_organizacion(organizacion.id) if self.casos else 0
+
+    def _quitar_accesos(self, organizacion, miembro):
+        """Quita los accesos individuales del miembro a casos de la organización."""
+        for acceso in self.casos.accesos_en_organizacion(miembro.id, organizacion.id):
+            self.repositorio.quitar(acceso)
+
+    def _reasignar_casos(self, organizacion, desvinculado, referente):
+        """Pasa al Referente los casos del desvinculado y le quita sus accesos (RN14, RF14 CA2).
+
+        No confirma: se guarda junto con la desvinculación.
+        """
+        if not self.casos:
+            return
+        reasignados = []
+        for caso in self.casos.casos_a_cargo_en(desvinculado.id, organizacion.id):
+            propio = self.casos.acceso_individual(caso.id, referente.id)
+            if propio is not None:
+                self.repositorio.quitar(propio)
+            caso.id_responsable = referente.id
+            reasignados.append(caso.numero)
+        self._quitar_accesos(organizacion, desvinculado)
+        if reasignados:
+            self._auditar(
+                auditoria.CASO_TRANSFERENCIA, auditoria.EXITOSO, referente, organizacion,
+                {"motivo": "desvinculacion", "casos": reasignados, "anterior": desvinculado.id,
+                 "nuevo": referente.id},
+            )
 
     def designar_referente(self, id_organizacion, usuario, id_usuario):
         """Transfiere el rol de Referente a otro miembro (RF15 CA2, RN07)."""
@@ -366,8 +405,22 @@ class ServicioOrganizaciones:
             )
             return True, self._eliminar(organizacion, usuario, avisar=False, motivo="abandono")
 
+        a_cargo = self.casos.casos_a_cargo_en(usuario.id, organizacion.id) if self.casos else []
+        if a_cargo:
+            self._rechazar(
+                ConflictoDatos(
+                    f"Sos Responsable de {len(a_cargo)} "
+                    f"{'caso' if len(a_cargo) == 1 else 'casos'} de la organización: "
+                    "transferilos a otro miembro antes de abandonarla.",
+                    codigo="debe_transferir_casos",
+                ),
+                auditoria.MEMBRESIA_ABANDONO, usuario, organizacion, "tiene_casos",
+                {"casos": [caso.numero for caso in a_cargo]},
+            )
         referente = self.repositorio.referente(organizacion.id).usuario
         self._auditar(auditoria.MEMBRESIA_ABANDONO, auditoria.EXITOSO, usuario, organizacion)
+        if self.casos:
+            self._quitar_accesos(organizacion, usuario)
         desactivada = self._desactivar_si_corresponde(usuario, organizacion, usuario)
         self.repositorio.quitar(membresia)
         self.repositorio.confirmar()

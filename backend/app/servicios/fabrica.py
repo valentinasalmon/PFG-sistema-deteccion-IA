@@ -8,9 +8,11 @@ IP) para que la auditoría lo registre sin que los servicios conozcan Flask.
 """
 from app.repositorios.catalogo_aseguradoras import CatalogoAseguradoras
 from app.repositorios.repositorio_auditoria import RepositorioAuditoria
+from app.repositorios.repositorio_casos import RepositorioCasos
 from app.repositorios.repositorio_organizaciones import RepositorioOrganizaciones
 from app.repositorios.repositorio_usuarios import RepositorioUsuarios
 from app.servicios.auditoria import ServicioAuditoria
+from app.servicios.servicio_casos import ServicioCasos
 from app.servicios.servicio_correos import ServicioCorreos
 from app.servicios.servicio_cuentas import ServicioCuentas
 from app.servicios.servicio_organizaciones import ServicioOrganizaciones
@@ -67,5 +69,13 @@ def crear_servicio_organizaciones(configuracion, enviador, origen=None):
     return ServicioOrganizaciones(
         RepositorioOrganizaciones(), RepositorioUsuarios(), _correos(configuracion, enviador),
         GestorTokens(configuracion["SECRET_KEY"]), configuracion,
-        crear_servicio_auditoria(origen),
+        crear_servicio_auditoria(origen), RepositorioCasos(),
+    )
+
+
+def crear_servicio_casos(configuracion, enviador, origen=None):
+    """Servicio de casos y accesos (funcionalidad 005)."""
+    return ServicioCasos(
+        RepositorioCasos(), RepositorioOrganizaciones(), RepositorioUsuarios(),
+        _correos(configuracion, enviador), crear_servicio_auditoria(origen),
     )

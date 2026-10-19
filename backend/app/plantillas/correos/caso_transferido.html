@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>{% if es_nuevo %}{{ otro }} te transfirió el caso <strong>{{ numero }}</strong>: ahora sos su Responsable.{% else %}Transferiste el caso <strong>{{ numero }}</strong> a {{ otro }}, que ahora es su Responsable.{% endif %}</p>
+{% with texto_boton = "Ver el caso" %}{% include "_boton.html" %}{% endwith %}
+{% endblock %}

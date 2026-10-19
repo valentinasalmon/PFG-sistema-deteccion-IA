@@ -178,3 +178,67 @@ class ServicioCorreos:
             "aseguradora_rechazada",
             nombre=usuario.nombre, organizacion=nombre_organizacion, motivo=motivo,
         )
+
+    # --- Casos (funcionalidad 005) ---
+
+    def _enlace_caso(self, caso):
+        return f"{self.url_frontend}/casos/{caso.id}"
+
+    def enviar_aviso_acceso_caso(self, usuario, caso, cambio, nivel):
+        """Aviso de un acceso a un caso otorgado, modificado o revocado (RF30 CA1, CU22).
+
+        Args:
+            cambio: ``"otorgado"``, ``"modificado"`` o ``"revocado"``.
+            nivel: ``"lectura"`` o ``"colaboracion"``; None si se revocó.
+        """
+        asuntos = {
+            "otorgado": f"Te compartieron el caso {caso.numero}",
+            "modificado": f"Cambió tu permiso sobre el caso {caso.numero}",
+            "revocado": f"Ya no tenés acceso al caso {caso.numero}",
+        }
+        return self._enviar(
+            usuario.correo, asuntos[cambio], "caso_acceso",
+            nombre=usuario.nombre, numero=caso.numero, cambio=cambio,
+            nivel={"lectura": "Lectura", "colaboracion": "Colaboración"}.get(nivel),
+            enlace=self._enlace_caso(caso),
+        )
+
+    def enviar_aviso_transferencia_caso(self, usuario, caso, es_nuevo, otro):
+        """Aviso de la transferencia de un caso al nuevo y al anterior Responsable (RF33 CA3)."""
+        asunto = (
+            f"Ahora sos Responsable del caso {caso.numero}" if es_nuevo
+            else f"Transferiste el caso {caso.numero}"
+        )
+        return self._enviar(
+            usuario.correo, asunto, "caso_transferido",
+            nombre=usuario.nombre, numero=caso.numero, es_nuevo=es_nuevo,
+            otro=f"{otro.nombre} {otro.apellido}", enlace=self._enlace_caso(caso),
+        )
+
+    def enviar_solicitud_transferencia_caso(self, usuario, caso, solicitante):
+        """Pedido de aceptar un caso personal transferido (RF33 CA2)."""
+        return self._enviar(
+            usuario.correo, f"Te quieren transferir el caso {caso.numero}",
+            "caso_transferencia_solicitada",
+            nombre=usuario.nombre, numero=caso.numero,
+            solicitante=f"{solicitante.nombre} {solicitante.apellido}",
+            enlace=f"{self.url_frontend}/casos",
+        )
+
+    def enviar_respuesta_transferencia_caso(self, usuario, caso, destinatario, aceptada):
+        """Aviso a quien pidió la transferencia de que fue aceptada o rechazada."""
+        accion = "aceptó" if aceptada else "rechazó"
+        return self._enviar(
+            usuario.correo, f"{destinatario.nombre} {accion} el caso {caso.numero}",
+            "caso_transferencia_respondida",
+            nombre=usuario.nombre, numero=caso.numero, aceptada=aceptada,
+            receptor=f"{destinatario.nombre} {destinatario.apellido}",
+        )
+
+    def enviar_aviso_caso_eliminado(self, usuario, numero, responsable):
+        """Aviso a quienes tenían acceso de que el caso fue eliminado (RF32 CA2)."""
+        return self._enviar(
+            usuario.correo, f"Se eliminó el caso {numero}", "caso_eliminado",
+            nombre=usuario.nombre, numero=numero,
+            responsable=f"{responsable.nombre} {responsable.apellido}",
+        )
