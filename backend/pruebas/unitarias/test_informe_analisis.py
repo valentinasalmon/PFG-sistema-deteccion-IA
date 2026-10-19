@@ -75,10 +75,28 @@ def test_que_significa_por_capa_y_sin_veredictos():
     assert "datos ocultos además de la imagen" in html
     datos = informe_analisis.armar_datos(_analisis(), {}, "0.2.0")
     textos = " ".join(
-        [datos["escala"], *datos["limitaciones"], informe_analisis.QUE_SIGNIFICA["metadatos"]]
+        [datos["escala"], *datos["limitaciones"], *informe_analisis.QUE_SIGNIFICA.values()]
     ).lower()
     palabras = set(textos.replace(".", " ").replace(",", " ").replace(":", " ").split())
     assert not palabras & set(TERMINOS_DE_VEREDICTO)
+
+
+def test_capa_de_credenciales_con_su_titulo_y_su_explicacion():
+    """009 CA7: la capa 2 aparece con su título, su tabla y su recuadro."""
+    analisis = _analisis()
+    credenciales = _resultado()
+    credenciales.capa = "c2pa"
+    credenciales.detalle = {"tabla": [{"campo": "Firmante", "valor": "OpenAI OpCo, LLC"}]}
+    analisis.imagenes[0].resultados.append(credenciales)
+    analisis.versiones["c2pa"] = "1.0 (c2pa-python 0.38.0, lista de confianza abc/def)"
+
+    html = _html(analisis)
+
+    for texto in (
+        "Capa 2 · Credenciales de contenido (C2PA)", "OpenAI OpCo, LLC",
+        "lista de confianza del consorcio C2PA", "1.0 (c2pa-python 0.38.0",
+    ):
+        assert texto in html, texto
 
 
 def test_capa_no_disponible_e_imagen_alterada():
