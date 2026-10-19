@@ -33,7 +33,9 @@ Documentos: [especificación](../funcionalidades/009-capa-c2pa/especificacion.md
   - La tabla "Datos de las credenciales".
   - El recuadro "¿Qué significa?".
 - **Refactorización**: el cálculo del nivel y los textos de intensidad pasaron a `app/analisis/base.py`, compartidos con la capa de metadatos.
-- **Mejora del PDF**: el título de cada capa ya no queda solo al pie de una página, separado de su contenido.
+- **Mejoras del PDF**:
+  - El título de cada capa ya no queda solo al pie de una página, separado de su contenido.
+  - Se agregó la leyenda "Este informe no constituye un dictamen pericial. Consulte a un profesional especializado." en todas las páginas. La exige RNF23 CA2 y faltaba desde la 008.
 
 ## Hallazgo principal: la firma de OpenAI sí es confiable
 
@@ -104,4 +106,5 @@ Resultado con las 10 imágenes de la prueba de canales del TIF (sin subirlas al 
   - Confirmar la licencia de uso de la lista de confianza de C2PA, igual que la del catálogo de la SSN.
   - Sigue pendiente lo de la 008: el hito v0.1 (Pull Request de `desarrollo` hacia `main` y etiqueta) y el valor de `VERSION_APLICACION`.
 - **Revisión periódica**: actualizar la lista de confianza; el README de la carpeta explica cómo.
+- **Para avanzar con la red neuronal (010 y 012)** hacen falta CP-07 (conjunto de datos y umbral) y CP-21 (quién entrena y dónde).
 - **Siguiente**: 011 (capa 3, ELA).

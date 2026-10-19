@@ -6,7 +6,7 @@ con las limitaciones y la advertencia legal. Nunca emite un veredicto ni
 combina las capas en un puntaje (RN27). No accede a la base de datos ni al
 almacenamiento: recibe los objetos y las miniaturas ya leídas.
 
-Realiza: RF44 (CA1, CA2), RNF07 (CA3); RN27, RN29.
+Realiza: RF44 (CA1, CA2), RNF07 (CA3), RNF23 (CA2); RN27, RN29.
 """
 import base64
 
@@ -46,6 +46,11 @@ QUE_SIGNIFICA = {
 QUE_SIGNIFICA_GENERICO = (
     "Esta capa busca señales técnicas de edición o de generación artificial. Su "
     "resultado debe leerse junto con las demás capas."
+)
+
+# Leyenda exigida en todas las páginas del informe (RNF23 CA2).
+LEYENDA_PERICIAL = (
+    "Este informe no constituye un dictamen pericial. Consulte a un profesional especializado."
 )
 
 ESCALA_DE_INDICIO = (
@@ -161,6 +166,7 @@ def armar_datos(analisis, miniaturas, version_plataforma):
             "WeasyPrint (generación del PDF)": version_weasyprint(),
         },
         "escala": ESCALA_DE_INDICIO,
+        "leyenda": LEYENDA_PERICIAL,
         "limitaciones": LIMITACIONES,
     }
 
