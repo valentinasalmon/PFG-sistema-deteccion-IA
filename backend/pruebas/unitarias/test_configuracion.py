@@ -39,8 +39,12 @@ def test_produccion_con_todas_las_variables(monkeypatch):
     monkeypatch.setenv("URL_FRONTEND", "https://plataforma.ejemplo.com")
     monkeypatch.setenv("SERVIDOR_CORREO", "email-smtp.eu-west-1.amazonaws.com")
     monkeypatch.setenv("REMITENTE_CORREO", "no-responder@ejemplo.com")
+    monkeypatch.setenv("S3_BUCKET", "imagenes-plataforma")
+    monkeypatch.setenv("ALMACENAMIENTO", "local")
     configuracion = obtener_configuracion("produccion")
     assert isinstance(configuracion, ConfiguracionProduccion)
+    # En producción las imágenes siempre van a S3 cifrado (RNF03).
+    assert (configuracion.ALMACENAMIENTO, configuracion.S3_CIFRADO) == ("s3", "AES256")
     assert configuracion.DEBUG is False
     assert configuracion.SECRET_KEY == "una-clave-segura"
     assert configuracion.SESSION_COOKIE_SECURE is True
