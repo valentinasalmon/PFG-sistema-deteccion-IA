@@ -44,7 +44,7 @@ implementación siguiendo tareas.md, con pruebas
 | 016 | Sello de tiempo en Blockchain Federal Argentina | 7 | RF37 | Pendiente |
 | 017 | Infraestructura y despliegue en AWS | 8 | RNF02, RNF03, RNF15, RNF22 | Pendiente |
 | 018 | Cierre: usabilidad, índice de calidad y documentación final | 9 | RNF10, RNF11, RNF19 | Pendiente |
-| 019 | Eliminación de cuenta y copia de datos personales | 3 | RF08, RF09 | Pendiente |
+| 019 | Eliminación de cuenta y copia de datos personales | 3 | RF08, RF09 | Completado |
 | 020 | Registro guiado por pasos | 2 | RF01 (interfaz), RNF10 | Completado |
 | 021 | Organizaciones de aseguradoras | 3 | RF01, RF10, RF12 – RF17 (ajustes), RN36 – RN40 | Completado |
 

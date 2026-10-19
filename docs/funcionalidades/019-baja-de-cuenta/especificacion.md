@@ -1,7 +1,7 @@
 # Especificación: 019 — Eliminación de cuenta y copia de datos personales
 
 - **Rama**: `funcionalidad/019-baja-de-cuenta`
-- **Estado**: Aprobada (por el asistente, según el reparto del 2026-10-16; pendiente de revisión de la autora en el Pull Request)
+- **Estado**: Completada (pendiente de revisión de la autora en el Pull Request)
 - **Requisitos que realiza**: RF08, RF09; RNF06 (CA5); RNF08 (CA4: derechos de acceso y supresión)
 - **Reglas de negocio aplicadas**: RN04, RN05, RN08, RN09, RN34
 - **Casos de uso**: CU06, CU07 (incluye CU12, CU15, CU23 y CU24)
@@ -55,19 +55,19 @@ La baja no puede dejar casos sin Responsable ni organizaciones sin Referente. Po
 ## Criterios de aceptación
 
 ### Copia de datos (RF09)
-- [ ] **CA1**: Dado un usuario con sesión, cuando pide la copia, entonces recibe dos enlaces (JSON y PDF) que vencen a los 15 minutos, y se le envía un correo de aviso (RF09 CA1, CA2, CA4).
-- [ ] **CA2**: La copia contiene sus datos de cuenta, el consentimiento, sus membresías, sus invitaciones pendientes, los casos de los que es Responsable y su actividad registrada (RF09 CA1).
-- [ ] **CA3**: La copia no contiene datos personales de otras personas ni el contenido de los casos (RF09 CA3).
-- [ ] **CA4**: Un enlace vencido, alterado o de otra persona no descarga nada.
+- [x] **CA1**: Dado un usuario con sesión, cuando pide la copia, entonces recibe dos enlaces (JSON y PDF) que vencen a los 15 minutos, y se le envía un correo de aviso (RF09 CA1, CA2, CA4).
+- [x] **CA2**: La copia contiene sus datos de cuenta, el consentimiento, sus membresías, sus invitaciones pendientes, los casos de los que es Responsable y su actividad registrada (RF09 CA1).
+- [x] **CA3**: La copia no contiene datos personales de otras personas ni el contenido de los casos (RF09 CA3).
+- [x] **CA4**: Un enlace vencido, alterado o de otra persona no descarga nada.
 
 ### Eliminación (RF08)
-- [ ] **CA5**: Dado un usuario Responsable de casos, cuando consulta la baja, entonces ve la lista de esos casos y no puede eliminar la cuenta hasta transferirlos o eliminarlos (RF08 CA1, RN05).
-- [ ] **CA6**: Dado un usuario que es Referente de una organización con otros miembros, entonces no puede eliminar la cuenta hasta designar otro Referente (RF08 CA2, RN08).
-- [ ] **CA7**: Dado un usuario que es el único miembro de una organización, entonces se le informa que la organización y sus casos se eliminarán, y se eliminan junto con la cuenta (RN08, RN09).
-- [ ] **CA8**: Dada una contraseña incorrecta, entonces la cuenta no se elimina y el intento queda en la auditoría.
-- [ ] **CA9**: Dadas las condiciones resueltas y la contraseña correcta, entonces se suprimen la cuenta, sus membresías, sus accesos y las invitaciones a su correo; se cierran sus sesiones; y la auditoría conserva sus entradas sin el usuario (RF08 CA3, RN34, RNF06 CA5).
-- [ ] **CA10**: Dada la eliminación completada, entonces se envía un correo de confirmación a la dirección de la cuenta eliminada (RF08 CA4).
-- [ ] **CA11**: Dada una cuenta eliminada, entonces su correo puede registrarse otra vez como una cuenta nueva, sin datos de la anterior.
+- [x] **CA5**: Dado un usuario Responsable de casos, cuando consulta la baja, entonces ve la lista de esos casos y no puede eliminar la cuenta hasta transferirlos o eliminarlos (RF08 CA1, RN05).
+- [x] **CA6**: Dado un usuario que es Referente de una organización con otros miembros, entonces no puede eliminar la cuenta hasta designar otro Referente (RF08 CA2, RN08).
+- [x] **CA7**: Dado un usuario que es el único miembro de una organización, entonces se le informa que la organización y sus casos se eliminarán, y se eliminan junto con la cuenta (RN08, RN09).
+- [x] **CA8**: Dada una contraseña incorrecta, entonces la cuenta no se elimina y el intento queda en la auditoría.
+- [x] **CA9**: Dadas las condiciones resueltas y la contraseña correcta, entonces se suprimen la cuenta, sus membresías, sus accesos y las invitaciones a su correo; se cierran sus sesiones; y la auditoría conserva sus entradas sin el usuario (RF08 CA3, RN34, RNF06 CA5).
+- [x] **CA10**: Dada la eliminación completada, entonces se envía un correo de confirmación a la dirección de la cuenta eliminada (RF08 CA4).
+- [x] **CA11**: Dada una cuenta eliminada, entonces su correo puede registrarse otra vez como una cuenta nueva, sin datos de la anterior.
 
 ## Preguntas abiertas
 
