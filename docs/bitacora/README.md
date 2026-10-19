@@ -29,3 +29,4 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-19 | [Funcionalidad 005: casos y permisos](2026-10-19-funcionalidad-005-casos.md) |
 | 2026-10-19 | [Funcionalidad 019: eliminación de cuenta y copia de datos](2026-10-19-funcionalidad-019-baja-de-cuenta.md) |
 | 2026-10-19 | [Funcionalidad 006: carga de imágenes, huella y almacenamiento](2026-10-19-funcionalidad-006-imagenes.md) |
+| 2026-10-19 | [Funcionalidad 007: motor de análisis y capa de metadatos](2026-10-19-funcionalidad-007-motor-de-analisis.md) |

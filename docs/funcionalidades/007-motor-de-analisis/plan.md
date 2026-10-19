@@ -52,6 +52,8 @@ Código revisado: `app/services/metadatos_service.py` y `tests/test_metadatos_ex
 | Dos llamadas a ExifTool (todo y XMP) sobre un archivo en disco | Una sola llamada que lee la imagen por la entrada estándar: no se escriben copias temporales de la evidencia |
 | "Fecha de creación del sistema" con `os.path.getctime` (en el servidor es la fecha de copia) | Fecha de carga registrada en la base (RF39 CA2) |
 | Solo comparaba la fecha del sistema con `DateTimeOriginal` | Se agrega la fecha anterior al lanzamiento del dispositivo declarado (RF39 CA2), con una tabla de modelos editable |
+| Historial XMP pedido sin `-struct`: la regla nunca se activaba | `-struct` y prueba de regresión |
+| Sin lectura de las declaraciones C2PA | Software y origen declarados en el C2PA, informados sin verificar la firma (la verifica la capa 2) |
 | Sin regla para la ausencia de metadatos | Anomalía de severidad neutra con la aclaración de RF39 CA3; no eleva el nivel |
 | No leía el origen sintético IPTC (`DigitalSourceType`) | Se detecta `trainedAlgorithmicMedia` y `compositeSynthetic` en XMP (directo) |
 | Clasificación en cuatro categorías de texto | Nivel de indicio de 0 a 100 con un método documentado (RF43) |
@@ -60,6 +62,28 @@ Código revisado: `app/services/metadatos_service.py` y `tests/test_metadatos_ex
 | Sin tabla de metadatos en el resultado | Tabla de campos relevantes (RF39 CA4) |
 | Soporte HEIC | Se quita: la plataforma solo acepta JPEG y PNG (RN22) |
 | `ConclusionFinal`, que combinaba capas | Se descarta (RN27, ADR-0006) |
+
+### Hallazgos durante la implementación
+
+- **La regla de historial XMP del TIF nunca se activaba.** El TIF pedía `-XMP:History` sin `-struct`. Así, ExifTool no devuelve la clave `History`, sino `HistoryAction`, `HistoryWhen`, etc. (se verificó con ExifTool 12.76 sobre una imagen con historial). La capa nueva usa `-struct` y tiene una prueba de regresión.
+- **Las imágenes de ChatGPT y Gemini no traen EXIF ni XMP**: lo que declaran está en las credenciales de contenido (C2PA). ExifTool lee esas declaraciones sin verificar la firma: acciones con `softwareAgent` y `digitalSourceType`, y `claim_generator_info`.
+  - La capa de metadatos las informa como origen o software declarado, con la aclaración "sin verificar su firma".
+  - La conclusión remite a la capa de credenciales de contenido (009) para la verificación.
+  - Sin esto, la v0.1 informaría "sin metadatos" para una imagen que declara haber sido generada con IA.
+
+### Resultado con las imágenes de prueba del TIF
+
+Se analizaron las diez imágenes de `tests/imagenes_prueba/` del TIF (generadas con ChatGPT y Gemini y enviadas por distintos canales). No se copiaron al repositorio.
+
+| Canal | ChatGPT | Gemini |
+|---|---|---|
+| Archivo original | 90 (C2PA declara ChatGPT y origen sintético; dimensiones típicas) | 90 (C2PA declara origen sintético) |
+| WhatsApp como documento | 90 | 90 |
+| Correo electrónico | 90 | 90 |
+| WhatsApp como foto | 20 (solo las dimensiones; sin metadatos) | 0 (sin metadatos) |
+| Captura de pantalla | 0 (sin metadatos) | 0 (sin metadatos) |
+
+Coincide con el experimento de canales del TIF: WhatsApp como foto y la captura de pantalla eliminan toda la información. En esos casos la capa informa la ausencia de metadatos como dato (RF39 CA3), y las capas 3 y 4 son las que pueden aportar indicios.
 
 ### Cálculo del nivel de indicio de la capa de metadatos
 
