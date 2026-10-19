@@ -209,12 +209,12 @@ def test_lector_no_edita_y_colaborador_si(aplicacion, ana, beto, carla, estudio)
 
 
 def test_ciclo_de_estados_y_retencion(ana):
-    """CA8 a CA11: cerrar, archivar, desarchivar y reabrir; vencimiento a 2 años."""
+    """CA8 a CA11: cerrar, archivar, desarchivar y reabrir; vencimiento a 5 años."""
     caso = _crear(ana)
     cerrado = _estado(ana, caso["id"], "cerrar").get_json()["caso"]
     assert cerrado["estado"] == "cerrado"
     desde = cerrado["retencion_desde"]
-    assert cerrado["retencion_vence"][:4] == str(int(desde[:4]) + 2)
+    assert cerrado["retencion_vence"][:4] == str(int(desde[:4]) + 5)
     assert cerrado["retencion_vence"][4:10] == desde[4:10]
     assert ana.patch(f"/api/casos/{caso['id']}", json={"lugar": "X"}).get_json()["codigo"] == (
         "caso_solo_lectura"

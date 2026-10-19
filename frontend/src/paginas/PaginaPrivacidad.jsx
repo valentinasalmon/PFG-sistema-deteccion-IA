@@ -30,7 +30,7 @@ export default function PaginaPrivacidad() {
 
       <h2>3. Cuánto tiempo se conservan</h2>
       <p>
-        Las imágenes y los informes de un caso se conservan hasta dos años después de cerrarlo o
+        Las imágenes y los informes de un caso se conservan hasta cinco años después de cerrarlo o
         archivarlo, y luego se eliminan. Los casos que eliminás se borran de inmediato.
       </p>
 

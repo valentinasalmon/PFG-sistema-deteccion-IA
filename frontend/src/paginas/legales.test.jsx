@@ -31,7 +31,7 @@ describe('textos legales', () => {
   it('la Política de Privacidad informa la retención y la Ley 25.326', () => {
     render(<PaginaPrivacidad />)
     expect(screen.getByRole('heading', { level: 1, name: 'Política de Privacidad' })).toBeInTheDocument()
-    expect(screen.getByText(/dos años/)).toBeInTheDocument()
+    expect(screen.getByText(/se conservan hasta cinco años después de cerrarlo/)).toBeInTheDocument()
     expect(screen.getByText(/25.326/)).toBeInTheDocument()
   })
 })

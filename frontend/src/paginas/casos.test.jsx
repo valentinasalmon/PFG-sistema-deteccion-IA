@@ -365,7 +365,7 @@ describe('pantalla del caso', () => {
             ...CASO,
             estado: 'cerrado',
             estado_nombre: 'Cerrado',
-            retencion_vence: '2028-10-16T12:00:00',
+            retencion_vence: '2031-10-16T12:00:00',
             acciones: { ...TODAS, editar: false, cerrar: false, archivar: true, reabrir: true },
           }
           return { cuerpo: { caso, accesos: [], mensaje: 'El caso quedó cerrado.' } }
@@ -378,7 +378,7 @@ describe('pantalla del caso', () => {
     await usuario.click(screen.getByRole('button', { name: 'Cerrar' }))
 
     expect(await screen.findByText('El caso quedó cerrado.')).toBeInTheDocument()
-    expect(await screen.findByText(/Los datos se conservan hasta el 16\/10\/2028/)).toBeInTheDocument()
+    expect(await screen.findByText(/Los datos se conservan hasta el 16\/10\/2031/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Archivar' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Reabrir' })).toBeInTheDocument()
     expect(screen.getByText(/es de solo lectura/)).toBeInTheDocument()

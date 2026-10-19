@@ -210,6 +210,7 @@ El sistema debe controlar, para cada espacio de trabajo, las capacidades y lími
 El sistema debe permitir al usuario consultar el plan de su espacio personal y al Referente el plan de su organización, junto con el consumo del período.
 
 - **CA1:** Dado el Referente, cuando consulta el plan, entonces ve el nombre del plan, los límites y el consumo actual de cada uno.
+- **CA2:** Dado el Referente, cuando elige otro plan, entonces recorre un flujo de pago **simulado**, que se presenta como tal y no pide datos de pago, y al confirmarlo el plan se aplica de inmediato con sus límites y queda registrado en la auditoría como pago simulado (CP-01).
 
 ### RF21 — Consultar tablero de administración
 **Prioridad:** Debe · **Reglas:** RN35

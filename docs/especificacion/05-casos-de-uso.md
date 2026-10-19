@@ -329,7 +329,7 @@ Precondición común a todos los casos de uso cuyo actor es Usuario, Referente, 
 
 **Flujo principal (cerrar)**
 1. El Responsable selecciona "Cerrar caso" en un caso en Borrador o Analizado.
-2. El sistema informa que el caso quedará en solo lectura y que comenzará el plazo de retención de 2 años, con su fecha de vencimiento.
+2. El sistema informa que el caso quedará en solo lectura y que comenzará el plazo de retención de 5 años, con su fecha de vencimiento.
 3. El Responsable confirma.
 4. El sistema cambia el estado a Cerrado y registra la fecha de inicio de la retención.
 
