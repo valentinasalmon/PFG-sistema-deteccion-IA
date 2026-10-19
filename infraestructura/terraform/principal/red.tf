@@ -25,7 +25,7 @@ resource "aws_security_group" "servidor" {
 
 resource "aws_vpc_security_group_ingress_rule" "http" {
   security_group_id = aws_security_group.servidor.id
-  description       = "HTTP: certificados de Let's Encrypt y redireccion a HTTPS"
+  description       = "HTTP: certificados de Lets Encrypt y redireccion a HTTPS"
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "tcp"
   from_port         = 80
@@ -43,7 +43,7 @@ resource "aws_vpc_security_group_ingress_rule" "https" {
 
 resource "aws_vpc_security_group_egress_rule" "salida" {
   security_group_id = aws_security_group.servidor.id
-  description       = "Salida: paquetes, S3, SES, SSM y Let's Encrypt"
+  description       = "Salida: paquetes, S3, SES, SSM y Lets Encrypt"
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
 }
