@@ -36,7 +36,7 @@ implementación siguiendo tareas.md, con pruebas
 | 008 | Informe PDF e historial | 4 | RF44, RF45 | Completado |
 | 009 | Capa 2 (C2PA) | 5 | RF40 | Completado |
 | 010 | Red neuronal: entrenamiento y exportación (pista paralela) | 2 – 5 | RNF24 | Pendiente |
-| 011 | Capa 3 (ELA) | 5 | RF41 | Pendiente |
+| 011 | [Capa 3 (ELA)](011-capa-ela/especificacion.md) | 5 | RF41 | Completado |
 | 012 | Capa 4 (ONNX) | 5 | RF42 | Pendiente |
 | 013 | Notificaciones y panel principal | 6 | RF47, RF48 | Pendiente |
 | 014 | Planes y tablero de administración | 6 | RF19 – RF22 | Pendiente |

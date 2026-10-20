@@ -1,7 +1,7 @@
 # Especificación: 011 — Capa 3 (análisis de niveles de error, ELA)
 
 - **Rama**: `funcionalidad/011-capa-ela`
-- **Estado**: En desarrollo
+- **Estado**: Completada (pendiente de revisión de la autora en el Pull Request)
 - **Requisitos que realiza**: RF41; RF43 (CA1 a CA4, para esta capa); RNF23 (CA1)
 - **Reglas de negocio aplicadas**: RN21, RN26, RN27, RN29
 - **Casos de uso**: la parte de CU28 que ejecuta la capa 3
@@ -50,13 +50,13 @@ Es una técnica conocida y fácil de explicar, pero **débil por sí sola**: los
 
 ## Criterios de aceptación
 
-- [ ] **CA1**: Dada una imagen JPEG con una región pegada desde otra imagen, entonces la capa la señala con su ubicación, y el nivel es mayor que el de la misma imagen sin editar (RF41 CA1).
-- [ ] **CA2**: Dada una imagen JPEG sin editar, entonces no se señalan regiones y el nivel es 0, con la aclaración de que no descarta ediciones.
-- [ ] **CA3**: Dada una imagen PNG, entonces el resultado aclara la validez limitada de ELA y no pasa de indicios débiles (RF41 CA2).
-- [ ] **CA4**: El resultado incluye el mapa ELA con las regiones recuadradas y la aclaración de que es una señal complementaria; se ve en la pantalla y en el informe PDF (RF41 CA3).
-- [ ] **CA5**: El mapa se borra del almacenamiento al eliminar el caso (RN21).
-- [ ] **CA6**: La conclusión es un indicio con la recomendación de consultar a un profesional, sin términos de veredicto (RN27), y el resultado registra las versiones (RN29).
-- [ ] **CA7**: Si la imagen no se puede leer, la capa queda "No disponible" con el motivo y las demás capas siguen (RN26).
+- [x] **CA1**: Dada una imagen JPEG con una región pegada desde otra imagen, entonces la capa la señala con su ubicación, y el nivel es mayor que el de la misma imagen sin editar (RF41 CA1).
+- [x] **CA2**: Dada una imagen JPEG sin editar, entonces no se señalan regiones y el nivel es 0, con la aclaración de que no descarta ediciones.
+- [x] **CA3**: Dada una imagen PNG, entonces el resultado aclara la validez limitada de ELA y no pasa de indicios débiles (RF41 CA2).
+- [x] **CA4**: El resultado incluye el mapa ELA con las regiones recuadradas y la aclaración de que es una señal complementaria; se ve en la pantalla y en el informe PDF (RF41 CA3).
+- [x] **CA5**: El mapa se borra del almacenamiento al eliminar el caso (RN21).
+- [x] **CA6**: La conclusión es un indicio con la recomendación de consultar a un profesional, sin términos de veredicto (RN27), y el resultado registra las versiones (RN29).
+- [x] **CA7**: Si la imagen no se puede leer, la capa queda "No disponible" con el motivo y las demás capas siguen (RN26).
 
 ## Preguntas abiertas
 

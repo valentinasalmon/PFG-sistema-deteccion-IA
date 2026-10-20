@@ -34,3 +34,4 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-19 | [Funcionalidad 009: capa de credenciales de contenido (C2PA)](2026-10-19-funcionalidad-009-capa-c2pa.md) |
 | 2026-10-19 | [Decisiones de alcance y entrega](2026-10-19-decisiones-de-alcance-y-entrega.md) |
 | 2026-10-19 | [Funcionalidad 017: infraestructura y despliegue en AWS (código)](2026-10-19-funcionalidad-017-infraestructura.md) |
+| 2026-10-20 | [Funcionalidad 011: capa 3, niveles de error (ELA)](2026-10-20-funcionalidad-011-capa-ela.md) |
