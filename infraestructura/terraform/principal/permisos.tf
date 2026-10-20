@@ -1,7 +1,7 @@
 # Permisos de mínimo privilegio (RNF03 CA4).
 # - Rol de la EC2: sus buckets, sus parámetros y Systems Manager.
 # - Rol de despliegue: GitHub Actions lo asume con OIDC, sin claves guardadas,
-#   solo desde este repositorio; el flujo despliega solo desde main (CP-06).
+#   solo desde la rama main del repositorio (CP-06).
 
 data "aws_iam_policy_document" "asumir_ec2" {
   statement {
@@ -79,6 +79,11 @@ resource "aws_iam_instance_profile" "servidor" {
 
 # --- Despliegue desde GitHub Actions ---
 
+locals {
+  propietario_github        = split("/", var.repositorio_github)[0]
+  nombre_repositorio_github = split("/", var.repositorio_github)[1]
+}
+
 resource "aws_iam_openid_connect_provider" "github" {
   url            = "https://token.actions.githubusercontent.com"
   client_id_list = ["sts.amazonaws.com"]
@@ -96,13 +101,17 @@ data "aws_iam_policy_document" "asumir_github" {
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
     }
-    # Cualquier ejecución de este repositorio. El trabajo de despliegue solo
-    # corre en main (integracion-continua.yml) y solo quien tiene permiso de
-    # escritura en el repositorio puede ejecutar flujos con este token.
+    # Solo la rama main de este repositorio. GitHub identifica al repositorio
+    # con su nombre y, en el formato actual, también con los números de la
+    # cuenta y del repositorio (repo:propietario@id/nombre@id:...). Se aceptan
+    # los dos formatos.
     condition {
-      test     = "StringLike"
+      test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.repositorio_github}:*"]
+      values = [
+        "repo:${var.repositorio_github}:ref:refs/heads/main",
+        "repo:${local.propietario_github}@${var.id_propietario_github}/${local.nombre_repositorio_github}@${var.id_repositorio_github}:ref:refs/heads/main",
+      ]
     }
   }
 }

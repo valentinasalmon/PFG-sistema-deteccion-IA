@@ -125,11 +125,6 @@ jobs:
           tar -czf artefacto.tar.gz
           --exclude=__pycache__ --exclude=backend/almacenamiento_local --exclude=backend/pruebas
           backend frontend/dist infraestructura/nginx infraestructura/systemd infraestructura/scripts
-      - name: Mostrar la identidad que GitHub presenta ante AWS
-        run: |
-          token=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r .value)
-          echo "$token" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null | jq '{sub, aud, ref, repository}' || true
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.AWS_ROLE_DESPLIEGUE }}
