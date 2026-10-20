@@ -18,6 +18,7 @@ VERSION_PLANTILLA = "1.0"
 TITULOS_CAPA = {
     "metadatos": "Capa 1 · Metadatos",
     "c2pa": "Capa 2 · Credenciales de contenido (C2PA)",
+    "ela": "Capa 3 · Niveles de error (ELA)",
 }
 
 QUE_SIGNIFICA = {
@@ -41,6 +42,15 @@ QUE_SIGNIFICA = {
         "fuerte de la plataforma. Que una imagen no tenga credenciales es lo más habitual: "
         "muchas cámaras no las agregan y WhatsApp o una captura de pantalla las eliminan, "
         "por lo que su ausencia no indica que la imagen sea original."
+    ),
+    "ela": (
+        "Cada vez que una foto se guarda en JPEG pierde un poco de calidad, de manera "
+        "pareja en toda la imagen. Si una parte se pegó desde otra foto o se retocó y se "
+        "volvió a guardar, esa parte suele haber perdido calidad de otra forma. Esta capa "
+        "vuelve a comprimir la imagen y compara cuánto cambia cada zona: las que se "
+        "apartan del resto quedan recuadradas en el mapa. Es una técnica orientativa: los "
+        "bordes, los textos y las imágenes reenviadas por mensajería también producen "
+        "diferencias, por eso sus resultados nunca superan el nivel de indicio moderado."
     ),
 }
 QUE_SIGNIFICA_GENERICO = (
@@ -87,11 +97,11 @@ NOMBRES_SEVERIDAD = {
 NOMBRES_PERFIL = {"abogado": "Abogado", "aseguradora": "Aseguradora"}
 
 
-def _miniatura_como_dato(contenido):
-    """Miniatura JPEG embebida en el HTML, así el PDF no depende de enlaces."""
+def _miniatura_como_dato(contenido, tipo="image/jpeg"):
+    """Imagen embebida en el HTML (miniatura o mapa ELA), así el PDF no depende de enlaces."""
     if not contenido:
         return None
-    return "data:image/jpeg;base64," + base64.b64encode(contenido).decode("ascii")
+    return f"data:{tipo};base64," + base64.b64encode(contenido).decode("ascii")
 
 
 def _solicitante(analisis):
@@ -106,7 +116,7 @@ def _solicitante(analisis):
     }
 
 
-def _resultado(resultado):
+def _resultado(resultado, imagenes_de_capas):
     return {
         "titulo": TITULOS_CAPA.get(resultado.capa, resultado.capa),
         "disponible": resultado.estado == "completado",
@@ -123,17 +133,22 @@ def _resultado(resultado):
             for a in resultado.anomalias
         ],
         "tabla": (resultado.detalle or {}).get("tabla", []),
+        "imagen": _miniatura_como_dato(
+            imagenes_de_capas.get(getattr(resultado, "id", None)), "image/png"
+        ),
     }
 
 
-def armar_datos(analisis, miniaturas, version_plataforma):
+def armar_datos(analisis, miniaturas, version_plataforma, imagenes_de_capas=None):
     """Datos del informe a partir del análisis.
 
     Args:
         miniaturas: diccionario ``id de AnalisisImagen -> bytes`` de cada vista reducida.
+        imagenes_de_capas: diccionario ``id de ResultadoCapa -> bytes`` (mapas ELA, 011).
         version_plataforma: versión de la aplicación (RN29).
     """
     caso = analisis.caso
+    imagenes_de_capas = imagenes_de_capas or {}
     return {
         "caso": {
             "numero": caso.numero,
@@ -155,7 +170,7 @@ def armar_datos(analisis, miniaturas, version_plataforma):
                 "huella": incluida.huella,
                 "miniatura": _miniatura_como_dato(miniaturas.get(incluida.id)),
                 "integridad": incluida.integridad,
-                "resultados": [_resultado(r) for r in incluida.resultados],
+                "resultados": [_resultado(r, imagenes_de_capas) for r in incluida.resultados],
             }
             for incluida in analisis.imagenes
         ],
