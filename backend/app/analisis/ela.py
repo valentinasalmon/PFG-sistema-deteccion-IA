@@ -42,6 +42,7 @@ TAMANIO_BLOQUE = 16
 CLASES_DE_TEXTURA = 10
 UMBRAL_DESVIO_BLOQUE = 4.0  # desvíos robustos (MAD) para marcar un bloque
 MINIMO_BLOQUES_REGION = 6  # una región más chica se considera ruido
+SEPARACION_MAXIMA = 2  # bloques marcados a esta distancia o menos forman una misma región
 UMBRAL_DESVIO_MODERADO = 10.0  # desvío medio de la región para un indicio moderado
 MAXIMO_REGIONES_INFORMADAS = 3
 MINIMO_BLOQUES_POR_LADO = 8  # imágenes de menos de 128 píxeles por lado no se analizan
@@ -119,13 +120,32 @@ def desvios_por_bloque(error, textura):
     return (residuo - centro) / dispersion
 
 
-def buscar_regiones(desvios):
-    """Regiones conectadas de bloques marcados, de la más llamativa a la menos."""
-    marcados = desvios > UMBRAL_DESVIO_BLOQUE
-    visitados = np.zeros_like(marcados)
+def _ampliar(marcados):
+    """Extiende cada bloque marcado SEPARACION_MAXIMA bloques en todas las direcciones.
+
+    Así los bordes de una misma zona pegada, que ELA suele marcar por separado,
+    quedan unidos en una sola región.
+    """
+    ampliados = marcados.copy()
     filas, columnas = marcados.shape
-    regiones = []
-    for inicio in zip(*np.nonzero(marcados)):
+    for desplazamiento_fila in range(-SEPARACION_MAXIMA, SEPARACION_MAXIMA + 1):
+        for desplazamiento_columna in range(-SEPARACION_MAXIMA, SEPARACION_MAXIMA + 1):
+            origen = marcados[
+                max(0, -desplazamiento_fila): filas - max(0, desplazamiento_fila),
+                max(0, -desplazamiento_columna): columnas - max(0, desplazamiento_columna),
+            ]
+            ampliados[
+                max(0, desplazamiento_fila): filas - max(0, -desplazamiento_fila),
+                max(0, desplazamiento_columna): columnas - max(0, -desplazamiento_columna),
+            ] |= origen
+    return ampliados
+
+
+def _componentes(mascara):
+    """Grupos de celdas conectadas (vecinas en las cuatro direcciones) de una máscara."""
+    visitados = np.zeros_like(mascara)
+    filas, columnas = mascara.shape
+    for inicio in zip(*np.nonzero(mascara)):
         if visitados[inicio]:
             continue
         visitados[inicio] = True
@@ -136,9 +156,23 @@ def buscar_regiones(desvios):
             for vecina in ((fila + 1, columna), (fila - 1, columna),
                            (fila, columna + 1), (fila, columna - 1)):
                 if (0 <= vecina[0] < filas and 0 <= vecina[1] < columnas
-                        and marcados[vecina] and not visitados[vecina]):
+                        and mascara[vecina] and not visitados[vecina]):
                     visitados[vecina] = True
                     pendientes.append(vecina)
+        yield celdas
+
+
+def buscar_regiones(desvios):
+    """Regiones de bloques marcados, de la más llamativa a la menos.
+
+    Los bloques marcados cercanos (a SEPARACION_MAXIMA bloques o menos) forman
+    una misma región; su tamaño, su ubicación y su desvío se calculan solo con
+    los bloques marcados.
+    """
+    marcados = desvios > UMBRAL_DESVIO_BLOQUE
+    regiones = []
+    for grupo in _componentes(_ampliar(marcados)):
+        celdas = [celda for celda in grupo if marcados[celda]]
         if len(celdas) < MINIMO_BLOQUES_REGION:
             continue
         indices = np.array(celdas)
@@ -176,7 +210,8 @@ def dibujar_mapa(diferencia, regiones):
         dibujo.rectangle(caja, outline=(230, 30, 30), width=grosor)
     mapa.thumbnail((LADO_MAXIMO_MAPA, LADO_MAXIMO_MAPA))
     salida = io.BytesIO()
-    mapa.save(salida, "PNG", optimize=True)
+    # Con una paleta de 64 colores el PNG pesa mucho menos (va embebido en el PDF).
+    mapa.quantize(colors=64).save(salida, "PNG", optimize=True)
     return salida.getvalue()
 
 

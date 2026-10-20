@@ -102,7 +102,8 @@ def test_el_resultado_incluye_el_mapa_y_la_tabla(empalme):
     mapa = Image.open(io.BytesIO(resultado.imagen))
     assert mapa.format == "PNG" and max(mapa.size) <= 900
     # El recuadro rojo de la región está dibujado sobre el mapa.
-    assert (np.asarray(mapa)[:, :, 0] > 200).any()
+    rojos = np.asarray(mapa.convert("RGB")).astype(int)
+    assert ((rojos[:, :, 0] > 200) & (rojos[:, :, 1] < 80)).any()
     tabla = {fila["campo"]: fila["valor"] for fila in resultado.detalle["tabla"]}
     assert tabla["Calidad JPEG estimada"] == "90 %"
     assert tabla["Recompresión de referencia"] == "JPEG al 90 %"
@@ -172,10 +173,10 @@ def test_sin_tablas_de_cuantizacion_no_hay_calidad():
 
 def test_buscar_regiones_descarta_las_chicas_y_ordena():
     """Las regiones de menos de 6 bloques se consideran ruido."""
-    desvios = np.zeros((20, 20))
+    desvios = np.zeros((30, 30))
     desvios[2:4, 2:4] = 20  # 4 bloques: ruido
     desvios[10:13, 10:14] = 8  # 12 bloques
-    desvios[15:17, 0:4] = 30  # 8 bloques, más llamativa
+    desvios[24:26, 0:4] = 30  # 8 bloques, más llamativa
 
     regiones = buscar_regiones(desvios)
 
@@ -183,6 +184,23 @@ def test_buscar_regiones_descarta_las_chicas_y_ordena():
     assert (regiones[1].fila, regiones[1].columna, regiones[1].alto, regiones[1].ancho) == (
         10, 10, 3, 4,
     )
+
+
+def test_los_bordes_cercanos_forman_una_sola_region():
+    """Los cuatro bordes de una zona pegada, a dos bloques o menos, se informan juntos."""
+    desvios = np.zeros((30, 30))
+    desvios[10, 10:20] = 12  # borde superior
+    desvios[19, 10:20] = 12  # borde inferior
+    desvios[12:18, 10] = 12  # borde izquierdo, separado del superior por un bloque
+    desvios[12:18, 19] = 12  # borde derecho
+
+    regiones = buscar_regiones(desvios)
+
+    assert len(regiones) == 1
+    assert (regiones[0].fila, regiones[0].columna, regiones[0].alto, regiones[0].ancho) == (
+        10, 10, 10, 10,
+    )
+    assert regiones[0].bloques == 32
 
 
 def test_describir_ubicacion():
