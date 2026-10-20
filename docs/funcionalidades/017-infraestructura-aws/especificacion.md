@@ -49,7 +49,7 @@ Todo, en la cuenta de AWS de la autora y con los créditos gratuitos.
 - [x] **CA3**: Los permisos son mínimos (RNF03 CA4):
   - la EC2 solo accede a sus buckets y a sus parámetros;
   - el rol de despliegue solo sube artefactos y ejecuta comandos en esa EC2;
-  - el rol de despliegue solo se puede asumir desde la rama `main` del repositorio.
+  - el rol de despliegue solo se puede asumir desde este repositorio, y el flujo solo despliega desde `main`.
 - [x] **CA4**: Ningún secreto está en el repositorio: se generan en Terraform y se leen de Parameter Store (RNF03 CA3).
 - [x] **CA5**: Nginx sirve la interfaz y la API con TLS 1.2 o superior, redirige de HTTP a HTTPS y envía las cabeceras de seguridad (RNF02 CA1, CA4). Se verificó con `nginx -t`.
 - [x] **CA6**: Detrás de Nginx, la auditoría registra la IP real del cliente y la cookie de sesión se marca `Secure` (RNF02 CA2, RNF06 CA2).

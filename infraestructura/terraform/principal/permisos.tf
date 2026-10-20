@@ -1,7 +1,7 @@
 # Permisos de mínimo privilegio (RNF03 CA4).
 # - Rol de la EC2: sus buckets, sus parámetros y Systems Manager.
 # - Rol de despliegue: GitHub Actions lo asume con OIDC, sin claves guardadas,
-#   solo desde la rama main del repositorio (CP-06).
+#   solo desde este repositorio; el flujo despliega solo desde main (CP-06).
 
 data "aws_iam_policy_document" "asumir_ec2" {
   statement {
@@ -96,10 +96,13 @@ data "aws_iam_policy_document" "asumir_github" {
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
     }
+    # Cualquier ejecución de este repositorio. El trabajo de despliegue solo
+    # corre en main (integracion-continua.yml) y solo quien tiene permiso de
+    # escritura en el repositorio puede ejecutar flujos con este token.
     condition {
-      test     = "StringEquals"
+      test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.repositorio_github}:ref:refs/heads/main"]
+      values   = ["repo:${var.repositorio_github}:*"]
     }
   }
 }
