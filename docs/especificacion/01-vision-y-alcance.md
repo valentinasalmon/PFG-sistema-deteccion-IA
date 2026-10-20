@@ -34,7 +34,7 @@ La difusión de herramientas de edición y de generación de imágenes por IA fa
 - Interfaz de consulta del registro de auditoría.
 - Validación de matrículas profesionales o de la pertenencia a una empresa.
 - Aplicaciones móviles nativas.
-- Cobro en línea mediante pasarela de pagos **[A DEFINIR]** (ver CP-01).
+- Cobro en línea mediante pasarela de pagos: forma parte del modelo de negocios y queda como trabajo futuro. La plataforma incluye un **flujo de pago simulado** que aplica el plan elegido sin cobrar (ver CP-01).
 
 ## 1.4 Actores
 
@@ -62,7 +62,7 @@ El modelo diferencia dos tipos de espacio de trabajo:
 | **Personal** | Todo usuario registrado | Gratuito | Gestión de casos propios y análisis, con límites de uso. **No permite compartir casos.** |
 | **Organización** | Estudios jurídicos y aseguradoras | Plan pago | Todo lo del espacio personal, más invitación de miembros, casos compartidos y colaboración, con límites según el plan. |
 
-La colaboración es el principal diferencial de los planes pagos. Los planes concretos, sus límites y su forma de cobro están **[A DEFINIR]** (ver CP-01 y CP-02).
+La colaboración es el principal diferencial de los planes pagos. Los planes y sus límites están en CP-02; la contratación se hace con un pago simulado (CP-01).
 
 ## 1.6 Glosario
 

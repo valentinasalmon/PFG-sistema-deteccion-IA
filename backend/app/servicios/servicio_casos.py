@@ -32,7 +32,7 @@ PERMISO_RESPONSABLE = "responsable"
 JERARQUIA = {NIVEL_LECTURA: 1, NIVEL_COLABORACION: 2, PERMISO_RESPONSABLE: 3}
 ESTADOS_EDITABLES = (ESTADO_BORRADOR, ESTADO_ANALIZADO)
 CAMPOS_EDITABLES = ("tipo", "fecha_hecho", "lugar", "expediente", "descripcion")
-ANIOS_DE_RETENCION = 2  # RN30
+ANIOS_DE_RETENCION = 5  # RN30: plazo de prescripción genérico (CCyC, art. 2560)
 
 MENSAJE_NO_ENCONTRADO = "El caso no existe o no tenés acceso a él."
 MENSAJE_SOLO_RESPONSABLE = "Solo el Responsable del caso puede hacer esto."

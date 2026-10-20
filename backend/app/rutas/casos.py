@@ -43,7 +43,7 @@ casos_bp = Blueprint("casos", __name__, url_prefix="/api/casos")
 
 POR_PAGINA = 20
 MENSAJES_ESTADO = {
-    "cerrar": "El caso fue cerrado. Comenzó el plazo de retención de 2 años.",
+    "cerrar": "El caso fue cerrado. Comenzó el plazo de retención de 5 años.",
     "archivar": "El caso fue archivado.",
     "desarchivar": "El caso volvió a Cerrado.",
     "reabrir": "El caso fue reabierto.",

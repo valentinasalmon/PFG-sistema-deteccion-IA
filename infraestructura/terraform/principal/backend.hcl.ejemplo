@@ -1,0 +1,3 @@
+# Copiar como backend.hcl (no se sube) con el nombre que muestra
+# "terraform output" en ../estado.
+bucket = "deteccion-imagenes-tfstate-123456789012"

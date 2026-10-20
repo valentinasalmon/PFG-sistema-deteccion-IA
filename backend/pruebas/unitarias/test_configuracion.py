@@ -1,12 +1,15 @@
 """Pruebas de la fábrica de configuración (RNF22, CA6 de la funcionalidad 001)."""
 import pytest
+from flask import request
 
+from app import crear_app
 from app.configuracion import (
     ConfiguracionDesarrollo,
     ConfiguracionProduccion,
     ErrorConfiguracion,
     obtener_configuracion,
 )
+from app.seguridad.origen import origen_de_la_solicitud
 
 
 def test_entorno_por_defecto_es_desarrollo(monkeypatch):
@@ -48,6 +51,8 @@ def test_produccion_con_todas_las_variables(monkeypatch):
     assert configuracion.DEBUG is False
     assert configuracion.SECRET_KEY == "una-clave-segura"
     assert configuracion.SESSION_COOKIE_SECURE is True
+    # Detrás de Nginx se confía en un único proxy (017) y la región es Irlanda.
+    assert (configuracion.PROXIES_DE_CONFIANZA, configuracion.S3_REGION) == (1, "eu-west-1")
 
 
 def test_desarrollo_usa_clave_por_defecto(monkeypatch):
@@ -62,3 +67,21 @@ def test_pruebas_usa_base_en_memoria():
     configuracion = obtener_configuracion("pruebas")
     assert configuracion.SQLALCHEMY_DATABASE_URI == "sqlite:///:memory:"
     assert configuracion.TESTING is True
+
+
+def test_detras_de_nginx_se_usa_la_ip_real_del_cliente(monkeypatch):
+    """017: con un proxy de confianza, la auditoría registra la IP que informa Nginx."""
+    monkeypatch.setenv("PROXIES_DE_CONFIANZA", "1")
+    aplicacion = crear_app("pruebas")
+
+    @aplicacion.get("/ip-de-prueba")
+    def ip_de_prueba():
+        return {"ip": origen_de_la_solicitud()["ip"], "esquema": request.scheme}
+
+    respuesta = aplicacion.test_client().get(
+        "/ip-de-prueba",
+        headers={"X-Forwarded-For": "1.1.1.1, 203.0.113.7", "X-Forwarded-Proto": "https"},
+    )
+
+    # Solo se toma la última dirección agregada por el proxy de confianza.
+    assert respuesta.get_json() == {"ip": "203.0.113.7", "esquema": "https"}

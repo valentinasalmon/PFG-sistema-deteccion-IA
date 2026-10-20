@@ -22,7 +22,7 @@ El caso es la unidad de trabajo de la plataforma: agrupa las imágenes de un sin
 
 **Editar y cambiar de estado**
 - Editar tipo, fecha, lugar, expediente y descripción (Responsable y Colaborador), con el valor anterior y el nuevo en la auditoría.
-- Cerrar, archivar, desarchivar y reabrir (solo el Responsable). Al cerrar comienza el plazo de retención de 2 años y se muestra la fecha de vencimiento; desarchivar no lo reinicia; reabrir lo detiene.
+- Cerrar, archivar, desarchivar y reabrir (solo el Responsable). Al cerrar comienza el plazo de retención de 2 años (5 años desde el 2026-10-19, ver RN30) y se muestra la fecha de vencimiento; desarchivar no lo reinicia; reabrir lo detiene.
 
 **Compartir y transferir**
 - Compartir un caso de organización con un miembro o con toda la organización, con permiso de Lectura o de Colaboración; modificar el nivel y revocar. Prevalece el permiso más alto. Los casos personales no se comparten.

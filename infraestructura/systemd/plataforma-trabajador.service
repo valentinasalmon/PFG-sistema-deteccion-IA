@@ -1,0 +1,19 @@
+# Trabajador de RQ que ejecuta los análisis en segundo plano (ADR-0004).
+[Unit]
+Description=Plataforma de análisis de imágenes - trabajador de análisis (RQ)
+After=network.target postgresql.service redis-server.service
+Requires=postgresql.service redis-server.service
+
+[Service]
+User=plataforma
+Group=plataforma
+WorkingDirectory=/opt/plataforma/actual/backend
+EnvironmentFile=/opt/plataforma/.env
+ExecStart=/opt/plataforma/actual/venv/bin/python trabajador.py
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

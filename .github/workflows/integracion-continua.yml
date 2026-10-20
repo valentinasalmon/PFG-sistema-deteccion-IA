@@ -1,6 +1,9 @@
-# Integración continua (RNF20).
+# Integración y despliegue continuos (RNF20, CP-06).
 # Se ejecuta en cada Pull Request y en cada envío a main y desarrollo.
-# Un Pull Request solo puede integrarse si los tres trabajos terminan en verde.
+# Un Pull Request solo puede integrarse si todas las verificaciones terminan en
+# verde. Cada envío a main que pasa las verificaciones se despliega en la EC2
+# (funcionalidad 017); el despliegue se omite mientras no estén cargadas las
+# variables de AWS en el repositorio.
 
 name: Integración continua
 
@@ -74,3 +77,74 @@ jobs:
           npx commitlint --verbose
           --from ${{ github.event.pull_request.base.sha }}
           --to ${{ github.event.pull_request.head.sha }}
+
+  infraestructura:
+    name: Infraestructura (Terraform y scripts del servidor)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.12.2"
+      - name: Formato de Terraform
+        run: terraform fmt -check -recursive infraestructura/terraform
+      - name: Validación de Terraform
+        run: |
+          for modulo in estado principal; do
+            terraform -chdir=infraestructura/terraform/$modulo init -backend=false -input=false
+            terraform -chdir=infraestructura/terraform/$modulo validate
+          done
+      - name: Scripts del servidor (shellcheck)
+        run: shellcheck -S warning infraestructura/scripts/*.sh
+
+  desplegar:
+    name: Despliegue en AWS
+    needs: [backend, frontend, infraestructura]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ID_INSTANCIA != ''
+    runs-on: ubuntu-24.04
+    concurrency: despliegue-produccion
+    permissions:
+      id-token: write   # credenciales temporales de AWS por OIDC, sin claves guardadas
+      contents: read
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      BUCKET: ${{ vars.BUCKET_OPERACION }}
+      INSTANCIA: ${{ vars.ID_INSTANCIA }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Compilar la interfaz
+        working-directory: frontend
+        run: npm ci && npm run build
+      - name: Armar el artefacto
+        run: >
+          tar -czf artefacto.tar.gz
+          --exclude=__pycache__ --exclude=backend/almacenamiento_local --exclude=backend/pruebas
+          backend frontend/dist infraestructura/nginx infraestructura/systemd infraestructura/scripts
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_DESPLIEGUE }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Subir el artefacto a S3
+        run: aws s3 cp artefacto.tar.gz "s3://$BUCKET/artefactos/$GITHUB_SHA.tar.gz"
+      - name: Desplegar en la EC2 con Systems Manager
+        run: |
+          comando="set -e; aws s3 cp s3://$BUCKET/artefactos/$GITHUB_SHA.tar.gz /tmp/$GITHUB_SHA.tar.gz; mkdir -p /tmp/d-$GITHUB_SHA; tar -xzf /tmp/$GITHUB_SHA.tar.gz -C /tmp/d-$GITHUB_SHA infraestructura/scripts; bash /tmp/d-$GITHUB_SHA/infraestructura/scripts/desplegar.sh /tmp/$GITHUB_SHA.tar.gz $GITHUB_SHA"
+          id=$(aws ssm send-command --instance-ids "$INSTANCIA" --document-name AWS-RunShellScript \
+            --comment "Despliegue $GITHUB_SHA" --timeout-seconds 1200 \
+            --parameters "$(jq -n --arg c "$comando" '{commands: [$c], executionTimeout: ["1200"]}')" \
+            --query Command.CommandId --output text)
+          echo "Comando de Systems Manager: $id"
+          for _ in $(seq 1 120); do
+            sleep 10
+            estado=$(aws ssm get-command-invocation --command-id "$id" --instance-id "$INSTANCIA" --query Status --output text 2>/dev/null || echo Pending)
+            case "$estado" in Pending|InProgress|Delayed) continue ;; *) break ;; esac
+          done
+          aws ssm get-command-invocation --command-id "$id" --instance-id "$INSTANCIA" --query StandardOutputContent --output text
+          aws ssm get-command-invocation --command-id "$id" --instance-id "$INSTANCIA" --query StandardErrorContent --output text >&2
+          echo "Estado final: $estado"
+          test "$estado" = "Success"
