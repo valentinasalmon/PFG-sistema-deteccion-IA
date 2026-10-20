@@ -39,10 +39,10 @@ body { font-family: "Montserrat", sans-serif; color: var(--blanco); }
 
 /* capas de analisis */
 #capas { opacity: 0; }
-#visor { position: absolute; left: 50%; top: 50%; width: 92vmin; height: 34vmin; }
+#visor { position: absolute; left: 50%; top: 50%; width: 116vmin; height: 38vmin; }
 #visor .esquina { width: 6vmin; height: 6vmin; }
 #escaner { position: absolute; top: 0; bottom: 0; width: .35vmin; background: var(--verde); box-shadow: 0 0 3vmin 1vmin rgba(168,207,94,.6); opacity: 0; }
-#indice { position: absolute; left: 50%; top: 50%; font-weight: 500; font-size: 2.2vmin; letter-spacing: .4em; color: var(--verde); }
+#indice { position: absolute; left: 50%; top: 50%; font-weight: 500; font-size: 2.8vmin; letter-spacing: .4em; color: var(--verde); }
 
 /* logo */
 #logo { opacity: 0; }
@@ -61,7 +61,7 @@ body { font-family: "Montserrat", sans-serif; color: var(--blanco); }
       <svg id="dibujo" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"></svg>
       <canvas id="pixeles" width="80" height="50"></canvas>
     </div>
-    <div class="rotulo"><span>IMG_2047.JPG</span><span>14/03 · 23:41</span></div>
+    <div class="rotulo"><span id="archivo"></span><span id="fecha"></span></div>
   </div>
   <div class="copia" id="copia-roja"></div>
   <div class="copia" id="copia-cian"></div>
@@ -125,28 +125,58 @@ const DIBUJO = `
   <g fill="#efefe9" opacity=".85">
     <path d="M362,160 l7,-3 l2,5 z"/><path d="M376,165 l6,-2 l1,4 z"/><path d="M350,166 l4,-1 l1,3 z"/><path d="M384,158 l3,-2 l1,3 z"/>
   </g>`;
-$('dibujo').innerHTML = DIBUJO;
-for (const [id, color] of [['copia-roja', '#ff2d55'], ['copia-cian', '#1ee8ff']]) {
-  $(id).innerHTML = `<div style="position:absolute;inset:1.4vmin 1.4vmin 5.4vmin;overflow:hidden"><svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">${DIBUJO.replace(/#efefe9|#d8d8d2/g, color)}</svg></div>`;
+const DIBUJO_LABORAL = `
+  <defs><linearGradient id="luz" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f6f1d0" stop-opacity=".16"/><stop offset="1" stop-color="#f6f1d0" stop-opacity="0"/></linearGradient></defs>
+  <path d="M150,0 L250,0 L330,172 L70,172 Z" fill="url(#luz)"/>
+  <path d="M0,172 L400,172" stroke="#8d918f" stroke-width="1.2" opacity=".5"/>
+  <g fill="none" stroke="#d8d8d2" stroke-width="2.2" stroke-linejoin="round">
+    <path d="M30,40 L120,40 L120,172 M30,40 L30,172 M30,82 L120,82 M30,126 L120,126"/>
+    <path d="M40,82 L40,58 L70,58 L70,82 M76,82 L76,66 L108,66 L108,82 M44,126 L44,100 L84,100 L84,126"/>
+    <path d="M352,26 L384,80 L320,80 Z"/><path d="M352,44 L352,64 M352,70 L352,72" stroke-linecap="round"/>
+  </g>
+  <g fill="none" stroke="#efefe9" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M180,172 L290,62 M204,172 L314,62"/>
+    <path d="M195.7,156.3 L219.7,156.3 M211.4,140.6 L235.4,140.6 M227.1,124.9 L251.1,124.9 M242.9,109.1 L266.9,109.1 M258.6,93.4 L282.6,93.4 M274.3,77.7 L298.3,77.7"/>
+    <path d="M318,48 Q334,56 340,74 M326,40 Q346,50 354,70" stroke-width="1.6" stroke-dasharray="6 5"/>
+    <path d="M300,172 Q302,146 328,144 Q354,146 356,172 Z"/><path d="M292,172 L366,172 M328,144 L328,172"/>
+  </g>
+  <ellipse cx="236" cy="178" rx="44" ry="5" fill="none" stroke="#8d918f" stroke-width="1.4" stroke-dasharray="5 4" opacity=".7"/>`;
+const ESCENAS = {
+  choque: { dibujo: DIBUJO, archivo: 'IMG_2047.JPG', fecha: '14/03 · 23:41' },
+  laboral: { dibujo: DIBUJO_LABORAL, archivo: 'IMG_3318.JPG', fecha: '02/09 · 10:17' },
+};
+let escenaActual = null;
+function ponerEscena(nombre) {
+  if (escenaActual === nombre) return;
+  escenaActual = nombre;
+  const e = ESCENAS[nombre];
+  $('dibujo').innerHTML = e.dibujo;
+  $('archivo').textContent = e.archivo;
+  $('fecha').textContent = e.fecha;
+  for (const [id, color] of [['copia-roja', '#ff2d55'], ['copia-cian', '#1ee8ff']]) {
+    $(id).innerHTML = `<div style="position:absolute;inset:1.4vmin 1.4vmin 5.4vmin;overflow:hidden"><svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">${e.dibujo.replace(/#efefe9|#d8d8d2/g, color).replace(/id="(farol|luz)"/g, 'id="$1-copia"')}</svg></div>`;
+  }
 }
+ponerEscena('choque');
 for (let i = 0; i < 7; i++) { const b = document.createElement('div'); b.className = 'barra'; $('barras').appendChild(b); }
 
 // ---------- textos ----------
 // a: aparece, b: se va; tam en vmin; y: desplazamiento vertical en vmin; tipo: "escribir" | "glitch"
 const TEXTOS = [
-  { html: 'Llega una foto.', a: 0.5, b: 2.6, tam: 7, peso: 300 },
-  { html: 'Muestra un choque.', a: 3.0, b: 5.1, tam: 4.4, peso: 400, y: 34 },
-  { html: 'Parece <b class="verde">real</b>.', a: 5.3, b: 7.5, tam: 4.4, peso: 400, y: 34 },
-  { html: '¿Lo es?', a: 8.45, b: 9.8, tam: 16, peso: 800, tipo: 'glitch' },
-  { html: 'Hoy una imagen se edita en segundos.', a: 10.1, b: 12.5, tam: 5.4, peso: 600, tipo: 'escribir' },
-  { html: 'O se crea de la nada.', a: 12.7, b: 15.0, tam: 4.4, peso: 400, y: 34 },
-  { html: 'A simple vista, <b class="verde">no se nota</b>.', a: 15.3, b: 17.5, tam: 6, peso: 300 },
-  { html: 'Pero toda imagen deja <b class="verde">rastros</b>.', a: 19.9, b: 22.3, tam: 4.4, peso: 400, y: 30 },
-  { html: 'Cuatro capas de análisis.<br><span style="font-weight:300">Un informe claro.</span>', a: 27.7, b: 30.0, tam: 6, peso: 700 },
-  { html: '<b class="verde">Indicios</b>, no veredictos.', a: 30.2, b: 32.0, tam: 6.4, peso: 300 },
-  { html: 'Tu primera línea de defensa contra el fraude visual', a: 33.3, b: 37.2, tam: 2.9, peso: 400, y: 17, espaciado: .12 },
-  { html: 'PRÓXIMAMENTE', a: 34.3, b: 37.2, tam: 2.6, peso: 700, y: 27, espaciado: .7, clase: 'verde' },
-  { html: 'Evaluación preliminar. Consultá siempre a un profesional especializado.', a: 34.8, b: 37.2, tam: 1.9, peso: 400, y: 43, opacidad: .6, espaciado: .05 },
+  { html: 'Llega una foto.', a: 0.5, b: 2.6, tam: 8.8, peso: 300 },
+  { html: 'Un choque.', a: 2.95, b: 4.55, tam: 5.6, peso: 400, y: 35 },
+  { html: 'Un accidente <b class="verde">laboral</b>.', a: 4.95, b: 6.35, tam: 5.6, peso: 400, y: 35 },
+  { html: 'Parece <b class="verde">real</b>.', a: 6.5, b: 7.6, tam: 5.6, peso: 400, y: 35, entrada: .3, salida: .2 },
+  { html: '¿Lo es?', a: 8.45, b: 9.8, tam: 19, peso: 800, tipo: 'glitch' },
+  { html: 'Hoy una imagen se edita en segundos.', a: 10.1, b: 12.5, tam: 6.6, peso: 600, tipo: 'escribir' },
+  { html: 'O se crea de la nada.', a: 12.7, b: 15.0, tam: 5.6, peso: 400, y: 35 },
+  { html: 'A simple vista, <b class="verde">no se nota</b>.', a: 15.3, b: 17.5, tam: 7.4, peso: 300 },
+  { html: 'Pero toda imagen deja <b class="verde">rastros</b>.', a: 19.9, b: 22.3, tam: 5.6, peso: 400, y: 31 },
+  { html: 'Cuatro capas de análisis.<br><span style="font-weight:300">Un informe claro.</span>', a: 27.7, b: 30.0, tam: 7.4, peso: 700 },
+  { html: '<b class="verde">Indicios</b>, no veredictos.', a: 30.2, b: 32.0, tam: 7.8, peso: 300 },
+  { html: 'Tu primera línea de defensa contra el fraude visual', a: 33.3, b: 37.2, tam: 3.5, peso: 400, y: 17, espaciado: .1 },
+  { html: 'PRÓXIMAMENTE', a: 34.3, b: 37.2, tam: 3.2, peso: 700, y: 27, espaciado: .6, clase: 'verde' },
+  { html: 'Evaluación preliminar. Consultá siempre a un profesional especializado.', a: 34.8, b: 37.2, tam: 2.3, peso: 400, y: 41, opacidad: .65, espaciado: .04 },
 ];
 const CAPAS = [
   { palabra: 'METADATOS', nota: 'lo que la cámara registró' },
@@ -156,8 +186,8 @@ const CAPAS = [
 ];
 const INICIO_CAPAS = 22.8, DURACION_CAPA = 1.2;
 CAPAS.forEach((c, i) => TEXTOS.push(
-  { html: c.palabra, a: INICIO_CAPAS + i * DURACION_CAPA, b: INICIO_CAPAS + (i + 1) * DURACION_CAPA - .05, tam: 9, peso: 800, espaciado: .06, entrada: .12, salida: .08, capa: true },
-  { html: c.nota, a: INICIO_CAPAS + i * DURACION_CAPA + .15, b: INICIO_CAPAS + (i + 1) * DURACION_CAPA - .05, tam: 3, peso: 400, y: 10, clase: 'verde', espaciado: .08, entrada: .2, salida: .08, capa: true },
+  { html: c.palabra, a: INICIO_CAPAS + i * DURACION_CAPA, b: INICIO_CAPAS + (i + 1) * DURACION_CAPA - .05, tam: 10.5, peso: 800, espaciado: .06, entrada: .12, salida: .08, capa: true },
+  { html: c.nota, a: INICIO_CAPAS + i * DURACION_CAPA + .15, b: INICIO_CAPAS + (i + 1) * DURACION_CAPA - .05, tam: 3.8, peso: 400, y: 11, clase: 'verde', espaciado: .08, entrada: .2, salida: .08, capa: true },
 ));
 for (const tx of TEXTOS) {
   const d = document.createElement('div');
@@ -176,6 +206,7 @@ function pintarTextos(t, u) {
     const pi = sale(prog(t, tx.a, tx.a + ent)), po = 1 - prog(t, tx.b - sal, tx.b);
     let op = Math.min(pi, po) * (tx.opacidad ?? 1);
     let tam = tx.tam;
+    if (vertical() && tx.capa) tam *= .85;
     if (vertical() && !tx.capa) { tam *= tam > 5 ? 1.15 : 1.6; el.style.whiteSpace = 'normal'; el.style.width = '88vw'; }
     el.style.fontSize = tam * u + 'px';
     el.style.fontWeight = tx.peso;
@@ -238,9 +269,12 @@ function render(t) {
   // foto: primera aparicion (2.6 a 8.45) y reconstruccion (12.6 a 15.1)
   const foto = $('foto');
   let fotoOp = 0, fotoEsc = 1, fotoRot = -3, fx = 0, fy = -6 * u, glitch = 0;
+  ponerEscena(t >= 4.75 ? 'laboral' : 'choque');
   if (t >= 2.6 && t < 8.45) {
     const p = sale(prog(t, 2.6, 3.4));
-    fotoOp = p; fotoEsc = .9 + .1 * p + .03 * prog(t, 3.4, 8.4); fotoRot = -3 + 1.2 * prog(t, 2.6, 8.4);
+    const cambio = t >= 4.6 && t < 4.95 ? Math.sin(prog(t, 4.6, 4.95) * Math.PI) : 0;
+    fx += (t < 4.75 ? -1 : 1) * cambio * 10 * u;
+    fotoOp = p * (1 - .8 * cambio); fotoEsc = .9 + .1 * p + .03 * prog(t, 3.4, 8.4); fotoRot = -3 + 1.2 * prog(t, 2.6, 8.4);
     glitch = t > 7.6 ? Math.pow(prog(t, 7.6, 8.45), 1.4) : 0;
     if (t > 6.6 && t < 7.6) { const r = azar(Math.floor(t * 30)); glitch = r() < .1 ? .35 : 0; }
   } else if (t >= 12.6 && t < 15.15) {
@@ -301,13 +335,13 @@ function render(t) {
     capas.style.opacity = Math.min(prog(t, INICIO_CAPAS - .1, INICIO_CAPAS + .05), 1 - prog(t, fin, fin + .3));
     const i = Math.min(CAPAS.length - 1, Math.floor((t - INICIO_CAPAS) / DURACION_CAPA));
     const pl = prog(t, INICIO_CAPAS + i * DURACION_CAPA, INICIO_CAPAS + i * DURACION_CAPA + .25);
-    const ancho = vertical() ? .92 : 1;
+    const ancho = vertical() ? .82 : 1;
     $('visor').style.transform = `translate(-50%, -50%) scale(${(1.18 - .18 * rebote(pl)) * ancho}, ${1.18 - .18 * rebote(pl)})`;
     const pe = prog(t, INICIO_CAPAS + i * DURACION_CAPA + .1, INICIO_CAPAS + (i + 1) * DURACION_CAPA - .1);
     $('escaner').style.left = (pe * 100) + '%';
     $('escaner').style.opacity = Math.sin(pe * Math.PI);
     $('indice').textContent = `0${i + 1} / 04`;
-    $('indice').style.transform = `translate(-50%, ${-26 * u}px)`;
+    $('indice').style.transform = `translate(-50%, ${-28 * u}px)`;
   } else capas.style.opacity = 0;
   $('reticula').style.opacity = .9 * (t >= INICIO_CAPAS - .1 && t < fin + .3 ? Math.min(prog(t, INICIO_CAPAS - .1, INICIO_CAPAS + .2), 1 - prog(t, fin, fin + .3)) : 0);
 
@@ -325,7 +359,7 @@ function render(t) {
 
   // destellos
   const destello = (a, d, m = 1) => t >= a && t < a + d ? m * (1 - prog(t, a, a + d)) : 0;
-  $('flash').style.opacity = Math.max(destello(8.45, .25, .8), destello(32.3, .5, .35));
+  $('flash').style.opacity = Math.max(destello(4.75, .18, .3), destello(8.45, .25, .55), destello(32.3, .5, .3));
   $('flash-verde').style.opacity = Math.max(destello(18.95, .6, .5), ...CAPAS.map((_, i) => destello(INICIO_CAPAS + i * DURACION_CAPA, .2, .25)));
   $('negro-final').style.opacity = prog(t, 37.2, 38);
 }

@@ -29,7 +29,7 @@ ffmpeg -i imagen-horizontal.mp4 -i banda.wav -c:v libx264 -crf 25 -preset slow \
 
 | Tiempo | Escena |
 |---|---|
-| 0–7,6 s | "Llega una foto. Muestra un choque. Parece real." |
+| 0–7,6 s | "Llega una foto. Un choque. Un accidente laboral. Parece real." |
 | 7,6–9,8 s | La foto se rompe en interferencias: "¿Lo es?" |
 | 10–17,5 s | "Hoy una imagen se edita en segundos. O se crea de la nada. A simple vista, no se nota." |
 | 18,3–22,8 s | Se cierra el marco verde y se abre el ojo: "Pero toda imagen deja rastros." |

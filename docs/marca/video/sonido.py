@@ -98,7 +98,7 @@ def tono(f, dur, ataque, caida, armonicos=(1, .5, .25), vibrato=0.0):
 # ---- dron de fondo ----
 t = tiempo(N)
 volumen = np.interp(t, [0, 1, 7.6, 8.45, 8.6, 9.8, 17.4, 17.55, 18.9, 19.5, 27.6, 28, 32, 32.3, 36.5, 38],
-                    [0, .16, .3, .45, .05, .14, .42, 0, 0, .3, .34, .18, .2, 0, 0, 0])
+                    [0, .16, .3, .4, .08, .14, .36, .07, .07, .26, .3, .2, .2, .12, .1, 0])
 dron = (np.sin(2 * np.pi * 55 * t) + .7 * np.sin(2 * np.pi * 55.4 * t) + .5 * np.sin(2 * np.pi * 82.4 * t)
         + .25 * np.sin(2 * np.pi * 110.3 * t) * (.5 + .5 * np.sin(2 * np.pi * .13 * t)))
 textura = pasabajos_rapido(rng.standard_normal(N), 380) * 2.2
@@ -108,24 +108,25 @@ seco_rev += dron * volumen * .2
 
 # ---- latidos (0 a 7.6 s, cada vez mas rapidos) ----
 for x in [0.5, 1.95, 3.25, 4.4, 5.4, 6.25, 6.95, 7.5]:
-    poner(latido(), x, .9)
+    poner(latido(), x, .7)
 
 # ---- interferencias ----
 for x in [6.62, 7.08, 7.31]:
-    poner(glitch(.09), x, .25, pan=rng.uniform(-.6, .6), rev=.2)
+    poner(glitch(.09), x, .1, pan=rng.uniform(-.6, .6), rev=.2)
 x = 7.6
 while x < 8.4:
     d = rng.uniform(.03, .08)
-    poner(glitch(d), x, .18 + .35 * (x - 7.6), pan=rng.uniform(-.8, .8), rev=.15)
+    poner(glitch(d), x, .07 + .14 * (x - 7.6), pan=rng.uniform(-.8, .8), rev=.15)
     x += d * rng.uniform(.9, 1.6)
-poner(boom(70, .9, .6), 8.45, .9, rev=.6)
-poner(click(.03, 2500), 8.45, .6, rev=.5)
+poner(boom(70, .9, .2), 8.45, .45, rev=.6)
+poner(click(.03, 2500), 8.45, .15, rev=.5)
+poner(click(.006, 2200), 4.72, .12, rev=.3)  # obturador al cambiar de foto
 
 # ---- tecleo (10.1 s) ----
 texto = 'Hoy una imagen se edita en segundos.'
 for k in range(len(texto)):
     if texto[k] != ' ':
-        poner(click(.008, rng.uniform(3000, 5200)), 10.1 + .9 * k / len(texto), .16, pan=rng.uniform(-.3, .3))
+        poner(click(.008, rng.uniform(3000, 5200)), 10.1 + .9 * k / len(texto), .07, pan=rng.uniform(-.3, .3))
 
 # ---- pixeles que se ordenan (12.85 a 14.6 s) ----
 for _ in range(70):
@@ -138,25 +139,25 @@ tt = tiempo(n)
 sub = np.sin(2 * np.pi * np.cumsum(np.linspace(110, 440, n)) / SR) * (tt / tt[-1]) ** 2
 ruido = rng.standard_normal(n)
 barrido = np.concatenate([pasabajos_rapido(ruido[i:i + 4410], 200 + 5000 * (i / n) ** 2) for i in range(0, n, 4410)])[:n]
-poner(sub * .22 + barrido * (tt / tt[-1]) ** 2 * .5, 15.0, 1, rev=.3)
-poner(click(.004, 6000), 17.55, .5)
+poner(sub * .13 + barrido * (tt / tt[-1]) ** 2 * .22, 15.0, 1, rev=.3)
+poner(click(.004, 6000), 17.55, .12)
 
 # ---- ojo (18.3 a 22.8 s) ----
-poner(click(.02, 1800), 18.72, .45, pan=-.3, rev=.3)
-poner(click(.02, 1700), 18.76, .45, pan=.3, rev=.3)
-poner(boom(55, 1.8, .3), 18.95, 1.0, rev=.5)
+poner(click(.02, 1800), 18.72, .18, pan=-.3, rev=.3)
+poner(click(.02, 1700), 18.76, .18, pan=.3, rev=.3)
+poner(boom(55, 1.8, .12), 18.95, .3, rev=.5)
 for k, f in enumerate([880, 1318.5, 1760]):
-    poner(tono(f, 2.6, .4, 1.8, (1, .2)), 19.0 + k * .08, .05, pan=(k - 1) * .5, rev=.9)
+    poner(tono(f, 2.6, .4, 1.8, (1, .2)), 19.0 + k * .08, .035, pan=(k - 1) * .5, rev=.9)
 
 # ---- pulso y capas (19.5 a 27.6 s) ----
 x = 19.5
 while x < 27.6:
-    poner(boom(48, .18, .05), x, .35)
+    poner(boom(48, .18, .05), x, .2)
     x += .6
 for i in range(4):
     x = 22.8 + 1.2 * i
-    poner(boom(90, .25, .4), x, .55, rev=.3)
-    poner(click(.015, 3200), x, .4, rev=.4)
+    poner(boom(90, .25, .15), x, .28, rev=.3)
+    poner(click(.015, 3200), x, .13, rev=.4)
     poner(tono(1046.5 * (1.12 ** i), .9, .05, .7, (1, .3)), x + .1, .04, pan=.4 - .27 * i, rev=.8)
 
 # ---- informe e indicios (27.7 a 32 s) ----
@@ -167,11 +168,11 @@ for x, f in [(27.7, 220), (30.2, 196)]:
 n = int(.9 * SR)
 tt = tiempo(n)
 soplo = pasabajos_rapido(rng.standard_normal(n), 2500) * (tt / tt[-1]) ** 3
-poner(soplo, 31.4, .45, rev=.4)
-poner(boom(52, 2.2, .35), 32.3, 1.0, rev=.6)
+poner(soplo, 31.4, .28, rev=.4)
+poner(boom(52, 2.2, .12), 32.3, .32, rev=.6)
 acorde = [110, 164.8, 220, 246.9, 261.6, 329.6, 493.9]
 for k, f in enumerate(acorde):
-    poner(tono(f, 5.6, .8, 2.8, (1, .35, .15), vibrato=.4), 32.3 + k * .03, .055, pan=(k / 3 - 1) * .6, rev=.8)
+    poner(tono(f, 5.6, 1.2, 2.8, (1, .35, .15), vibrato=.4), 32.3 + k * .03, .04, pan=(k / 3 - 1) * .6, rev=.8)
 poner(tono(1318.5, 3.5, .02, 3.2, (1,)), 34.3, .03, rev=1)  # "proximamente"
 
 # ---- reverberacion ----
@@ -189,7 +190,7 @@ R += revR * escala * .22
 # ---- mezcla final ----
 mezcla = np.stack([L, R], axis=1)
 mezcla /= np.abs(mezcla).max()
-mezcla = np.tanh(mezcla * 1.4) / np.tanh(1.4)
+mezcla = np.tanh(mezcla * 1.1) / np.tanh(1.1)
 fundido = np.interp(t, [0, .05, 37.0, 38], [0, 1, 1, 0])[:, None]
 mezcla *= fundido * .89
 with wave.open(sys.argv[1], 'wb') as w:
