@@ -9,10 +9,11 @@
  *
  * Cada análisis finalizado ofrece descargar su informe PDF o, si no se pudo
  * generar, volver a generarlo (funcionalidad 008). La capa de credenciales de
- * contenido muestra además el estado de su firma (funcionalidad 009).
+ * contenido muestra además el estado de su firma (funcionalidad 009) y la de
+ * niveles de error, su mapa ELA (funcionalidad 011).
  *
  * Realiza: RF40, RF43, RF44, RF46; CA5 a CA7 y CA12 a CA14 de la funcionalidad
- * 007; CA6 de la 008; CA7 de la 009.
+ * 007; CA6 de la 008; CA7 de la 009; CA4 de la 011.
  */
 import { useCallback, useEffect, useState } from 'react'
 import { listarAnalisis, obtenerAnalisis } from '../api/analisis.js'
@@ -25,8 +26,16 @@ import Etiqueta from './Etiqueta.jsx'
 
 export const INTERVALO_DE_CONSULTA = 2000
 
-const TITULOS_CAPA = { metadatos: 'Metadatos', c2pa: 'Credenciales de contenido (C2PA)' }
-const TITULOS_TABLA = { metadatos: 'Metadatos extraídos', c2pa: 'Datos de las credenciales' }
+const TITULOS_CAPA = {
+  metadatos: 'Metadatos',
+  c2pa: 'Credenciales de contenido (C2PA)',
+  ela: 'Niveles de error (ELA)',
+}
+const TITULOS_TABLA = {
+  metadatos: 'Metadatos extraídos',
+  c2pa: 'Datos de las credenciales',
+  ela: 'Datos del análisis',
+}
 const ESTADOS_FIRMA = {
   confiable: 'Firma confiable',
   firmante_no_reconocido: 'Firmante no reconocido',
@@ -114,6 +123,16 @@ function ResultadoDeCapa({ resultado }) {
             </li>
           ))}
         </ul>
+      )}
+      {resultado.imagen && (
+        <figure className="mapa-capa">
+          <img src={resultado.imagen} alt={`Mapa de la capa ${titulo}`} loading="lazy" />
+          <figcaption className="nota">
+            Las zonas claras cambiaron más al recomprimir la imagen; las regiones señaladas están
+            recuadradas en rojo. Es una señal complementaria: los bordes y los detalles marcados
+            también se ven claros sin que haya edición.
+          </figcaption>
+        </figure>
       )}
       {resultado.detalle?.tabla?.length > 0 && (
         <details>
