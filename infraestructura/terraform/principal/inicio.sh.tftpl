@@ -1,0 +1,26 @@
+#!/bin/bash
+# Primer arranque de la EC2 (user_data). Instala la AWS CLI, descarga los
+# scripts del servidor desde S3 y ejecuta la preparación completa.
+set -euo pipefail
+exec > >(tee -a /var/log/plataforma-inicio.log) 2>&1
+
+export DEBIAN_FRONTEND=noninteractive
+apt-get update -q
+apt-get install -y -q unzip curl
+
+if ! command -v aws >/dev/null; then
+  curl -sSo /tmp/awscli.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+  unzip -q /tmp/awscli.zip -d /tmp
+  /tmp/aws/install
+fi
+
+mkdir -p /etc/plataforma
+cat > /etc/plataforma/aws.env <<FIN
+AWS_DEFAULT_REGION=${region}
+BUCKET_OPERACION=${bucket_operacion}
+PREFIJO_PARAMETROS=${prefijo_parametros}
+FIN
+
+mkdir -p /opt/plataforma/servidor
+aws s3 cp --region ${region} --recursive "s3://${bucket_operacion}/servidor/" /opt/plataforma/servidor/
+bash /opt/plataforma/servidor/scripts/preparar_servidor.sh

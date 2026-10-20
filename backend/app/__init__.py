@@ -11,6 +11,7 @@ import os
 
 import redis
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Se importan los modelos para que Alembic los detecte al generar migraciones.
 from app import modelos  # noqa: F401  pylint: disable=unused-import
@@ -47,6 +48,11 @@ def crear_app(nombre_entorno=None):
 
     aplicacion = Flask(__name__)
     aplicacion.config.from_object(configuracion)
+    proxies = aplicacion.config["PROXIES_DE_CONFIANZA"]
+    if proxies:
+        # Detrás de Nginx: IP real y esquema HTTPS, sin aceptar cabeceras de más
+        # proxies que los configurados (RNF06 CA2, RNF02).
+        aplicacion.wsgi_app = ProxyFix(aplicacion.wsgi_app, x_for=proxies, x_proto=proxies)
     if aplicacion.config["SESSION_TYPE"] == "redis":
         aplicacion.config["SESSION_REDIS"] = redis.Redis.from_url(aplicacion.config["URL_REDIS"])
 

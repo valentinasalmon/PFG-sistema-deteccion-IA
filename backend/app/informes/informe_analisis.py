@@ -6,7 +6,7 @@ con las limitaciones y la advertencia legal. Nunca emite un veredicto ni
 combina las capas en un puntaje (RN27). No accede a la base de datos ni al
 almacenamiento: recibe los objetos y las miniaturas ya leídas.
 
-Realiza: RF44 (CA1, CA2), RNF07 (CA3); RN27, RN29.
+Realiza: RF44 (CA1, CA2), RNF07 (CA3), RNF23 (CA2); RN27, RN29.
 """
 import base64
 
@@ -15,7 +15,10 @@ from app.informes.plantillas import html_a_pdf, version_weasyprint
 
 VERSION_PLANTILLA = "1.0"
 
-TITULOS_CAPA = {"metadatos": "Capa 1 · Metadatos"}
+TITULOS_CAPA = {
+    "metadatos": "Capa 1 · Metadatos",
+    "c2pa": "Capa 2 · Credenciales de contenido (C2PA)",
+}
 
 QUE_SIGNIFICA = {
     "metadatos": (
@@ -28,10 +31,26 @@ QUE_SIGNIFICA = {
         "datos, por lo que su ausencia no indica por sí sola una manipulación, y "
         "quien quiera alterar una imagen también puede modificarlos."
     ),
+    "c2pa": (
+        "Algunas herramientas, como ChatGPT, Gemini o Adobe Firefly, y algunas cámaras "
+        "agregan a la imagen unas credenciales de contenido: una declaración firmada "
+        "digitalmente que dice quién la hizo, con qué herramienta, si la generó una "
+        "inteligencia artificial y qué ediciones tuvo. Esta capa comprueba esa firma con "
+        "la lista de confianza del consorcio C2PA, que reúne a los emisores reconocidos. "
+        "Si la firma es confiable y declara inteligencia artificial, es el indicio más "
+        "fuerte de la plataforma. Que una imagen no tenga credenciales es lo más habitual: "
+        "muchas cámaras no las agregan y WhatsApp o una captura de pantalla las eliminan, "
+        "por lo que su ausencia no indica que la imagen sea original."
+    ),
 }
 QUE_SIGNIFICA_GENERICO = (
     "Esta capa busca señales técnicas de edición o de generación artificial. Su "
     "resultado debe leerse junto con las demás capas."
+)
+
+# Leyenda exigida en todas las páginas del informe (RNF23 CA2).
+LEYENDA_PERICIAL = (
+    "Este informe no constituye un dictamen pericial. Consulte a un profesional especializado."
 )
 
 ESCALA_DE_INDICIO = (
@@ -147,6 +166,7 @@ def armar_datos(analisis, miniaturas, version_plataforma):
             "WeasyPrint (generación del PDF)": version_weasyprint(),
         },
         "escala": ESCALA_DE_INDICIO,
+        "leyenda": LEYENDA_PERICIAL,
         "limitaciones": LIMITACIONES,
     }
 

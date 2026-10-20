@@ -22,11 +22,16 @@ Variables de entorno:
     ALMACENAMIENTO       "local" (desarrollo) o "s3"; en producción siempre S3.
     DIRECTORIO_ALMACENAMIENTO  Carpeta de las imágenes con el almacenamiento local.
     S3_BUCKET            Bucket privado de las imágenes (producción).
-    S3_REGION            Región de AWS del bucket (por defecto, sa-east-1).
+    S3_REGION            Región de AWS del bucket (por defecto, eu-west-1, Irlanda;
+                         RNF08 CA6).
     S3_ENDPOINT          Dirección de un servicio compatible con S3 (opcional).
     S3_CIFRADO           Cifrado del lado del servidor (por defecto, AES256).
     RUTA_EXIFTOOL        Ejecutable de ExifTool (por defecto, "exiftool" del sistema).
+    CARPETA_CONFIANZA_C2PA  Carpeta con la lista de confianza de C2PA (por defecto,
+                         ``recursos/confianza_c2pa`` del backend).
     COLA_ANALISIS        "hilo" (desarrollo), "rq" (producción) o "sincronica".
+    PROXIES_DE_CONFIANZA Cantidad de proxies delante de la aplicación (Nginx en
+                         producción: 1), para leer la IP real del cliente.
 
 Realiza: RNF01, RNF02, RNF03 (CA1, CA3), RNF22.
 """
@@ -41,6 +46,7 @@ from cachelib import SimpleCache
 # Carpeta de las imágenes en desarrollo: está en .gitignore y nunca se sube
 # al repositorio (constitución: nada de imágenes de casos reales).
 DIRECTORIO_ALMACENAMIENTO_LOCAL = Path(__file__).resolve().parents[2] / "almacenamiento_local"
+CARPETA_CONFIANZA = Path(__file__).resolve().parents[2] / "recursos" / "confianza_c2pa"
 
 
 class ErrorConfiguracion(Exception):
@@ -158,12 +164,17 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
             "DIRECTORIO_ALMACENAMIENTO", str(DIRECTORIO_ALMACENAMIENTO_LOCAL)
         )
         self.S3_BUCKET = os.getenv("S3_BUCKET", "")
-        self.S3_REGION = os.getenv("S3_REGION", "sa-east-1")
+        self.S3_REGION = os.getenv("S3_REGION", "eu-west-1")
         self.S3_ENDPOINT = os.getenv("S3_ENDPOINT", "")
         self.S3_CIFRADO = os.getenv("S3_CIFRADO", "AES256") or None
         # Análisis: ExifTool del sistema y cola "hilo" (desarrollo), "rq" o "sincronica".
         self.RUTA_EXIFTOOL = os.getenv("RUTA_EXIFTOOL", "exiftool")
+        self.CARPETA_CONFIANZA_C2PA = os.getenv("CARPETA_CONFIANZA_C2PA", "") or str(
+            CARPETA_CONFIANZA
+        )
         self.COLA_ANALISIS = os.getenv("COLA_ANALISIS", "hilo")
+        # Proxies delante de la aplicación: 0 en desarrollo, 1 (Nginx) en producción.
+        self.PROXIES_DE_CONFIANZA = int(os.getenv("PROXIES_DE_CONFIANZA", "0"))
 
     def validar(self):
         """Verifica que existan todas las variables obligatorias del entorno.
@@ -244,3 +255,6 @@ class ConfiguracionProduccion(ConfiguracionBase):
         super().__init__()
         self.ALMACENAMIENTO = "s3"  # pylint: disable=invalid-name
         self.COLA_ANALISIS = "rq"  # pylint: disable=invalid-name
+        self.PROXIES_DE_CONFIANZA = int(  # pylint: disable=invalid-name
+            os.getenv("PROXIES_DE_CONFIANZA", "1")
+        )

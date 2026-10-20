@@ -113,6 +113,7 @@ def test_analizar_procesa_las_imagenes_y_deja_el_caso_analizado(aplicacion, ana,
     assert analisis["estado"] == "finalizado"
     assert analisis["solicitante"] == "Ana López"
     assert analisis["versiones"]["metadatos"].startswith("1.0 (ExifTool")
+    assert analisis["versiones"]["c2pa"].startswith("1.0 (c2pa-python")
     sin_datos, generada = analisis["imagenes"]
     assert sin_datos["integridad"] == "verificada"
     resultado = sin_datos["resultados"][0]
@@ -120,6 +121,11 @@ def test_analizar_procesa_las_imagenes_y_deja_el_caso_analizado(aplicacion, ana,
         "metadatos", "completado", 0,
     )
     assert resultado["detalle"]["sin_metadatos"] is True
+    credenciales = sin_datos["resultados"][1]
+    assert (credenciales["capa"], credenciales["estado"], credenciales["nivel"]) == (
+        "c2pa", "completado", 0,
+    )
+    assert credenciales["detalle"]["sin_credenciales"] is True
     nivel_generada = generada["resultados"][0]
     assert nivel_generada["nivel"] == 90
     assert nivel_generada["anomalias"][0]["severidad"] == "directo"

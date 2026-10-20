@@ -35,3 +35,11 @@ dump.rdb
 
 # ---- Imágenes de casos guardadas en desarrollo (NUNCA subir) ----
 backend/almacenamiento_local/
+
+# ---- Terraform: estado, variables personales y proveedores descargados ----
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+backend.hcl
+plan.tfplan

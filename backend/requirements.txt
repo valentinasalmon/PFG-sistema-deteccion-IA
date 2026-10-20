@@ -3,6 +3,7 @@
 # y producción) usen exactamente las mismas.
 
 Flask==3.1.3                # Framework web
+gunicorn==23.0.0            # Servidor WSGI de producción, detrás de Nginx (RNF22 CA3)
 Flask-SQLAlchemy==3.1.1     # Integración de SQLAlchemy (ORM) con Flask
 Flask-Migrate==4.1.0        # Migraciones de esquema con Alembic (ADR-0008)
 SQLAlchemy==2.0.54          # ORM y acceso a la base de datos
@@ -29,3 +30,6 @@ boto3==1.43.114             # Almacenamiento en Amazon S3 (producción)
 
 # --- Funcionalidad 007: motor de análisis ---
 rq==2.12.0                  # Cola de trabajos sobre Redis (ADR-0004); requiere ExifTool del sistema
+
+# --- Funcionalidad 009: capa 2 (credenciales de contenido) ---
+c2pa-python==0.38.0         # Lectura y verificación de la firma de los manifiestos C2PA

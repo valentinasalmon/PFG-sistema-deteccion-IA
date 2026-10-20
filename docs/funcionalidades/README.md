@@ -34,7 +34,7 @@ implementación siguiendo tareas.md, con pruebas
 | 006 | Carga de imágenes, huella y almacenamiento | 4 | RF34 – RF36 | Completado |
 | 007 | Motor de análisis y capa 1 (metadatos) | 4 | RF38, RF39, RF43, RF46 | Completado |
 | 008 | Informe PDF e historial | 4 | RF44, RF45 | Completado |
-| 009 | Capa 2 (C2PA) | 5 | RF40 | Pendiente |
+| 009 | Capa 2 (C2PA) | 5 | RF40 | Completado |
 | 010 | Red neuronal: entrenamiento y exportación (pista paralela) | 2 – 5 | RNF24 | Pendiente |
 | 011 | Capa 3 (ELA) | 5 | RF41 | Pendiente |
 | 012 | Capa 4 (ONNX) | 5 | RF42 | Pendiente |
@@ -42,7 +42,7 @@ implementación siguiendo tareas.md, con pruebas
 | 014 | Planes y tablero de administración | 6 | RF19 – RF22 | Pendiente |
 | 015 | Retención y destrucción de datos | 7 | RF49 – RF51 | Pendiente |
 | 016 | Sello de tiempo en Blockchain Federal Argentina | 7 | RF37 | Pendiente |
-| 017 | Infraestructura y despliegue en AWS | 8 | RNF02, RNF03, RNF15, RNF22 | Pendiente |
+| 017 | [Infraestructura y despliegue en AWS](017-infraestructura-aws/especificacion.md) | 8 | RNF02, RNF03, RNF15, RNF22 | En curso (falta aplicar en AWS) |
 | 018 | Cierre: usabilidad, índice de calidad y documentación final | 9 | RNF10, RNF11, RNF19 | Pendiente |
 | 019 | Eliminación de cuenta y copia de datos personales | 3 | RF08, RF09 | Completado |
 | 020 | Registro guiado por pasos | 2 | RF01 (interfaz), RNF10 | Completado |
