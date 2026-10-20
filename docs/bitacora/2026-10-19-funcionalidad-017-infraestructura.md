@@ -68,3 +68,5 @@ La autora aplicó la infraestructura en su cuenta. Problemas encontrados y resue
 | GitHub no podía asumir el rol de despliegue (`AssumeRoleWithWebIdentity`) | Un flujo temporal de diagnóstico mostró que GitHub identifica al repositorio con los números de la cuenta y del repositorio (`repo:valentinasalmon@141863784/PFG-sistema-deteccion-IA@1410365187:...`). El rol acepta ese formato y el anterior, siempre solo desde `main` |
 
 Se agregó `crear_infraestructura_aws.sh`, que aplica todo con un solo comando y explica qué falta si algo no está listo.
+
+Con el rol corregido, el despliegue automático instaló la versión de `main` y la plataforma responde en `https://18-200-199-40.sslip.io` (CA9).
