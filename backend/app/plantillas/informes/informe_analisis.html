@@ -38,6 +38,8 @@
     ul { margin: 4pt 0; padding-left: 14pt; }
     li { margin-bottom: 2pt; }
     .limitaciones li { margin-bottom: 5pt; }
+    .mapa { margin: 6pt 0; page-break-inside: avoid; }
+    .mapa img { max-width: 12cm; max-height: 9cm; border: 1px solid #d1d5db; }
   </style>
 </head>
 <body>
@@ -105,6 +107,12 @@
             <li><span class="severidad">{{ anomalia.severidad }}:</span> {{ anomalia.descripcion }}</li>
             {% endfor %}
           </ul>
+          {% endif %}
+          {% if capa.imagen %}
+          <figure class="mapa">
+            <img src="{{ capa.imagen }}" alt="Mapa de la capa {{ capa.titulo }}">
+            <figcaption class="nota">Mapa ELA: las zonas claras cambiaron más al recomprimir. Las regiones señaladas están recuadradas en rojo. Es una señal complementaria: los bordes y los detalles marcados también se ven claros sin que haya edición.</figcaption>
+          </figure>
           {% endif %}
           {% if capa.tabla %}
           <table>

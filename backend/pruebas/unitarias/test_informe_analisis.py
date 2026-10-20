@@ -100,6 +100,21 @@ def test_capa_de_credenciales_con_su_titulo_y_su_explicacion():
         assert texto in html, texto
 
 
+def test_mapa_ela_embebido_en_el_informe():
+    """011 CA4: el mapa se incluye como imagen PNG con su aclaración."""
+    analisis = _analisis()
+    ela = _resultado()
+    ela.capa, ela.id = "ela", 41
+    analisis.imagenes[0].resultados.append(ela)
+
+    datos = informe_analisis.armar_datos(analisis, {}, "0.2.0", {41: b"\x89PNGmapa"})
+    html = entorno.get_template("informe_analisis.html").render(informe=datos, generado_en=GENERADO)
+
+    assert "Capa 3 · Niveles de error (ELA)" in html
+    assert "data:image/png;base64," in html
+    assert "señal complementaria" in html
+
+
 def test_capa_no_disponible_e_imagen_alterada():
     """La capa no disponible muestra el motivo; la imagen alterada, la aclaración."""
     assert "ExifTool no está instalado." in _html(_analisis(estado="no_disponible"))

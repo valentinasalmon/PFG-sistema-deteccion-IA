@@ -37,25 +37,29 @@ class ArchivosDeCasos:
     después de confirmar la base.
     """
 
-    def __init__(self, repositorio, almacenamiento, informes=None):
+    def __init__(self, repositorio, almacenamiento, informes=None, analisis=None):
         """
         Args:
             repositorio: ``RepositorioImagenes``.
             informes: ``RepositorioInformes``, para borrar también los PDF (008).
+            analisis: ``RepositorioAnalisis``, para borrar los mapas ELA (011).
         """
         self.repositorio = repositorio
         self.almacenamiento = almacenamiento
         self.informes = informes
+        self.analisis = analisis
         self.pendientes = []
 
     def preparar(self, casos):
-        """Anota los archivos de los casos (imágenes y PDF) y devuelve sus huellas."""
+        """Anota los archivos de los casos (imágenes, PDF y mapas) y devuelve sus huellas."""
         ids = [caso.id for caso in casos]
         imagenes = self.repositorio.de_casos(ids)
         informes = self.informes.de_casos(ids) if self.informes else []
         for imagen in imagenes:
             self.pendientes.extend((imagen.clave, imagen.clave_miniatura))
         self.pendientes.extend(informe.clave for informe in informes)
+        if self.analisis:
+            self.pendientes.extend(self.analisis.claves_de_imagenes_de_casos(ids))
         return [imagen.huella for imagen in imagenes] + [informe.huella for informe in informes]
 
     def borrar_pendientes(self):

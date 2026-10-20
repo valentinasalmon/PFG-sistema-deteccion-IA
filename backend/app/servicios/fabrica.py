@@ -79,7 +79,9 @@ def crear_servicio_perfil(configuracion, enviador, origen=None):
 def _archivos(almacenamiento):
     if not almacenamiento:
         return None
-    return ArchivosDeCasos(RepositorioImagenes(), almacenamiento, RepositorioInformes())
+    return ArchivosDeCasos(
+        RepositorioImagenes(), almacenamiento, RepositorioInformes(), RepositorioAnalisis()
+    )
 
 
 def crear_servicio_organizaciones(configuracion, enviador, origen=None, almacenamiento=None):

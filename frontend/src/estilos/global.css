@@ -879,6 +879,18 @@ textarea.campo__control {
   margin-bottom: 0.35rem;
 }
 
+.mapa-capa {
+  margin: 0.75rem 0;
+}
+
+.mapa-capa img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
 .resultado-capa details {
   margin-bottom: 0.5rem;
 }

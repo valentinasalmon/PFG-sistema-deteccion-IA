@@ -87,6 +87,8 @@ Cada dirección de `correo_remitente` y `correos_verificados` recibe un correo d
 - Mientras SES está en modo de prueba, la plataforma **solo envía correos a esas direcciones**.
 - Para registrar a otra persona en la demo, agregá su correo a `correos_verificados`, ejecutá `terraform apply` y pedile que confirme el enlace.
 
+> **Correos en Spam:** mientras se use un Gmail como remitente sin dominio propio, Gmail suele mandar los correos de la plataforma a **Spam**. Marcalos como "No es spam" y avisales a los tutores. Con el dominio propio y su verificación en SES (con DKIM), los correos llegan a la bandeja de entrada.
+
 ## Paso 6. Cargar las variables en GitHub
 
 En el repositorio, entrá a *Settings*, *Secrets and variables*, *Actions* y la pestaña **Variables** (no *Secrets*). Creá estas cuatro con los valores de `terraform output variables_github`:

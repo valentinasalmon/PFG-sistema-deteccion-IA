@@ -3,7 +3,7 @@
 Realiza: RF38, RF43, RF46.
 """
 from app.extensiones import db
-from app.modelos.analisis import ESTADOS_EN_CURSO, Analisis
+from app.modelos.analisis import ESTADOS_EN_CURSO, Analisis, AnalisisImagen, ResultadoCapa
 from app.repositorios.base import RepositorioBase
 
 
@@ -21,6 +21,19 @@ class RepositorioAnalisis(RepositorioBase):
             .order_by(Analisis.creado_en.desc(), Analisis.id.desc())
             .all()
         )
+
+    def claves_de_imagenes_de_casos(self, ids_casos):
+        """Claves de las imágenes de los resultados (mapas ELA) de varios casos (RN21)."""
+        if not ids_casos:
+            return []
+        filas = (
+            db.session.query(ResultadoCapa.clave_imagen)
+            .join(AnalisisImagen, ResultadoCapa.id_analisis_imagen == AnalisisImagen.id)
+            .join(Analisis, AnalisisImagen.id_analisis == Analisis.id)
+            .filter(Analisis.id_caso.in_(ids_casos), ResultadoCapa.clave_imagen.isnot(None))
+            .all()
+        )
+        return [clave for (clave,) in filas]
 
     def en_curso_de_caso(self, id_caso):
         """El análisis en cola o en proceso del caso, o None (RF38 CA3)."""

@@ -33,3 +33,6 @@ rq==2.12.0                  # Cola de trabajos sobre Redis (ADR-0004); requiere 
 
 # --- Funcionalidad 009: capa 2 (credenciales de contenido) ---
 c2pa-python==0.38.0         # Lectura y verificación de la firma de los manifiestos C2PA
+
+# --- Funcionalidad 011: capa 3 (ELA) ---
+numpy==2.4.6                # Cálculo por bloques del análisis de niveles de error

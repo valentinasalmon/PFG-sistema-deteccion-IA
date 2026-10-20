@@ -127,6 +127,8 @@ class ResultadoCapa(db.Model):  # pylint: disable=too-few-public-methods
     motivo = db.Column(db.String(300), nullable=True)
     detalle = db.Column(db.JSON, nullable=False, default=dict)
     version = db.Column(db.String(100), nullable=False)
+    # Imagen que acompaña al resultado en el almacenamiento (mapa ELA, 011).
+    clave_imagen = db.Column(db.String(200), nullable=True)
 
     analisis_imagen = db.relationship("AnalisisImagen", back_populates="resultados")
     anomalias = db.relationship(

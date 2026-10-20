@@ -14,6 +14,7 @@ RN27, RN29; RNF07 (CA2).
 """
 import hashlib
 import logging
+from uuid import uuid4
 
 from app.analisis.base import CapaNoDisponible, ContextoImagen
 from app.modelos.analisis import (
@@ -208,8 +209,7 @@ class ServicioAnalisis:
             incluida.resultados.append(self._ejecutar_capa(capa, contenido, contexto))
             self._avanzar(analisis)
 
-    @staticmethod
-    def _ejecutar_capa(capa, contenido, contexto):
+    def _ejecutar_capa(self, capa, contenido, contexto):
         """Resultado de una capa; si falla, "No disponible" con el motivo (RN26, RF43 CA3)."""
         version = capa.version()
         try:
@@ -229,6 +229,7 @@ class ServicioAnalisis:
         return ResultadoCapa(
             capa=capa.nombre, estado=RESULTADO_COMPLETADO, nivel=resultado.nivel,
             conclusion=resultado.conclusion, detalle=resultado.detalle, version=version,
+            clave_imagen=self._guardar_imagen(resultado.imagen),
             anomalias=[
                 Anomalia(
                     campo=a.campo[:100], valor=a.valor, descripcion=a.descripcion,
@@ -237,6 +238,18 @@ class ServicioAnalisis:
                 for a in resultado.anomalias
             ],
         )
+
+    def _guardar_imagen(self, imagen):
+        """Guarda la imagen de un resultado (mapa ELA); si falla, el resultado sigue sin ella."""
+        if not imagen:
+            return None
+        clave = f"analisis/{uuid4().hex}.png"
+        try:
+            self.ejecucion["almacenamiento"].guardar(clave, imagen, "image/png")
+        except Exception:  # pylint: disable=broad-exception-caught
+            registro_log.exception("No se pudo guardar la imagen del resultado %s", clave)
+            return None
+        return clave
 
     def _generar_informe(self, analisis):
         """Genera el informe PDF (008); si falla, el análisis igual finaliza (CA6 de la 008).
@@ -310,6 +323,16 @@ class ServicioAnalisis:
         caso, _ = self.casos.caso_con_permiso(id_caso, usuario, NIVEL_LECTURA)
         self.verificar_interrumpidos(caso)
         return self.repositorio.de_caso(caso.id)
+
+    def enlaces_de_imagenes(self, analisis):
+        """Enlaces firmados de las imágenes de los resultados, por id de resultado (RNF03 CA2)."""
+        segundos = int(self.configuracion["VIGENCIA_ENLACE_ARCHIVO"].total_seconds())
+        return {
+            resultado.id: self.ejecucion["almacenamiento"].enlace(resultado.clave_imagen, segundos)
+            for incluida in analisis.imagenes
+            for resultado in incluida.resultados
+            if resultado.clave_imagen
+        }
 
     def detalle(self, id_caso, id_analisis, usuario):
         """Estado, progreso y resultados de un análisis del caso."""
