@@ -178,20 +178,20 @@ for (let i = 0; i < 7; i++) { const b = document.createElement('div'); b.classNa
 // ---------- textos ----------
 // a: aparece, b: se va; tam en vmin; y: desplazamiento vertical en vmin; tipo: "escribir" | "glitch"
 const TEXTOS = [
-  { html: 'Llega una foto.', a: 0.5, b: 2.6, tam: 8.8, peso: 300 },
-  { html: 'Un choque.', a: 2.95, b: 4.55, tam: 5.6, peso: 400, y: 35 },
-  { html: 'Un accidente <b class="verde">laboral</b>.', a: 4.95, b: 6.35, tam: 5.6, peso: 400, y: 35 },
-  { html: 'Parece <b class="verde">real</b>.', a: 6.5, b: 7.6, tam: 5.6, peso: 400, y: 35, entrada: .3, salida: .2 },
-  { html: '¿Lo es?', a: 8.45, b: 9.8, tam: 19, peso: 800, tipo: 'glitch' },
-  { html: 'Hoy una imagen se edita en segundos.', a: 10.1, b: 12.5, tam: 6.6, peso: 600, tipo: 'escribir' },
-  { html: 'O se crea de la nada.', a: 12.7, b: 15.0, tam: 5.6, peso: 400, y: 35 },
-  { html: 'A simple vista, <b class="verde">no se nota</b>.', a: 15.3, b: 17.5, tam: 7.4, peso: 300 },
-  { html: 'Pero toda imagen deja <b class="verde">rastros</b>.', a: 19.9, b: 22.3, tam: 5.6, peso: 400, y: 31 },
-  { html: 'Cuatro capas de análisis.<br><span style="font-weight:300">Un informe claro.</span>', a: 27.7, b: 30.0, tam: 7.4, peso: 700 },
-  { html: '<b class="verde">Indicios</b>, no veredictos.', a: 30.2, b: 32.0, tam: 7.8, peso: 300 },
-  { html: 'Tu primera línea de defensa contra el fraude visual', a: 33.3, b: 37.2, tam: 3.5, peso: 400, y: 17, espaciado: .1 },
-  { html: 'PRÓXIMAMENTE', a: 34.3, b: 37.2, tam: 3.2, peso: 700, y: 27, espaciado: .6, clase: 'verde' },
-  { html: 'Evaluación preliminar. Consultá siempre a un profesional especializado.', a: 34.8, b: 37.2, tam: 2.3, peso: 400, y: 41, opacidad: .65, espaciado: .04 },
+  { tamV: 9, html: 'Llega una foto.', a: 0.5, b: 2.6, tam: 8.8, peso: 300 },
+  { tamV: 7, yV: 44, html: 'Un choque.', a: 2.95, b: 4.55, tam: 5.6, peso: 400, y: 35 },
+  { htmlV: 'Un accidente<br><b class="verde">laboral</b>.', tamV: 7, yV: 47, html: 'Un accidente <b class="verde">laboral</b>.', a: 4.95, b: 6.35, tam: 5.6, peso: 400, y: 35 },
+  { tamV: 7, yV: 44, html: 'Parece <b class="verde">real</b>.', a: 6.5, b: 7.6, tam: 5.6, peso: 400, y: 35, entrada: .3, salida: .2 },
+  { tamV: 15, html: '¿Lo es?', a: 8.45, b: 9.8, tam: 19, peso: 800, tipo: 'glitch' },
+  { textoV: 'Hoy una imagen\nse edita en segundos.', tamV: 6, html: 'Hoy una imagen se edita en segundos.', a: 10.1, b: 12.5, tam: 6.6, peso: 600, tipo: 'escribir' },
+  { tamV: 6.4, yV: 44, html: 'O se crea de la nada.', a: 12.7, b: 15.0, tam: 5.6, peso: 400, y: 35 },
+  { htmlV: 'A simple vista,<br><b class="verde">no se nota</b>.', tamV: 8, html: 'A simple vista, <b class="verde">no se nota</b>.', a: 15.3, b: 17.5, tam: 7.4, peso: 300 },
+  { htmlV: 'Pero toda imagen<br>deja <b class="verde">rastros</b>.', tamV: 6.4, yV: 44, html: 'Pero toda imagen deja <b class="verde">rastros</b>.', a: 19.9, b: 22.3, tam: 5.6, peso: 400, y: 31 },
+  { htmlV: 'Cuatro capas<br>de análisis.<br><span style="font-weight:300">Un informe claro.</span>', tamV: 7, html: 'Cuatro capas de análisis.<br><span style="font-weight:300">Un informe claro.</span>', a: 27.7, b: 30.0, tam: 7.4, peso: 700 },
+  { htmlV: '<b class="verde">Indicios</b>,<br>no veredictos.', tamV: 8, html: '<b class="verde">Indicios</b>, no veredictos.', a: 30.2, b: 32.0, tam: 7.8, peso: 300 },
+  { htmlV: 'Tu primera línea de defensa<br>contra el fraude visual', tamV: 4.2, yV: 17, html: 'Tu primera línea de defensa contra el fraude visual', a: 33.3, b: 37.2, tam: 3.5, peso: 400, y: 17, espaciado: .1 },
+  { tamV: 4.2, yV: 36, espaciadoV: .5, html: 'PRÓXIMAMENTE', a: 34.3, b: 37.2, tam: 3.2, peso: 700, y: 27, espaciado: .6, clase: 'verde' },
+  { htmlV: 'Evaluación preliminar.<br>Consultá siempre a un profesional especializado.', tamV: 2.8, yV: 68, html: 'Evaluación preliminar. Consultá siempre a un profesional especializado.', a: 34.8, b: 37.2, tam: 2.3, peso: 400, y: 41, opacidad: .65, espaciado: .04 },
 ];
 const CAPAS = [
   { palabra: 'METADATOS', nota: 'lo que la cámara registró' },
@@ -221,19 +221,29 @@ function pintarTextos(t, u) {
     const pi = sale(prog(t, tx.a, tx.a + ent)), po = 1 - prog(t, tx.b - sal, tx.b);
     let op = Math.min(pi, po) * (tx.opacidad ?? 1);
     let tam = tx.tam;
-    if (vertical() && tx.capa) tam *= .85;
-    if (vertical() && !tx.capa) { tam *= tam > 5 ? 1.15 : 1.6; el.style.whiteSpace = 'normal'; el.style.width = '88vw'; }
+    const v = vertical();
+    if (v && tx.capa) tam *= .85;
+    if (v && tx.tamV) tam = tx.tamV;
+    const html = v && tx.htmlV ? tx.htmlV : tx.html;
+    if (tx.tipo !== 'escribir' && el.dataset.html !== html) { el.innerHTML = html; el.dataset.html = html; }
     el.style.fontSize = tam * u + 'px';
     el.style.fontWeight = tx.peso;
     el.style.lineHeight = 1.25;
-    const esp = (tx.espaciado ?? 0) + (1 - pi) * .08;
+    const esp = (v && tx.espaciadoV !== undefined ? tx.espaciadoV : (tx.espaciado ?? 0)) + (v ? 0 : (1 - pi) * .08);
     el.style.letterSpacing = esp + 'em';
-    const dy = (tx.y ?? 0) * u * (vertical() ? 1.25 : 1) + (1 - pi) * 1.6 * u;
+    const dy = (v ? (tx.yV ?? (tx.y ?? 0) * 1.25) : (tx.y ?? 0)) * u + (1 - pi) * 1.6 * u;
     let dx = 0, sombra = 'none', desenfoque = (1 - pi) * 10 + (1 - po) * 6;
     if (tx.tipo === 'escribir') {
-      const n = tx.html.length, k = Math.floor(n * clamp((t - tx.a) / .9));
-      const cursor = (Math.floor(t * 3) % 2 === 0 && k < n + 1) ? '<span class="verde">|</span>' : '<span style="opacity:0">|</span>';
-      el.innerHTML = tx.html.slice(0, k) + `<span style="opacity:0">${tx.html.slice(k)}</span>` + (k < n ? cursor : '');
+      const texto = v && tx.textoV ? tx.textoV : tx.html;
+      const n = texto.length, k = Math.floor(n * clamp((t - tx.a) / .9));
+      const br = s => s.replace(/\n/g, '<br>');
+      const cursor = (Math.floor(t * 3) % 2 === 0) ? '<span class="verde">|</span>' : '<span style="opacity:0">|</span>';
+      if (v) {
+        // en vertical el cursor no ocupa ancho, asi el texto centrado no se mueve al escribir
+        el.innerHTML = br(texto.slice(0, k)) + `<span style="display:inline-block;width:0">${k < n ? cursor : ''}</span>` + `<span style="opacity:0">${br(texto.slice(k))}</span>`;
+      } else {
+        el.innerHTML = texto.slice(0, k) + `<span style="opacity:0">${texto.slice(k)}</span>` + (k < n ? cursor : '');
+      }
       op = po; desenfoque = (1 - po) * 6;
     }
     if (tx.tipo === 'glitch') {
@@ -368,7 +378,7 @@ function render(t) {
     const img = logo.querySelector('img');
     const ancho = vertical() ? 88 : 92;
     img.style.width = ancho * u + 'px';
-    img.style.transform = `translate(-50%, calc(-50% + ${-4 * u}px)) scale(${1.08 - .08 * p + .02 * prog(t, 33.4, 38)})`;
+    img.style.transform = `translate(-50%, calc(-50% + ${(vertical() ? -12 : -4) * u}px)) scale(${1.08 - .08 * p + .02 * prog(t, 33.4, 38)})`;
     img.style.filter = `blur(${(1 - p) * 14}px) drop-shadow(0 0 ${2 + 2 * Math.sin(t * 2)}vmin rgba(168,207,94,.25))`;
   } else logo.style.opacity = 0;
 
