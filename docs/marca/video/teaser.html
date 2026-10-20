@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>evidentIA teaser</title>
+<style>
+@font-face { font-family: "Montserrat"; src: url("fuentes/montserrat.woff2") format("woff2"); font-weight: 100 900; }
+:root { --verde: #a8cf5e; --verde-claro: #c9e58f; --oliva: #5f7d24; --blanco: #eeeeea; --negro: #0b0b0b; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; background: var(--negro); overflow: hidden; }
+body { font-family: "Montserrat", sans-serif; color: var(--blanco); }
+.capa { position: absolute; inset: 0; }
+#grano { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .085; mix-blend-mode: screen; image-rendering: pixelated; }
+#vineta { background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.75) 100%); }
+#reticula { background-image: linear-gradient(rgba(168,207,94,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(168,207,94,.07) 1px, transparent 1px); background-size: 6vmin 6vmin; background-position: center; opacity: 0; }
+.texto { position: absolute; left: 50%; top: 50%; white-space: nowrap; text-align: center; opacity: 0; will-change: transform, opacity, filter; }
+.verde { color: var(--verde); }
+
+/* foto */
+#foto { position: absolute; left: 50%; top: 50%; width: 74vmin; height: 52vmin; opacity: 0; }
+.marco-foto { position: absolute; inset: 0; background: #e9e8e2; padding: 1.4vmin 1.4vmin 5.4vmin; box-shadow: 0 3vmin 6vmin rgba(0,0,0,.6); }
+.marco-foto .imagen { position: relative; width: 100%; height: 100%; overflow: hidden; background: radial-gradient(ellipse at 70% 35%, #3b4044 0%, #1d2023 55%, #0f1112 100%); }
+.marco-foto svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.marco-foto .rotulo { position: absolute; left: 1.6vmin; right: 1.6vmin; bottom: 1.6vmin; font: 500 1.7vmin/1 "DejaVu Sans Mono", monospace; color: #55554f; display: flex; justify-content: space-between; letter-spacing: .05em; }
+.copia { position: absolute; inset: 0; opacity: 0; mix-blend-mode: screen; }
+#pixeles { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
+.barra { position: absolute; left: -5%; width: 110%; mix-blend-mode: difference; background: var(--blanco); opacity: 0; }
+
+/* ojo */
+#ojo { position: absolute; left: 50%; top: 50%; width: 46vmin; height: 40vmin; opacity: 0; }
+.esquina { position: absolute; width: 9vmin; height: 9vmin; border-color: var(--verde); border-style: solid; border-width: 0; }
+.esquina.ai { left: 0; top: 0; border-left-width: 1vmin; border-top-width: 1vmin; border-top-left-radius: 1.6vmin; }
+.esquina.ad { right: 0; top: 0; border-right-width: 1vmin; border-top-width: 1vmin; border-top-right-radius: 1.6vmin; }
+.esquina.bi { left: 0; bottom: 0; border-left-width: 1vmin; border-bottom-width: 1vmin; border-bottom-left-radius: 1.6vmin; }
+.esquina.bd { right: 0; bottom: 0; border-right-width: 1vmin; border-bottom-width: 1vmin; border-bottom-right-radius: 1.6vmin; }
+#ojo img { position: absolute; left: 50%; top: 50%; width: 40vmin; transform: translate(-50%, -50%); filter: drop-shadow(0 0 3vmin rgba(168,207,94,.35)); clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%); }
+#ojo .tapa { position: absolute; left: 50%; top: 50%; width: 40vmin; height: 36vmin; transform: translate(-50%, -50%); background: var(--negro); }
+#brillo { position: absolute; left: 50%; top: 50%; width: 80vmin; height: 80vmin; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(168,207,94,.28) 0%, rgba(168,207,94,0) 60%); opacity: 0; }
+
+/* capas de analisis */
+#capas { opacity: 0; }
+#visor { position: absolute; left: 50%; top: 50%; width: 92vmin; height: 34vmin; }
+#visor .esquina { width: 6vmin; height: 6vmin; }
+#escaner { position: absolute; top: 0; bottom: 0; width: .35vmin; background: var(--verde); box-shadow: 0 0 3vmin 1vmin rgba(168,207,94,.6); opacity: 0; }
+#indice { position: absolute; left: 50%; top: 50%; font-weight: 500; font-size: 2.2vmin; letter-spacing: .4em; color: var(--verde); }
+
+/* logo */
+#logo { opacity: 0; }
+#logo img { position: absolute; left: 50%; top: 50%; width: 92vmin; }
+#flash { background: var(--blanco); opacity: 0; mix-blend-mode: screen; }
+#flash-verde { background: radial-gradient(circle, rgba(201,229,143,.9), rgba(168,207,94,0) 70%); opacity: 0; }
+#negro-final { background: #000; opacity: 0; }
+</style>
+</head>
+<body>
+<div class="capa" id="reticula"></div>
+
+<div id="foto">
+  <div class="marco-foto">
+    <div class="imagen">
+      <svg id="dibujo" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"></svg>
+      <canvas id="pixeles" width="80" height="50"></canvas>
+    </div>
+    <div class="rotulo"><span>IMG_2047.JPG</span><span>14/03 · 23:41</span></div>
+  </div>
+  <div class="copia" id="copia-roja"></div>
+  <div class="copia" id="copia-cian"></div>
+</div>
+
+<div id="brillo"></div>
+<div id="ojo">
+  <img src="../piezas/20-isotipo-transparente.png" alt="">
+  <div class="tapa"></div>
+  <div class="esquina ai"></div><div class="esquina ad"></div><div class="esquina bi"></div><div class="esquina bd"></div>
+</div>
+
+<div class="capa" id="capas">
+  <div id="visor">
+    <div class="esquina ai"></div><div class="esquina ad"></div><div class="esquina bi"></div><div class="esquina bd"></div>
+    <div id="escaner"></div>
+  </div>
+  <div id="indice"></div>
+</div>
+
+<div class="capa" id="logo"><img src="../piezas/22-logo-y-nombre-blanco-transparente.png" alt=""></div>
+
+<div id="textos"></div>
+<div id="barras"></div>
+<canvas id="grano" width="384" height="216"></canvas>
+<div class="capa" id="vineta"></div>
+<div class="capa" id="flash-verde"></div>
+<div class="capa" id="flash"></div>
+<div class="capa" id="negro-final"></div>
+
+<script>
+// ---------- utilidades ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const sale = x => 1 - Math.pow(1 - x, 3);
+const entraSale = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const rebote = x => { const c = 1.70158, c3 = c + 1; return 1 + c3 * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+function azar(semilla) { let a = semilla >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const $ = id => document.getElementById(id);
+const vmin = () => Math.min(innerWidth, innerHeight) / 100;
+const vertical = () => innerHeight > innerWidth;
+
+// ---------- dibujo del choque ----------
+const DIBUJO = `
+  <defs><linearGradient id="farol" x1="0" x2="1"><stop offset="0" stop-color="#f6f1d0" stop-opacity=".0"/><stop offset="1" stop-color="#f6f1d0" stop-opacity=".18"/></linearGradient></defs>
+  <path d="M250,0 L372,40 L372,172 L250,172 Z" fill="url(#farol)"/>
+  <path d="M0,172 L400,172" stroke="#8d918f" stroke-width="1.2" opacity=".5"/>
+  <path d="M10,180 L120,178 M40,186 L170,184" stroke="#6c706e" stroke-width="2" stroke-dasharray="10 6" opacity=".45"/>
+  <path d="M358,30 L370,30 L370,172 L358,172 Z" fill="none" stroke="#d8d8d2" stroke-width="2.2"/>
+  <path d="M352,26 L376,26" stroke="#d8d8d2" stroke-width="2.2"/>
+  <g fill="none" stroke="#efefe9" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M30,150 L30,128 Q32,112 52,108 L110,102 L150,74 Q160,66 176,66 L262,66 Q280,66 292,78 L318,100 L336,103 L344,97 L350,111 L342,118 L355,126 L346,134 L352,150 L338,150 A26,26 0 0 0 286,150 L128,150 A26,26 0 0 0 76,150 Z"/>
+    <path d="M160,100 L178,76 L222,76 L222,100 Z"/>
+    <path d="M232,100 L232,76 L262,76 Q274,76 282,84 L300,100 Z"/>
+    <path d="M226,104 L226,142 M236,112 L248,112"/>
+    <circle cx="312" cy="150" r="20"/><circle cx="312" cy="150" r="7"/>
+    <circle cx="102" cy="150" r="20"/><circle cx="102" cy="150" r="7"/>
+    <path d="M318,100 L326,112 L319,122 L331,133" stroke-width="1.8"/>
+    <path d="M283,85 L291,93 M287,89 L281,97 M287,89 L295,88" stroke-width="1.4"/>
+  </g>
+  <g fill="#efefe9" opacity=".85">
+    <path d="M362,160 l7,-3 l2,5 z"/><path d="M376,165 l6,-2 l1,4 z"/><path d="M350,166 l4,-1 l1,3 z"/><path d="M384,158 l3,-2 l1,3 z"/>
+  </g>`;
+$('dibujo').innerHTML = DIBUJO;
+for (const [id, color] of [['copia-roja', '#ff2d55'], ['copia-cian', '#1ee8ff']]) {
+  $(id).innerHTML = `<div style="position:absolute;inset:1.4vmin 1.4vmin 5.4vmin;overflow:hidden"><svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">${DIBUJO.replace(/#efefe9|#d8d8d2/g, color)}</svg></div>`;
+}
+for (let i = 0; i < 7; i++) { const b = document.createElement('div'); b.className = 'barra'; $('barras').appendChild(b); }
+
+// ---------- textos ----------
+// a: aparece, b: se va; tam en vmin; y: desplazamiento vertical en vmin; tipo: "escribir" | "glitch"
+const TEXTOS = [
+  { html: 'Llega una foto.', a: 0.5, b: 2.6, tam: 7, peso: 300 },
+  { html: 'Muestra un choque.', a: 3.0, b: 5.1, tam: 4.4, peso: 400, y: 34 },
+  { html: 'Parece <b class="verde">real</b>.', a: 5.3, b: 7.5, tam: 4.4, peso: 400, y: 34 },
+  { html: '¿Lo es?', a: 8.45, b: 9.8, tam: 16, peso: 800, tipo: 'glitch' },
+  { html: 'Hoy una imagen se edita en segundos.', a: 10.1, b: 12.5, tam: 5.4, peso: 600, tipo: 'escribir' },
+  { html: 'O se crea de la nada.', a: 12.7, b: 15.0, tam: 4.4, peso: 400, y: 34 },
+  { html: 'A simple vista, <b class="verde">no se nota</b>.', a: 15.3, b: 17.5, tam: 6, peso: 300 },
+  { html: 'Pero toda imagen deja <b class="verde">rastros</b>.', a: 19.9, b: 22.3, tam: 4.4, peso: 400, y: 30 },
+  { html: 'Cuatro capas de análisis.<br><span style="font-weight:300">Un informe claro.</span>', a: 27.7, b: 30.0, tam: 6, peso: 700 },
+  { html: '<b class="verde">Indicios</b>, no veredictos.', a: 30.2, b: 32.0, tam: 6.4, peso: 300 },
+  { html: 'Tu primera línea de defensa contra el fraude visual', a: 33.3, b: 37.2, tam: 2.9, peso: 400, y: 17, espaciado: .12 },
+  { html: 'PRÓXIMAMENTE', a: 34.3, b: 37.2, tam: 2.6, peso: 700, y: 27, espaciado: .7, clase: 'verde' },
+  { html: 'Evaluación preliminar. Consultá siempre a un profesional especializado.', a: 34.8, b: 37.2, tam: 1.9, peso: 400, y: 43, opacidad: .6, espaciado: .05 },
+];
+const CAPAS = [
+  { palabra: 'METADATOS', nota: 'lo que la cámara registró' },
+  { palabra: 'CREDENCIALES', nota: 'de dónde viene la imagen' },
+  { palabra: 'COMPRESIÓN', nota: 'zonas con otra historia' },
+  { palabra: 'RED NEURONAL', nota: 'rasgos de una imagen sintética' },
+];
+const INICIO_CAPAS = 22.8, DURACION_CAPA = 1.2;
+CAPAS.forEach((c, i) => TEXTOS.push(
+  { html: c.palabra, a: INICIO_CAPAS + i * DURACION_CAPA, b: INICIO_CAPAS + (i + 1) * DURACION_CAPA - .05, tam: 9, peso: 800, espaciado: .06, entrada: .12, salida: .08, capa: true },
+  { html: c.nota, a: INICIO_CAPAS + i * DURACION_CAPA + .15, b: INICIO_CAPAS + (i + 1) * DURACION_CAPA - .05, tam: 3, peso: 400, y: 10, clase: 'verde', espaciado: .08, entrada: .2, salida: .08, capa: true },
+));
+for (const tx of TEXTOS) {
+  const d = document.createElement('div');
+  d.className = 'texto' + (tx.clase ? ' ' + tx.clase : '');
+  d.innerHTML = tx.html;
+  d.dataset.html = tx.html;
+  $('textos').appendChild(d);
+  tx.el = d;
+}
+
+function pintarTextos(t, u) {
+  for (const tx of TEXTOS) {
+    const el = tx.el;
+    const ent = tx.entrada ?? .45, sal = tx.salida ?? .35;
+    if (t < tx.a || t > tx.b) { el.style.opacity = 0; continue; }
+    const pi = sale(prog(t, tx.a, tx.a + ent)), po = 1 - prog(t, tx.b - sal, tx.b);
+    let op = Math.min(pi, po) * (tx.opacidad ?? 1);
+    let tam = tx.tam;
+    if (vertical() && !tx.capa) { tam *= tam > 5 ? 1.15 : 1.6; el.style.whiteSpace = 'normal'; el.style.width = '88vw'; }
+    el.style.fontSize = tam * u + 'px';
+    el.style.fontWeight = tx.peso;
+    el.style.lineHeight = 1.25;
+    const esp = (tx.espaciado ?? 0) + (1 - pi) * .08;
+    el.style.letterSpacing = esp + 'em';
+    const dy = (tx.y ?? 0) * u * (vertical() ? 1.25 : 1) + (1 - pi) * 1.6 * u;
+    let dx = 0, sombra = 'none', desenfoque = (1 - pi) * 10 + (1 - po) * 6;
+    if (tx.tipo === 'escribir') {
+      const n = tx.html.length, k = Math.floor(n * clamp((t - tx.a) / .9));
+      const cursor = (Math.floor(t * 3) % 2 === 0 && k < n + 1) ? '<span class="verde">|</span>' : '<span style="opacity:0">|</span>';
+      el.innerHTML = tx.html.slice(0, k) + `<span style="opacity:0">${tx.html.slice(k)}</span>` + (k < n ? cursor : '');
+      op = po; desenfoque = (1 - po) * 6;
+    }
+    if (tx.tipo === 'glitch') {
+      const r = azar(Math.floor(t * 30) * 7 + 3);
+      const fuerza = Math.max(1 - prog(t, tx.a, tx.a + .5), r() < .12 ? .7 : 0);
+      dx = (r() - .5) * 4 * u * fuerza;
+      sombra = `${(r() * 1.6 + .3) * u * fuerza}px 0 #ff2d55, ${-(r() * 1.6 + .3) * u * fuerza}px 0 #1ee8ff`;
+      el.style.clipPath = fuerza > .3 && r() < .5 ? `inset(${r() * 40}% 0 ${r() * 40}% 0)` : 'none';
+      desenfoque = 0; op = Math.min(1, po);
+    }
+    el.style.opacity = op;
+    el.style.textShadow = sombra;
+    el.style.filter = desenfoque > .05 ? `blur(${desenfoque}px)` : 'none';
+    el.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+  }
+}
+
+// ---------- grano ----------
+const grano = $('grano').getContext('2d');
+const granoDatos = grano.createImageData(384, 216);
+function pintarGrano(t) {
+  const r = azar(Math.floor(t * 30) + 11), d = granoDatos.data;
+  for (let i = 0; i < d.length; i += 4) { const v = r() * 255; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+  grano.putImageData(granoDatos, 0, 0);
+}
+
+// ---------- pixeles que forman la foto ----------
+const pix = $('pixeles').getContext('2d');
+const umbrales = (() => { const r = azar(99); return Array.from({ length: 80 * 50 }, () => r()); })();
+const tonos = ['#1b1e20', '#2a2e31', '#3a3f43', '#55595c', '#a8cf5e', '#eeeeea', '#5f7d24', '#121314'];
+function pintarPixeles(p, t) {
+  pix.clearRect(0, 0, 80, 50);
+  if (p >= 1) return;
+  const r = azar(Math.floor(t * 30) + 5);
+  for (let i = 0; i < 80 * 50; i++) {
+    if (umbrales[i] < p) continue;
+    pix.fillStyle = tonos[Math.floor(r() * (r() < .9 ? 4 : 8))];
+    pix.fillRect(i % 80, Math.floor(i / 80), 1, 1);
+  }
+}
+
+// ---------- escena por fotograma ----------
+function render(t) {
+  const u = vmin();
+  pintarGrano(t);
+  pintarTextos(t, u);
+
+  // foto: primera aparicion (2.6 a 8.45) y reconstruccion (12.6 a 15.1)
+  const foto = $('foto');
+  let fotoOp = 0, fotoEsc = 1, fotoRot = -3, fx = 0, fy = -6 * u, glitch = 0;
+  if (t >= 2.6 && t < 8.45) {
+    const p = sale(prog(t, 2.6, 3.4));
+    fotoOp = p; fotoEsc = .9 + .1 * p + .03 * prog(t, 3.4, 8.4); fotoRot = -3 + 1.2 * prog(t, 2.6, 8.4);
+    glitch = t > 7.6 ? Math.pow(prog(t, 7.6, 8.45), 1.4) : 0;
+    if (t > 6.6 && t < 7.6) { const r = azar(Math.floor(t * 30)); glitch = r() < .1 ? .35 : 0; }
+  } else if (t >= 12.6 && t < 15.15) {
+    fotoOp = Math.min(sale(prog(t, 12.6, 12.9)), 1 - prog(t, 14.8, 15.15));
+    fotoEsc = .96 + .04 * prog(t, 12.6, 15); fotoRot = 2;
+  }
+  if (vertical()) fy = -10 * u;
+  const rg = azar(Math.floor(t * 30) * 13 + 1);
+  if (glitch > 0) { fx = (rg() - .5) * 6 * u * glitch; fotoRot += (rg() - .5) * 4 * glitch; }
+  foto.style.opacity = fotoOp;
+  foto.style.transform = `translate(calc(-50% + ${fx}px), calc(-50% + ${fy}px)) rotate(${fotoRot}deg) scale(${fotoEsc})`;
+  $('copia-roja').style.opacity = $('copia-cian').style.opacity = glitch > 0 ? .9 : 0;
+  $('copia-roja').style.transform = `translate(${(rg() * 2 + 1) * u * glitch}px, ${(rg() - .5) * u * glitch}px)`;
+  $('copia-cian').style.transform = `translate(${-(rg() * 2 + 1) * u * glitch}px, ${(rg() - .5) * u * glitch}px)`;
+  const corte = glitch > .2 && rg() < .6;
+  foto.style.clipPath = corte ? `polygon(0 0,100% 0,100% ${rg() * 100}%,${rg() * 30}% ${rg() * 100}%,0 100%)` : 'none';
+  $('dibujo').style.opacity = t >= 12.6 && t < 15.15 ? clamp(prog(t, 12.9, 14.5) * 1.2) : 1;
+  pintarPixeles(t >= 12.6 && t < 15.15 ? entraSale(prog(t, 12.85, 14.6)) : 1, t);
+
+  // barras de interferencia
+  const barras = $('barras').children;
+  const fuerzaBarras = Math.max(glitch, t > 8.45 && t < 8.9 ? 1 - prog(t, 8.45, 8.9) : 0, t > 17.45 && t < 17.6 ? 1 : 0);
+  for (const b of barras) {
+    const on = fuerzaBarras > 0 && rg() < .5 + fuerzaBarras * .4;
+    b.style.opacity = on ? .25 + .6 * rg() * fuerzaBarras : 0;
+    b.style.top = rg() * 100 + '%';
+    b.style.height = (rg() * 3 + .2) * u + 'px';
+    b.style.background = rg() < .3 ? 'var(--verde)' : 'var(--blanco)';
+  }
+
+  // ojo: 18.3 a 22.8
+  const ojo = $('ojo');
+  if (t >= 18.2 && t < 22.9) {
+    const pe = rebote(prog(t, 18.3, 18.95));
+    const abre = entraSale(prog(t, 18.95, 19.9));
+    const sal = prog(t, 22.3, 22.85);
+    ojo.style.opacity = 1 - sal;
+    const esc = (1 + 1.4 * Math.pow(sal, 2)) * (vertical() ? 1.25 : 1);
+    ojo.style.transform = `translate(-50%, calc(-50% + ${-5 * u * (1 - sal)}px)) scale(${esc})`;
+    const desp = (1 - pe) * 30;
+    const [ai, ad, bi, bd] = ojo.querySelectorAll('.esquina');
+    ai.style.transform = `translate(${-desp}vmin, ${-desp}vmin)`; ad.style.transform = `translate(${desp}vmin, ${-desp}vmin)`;
+    bi.style.transform = `translate(${-desp}vmin, ${desp}vmin)`; bd.style.transform = `translate(${desp}vmin, ${desp}vmin)`;
+    for (const e of [ai, ad, bi, bd]) e.style.opacity = clamp(pe * 1.5);
+    // el parpado se abre: la tapa negra se recorta desde el centro hacia arriba y abajo
+    const ab = abre * 52;
+    ojo.querySelector('.tapa').style.clipPath = `polygon(0 0,100% 0,100% ${50 - ab}%,0 ${50 - ab}%,0 ${50 + ab}%,100% ${50 + ab}%,100% 100%,0 100%)`;
+    const img = ojo.querySelector('img');
+    img.style.transform = `translate(-50%, -50%) scale(${1.12 - .12 * abre + .05 * prog(t, 19.9, 22.3)})`;
+    $('brillo').style.opacity = abre * (1 - sal) * (.7 + .3 * Math.sin(t * 3));
+    $('brillo').style.transform = `translate(-50%, calc(-50% + ${-5 * u}px)) scale(${1 + .5 * sal})`;
+  } else { ojo.style.opacity = 0; $('brillo').style.opacity = 0; }
+
+  // capas: 22.8 a 27.6
+  const capas = $('capas');
+  const fin = INICIO_CAPAS + CAPAS.length * DURACION_CAPA;
+  if (t >= INICIO_CAPAS - .1 && t < fin + .3) {
+    capas.style.opacity = Math.min(prog(t, INICIO_CAPAS - .1, INICIO_CAPAS + .05), 1 - prog(t, fin, fin + .3));
+    const i = Math.min(CAPAS.length - 1, Math.floor((t - INICIO_CAPAS) / DURACION_CAPA));
+    const pl = prog(t, INICIO_CAPAS + i * DURACION_CAPA, INICIO_CAPAS + i * DURACION_CAPA + .25);
+    const ancho = vertical() ? .92 : 1;
+    $('visor').style.transform = `translate(-50%, -50%) scale(${(1.18 - .18 * rebote(pl)) * ancho}, ${1.18 - .18 * rebote(pl)})`;
+    const pe = prog(t, INICIO_CAPAS + i * DURACION_CAPA + .1, INICIO_CAPAS + (i + 1) * DURACION_CAPA - .1);
+    $('escaner').style.left = (pe * 100) + '%';
+    $('escaner').style.opacity = Math.sin(pe * Math.PI);
+    $('indice').textContent = `0${i + 1} / 04`;
+    $('indice').style.transform = `translate(-50%, ${-26 * u}px)`;
+  } else capas.style.opacity = 0;
+  $('reticula').style.opacity = .9 * (t >= INICIO_CAPAS - .1 && t < fin + .3 ? Math.min(prog(t, INICIO_CAPAS - .1, INICIO_CAPAS + .2), 1 - prog(t, fin, fin + .3)) : 0);
+
+  // logo: 32.3 en adelante
+  const logo = $('logo');
+  if (t >= 32.2) {
+    const p = sale(prog(t, 32.3, 33.4));
+    logo.style.opacity = p;
+    const img = logo.querySelector('img');
+    const ancho = vertical() ? 88 : 92;
+    img.style.width = ancho * u + 'px';
+    img.style.transform = `translate(-50%, calc(-50% + ${-4 * u}px)) scale(${1.08 - .08 * p + .02 * prog(t, 33.4, 38)})`;
+    img.style.filter = `blur(${(1 - p) * 14}px) drop-shadow(0 0 ${2 + 2 * Math.sin(t * 2)}vmin rgba(168,207,94,.25))`;
+  } else logo.style.opacity = 0;
+
+  // destellos
+  const destello = (a, d, m = 1) => t >= a && t < a + d ? m * (1 - prog(t, a, a + d)) : 0;
+  $('flash').style.opacity = Math.max(destello(8.45, .25, .8), destello(32.3, .5, .35));
+  $('flash-verde').style.opacity = Math.max(destello(18.95, .6, .5), ...CAPAS.map((_, i) => destello(INICIO_CAPAS + i * DURACION_CAPA, .2, .25)));
+  $('negro-final').style.opacity = prog(t, 37.2, 38);
+}
+window.render = render;
+window.DURACION = 38;
+window.listo = Promise.all([document.fonts.load('400 20px Montserrat'), ...Array.from(document.images).map(i => i.decode())]);
+</script>
+</body>
+</html>
