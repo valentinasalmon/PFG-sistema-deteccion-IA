@@ -6,7 +6,7 @@ la misma imagen. Los parámetros del preprocesamiento (tamaño de recorte,
 media, desvío) se leen de los metadatos del propio archivo ONNX, de modo
 que un modelo nunca se ejecuta con un preprocesamiento distinto del suyo.
 
-Realiza: RF42 CA1, RN29, RNF24 CA1 y CA4. Ver ADR-0013.
+Realiza: RF42 CA1, RN29, RNF24 CA1 y CA4. Ver ADR-0015.
 """
 
 import json
@@ -43,7 +43,7 @@ class ParametrosEntrada:
 
 @dataclass(frozen=True)
 class MetadatosModelo:
-    """Metadatos que viajan dentro del archivo ONNX (ADR-0013).
+    """Metadatos que viajan dentro del archivo ONNX (ADR-0015).
 
     Permiten saber, solo con el archivo, qué versión es, cómo preprocesar
     sus entradas y con qué datos y código se entrenó (RN29).

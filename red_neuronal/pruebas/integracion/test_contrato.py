@@ -1,4 +1,4 @@
-"""Prueba del contrato de inferencia (tarea T22, ADR-0013).
+"""Prueba del contrato de inferencia (tarea T22, ADR-0015).
 
 La misma imagen debe dar la misma probabilidad con el predictor ONNX (lo
 que usa el backend) y con el modelo de PyTorch más el preprocesamiento

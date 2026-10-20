@@ -9,7 +9,7 @@ El azar se toma del generador de PyTorch: con ``torch.manual_seed`` el
 resultado es reproducible, y el ``DataLoader`` da a cada proceso de carga
 una semilla distinta, por lo que no repiten la misma secuencia.
 
-La normalización final reutiliza la de la inferencia (ADR-0013).
+La normalización final reutiliza la de la inferencia (ADR-0015).
 
 Realiza: CA7 y CA12 de la funcionalidad 010.
 """
@@ -100,7 +100,7 @@ class AumentacionEntrenamiento:
 
 
 class TransformacionEvaluacion:
-    """Recorte central sin azar, idéntico al de la inferencia (ADR-0013)."""
+    """Recorte central sin azar, idéntico al de la inferencia (ADR-0015)."""
 
     def __init__(self, tamanio_recorte: int = TAMANIO_RECORTE) -> None:
         self.tamanio_recorte = tamanio_recorte

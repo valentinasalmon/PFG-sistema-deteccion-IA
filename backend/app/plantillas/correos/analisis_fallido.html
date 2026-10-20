@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>El análisis del caso <strong>{{ numero }}</strong> no pudo completarse: {{ motivo }}</p>
+<p>El caso volvió a su estado anterior y podés pedir el análisis de nuevo.</p>
+{% with texto_boton = "Ir al caso" %}{% include "_boton.html" %}{% endwith %}
+{% endblock %}

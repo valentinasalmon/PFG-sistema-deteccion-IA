@@ -88,9 +88,34 @@ Los mismos controles se ejecutan en la integración continua en cada Pull Reques
 | `app/servicios/` | Lógica de negocio, sin dependencias de Flask |
 | `app/repositorios/` | Acceso a la base de datos |
 | `app/modelos/` | Entidades de SQLAlchemy |
-| `app/integraciones/` | Adaptadores a servicios externos (Redis, y luego S3, SES y BFA) |
+| `app/integraciones/` | Adaptadores a servicios externos (Redis, correo, almacenamiento S3 o local; luego BFA) |
 | `migraciones/` | Migraciones de Alembic |
 | `pruebas/` | Pruebas unitarias, de integración y de arquitectura |
+
+## Imágenes de los casos
+
+En desarrollo, las imágenes se guardan en `backend/almacenamiento_local/` (variable `ALMACENAMIENTO=local`). Esa carpeta está en `.gitignore`: **nunca** se sube al repositorio. Para probar, usá imágenes propias o generadas, nunca de casos reales.
+
+En producción se usa un bucket privado de S3 con cifrado y versionado (`ALMACENAMIENTO=s3`, `S3_BUCKET`, `S3_REGION`). Las pruebas del adaptador de S3 usan `moto`, que lo simula sin conectarse a AWS.
+
+## Análisis de imágenes
+
+La capa de metadatos usa **ExifTool**, que se instala con el sistema (`sudo apt install libimage-exiftool-perl`; el script de entorno de WSL ya lo incluye). Si no está, la capa figura como "No disponible" y el resto del análisis sigue.
+
+La capa de credenciales de contenido (C2PA) usa **c2pa-python**, que se instala con `pip install -r requirements.txt`. Verifica las firmas con la lista de confianza de C2PA guardada en `recursos/confianza_c2pa/`; ese README explica cómo actualizarla. Para correr también la prueba con las imágenes de canales del TIF, que no se suben al repositorio:
+
+```bash
+IMAGENES_CANALES_TIF=/ruta/al/TIF/tests/imagenes_prueba pytest pruebas/unitarias/test_capa_c2pa.py
+```
+
+En desarrollo, los análisis corren en un hilo del mismo servidor (`COLA_ANALISIS=hilo`): no hace falta levantar nada más. Para probar la cola real de producción (ADR-0013):
+
+```bash
+# terminal 1: el servidor con COLA_ANALISIS=rq en el .env
+flask --app wsgi run
+# terminal 2: el trabajador
+source .venv/bin/activate && python trabajador.py
+```
 
 ## Problemas frecuentes
 
@@ -98,4 +123,7 @@ Los mismos controles se ejecutan en la integración continua en cada Pull Reques
 |---|---|
 | `/api/salud` responde 503 con `base_de_datos: error` | Verificar que PostgreSQL esté levantado: `docker compose ps` |
 | `ErrorConfiguracion: Faltan variables de entorno` | Crear el archivo `.env` a partir de `.env.ejemplo` |
+| La capa de metadatos aparece "No disponible: ExifTool no está instalado" | `sudo apt install libimage-exiftool-perl` |
+| La capa de credenciales aparece "No disponible: c2pa-python no está instalada" | Con el entorno virtual activo: `pip install -r requirements.txt` |
 | `ModuleNotFoundError` | Activar el entorno virtual: `source .venv/bin/activate` |
+| `error: externally-managed-environment` al usar `pip`, o `flask: command not found` | El entorno virtual no está activo (el prompt no empieza con `(.venv)`): `source .venv/bin/activate` y repetir el comando |

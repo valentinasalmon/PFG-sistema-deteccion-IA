@@ -60,6 +60,13 @@ def _metodo_no_permitido(_error):
     return _respuesta("Operación no permitida.", "metodo_no_permitido", 405)
 
 
+def _demasiado_grande(_error):
+    """Archivo por encima del máximo que admite Flask (RN22, RF34 CA3)."""
+    megas = current_app.config["TAMANIO_MAXIMO_IMAGEN"] // (1024 * 1024)
+    mensaje = f"El archivo supera el tamaño máximo de {megas} MB."
+    return _respuesta(mensaje, "archivo_demasiado_grande", 413, {"archivo": mensaje})
+
+
 def _error_base_de_datos(error):
     """Deshace la transacción y responde con un mensaje genérico.
 
@@ -80,3 +87,4 @@ def registrar_manejadores(aplicacion):
     aplicacion.register_error_handler(SQLAlchemyError, _error_base_de_datos)
     aplicacion.register_error_handler(404, _no_encontrado)
     aplicacion.register_error_handler(405, _metodo_no_permitido)
+    aplicacion.register_error_handler(413, _demasiado_grande)

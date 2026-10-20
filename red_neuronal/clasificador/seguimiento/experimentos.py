@@ -4,7 +4,7 @@ Cada ejecución queda registrada con la versión del código, la
 configuración, la huella del manifiesto, el entorno y las métricas, para
 poder compararlas y reproducirlas (CA9).
 
-- ``RegistradorMlflow``: MLflow con una base SQLite local (ADR-0012).
+- ``RegistradorMlflow``: MLflow con una base SQLite local (ADR-0014).
 - ``RegistradorNulo``: guarda todo en memoria; se usa en las pruebas.
 
 Realiza: RNF24 CA2; CA9 de la funcionalidad 010.
@@ -126,7 +126,7 @@ class RegistradorMlflow(RegistradorExperimentos):
     se empaqueta con cada versión publicada. Para comparar ejecuciones:
     ``mlflow ui --backend-store-uri sqlite:///<directorio>/mlflow.db``.
     Se usa SQLite porque MLflow dejó el almacén de archivos planos en modo
-    de mantenimiento (ADR-0012).
+    de mantenimiento (ADR-0014).
     """
 
     def __init__(self, directorio: Path, experimento: str = "clasificador_sintetico") -> None:

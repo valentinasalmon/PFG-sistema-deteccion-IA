@@ -1,4 +1,4 @@
-"""Ficha, compuerta de promoción y registro de modelos (ADR-0012).
+"""Ficha, compuerta de promoción y registro de modelos (ADR-0014).
 
 Realiza: RN29, RNF24 CA2 y CA4; CA15 a CA17 de la funcionalidad 010.
 """

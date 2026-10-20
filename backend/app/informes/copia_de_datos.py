@@ -7,41 +7,20 @@ el contenido de los casos, que puede referirse a terceros (RF09 CA3).
 Realiza: RF09 (CA1, CA3); RNF08 (CA4: derecho de acceso, Ley N.° 25.326, art. 14).
 """
 import json
-from pathlib import Path
-
-from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from app.esquemas.casos import NOMBRES_ESTADO
 from app.esquemas.casos import NOMBRES_TIPO as NOMBRES_TIPO_CASO
 from app.esquemas.organizaciones import NOMBRES_TIPO as NOMBRES_TIPO_ORGANIZACION
-
-DIRECTORIO_PLANTILLAS = Path(__file__).resolve().parents[1] / "plantillas" / "informes"
+from app.informes.plantillas import html_a_pdf
 
 NOMBRES_PERFIL = {"abogado": "Abogado", "aseguradora": "Aseguradora"}
 NOMBRES_ROL_CUENTA = {"usuario": "Usuario", "administrador": "Administrador"}
 NOMBRES_ROL_ORGANIZACION = {"referente": "Referente", "miembro": "Miembro"}
 
-_entorno = Environment(
-    loader=FileSystemLoader(DIRECTORIO_PLANTILLAS),
-    autoescape=select_autoescape(["html"]),
-)
-
 
 def _fecha(valor):
     """Fecha y hora en ISO 8601 (UTC), o None."""
     return valor.isoformat() if valor else None
-
-
-def _formatear(valor):
-    """Fecha ISO como ``dd/mm/aaaa hh:mm`` para el PDF; las fechas sin hora, ``dd/mm/aaaa``."""
-    if not valor:
-        return "—"
-    fecha, _, hora = valor.partition("T")
-    anio, mes, dia = fecha.split("-")
-    return f"{dia}/{mes}/{anio} {hora[:5]}".strip()
-
-
-_entorno.filters["fecha"] = _formatear
 
 
 def armar_copia(datos):
@@ -122,8 +101,4 @@ def a_json(copia):
 
 def a_pdf(copia):
     """La copia como PDF, generado con WeasyPrint a partir de una plantilla HTML."""
-    # Se importa aquí: WeasyPrint tarda en cargar y solo hace falta al pedir el PDF.
-    from weasyprint import HTML  # pylint: disable=import-outside-toplevel
-
-    html = _entorno.get_template("copia_de_datos.html").render(copia=copia)
-    return HTML(string=html).write_pdf()
+    return html_a_pdf("copia_de_datos.html", copia=copia)

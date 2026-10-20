@@ -12,7 +12,9 @@ export function simularApi(respuestas = {}) {
   const solicitudes = []
   const fetchSimulado = vi.fn(async (ruta, opciones = {}) => {
     const metodo = opciones.method ?? 'GET'
-    const cuerpoEnviado = opciones.body ? JSON.parse(opciones.body) : undefined
+    let cuerpoEnviado
+    if (opciones.body instanceof FormData) cuerpoEnviado = Object.fromEntries(opciones.body)
+    else if (opciones.body) cuerpoEnviado = JSON.parse(opciones.body)
     solicitudes.push({ metodo, ruta, cuerpo: cuerpoEnviado, cabeceras: opciones.headers ?? {} })
 
     let respuesta = respuestas[`${metodo} ${ruta}`]

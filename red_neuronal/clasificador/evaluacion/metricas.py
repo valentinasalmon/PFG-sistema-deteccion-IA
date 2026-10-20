@@ -3,7 +3,7 @@
 Se reportan exactitud, precisión, exhaustividad, F1, AUC ROC, matriz de
 confusión y error de calibración (RNF24 CA3). Las cuatro primeras necesitan
 un umbral: se usa 0,5 **solo para reportar**; el sistema no fija un umbral
-de decisión porque no emite veredictos (RN27, ADR-0013).
+de decisión porque no emite veredictos (RN27, ADR-0015).
 
 Desempeño por generador: el AUC necesita las dos clases, así que para cada
 generador se comparan sus imágenes contra **todas las reales** del mismo

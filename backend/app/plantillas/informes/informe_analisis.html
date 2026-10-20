@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <title>Informe de análisis · {{ informe.caso.numero }}</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 2cm 1.8cm 2.2cm;
+      @bottom-left { content: "Caso {{ informe.caso.numero }} · Informe generado el {{ generado_en | hora_argentina }}"; font-family: "DejaVu Sans", Arial, sans-serif; font-size: 7.5pt; color: #6b7280; }
+      @bottom-right { content: "Página " counter(page) " de " counter(pages); font-family: "DejaVu Sans", Arial, sans-serif; font-size: 7.5pt; color: #6b7280; }
+    }
+    body { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 9.5pt; color: #1f2937; line-height: 1.45; }
+    h1 { font-size: 17pt; color: #1e3a5f; margin: 0 0 2pt; }
+    h2 { font-size: 12pt; color: #1e3a5f; border-bottom: 1px solid #d1d5db; padding-bottom: 3pt; margin: 18pt 0 8pt; }
+    h3 { font-size: 11pt; margin: 0 0 6pt; }
+    h4 { font-size: 10pt; margin: 0 0 4pt; color: #1e3a5f; page-break-after: avoid; }
+    .capa .nivel { page-break-after: avoid; }
+    .subtitulo { color: #4b5563; margin: 0 0 12pt; }
+    .aviso { border: 1px solid #1e3a5f; background: #e8eef6; padding: 7pt 9pt; border-radius: 4pt; margin: 10pt 0; }
+    table { width: 100%; border-collapse: collapse; }
+    td, th { text-align: left; padding: 3pt 5pt; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+    th { background: #f3f4f6; }
+    .datos td:first-child { width: 32%; color: #4b5563; }
+    .imagen { page-break-inside: avoid; border: 1px solid #d1d5db; border-radius: 4pt; padding: 9pt; margin-bottom: 12pt; }
+    .cabecera-imagen { display: flex; gap: 10pt; }
+    .cabecera-imagen img { width: 5.5cm; max-height: 4.5cm; object-fit: contain; border: 1px solid #e5e7eb; }
+    .huella { font-family: "DejaVu Sans Mono", monospace; font-size: 7.5pt; word-break: break-all; }
+    .capa { border-top: 1px solid #e5e7eb; padding-top: 7pt; margin-top: 8pt; }
+    .barra { height: 7pt; background: #e5e7eb; border-radius: 3pt; width: 9cm; display: inline-block; vertical-align: middle; }
+    .barra span { display: block; height: 7pt; border-radius: 3pt; background: #b45309; }
+    .que-significa { background: #f3f4f6; border-left: 3pt solid #1e3a5f; padding: 6pt 8pt; margin: 6pt 0; font-size: 8.8pt; }
+    .que-significa strong { color: #1e3a5f; }
+    .severidad { font-weight: bold; }
+    .nota { color: #6b7280; font-size: 8pt; }
+    .alerta { border: 1px solid #991b1b; background: #fee2e2; color: #991b1b; padding: 6pt 8pt; border-radius: 4pt; }
+    ul { margin: 4pt 0; padding-left: 14pt; }
+    li { margin-bottom: 2pt; }
+    .limitaciones li { margin-bottom: 5pt; }
+  </style>
+</head>
+<body>
+  <h1>Informe de análisis de imágenes</h1>
+  <p class="subtitulo">Caso {{ informe.caso.numero }} · Análisis N.° {{ informe.analisis.id }}</p>
+
+  <div class="aviso">
+    Este informe presenta <strong>indicios técnicos</strong> obtenidos de forma automatizada y
+    no emite veredictos sobre la autenticidad de las imágenes. Ante cualquier duda, consultá con
+    un perito especializado en informática forense.
+  </div>
+
+  <h2>Datos del caso</h2>
+  <table class="datos">
+    <tr><td>Número de caso</td><td>{{ informe.caso.numero }}</td></tr>
+    <tr><td>Expediente</td><td>{{ informe.caso.expediente or "—" }}</td></tr>
+    <tr><td>Tipo</td><td>{{ informe.caso.tipo }}</td></tr>
+    <tr><td>Fecha del hecho</td><td>{{ informe.caso.fecha_hecho | dia }}</td></tr>
+    <tr><td>Lugar del hecho</td><td>{{ informe.caso.lugar }}</td></tr>
+    <tr><td>Espacio de trabajo</td><td>{{ informe.caso.espacio }}</td></tr>
+  </table>
+
+  <h2>Solicitud</h2>
+  <table class="datos">
+    <tr><td>Solicitado por</td><td>{{ informe.solicitante.nombre }}</td></tr>
+    <tr><td>Perfil</td><td>{{ informe.solicitante.perfil }}</td></tr>
+    {% if informe.solicitante.institucion %}
+    <tr><td>{{ informe.solicitante.etiqueta_institucion }}</td><td>{{ informe.solicitante.institucion }}</td></tr>
+    {% endif %}
+    <tr><td>Fecha y hora del pedido</td><td>{{ informe.analisis.pedido_en | hora_argentina }} (hora de Argentina)</td></tr>
+    <tr><td>Imágenes analizadas</td><td>{{ informe.imagenes | length }}</td></tr>
+  </table>
+
+  <h2>Cómo leer este informe</h2>
+  <p>{{ informe.escala }}</p>
+
+  <h2>Resultados por imagen</h2>
+  {% for imagen in informe.imagenes %}
+  <section class="imagen">
+    <div class="cabecera-imagen">
+      {% if imagen.miniatura %}<img src="{{ imagen.miniatura }}" alt="Vista reducida de {{ imagen.nombre }}">{% endif %}
+      <div>
+        <h3>{{ loop.index }}. {{ imagen.nombre }}</h3>
+        <p class="nota">Huella digital SHA-256 del archivo original:</p>
+        <p class="huella">{{ imagen.huella }}</p>
+        <p class="nota">Sello de tiempo en Blockchain Federal Argentina: todavía no disponible en esta versión de la plataforma.</p>
+      </div>
+    </div>
+    {% if imagen.integridad == "alterada" %}
+      <p class="alerta">
+        La huella SHA-256 de esta imagen no coincidió con la registrada al cargarla. Por eso se
+        excluyó del análisis: el archivo guardado ya no es idéntico al original.
+      </p>
+    {% else %}
+      {% for capa in imagen.resultados %}
+      <div class="capa">
+        <h4>{{ capa.titulo }}</h4>
+        {% if capa.disponible %}
+          <p class="nivel"><strong>Nivel de indicio: {{ capa.nivel }} %</strong>
+            <span class="barra"><span style="width: {{ capa.nivel }}%"></span></span></p>
+          <p>{{ capa.conclusion }}</p>
+          {% if capa.anomalias %}
+          <ul>
+            {% for anomalia in capa.anomalias %}
+            <li><span class="severidad">{{ anomalia.severidad }}:</span> {{ anomalia.descripcion }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% if capa.tabla %}
+          <table>
+            <tr><th>Dato</th><th>Valor</th></tr>
+            {% for fila in capa.tabla %}<tr><td>{{ fila.campo }}</td><td>{{ fila.valor }}</td></tr>{% endfor %}
+          </table>
+          {% endif %}
+        {% else %}
+          <p><strong>No disponible.</strong> {{ capa.motivo }}</p>
+        {% endif %}
+        <div class="que-significa"><strong>¿Qué significa?</strong> {{ capa.que_significa }}</div>
+        <p class="nota">Versión: {{ capa.version }}</p>
+      </div>
+      {% endfor %}
+    {% endif %}
+  </section>
+  {% endfor %}
+
+  <h2>Versiones de los componentes</h2>
+  <p class="nota">Se registran para que el análisis pueda reproducirse.</p>
+  <table class="datos">
+    {% for componente, version in informe.versiones.items() %}
+    <tr><td>{{ componente }}</td><td>{{ version }}</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Limitaciones y advertencia legal</h2>
+  <ul class="limitaciones">
+    {% for limitacion in informe.limitaciones %}<li>{{ limitacion }}</li>{% endfor %}
+  </ul>
+</body>
+</html>

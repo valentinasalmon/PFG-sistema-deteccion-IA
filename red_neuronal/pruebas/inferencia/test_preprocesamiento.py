@@ -91,7 +91,7 @@ def test_el_recorte_central_coincide_con_el_quinto_recorte():
 
 
 def test_el_modulo_de_inferencia_no_importa_pytorch():
-    """El backend puede usarlo sin instalar PyTorch (ADR-0013)."""
+    """El backend puede usarlo sin instalar PyTorch (ADR-0015)."""
     codigo = (
         "import sys; import clasificador.inferencia.preprocesamiento; "
         "print('torch' in sys.modules)"

@@ -19,13 +19,31 @@ Variables de entorno:
     REMITENTE_CORREO     Dirección que figura como remitente.
     ADMINISTRADORES      Correos separados por comas que reciben el rol de
                          Administrador al iniciar sesión (funcionalidad 021).
+    ALMACENAMIENTO       "local" (desarrollo) o "s3"; en producción siempre S3.
+    DIRECTORIO_ALMACENAMIENTO  Carpeta de las imágenes con el almacenamiento local.
+    S3_BUCKET            Bucket privado de las imágenes (producción).
+    S3_REGION            Región de AWS del bucket (por defecto, sa-east-1).
+    S3_ENDPOINT          Dirección de un servicio compatible con S3 (opcional).
+    S3_CIFRADO           Cifrado del lado del servidor (por defecto, AES256).
+    RUTA_EXIFTOOL        Ejecutable de ExifTool (por defecto, "exiftool" del sistema).
+    CARPETA_CONFIANZA_C2PA  Carpeta con la lista de confianza de C2PA (por defecto,
+                         ``recursos/confianza_c2pa`` del backend).
+    COLA_ANALISIS        "hilo" (desarrollo), "rq" (producción) o "sincronica".
 
-Realiza: RNF01, RNF02, RNF03 (CA3), RNF22.
+Realiza: RNF01, RNF02, RNF03 (CA1, CA3), RNF22.
 """
 import os
+import tempfile
 from datetime import timedelta
+from pathlib import Path
 
 from cachelib import SimpleCache
+
+
+# Carpeta de las imágenes en desarrollo: está en .gitignore y nunca se sube
+# al repositorio (constitución: nada de imágenes de casos reales).
+DIRECTORIO_ALMACENAMIENTO_LOCAL = Path(__file__).resolve().parents[2] / "almacenamiento_local"
+CARPETA_CONFIANZA = Path(__file__).resolve().parents[2] / "recursos" / "confianza_c2pa"
 
 
 class ErrorConfiguracion(Exception):
@@ -86,11 +104,26 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
     # para poder ajustarlos sin cambiar el código (RF19 CA3); la 014 los pasará
     # a la base de datos cuando el Administrador pueda cambiar el plan.
     PLANES = {
-        "basico": {"nombre": "Organización Básico", "miembros": 5},
-        "profesional": {"nombre": "Organización Profesional", "miembros": 25},
+        "basico": {"nombre": "Organización Básico", "miembros": 5, "imagenes_por_caso": 50},
+        "profesional": {
+            "nombre": "Organización Profesional", "miembros": 25, "imagenes_por_caso": 100,
+        },
     }
+    PLAN_PERSONAL = {"nombre": "Personal", "imagenes_por_caso": 20}
     PLAN_INICIAL_ORGANIZACION = "basico"
     VIGENCIA_INVITACION = timedelta(days=7)  # RN10
+
+    # --- Imágenes (funcionalidad 006) ---
+    TAMANIO_MAXIMO_IMAGEN = 20 * 1024 * 1024  # RN22 (propuesta)
+    # Flask corta antes las solicitudes más grandes; se deja margen para el formulario.
+    MAX_CONTENT_LENGTH = TAMANIO_MAXIMO_IMAGEN + 1024 * 1024
+    VIGENCIA_ENLACE_ARCHIVO = timedelta(minutes=5)  # RF35 CA2
+    LADO_MINIATURA = 480  # píxeles del lado mayor de la vista previa
+
+    # --- Análisis (funcionalidad 007) ---
+    # Un análisis en curso que no avanza en este tiempo se considera
+    # interrumpido y queda Fallido (RF46 CA2).
+    TIEMPO_MAXIMO_SIN_AVANCE = timedelta(minutes=15)
 
     # --- Términos de Uso y Política de Privacidad vigentes (RNF08 CA1) ---
     VERSION_TERMINOS = "1.0"
@@ -122,6 +155,21 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
         self.REMITENTE_CORREO = os.getenv(
             "REMITENTE_CORREO", "Plataforma de análisis de imágenes <no-responder@localhost>"
         )
+        # Almacenamiento de imágenes: "local" (carpeta del servidor) o "s3".
+        self.ALMACENAMIENTO = os.getenv("ALMACENAMIENTO", "local")
+        self.DIRECTORIO_ALMACENAMIENTO = os.getenv(
+            "DIRECTORIO_ALMACENAMIENTO", str(DIRECTORIO_ALMACENAMIENTO_LOCAL)
+        )
+        self.S3_BUCKET = os.getenv("S3_BUCKET", "")
+        self.S3_REGION = os.getenv("S3_REGION", "sa-east-1")
+        self.S3_ENDPOINT = os.getenv("S3_ENDPOINT", "")
+        self.S3_CIFRADO = os.getenv("S3_CIFRADO", "AES256") or None
+        # Análisis: ExifTool del sistema y cola "hilo" (desarrollo), "rq" o "sincronica".
+        self.RUTA_EXIFTOOL = os.getenv("RUTA_EXIFTOOL", "exiftool")
+        self.CARPETA_CONFIANZA_C2PA = os.getenv("CARPETA_CONFIANZA_C2PA", "") or str(
+            CARPETA_CONFIANZA
+        )
+        self.COLA_ANALISIS = os.getenv("COLA_ANALISIS", "hilo")
 
     def validar(self):
         """Verifica que existan todas las variables obligatorias del entorno.
@@ -150,7 +198,7 @@ class ConfiguracionDesarrollo(ConfiguracionBase):
         self.SECRET_KEY = self.SECRET_KEY or "clave-solo-para-desarrollo"
 
 
-class ConfiguracionPruebas(ConfiguracionBase):
+class ConfiguracionPruebas(ConfiguracionBase):  # pylint: disable=too-many-instance-attributes
     """Entorno de pruebas automatizadas: todo en memoria.
 
     Nunca usa la base de datos de desarrollo ni la de producción
@@ -176,6 +224,10 @@ class ConfiguracionPruebas(ConfiguracionBase):
         self.URL_FRONTEND = "http://frontend.prueba"
         self.ADMINISTRADORES = frozenset()
         self.SESSION_CACHELIB = SimpleCache()
+        # Cada aplicación de prueba usa su propia carpeta temporal.
+        self.ALMACENAMIENTO = "local"
+        self.COLA_ANALISIS = "sincronica"
+        self.DIRECTORIO_ALMACENAMIENTO = tempfile.mkdtemp(prefix="almacenamiento-pruebas-")
 
 
 class ConfiguracionProduccion(ConfiguracionBase):
@@ -190,4 +242,11 @@ class ConfiguracionProduccion(ConfiguracionBase):
         "URL_FRONTEND",
         "SERVIDOR_CORREO",
         "REMITENTE_CORREO",
+        "S3_BUCKET",
     )
+
+    def __init__(self):
+        """En producción, las imágenes van a S3 (RNF03) y los análisis a RQ (ADR-0004)."""
+        super().__init__()
+        self.ALMACENAMIENTO = "s3"  # pylint: disable=invalid-name
+        self.COLA_ANALISIS = "rq"  # pylint: disable=invalid-name

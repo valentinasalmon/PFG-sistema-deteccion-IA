@@ -1,4 +1,4 @@
-# ADR-0013: Arquitectura y contrato de inferencia del clasificador
+# ADR-0015: Arquitectura y contrato de inferencia del clasificador
 
 - **Estado**: Aceptada
 - **Fecha**: 2026-10-19

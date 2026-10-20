@@ -16,7 +16,7 @@ durante el entrenamiento).
       evaluacion/  prueba/  no_visto/  condiciones_reales/ evaluar
       paquete/                                            publicar
 
-Realiza: CA1 a CA17 de la funcionalidad 010 (orquestación). Ver ADR-0012.
+Realiza: CA1 a CA17 de la funcionalidad 010 (orquestación). Ver ADR-0014.
 """
 
 import json

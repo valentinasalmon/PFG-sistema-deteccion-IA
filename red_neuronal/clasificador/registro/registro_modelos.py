@@ -1,4 +1,4 @@
-"""Registro de modelos publicados (patrón Strategy, ADR-0012).
+"""Registro de modelos publicados (patrón Strategy, ADR-0014).
 
 Una versión publicada es un **paquete** (una carpeta) con, como mínimo, el
 modelo ONNX y su ficha, más las métricas, la configuración y el manifiesto.

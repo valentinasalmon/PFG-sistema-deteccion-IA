@@ -1,5 +1,6 @@
 """Accesorios (fixtures) compartidos por todas las pruebas de pytest."""
 import re
+import shutil
 
 import pytest
 
@@ -32,6 +33,8 @@ def aplicacion():
         db.drop_all()
         # Cierra las conexiones para no dejar bases en memoria abiertas.
         db.engine.dispose()
+    # Borra la carpeta temporal de las imágenes de esta aplicación (006).
+    shutil.rmtree(app.config["DIRECTORIO_ALMACENAMIENTO"], ignore_errors=True)
 
 
 def obtener_usuario(aplicacion, correo="ana@ejemplo.com"):  # pylint: disable=redefined-outer-name
@@ -164,3 +167,15 @@ def cuenta(aplicacion, correos):  # pylint: disable=redefined-outer-name
         return cliente_cuenta
 
     return _crear
+
+
+def crear_estudio(referente, miembro, correo_miembro, nombre="Estudio Pérez"):
+    """Crea un estudio jurídico del referente y suma al miembro; devuelve su id."""
+    id_org = referente.post(
+        "/api/organizaciones", json={"nombre": nombre, "tipo": "estudio_juridico"}
+    ).get_json()["organizacion"]["id"]
+    id_inv = referente.post(
+        f"/api/organizaciones/{id_org}/invitaciones", json={"correo": correo_miembro}
+    ).get_json()["invitacion"]["id"]
+    miembro.post(f"/api/invitaciones/{id_inv}/aceptacion")
+    return id_org
