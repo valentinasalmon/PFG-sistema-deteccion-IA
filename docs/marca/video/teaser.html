@@ -21,6 +21,8 @@ body { font-family: "Montserrat", sans-serif; color: var(--blanco); }
 .marco-foto { position: absolute; inset: 0; background: #e9e8e2; padding: 1.4vmin 1.4vmin 5.4vmin; box-shadow: 0 3vmin 6vmin rgba(0,0,0,.6); }
 .marco-foto .imagen { position: relative; width: 100%; height: 100%; overflow: hidden; background: radial-gradient(ellipse at 70% 35%, #3b4044 0%, #1d2023 55%, #0f1112 100%); }
 .marco-foto svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.foto-real { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+.copia .foto-real { display: block; }
 .marco-foto .rotulo { position: absolute; left: 1.6vmin; right: 1.6vmin; bottom: 1.6vmin; font: 500 1.7vmin/1 "DejaVu Sans Mono", monospace; color: #55554f; display: flex; justify-content: space-between; letter-spacing: .05em; }
 .copia { position: absolute; inset: 0; opacity: 0; mix-blend-mode: screen; }
 #pixeles { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
@@ -53,12 +55,14 @@ body { font-family: "Montserrat", sans-serif; color: var(--blanco); }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute"><filter id="solo-rojo"><feColorMatrix values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/></filter><filter id="solo-cian"><feColorMatrix values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/></filter></svg>
 <div class="capa" id="reticula"></div>
 
 <div id="foto">
   <div class="marco-foto">
     <div class="imagen">
       <svg id="dibujo" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"></svg>
+      <img id="foto-real" class="foto-real" alt="">
       <canvas id="pixeles" width="80" height="50"></canvas>
     </div>
     <div class="rotulo"><span id="archivo"></span><span id="fecha"></span></div>
@@ -142,17 +146,28 @@ const DIBUJO_LABORAL = `
   </g>
   <ellipse cx="236" cy="178" rx="44" ry="5" fill="none" stroke="#8d918f" stroke-width="1.4" stroke-dasharray="5 4" opacity=".7"/>`;
 const ESCENAS = {
-  choque: { dibujo: DIBUJO, archivo: 'IMG_2047.JPG', fecha: '14/03 · 23:41' },
-  laboral: { dibujo: DIBUJO_LABORAL, archivo: 'IMG_3318.JPG', fecha: '02/09 · 10:17' },
+  choque: { dibujo: DIBUJO, foto: 'foto-choque.jpg', archivo: 'IMG_2047.JPG', fecha: '14/03 · 23:41' },
+  laboral: { dibujo: DIBUJO_LABORAL, foto: 'foto-accidente-laboral.jpg', archivo: 'IMG_3318.JPG', fecha: '02/09 · 10:17' },
 };
 let escenaActual = null;
+const FOTOS_REALES = true;
 function ponerEscena(nombre) {
   if (escenaActual === nombre) return;
   escenaActual = nombre;
   const e = ESCENAS[nombre];
-  $('dibujo').innerHTML = e.dibujo;
   $('archivo').textContent = e.archivo;
   $('fecha').textContent = e.fecha;
+  if (FOTOS_REALES) {
+    // fotos realistas: el dibujo se oculta y las copias del glitch separan los canales de color
+    $('dibujo').innerHTML = '';
+    $('foto-real').src = e.foto;
+    $('foto-real').style.display = 'block';
+    for (const [id, filtro] of [['copia-roja', 'solo-rojo'], ['copia-cian', 'solo-cian']]) {
+      $(id).innerHTML = `<div style="position:absolute;inset:1.4vmin 1.4vmin 5.4vmin;overflow:hidden"><img class="foto-real" src="${e.foto}" style="filter:url(#${filtro})"></div>`;
+    }
+    return;
+  }
+  $('dibujo').innerHTML = e.dibujo;
   for (const [id, color] of [['copia-roja', '#ff2d55'], ['copia-cian', '#1ee8ff']]) {
     $(id).innerHTML = `<div style="position:absolute;inset:1.4vmin 1.4vmin 5.4vmin;overflow:hidden"><svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">${e.dibujo.replace(/#efefe9|#d8d8d2/g, color).replace(/id="(farol|luz)"/g, 'id="$1-copia"')}</svg></div>`;
   }
@@ -365,7 +380,8 @@ function render(t) {
 }
 window.render = render;
 window.DURACION = 38;
-window.listo = Promise.all([document.fonts.load('400 20px Montserrat'), ...Array.from(document.images).map(i => i.decode())]);
+const precarga = Object.values(ESCENAS).map(e => { const i = new Image(); i.src = e.foto; return i.decode(); });
+window.listo = Promise.all([document.fonts.load('400 20px Montserrat'), ...precarga, ...Array.from(document.images).filter(i => i.src).map(i => i.decode())]);
 </script>
 </body>
 </html>

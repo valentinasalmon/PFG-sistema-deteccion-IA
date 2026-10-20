@@ -8,6 +8,7 @@ Teaser de 38 segundos que genera intriga sin mostrar el software. Se arma comple
 | `sonido.py` | Sintetiza la banda sonora sincronizada con la animación (sin música de terceros). |
 | `renderizar.mjs` | Abre la animación en Chromium, captura cada fotograma y lo codifica con ffmpeg. |
 | `fuentes/montserrat.woff2` | Tipografía Montserrat (licencia SIL Open Font License). |
+| `foto-choque.jpg`, `foto-accidente-laboral.jpg` | Fotos de ejemplo generadas con IA en Canva. No son casos reales. Con `FOTOS_REALES = false` en `teaser.html` se vuelve a los dibujos de líneas. |
 
 Los videos generados no se guardan en el repositorio por su tamaño.
 
