@@ -54,3 +54,19 @@ Documentos: [especificación](../funcionalidades/017-infraestructura-aws/especif
   - Integrar `desarrollo` en `main` (hito v0.1), que dispara el primer despliegue.
 - **Asistente y autora**: revisar el primer despliegue y probar la restauración de un respaldo (RNF15 CA3).
 - **Al final**: dominio propio.
+
+## Puesta en marcha (2026-10-20)
+
+La autora aplicó la infraestructura en su cuenta. Problemas encontrados y resueltos:
+
+| Problema | Solución |
+|---|---|
+| El usuario de Terraform no tenía permisos | Se le asignó `AdministratorAccess` |
+| La búsqueda de la imagen de Ubuntu por nombre no devolvía resultados | Se toma del parámetro público de Canonical en Systems Manager |
+| EC2 rechazó el apóstrofo en la descripción de las reglas de seguridad | Descripciones sin ese carácter |
+| Cuatro mensajes de commit pasaban los 100 caracteres | Se acortaron y se rehízo el historial de la rama |
+| GitHub no podía asumir el rol de despliegue (`AssumeRoleWithWebIdentity`) | Un flujo temporal de diagnóstico mostró que GitHub identifica al repositorio con los números de la cuenta y del repositorio (`repo:valentinasalmon@141863784/PFG-sistema-deteccion-IA@1410365187:...`). El rol acepta ese formato y el anterior, siempre solo desde `main` |
+
+Se agregó `crear_infraestructura_aws.sh`, que aplica todo con un solo comando y explica qué falta si algo no está listo.
+
+Con el rol corregido, el despliegue automático instaló la versión de `main` y la plataforma responde en `https://18-200-199-40.sslip.io` (CA9).

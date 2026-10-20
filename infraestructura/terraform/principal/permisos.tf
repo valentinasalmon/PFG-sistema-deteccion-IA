@@ -79,6 +79,11 @@ resource "aws_iam_instance_profile" "servidor" {
 
 # --- Despliegue desde GitHub Actions ---
 
+locals {
+  propietario_github        = split("/", var.repositorio_github)[0]
+  nombre_repositorio_github = split("/", var.repositorio_github)[1]
+}
+
 resource "aws_iam_openid_connect_provider" "github" {
   url            = "https://token.actions.githubusercontent.com"
   client_id_list = ["sts.amazonaws.com"]
@@ -96,10 +101,17 @@ data "aws_iam_policy_document" "asumir_github" {
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
     }
+    # Solo la rama main de este repositorio. GitHub identifica al repositorio
+    # con su nombre y, en el formato actual, también con los números de la
+    # cuenta y del repositorio (repo:propietario@id/nombre@id:...). Se aceptan
+    # los dos formatos.
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.repositorio_github}:ref:refs/heads/main"]
+      values = [
+        "repo:${var.repositorio_github}:ref:refs/heads/main",
+        "repo:${local.propietario_github}@${var.id_propietario_github}/${local.nombre_repositorio_github}@${var.id_repositorio_github}:ref:refs/heads/main",
+      ]
     }
   }
 }

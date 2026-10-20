@@ -42,7 +42,7 @@ implementación siguiendo tareas.md, con pruebas
 | 014 | Planes y tablero de administración | 6 | RF19 – RF22 | Pendiente |
 | 015 | Retención y destrucción de datos | 7 | RF49 – RF51 | Pendiente |
 | 016 | Sello de tiempo en Blockchain Federal Argentina | 7 | RF37 | Pendiente |
-| 017 | [Infraestructura y despliegue en AWS](017-infraestructura-aws/especificacion.md) | 8 | RNF02, RNF03, RNF15, RNF22 | En curso (falta aplicar en AWS) |
+| 017 | [Infraestructura y despliegue en AWS](017-infraestructura-aws/especificacion.md) | 8 | RNF02, RNF03, RNF15, RNF22 | Desplegada (falta probar la restauración y el dominio) |
 | 018 | Cierre: usabilidad, índice de calidad y documentación final | 9 | RNF10, RNF11, RNF19 | Pendiente |
 | 019 | Eliminación de cuenta y copia de datos personales | 3 | RF08, RF09 | Completado |
 | 020 | Registro guiado por pasos | 2 | RF01 (interfaz), RNF10 | Completado |
