@@ -308,3 +308,55 @@ def test_analisis_de_otro_caso_no_se_encuentra(ana, caso):
     id_analisis = _analizar(ana, caso["id"], caso["imagenes"]).get_json()["analisis"]["id"]
     otro = ana.post("/api/casos", json=CASO).get_json()["caso"]["id"]
     assert ana.get(f"/api/casos/{otro}/analisis/{id_analisis}").status_code == 404
+
+
+# --- Capa ELA (funcionalidad 011) ---
+
+def _foto_jpeg():
+    """JPEG de 256 × 192 con ruido, suficiente para dividirlo en bloques."""
+    salida = io.BytesIO()
+    Image.effect_noise((256, 192), 40).convert("RGB").save(salida, "JPEG", quality=85)
+    return salida.getvalue()
+
+
+def test_el_mapa_ela_se_ve_en_el_detalle_y_se_borra_con_el_caso(aplicacion, ana):
+    """011 CA4 y CA5: enlace firmado del mapa en el resultado; RN21 al eliminar el caso."""
+    id_caso = ana.post("/api/casos", json=CASO).get_json()["caso"]["id"]
+    id_imagen = _cargar(ana, id_caso, _foto_jpeg(), "foto.jpg")
+    resumen = _analizar(ana, id_caso, [id_imagen]).get_json()["analisis"]
+
+    resultados = _detalle(ana, id_caso, resumen["id"])["imagenes"][0]["resultados"]
+    ela = next(r for r in resultados if r["capa"] == "ela")
+    assert ela["estado"] == "completado"
+    assert ela["imagen"].startswith("/api/archivos/")
+    assert ana.get(ela["imagen"]).headers["Content-Type"] == "image/png"
+    assert all(r["imagen"] is None for r in resultados if r["capa"] != "ela")
+    with aplicacion.app_context():
+        clave = db.session.get(Analisis, resumen["id"]).imagenes[0].resultados[2].clave_imagen
+    archivo = Path(aplicacion.config["DIRECTORIO_ALMACENAMIENTO"]) / clave
+    assert archivo.is_file()
+    numero = _caso(ana, id_caso)["numero"]
+
+    ana.delete(f"/api/casos/{id_caso}", json={"confirmacion": numero})
+
+    assert not archivo.exists()
+
+
+def test_si_no_se_puede_guardar_el_mapa_el_resultado_sigue_sin_el(aplicacion, ana, monkeypatch):
+    """Una falla del almacenamiento no pierde el resultado de la capa."""
+    almacenamiento = aplicacion.extensions["almacenamiento"]
+    guardar = almacenamiento.guardar
+
+    def guardar_salvo_mapas(clave, contenido, tipo_mime):
+        if clave.startswith("analisis/"):
+            raise OSError("disco lleno")
+        return guardar(clave, contenido, tipo_mime)
+
+    monkeypatch.setattr(almacenamiento, "guardar", guardar_salvo_mapas)
+    id_caso = ana.post("/api/casos", json=CASO).get_json()["caso"]["id"]
+    id_imagen = _cargar(ana, id_caso, _foto_jpeg(), "foto.jpg")
+    resumen = _analizar(ana, id_caso, [id_imagen]).get_json()["analisis"]
+
+    resultados = _detalle(ana, id_caso, resumen["id"])["imagenes"][0]["resultados"]
+    ela = next(r for r in resultados if r["capa"] == "ela")
+    assert (ela["estado"], ela["imagen"]) == ("completado", None)
