@@ -1996,3 +1996,196 @@ select.campo__control {
     transition: none !important;
   }
 }
+
+/* --- Avisos flotantes (funcionalidad 022) --- */
+.avisos-flotantes {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.625rem;
+  max-width: min(26rem, calc(100vw - 2rem));
+}
+
+.aviso--flotante {
+  align-items: center;
+  margin: 0;
+  padding: 0.75rem 0.5rem 0.75rem 1rem;
+  border: 0;
+  background: var(--tinta);
+  color: #fff;
+  box-shadow: var(--sombra-flotante);
+}
+
+.aviso--flotante::before {
+  background: var(--lima);
+  color: var(--tinta);
+}
+
+.aviso__texto {
+  flex: 1;
+}
+
+.aviso__cerrar {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--radio-chico);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.aviso__cerrar:hover {
+  background: rgb(255 255 255 / 12%);
+}
+
+.aviso--flotante :focus-visible {
+  outline-color: var(--lima);
+}
+
+/* --- Perfil, organizaciones y administración (funcionalidad 022) --- */
+.dos-columnas--invertidas .dos-columnas__lateral {
+  flex: 1 1 17rem;
+  max-width: 22rem;
+}
+
+.tarjeta-cuenta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.tarjeta-cuenta__visor {
+  --esquina: 16px;
+
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.tarjeta-cuenta__avatar {
+  width: 4.5rem;
+  height: 4.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--lima);
+  font-family: var(--fuente-titulos);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.tarjeta-cuenta__nombre {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.tarjeta-cuenta__correo {
+  margin: 0.125rem 0 0.75rem;
+  color: var(--tinta-2);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.tarjeta-cuenta__etiquetas {
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.indice-secciones {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--linea-suave);
+  text-align: left;
+}
+
+.indice-secciones a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border-radius: var(--radio);
+  color: var(--tinta-2);
+  text-decoration: none;
+}
+
+.indice-secciones a:hover {
+  background: var(--azul-suave);
+  color: var(--azul-oscuro);
+}
+
+.dos-columnas__principal > .seccion {
+  scroll-margin-top: 5rem;
+}
+
+.lista-tarjetas--grilla {
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+}
+
+.tarjeta-item--organizacion {
+  position: relative;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.tarjeta-item--organizacion .acciones-en-linea {
+  margin-left: auto;
+}
+
+.tarjeta-item__icono {
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--azul-suave);
+  color: var(--azul-oscuro);
+}
+
+.tarjeta-item--organizacion .tarjeta-item__titulo {
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.tarjeta-item--organizacion .tarjeta-item__titulo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+/* Botones de formulario a su ancho natural; en el acceso ocupan todo el ancho. */
+.formulario > .boton {
+  align-self: flex-start;
+}
+
+.tarjeta-acceso .formulario > .boton,
+.dos-columnas__lateral .formulario > .boton {
+  align-self: stretch;
+}
+
+/* Con muchas opciones de menú se oculta el nombre para que el encabezado quede en una línea. */
+@media (width <= 90rem) {
+  .encabezado__nombre {
+    display: none;
+  }
+
+  .encabezado__navegacion a {
+    padding: 0 0.625rem;
+  }
+}

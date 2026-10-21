@@ -6,7 +6,6 @@ import { describe, expect, it } from 'vitest'
 import { CON_SESION, simularApi, USUARIO } from '../pruebas/api.js'
 import { renderizarEn } from '../pruebas/renderizar.jsx'
 
-const seccion = (titulo) => screen.getByRole('region', { name: titulo })
 
 describe('PaginaPerfil', () => {
   it('muestra el perfil sin permitir modificarlo (CA19)', async () => {
@@ -29,8 +28,8 @@ describe('PaginaPerfil', () => {
     await usuario.type(nombre, 'Ana María')
     await usuario.click(screen.getByRole('button', { name: 'Guardar los datos' }))
 
-    expect(await within(seccion('Datos personales')).findByText('Tus datos fueron actualizados.')).toBeInTheDocument()
-    expect(screen.getByText('Ana María López')).toBeInTheDocument()
+    expect(await screen.findByText('Tus datos fueron actualizados.')).toBeInTheDocument()
+    expect(screen.getAllByText('Ana María López').length).toBeGreaterThan(0)
     expect(solicitudes.at(-1).cuerpo).toEqual({ nombre: 'Ana María', apellido: 'López', colegio: 'CPACF' })
   })
 

@@ -10,7 +10,7 @@
  * CA6, CA13 y CA18 de la 021.
  */
 import { useCallback, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import {
   abandonarOrganizacion,
   cancelarInvitacion,
@@ -30,6 +30,7 @@ import BotonConfirmar from '../componentes/BotonConfirmar.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
+import Icono from '../componentes/Icono.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useFormulario } from '../hooks/useFormulario.js'
 import { useSesion } from '../hooks/useSesion.js'
@@ -485,13 +486,21 @@ export default function PaginaOrganizacion() {
 
   return (
     <>
-      <div className="encabezado-pagina">
-        <h1>{organizacion.nombre}</h1>
-        <Etiqueta tipo={esReferente ? 'destacada' : 'neutra'}>
-          {esReferente ? 'Sos Referente' : 'Sos miembro'}
-        </Etiqueta>
-      </div>
-      <p className="subtitulo">{organizacion.tipo_nombre}</p>
+      <Link to="/organizaciones" className="volver">
+        <Icono nombre="derecha" tamanio={16} />
+        Organizaciones
+      </Link>
+      <header className="cabecera-caso">
+        <div className="cabecera-caso__titulo">
+          <h1>{organizacion.nombre}</h1>
+          <Etiqueta tipo={esReferente ? 'destacada' : 'neutra'}>
+            {esReferente ? 'Sos Referente' : 'Sos miembro'}
+          </Etiqueta>
+        </div>
+        <p className="subtitulo">
+          {organizacion.tipo_nombre} · {miembros.length} {miembros.length === 1 ? 'miembro' : 'miembros'}
+        </p>
+      </header>
       {state?.mensaje && <Aviso tipo="exito">{state.mensaje}</Aviso>}
       {organizacion.estado === 'pendiente' && (
         <Aviso tipo="info">
@@ -501,6 +510,8 @@ export default function PaginaOrganizacion() {
         </Aviso>
       )}
 
+      <div className="dos-columnas dos-columnas--caso">
+      <div className="dos-columnas__principal">
       <SeccionMiembros
         organizacion={organizacion}
         miembros={miembros}
@@ -515,6 +526,8 @@ export default function PaginaOrganizacion() {
           recargar={recargar}
         />
       )}
+      </div>
+      <div className="dos-columnas__lateral">
       <SeccionDatos
         key={organizacion.nombre}
         organizacion={organizacion}
@@ -526,6 +539,8 @@ export default function PaginaOrganizacion() {
         esReferente={esReferente}
         unicoMiembro={miembros.length === 1}
       />
+      </div>
+      </div>
     </>
   )
 }
