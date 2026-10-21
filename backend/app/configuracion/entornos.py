@@ -157,7 +157,7 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
             if correo.strip()
         )
         self.REMITENTE_CORREO = os.getenv(
-            "REMITENTE_CORREO", "Plataforma de análisis de imágenes <no-responder@localhost>"
+            "REMITENTE_CORREO", "evidentIA <no-responder@localhost>"
         )
         # Almacenamiento de imágenes: "local" (carpeta del servidor) o "s3".
         self.ALMACENAMIENTO = os.getenv("ALMACENAMIENTO", "local")

@@ -25,7 +25,7 @@ locals {
   parametros = {
     DOMINIO          = local.dominio
     CORREO_ALERTAS   = var.correo_alertas
-    REMITENTE_CORREO = "Plataforma de análisis de imágenes <${var.correo_remitente}>"
+    REMITENTE_CORREO = "evidentIA <${var.correo_remitente}>"
     ADMINISTRADORES  = join(",", var.administradores)
     SERVIDOR_CORREO  = "email-smtp.${var.region}.amazonaws.com"
     S3_BUCKET        = aws_s3_bucket.bucket["imagenes"].bucket

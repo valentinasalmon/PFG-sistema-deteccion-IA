@@ -1,20 +1,24 @@
 <!doctype html>
 <html lang="es-AR">
-  <body style="margin:0;padding:24px;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
-    <table role="presentation" width="100%" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:8px;">
+  <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ asunto }}</title></head>
+  <body style="margin:0;padding:32px 16px;background:#e6ece8;font-family:'Segoe UI',Arial,Helvetica,sans-serif;color:#14201a;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #d9e0dc;border-radius:10px;border-collapse:separate;">
       <tr>
-        <td style="padding:24px 32px;border-bottom:1px solid #e5e7eb;font-weight:bold;">
-          Plataforma de análisis de imágenes
+        <td style="padding:24px 36px 20px;border-bottom:1px solid #e6ece8;">
+          <img src="{{ url_frontend }}/marca/logo-tipografia-negra.png" alt="evidentIA" height="28" style="display:block;height:28px;width:auto;border:0;">
+          <div style="width:44px;height:3px;background:#a4cb3e;margin-top:14px;font-size:0;line-height:0;">&nbsp;</div>
         </td>
       </tr>
       <tr>
-        <td style="padding:24px 32px;line-height:1.5;">
+        <td style="padding:28px 36px 32px;font-size:16px;line-height:1.6;">
+          <h1 style="margin:0 0 16px;font-size:24px;line-height:1.25;font-weight:800;letter-spacing:-0.3px;color:#14201a;">{{ asunto }}</h1>
           {% block contenido %}{% endblock %}
         </td>
       </tr>
       <tr>
-        <td style="padding:16px 32px;border-top:1px solid #e5e7eb;font-size:12px;color:#6b7280;">
-          Este es un mensaje automático; no lo respondas.
+        <td style="padding:20px 36px;background:#f7f9f8;border-top:1px solid #e6ece8;border-radius:0 0 10px 10px;font-size:13px;line-height:1.6;color:#4e5b54;">
+          Este es un mensaje automático; no lo respondas.<br>
+          evidentIA · Tu primera línea de defensa contra el fraude visual
         </td>
       </tr>
     </table>
