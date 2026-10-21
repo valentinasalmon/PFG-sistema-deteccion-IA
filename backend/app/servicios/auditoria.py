@@ -54,6 +54,7 @@ MEMBRESIA_ABANDONO = "membresia.abandono"
 # --- Acciones de aseguradoras (funcionalidad 021) ---
 ORGANIZACION_APROBACION = "organizacion.aprobacion"
 ORGANIZACION_RECHAZO = "organizacion.rechazo"
+ORGANIZACION_CAMBIO_PLAN = "organizacion.cambio_plan"  # funcionalidad 014, pago simulado
 CUENTA_DESACTIVACION = "cuenta.desactivacion"
 CUENTA_REACTIVACION = "cuenta.reactivacion"
 CUENTA_PROMOCION_ADMINISTRADOR = "cuenta.promocion_administrador"
