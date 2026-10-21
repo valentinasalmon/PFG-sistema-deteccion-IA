@@ -149,6 +149,7 @@ function TarjetaImagen({
         <span className="huella" title="Huella SHA-256">
           SHA-256: {imagen.huella}
         </span>
+        <SelloDeTiempo sello={imagen.sello} />
         <div className="acciones-en-linea">
           <button
             type="button"
@@ -214,6 +215,24 @@ function BarraAnalisis({ cantidad, total, alElegirTodas, alAnalizar }) {
       </span>
     </div>
   )
+}
+
+/** Estado del sello de la huella en Blockchain Federal Argentina (funcionalidad 016, RF37). */
+function SelloDeTiempo({ sello }) {
+  if (!sello?.estado) return null
+  if (sello.estado === 'sellado') {
+    return (
+      <span className={`sello sello--${sello.simulado ? 'simulado' : 'ok'}`}>
+        {sello.simulado
+          ? 'Sello simulado (entorno de pruebas)'
+          : `Sellada en BFA el ${formatearFecha(sello.fecha)} · ${sello.referencia}`}
+      </span>
+    )
+  }
+  if (sello.estado === 'fallido') {
+    return <span className="sello sello--fallido">Sin sello de BFA</span>
+  }
+  return <span className="sello">Sello en BFA en curso…</span>
 }
 
 export default function SeccionImagenes({ idCaso, alSolicitarAnalisis }) {

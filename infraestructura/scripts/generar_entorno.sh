@@ -29,6 +29,7 @@ ADMINISTRADORES=${P[ADMINISTRADORES]}
 S3_BUCKET=${P[S3_BUCKET]}
 S3_REGION=${P[S3_REGION]}
 PROXIES_DE_CONFIANZA=1
+SELLO_TIEMPO=${P[SELLO_TIEMPO]:-desactivado}
 FIN
 install -o plataforma -g plataforma -m 600 "$temporal" /opt/plataforma/.env
 rm -f "$temporal"

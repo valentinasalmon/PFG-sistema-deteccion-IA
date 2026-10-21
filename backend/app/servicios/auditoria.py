@@ -81,6 +81,7 @@ CUENTA_COPIA_DESCARGA = "cuenta.copia_descarga"
 IMAGEN_CARGA = "imagen.carga"
 IMAGEN_DESCARGA = "imagen.descarga"
 IMAGEN_ELIMINACION = "imagen.eliminacion"
+IMAGEN_SELLO = "imagen.sello"  # funcionalidad 016 (RF37)
 
 # --- Acciones de análisis (funcionalidad 007) ---
 ANALISIS_SOLICITUD = "analisis.solicitud"

@@ -178,6 +178,12 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
             CARPETA_CONFIANZA
         )
         self.COLA_ANALISIS = os.getenv("COLA_ANALISIS", "hilo")
+        # Sello de tiempo en BFA (funcionalidad 016): bfa | simulado | desactivado.
+        # En producción no se simula nunca: sin configurar, queda desactivado.
+        self.SELLO_TIEMPO = os.getenv(
+            "SELLO_TIEMPO", "desactivado" if self.NOMBRE == "produccion" else "simulado"
+        )
+        self.URL_SELLO_BFA = os.getenv("URL_SELLO_BFA", "https://tsa.bfa.ar")
         # Proxies delante de la aplicación: 0 en desarrollo, 1 (Nginx) en producción.
         self.PROXIES_DE_CONFIANZA = int(os.getenv("PROXIES_DE_CONFIANZA", "0"))
 

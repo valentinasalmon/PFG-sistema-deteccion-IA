@@ -81,7 +81,7 @@ class ServicioImagenes:
     """Operaciones sobre las imágenes de un caso."""
 
     def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        self, repositorio, casos, almacenamiento, configuracion, registro
+        self, repositorio, casos, almacenamiento, configuracion, registro, sellos=None,
     ):
         """
         Args:
@@ -89,7 +89,9 @@ class ServicioImagenes:
             casos: ``ServicioCasos``, que resuelve los permisos sobre el caso.
             almacenamiento: implementación de ``app.integraciones.almacenamiento``.
             registro: ``ServicioAuditoria``.
+            sellos: ``ServicioSellos`` (funcionalidad 016); opcional.
         """
+        self.sellos = sellos
         self.repositorio = repositorio
         self.casos = casos
         self.almacenamiento = almacenamiento
@@ -218,6 +220,7 @@ class ServicioImagenes:
             clave_miniatura=f"miniaturas/{uuid4().hex}.jpg", nombre_original=nombre,
             formato=formato, tamanio=len(contenido), ancho=dimensiones[0],
             alto=dimensiones[1], huella=huella, id_usuario=usuario.id,
+            sello_estado="pendiente" if self.sellos and self.sellos.activo else None,
         )
         self.almacenamiento.guardar(imagen.clave, contenido, imagen.tipo_mime)
         try:
@@ -234,6 +237,9 @@ class ServicioImagenes:
             borrar_sin_fallar(self.almacenamiento, imagen.clave)
             borrar_sin_fallar(self.almacenamiento, imagen.clave_miniatura)
             raise
+        if self.sellos is not None:
+            # Primer intento en el momento; si BFA no responde, lo retoma la tarea (RF37 CA3).
+            self.sellos.intentar(imagen)
         return imagen
 
     # --- Consultar (RF35) ---
