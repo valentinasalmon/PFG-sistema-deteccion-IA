@@ -5,6 +5,7 @@ nunca se llama al servicio real desde las pruebas.
 """
 import io
 import json
+from datetime import datetime
 from types import SimpleNamespace
 
 import pytest
@@ -50,8 +51,9 @@ def test_bfa_envia_solo_la_huella_y_confirma(monkeypatch):
     """RF37: solo viaja la huella; el recibo se verifica y devuelve bloque y fecha."""
     pedidos = _servidor(monkeypatch, [
         {"status": "success", "temporary_rd": "recibo-temporal"},
-        {"status": "success", "attestation_time": "1792560000", "block": 123456,
-         "permanent_rd": "recibo-definitivo"},
+        {"status": "success", "permanent_rd": "recibo-definitivo",
+         "attestation_time": "21/10/2026 18:05:27",
+         "messages": f"El archivo {HUELLA} fue ingresado en el bloque 50435901 el 21/10/2026"},
     ])
     sellador = SelladorBFA("https://tsa.prueba")
 
@@ -62,8 +64,8 @@ def test_bfa_envia_solo_la_huella_y_confirma(monkeypatch):
     assert pedidos[1] == ("https://tsa.prueba/api/tsa/verify/", {"file_hash": HUELLA, "rd": recibo})
     assert recibo == "recibo-temporal"
     assert confirmacion.recibo == "recibo-definitivo"
-    assert confirmacion.referencia == "BFA bloque 123456"
-    assert confirmacion.fecha.year == 2026
+    assert confirmacion.referencia == "BFA bloque 50435901"
+    assert confirmacion.fecha == datetime(2026, 10, 21, 21, 5, 27)  # 18:05:27 en Argentina
 
 
 def test_bfa_pendiente_y_caido(monkeypatch):
