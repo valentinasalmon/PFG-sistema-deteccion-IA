@@ -28,7 +28,11 @@ from app.seguridad.autenticacion import (
     usuario_actual,
 )
 from app.seguridad.origen import origen_de_la_solicitud
-from app.servicios.fabrica import crear_servicio_datos_personales, crear_servicio_perfil
+from app.servicios.fabrica import (
+    crear_servicio_datos_personales,
+    crear_servicio_perfil,
+    crear_servicio_planes,
+)
 from app.utilidades.tiempo import ahora_utc
 
 perfil_bp = Blueprint("perfil", __name__, url_prefix="/api/perfil")
@@ -146,3 +150,11 @@ def eliminar_cuenta():
     _servicio_datos().eliminar_cuenta(usuario_actual(), solicitud.contrasenia)
     terminar_sesion_de_cuenta_eliminada()
     return jsonify({"mensaje": "Tu cuenta fue eliminada. Te enviamos una confirmación por correo."})
+
+
+@perfil_bp.get("/plan")
+@login_required
+def plan_personal():
+    """Plan y consumo del espacio personal (RF20, funcionalidad 014)."""
+    servicio = crear_servicio_planes(current_app.config, current_app.extensions["enviador_correo"])
+    return jsonify({"plan": servicio.plan_personal(usuario_actual())})

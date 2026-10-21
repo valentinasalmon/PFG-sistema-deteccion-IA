@@ -107,12 +107,16 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
     # para poder ajustarlos sin cambiar el código (RF19 CA3); la 014 los pasará
     # a la base de datos cuando el Administrador pueda cambiar el plan.
     PLANES = {
-        "basico": {"nombre": "Organización Básico", "miembros": 5, "imagenes_por_caso": 50},
+        "basico": {
+            "nombre": "Organización Básico", "miembros": 5, "imagenes_por_caso": 50,
+            "analisis_mes": 100, "precio": "[PRECIO A DEFINIR]",
+        },
         "profesional": {
             "nombre": "Organización Profesional", "miembros": 25, "imagenes_por_caso": 100,
+            "analisis_mes": 500, "precio": "[PRECIO A DEFINIR]",
         },
     }
-    PLAN_PERSONAL = {"nombre": "Personal", "imagenes_por_caso": 20}
+    PLAN_PERSONAL = {"nombre": "Personal", "imagenes_por_caso": 20, "analisis_mes": 10}
     PLAN_INICIAL_ORGANIZACION = "basico"
     VIGENCIA_INVITACION = timedelta(days=7)  # RN10
 

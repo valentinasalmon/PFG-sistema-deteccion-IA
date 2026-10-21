@@ -11,11 +11,13 @@ from app.analisis.registro import crear_capas
 from app.repositorios.repositorio_analisis import RepositorioAnalisis
 from app.repositorios.repositorio_auditoria import RepositorioAuditoria
 from app.repositorios.repositorio_casos import RepositorioCasos
+from app.repositorios.repositorio_estadisticas import RepositorioEstadisticas
 from app.repositorios.repositorio_imagenes import RepositorioImagenes
 from app.repositorios.repositorio_informes import RepositorioInformes
 from app.repositorios.repositorio_organizaciones import RepositorioOrganizaciones
 from app.repositorios.repositorio_usuarios import RepositorioUsuarios
 from app.servicios.auditoria import ServicioAuditoria
+from app.servicios.servicio_administracion import ServicioAdministracion
 from app.servicios.servicio_analisis import ServicioAnalisis
 from app.servicios.servicio_casos import ServicioCasos
 from app.servicios.servicio_correos import ServicioCorreos
@@ -26,6 +28,7 @@ from app.servicios.servicio_informes import ServicioInformes
 from app.servicios.servicio_organizaciones import ServicioOrganizaciones
 from app.servicios.servicio_panel import ServicioPanel
 from app.servicios.servicio_perfil import ServicioPerfil
+from app.servicios.servicio_planes import ServicioPlanes
 from app.servicios.servicio_sesion import ServicioSesion
 from app.servicios.tokens import GestorTokens
 
@@ -135,6 +138,7 @@ def crear_servicio_analisis(configuracion, enviador, almacenamiento, cola, orige
             "capas": crear_capas(configuracion), "cola": cola, "trabajo": TRABAJO_ANALISIS,
             "almacenamiento": almacenamiento,
             "informes": crear_servicio_informes(configuracion, enviador, almacenamiento, origen),
+            "planes": crear_servicio_planes(configuracion, enviador, origen),
         },
         _correos(configuracion, enviador), configuracion, crear_servicio_auditoria(origen),
     )
@@ -154,3 +158,16 @@ def crear_servicio_panel():
         "casos": RepositorioCasos(), "analisis": RepositorioAnalisis(),
         "auditoria": RepositorioAuditoria(), "organizaciones": RepositorioOrganizaciones(),
     })
+
+
+def crear_servicio_planes(configuracion, enviador, origen=None):
+    """Planes, consumo y pago simulado (funcionalidad 014)."""
+    return ServicioPlanes(
+        crear_servicio_organizaciones(configuracion, enviador, origen), RepositorioEstadisticas(),
+        configuracion, crear_servicio_auditoria(origen),
+    )
+
+
+def crear_servicio_administracion(configuracion):
+    """Tablero y listados del Administrador (funcionalidad 014)."""
+    return ServicioAdministracion(RepositorioEstadisticas(), configuracion)

@@ -66,8 +66,9 @@ class ServicioAnalisis:
             ejecucion: diccionario con ``capas`` (lista de ``CapaAnalisis``),
                 ``almacenamiento`` (de donde se leen los originales), ``cola``
                 (implementación de ``app.integraciones.cola``), ``trabajo``
-                (ruta de importación de la función que procesa un análisis) e
-                ``informes`` (``ServicioInformes``, que genera el PDF).
+                (ruta de importación de la función que procesa un análisis),
+                ``informes`` (``ServicioInformes``, que genera el PDF) y, opcional,
+                ``planes`` (``ServicioPlanes``, que controla el límite mensual).
             registro: ``ServicioAuditoria``.
         """
         self.repositorio = repositorio
@@ -115,6 +116,12 @@ class ServicioAnalisis:
                 codigo="caso_sin_analisis",
             ), usuario, caso, "estado")
         elegidas = self._imagenes_elegidas(caso, usuario, ids_imagenes)
+        planes = self.ejecucion.get("planes")
+        if planes is not None:  # límite mensual del plan (RF19 CA2, funcionalidad 014)
+            try:
+                planes.verificar_analisis_disponible(caso)
+            except ConflictoDatos as error:
+                self._rechazar(error, usuario, caso, "limite_plan")
 
         analisis = Analisis(
             id_caso=caso.id, id_solicitante=usuario.id, estado=ESTADO_EN_COLA,
