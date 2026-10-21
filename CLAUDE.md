@@ -25,6 +25,7 @@ Este archivo forma parte del **arnés** del proyecto: define cómo debe trabajar
 - **Documentar siempre**: todo módulo, clase y función pública lleva docstring que explique qué hace, por qué y qué requisito realiza (por ejemplo, `Realiza: RF34, RN22`).
 - **Nunca** emitir veredictos en textos de análisis: solo indicios y recomendación de consultar a un profesional (RN27).
 - **Interfaz**: toda pantalla, correo o documento nuevo sigue la [guía de identidad visual](docs/guias/identidad-visual.md).
+- **Resultados**: toda salida de análisis respeta [ADR-0017](docs/arquitectura/decisiones/0017-marco-normativo-y-supervision-humana.md): descargo de IA, persona en el circuito y umbrales publicados.
 - **Nunca** subir secretos, archivos `.env`, imágenes de casos reales ni modelos entrenados al repositorio.
 
 ## Calidad mínima antes de dar algo por terminado

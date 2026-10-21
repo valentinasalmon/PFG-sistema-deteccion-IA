@@ -29,3 +29,6 @@ Dar a evidentIA una identidad visual única y quitar fricciones en todas las pan
   8. Limitaciones.
   9. Glosario.
 - **CA7**: ningún texto emite veredictos (RN27) y las capas nunca se combinan en un puntaje.
+- **CA8**: el informe, la pantalla de resultados y el correo de fin de análisis incluyen el descargo de IA y la supervisión humana (ADR-0017, RNF23 CA4).
+- **CA9**: cada capa del informe muestra sus criterios, el valor de referencia sin edición y el valor obtenido (RNF23 CA5).
+- **CA10**: los correos usan el diseño de marca y el remitente «evidentIA».

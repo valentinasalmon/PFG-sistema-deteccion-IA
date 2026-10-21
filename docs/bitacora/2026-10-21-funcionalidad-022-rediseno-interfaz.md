@@ -32,9 +32,21 @@
   - glosario.
 - **Guía de identidad visual**: [docs/guias/identidad-visual.md](../guias/identidad-visual.md), referida desde CLAUDE.md.
 
+## Tercera entrega: entrevista con Federico Miskinich (22/10/2026)
+
+- **Entrevista**: documentada en [docs/investigacion/](../investigacion/2026-10-02-entrevista-federico-miskinich.md), con una tabla de qué se hizo con cada recomendación.
+- **Marco normativo**: [ADR-0017](../arquitectura/decisiones/0017-marco-normativo-y-supervision-humana.md) toma como referencia el Reglamento europeo de IA y la ISO/IEC 42001, con la persona en el circuito.
+- **Informe PDF**:
+  - descargo de IA en el recuadro inicial;
+  - tabla «Criterio / Referencia sin edición / Valor obtenido» en cada capa (la capa ELA ahora guarda su desvío máximo);
+  - nueva sección «Uso previsto y supervisión humana».
+- **Pantalla de resultados**: recuadro «Herramienta auxiliar».
+- **Correos**: diseño de marca (logo, título, botón azul y pie con el eslogan) y remitente «evidentIA». El remitente en AWS cambia con `terraform apply` (guía de despliegue).
+- **Especificación**: RNF23 suma CA4 y CA5. Quedan abiertas CP-22 (peritos), CP-23 (alternativas a ELA) y CP-24 (tipos de caso de aseguradoras).
+- **Entorno local**: [guía para levantar el proyecto](../guias/levantar-en-local.md), con tareas y depuración de VS Code en `.vscode/`.
+
 ## Pendiente
 
 - Cambios que pida la autora sobre las capturas.
 - Plantillas de correo con el nuevo diseño.
-- Contrastar el informe con las recomendaciones de Federico Miskinich: no están registradas en el repositorio. Hay que pedírselas a la autora.
 - Avisos breves flotantes.

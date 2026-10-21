@@ -133,6 +133,19 @@ Para repetir un despliegue sin cambios: en *Actions*, abrí la última ejecució
 2. Registrate con un correo verificado en SES y confirmá el correo.
 3. Iniciá sesión. Tu correo figura en `administradores`, así que tenés el rol de Administrador.
 
+## Publicar cambios nuevos (por ejemplo, el rediseño 022)
+
+La infraestructura ya está creada: para publicar alcanza con integrar en `main`.
+1. Integrá los Pull Requests en orden hacia `desarrollo`: primero `funcionalidad/013-panel-y-notificaciones` y después `funcionalidad/022-rediseno-interfaz`, que sale de la 013.
+2. Abrí el Pull Request de `desarrollo` hacia `main` e integralo. El trabajo **Despliegue en AWS** publica la versión sola, en unos 3 minutos.
+3. La 022 cambia el remitente de los correos a «evidentIA». Para que tome efecto en el servidor, una sola vez:
+   1. En WSL, ejecutá `terraform -chdir=infraestructura/terraform/principal apply` y confirmá con `yes`. Solo actualiza el parámetro del remitente.
+   2. En la terminal de Session Manager de la instancia, ejecutá:
+      ```bash
+      sudo bash /opt/plataforma/servidor/scripts/generar_entorno.sh
+      sudo systemctl restart plataforma-web plataforma-trabajador
+      ```
+
 ## Cuando compres el dominio
 
 1. En `terraform.tfvars`, poné `dominio = "tu-dominio.com.ar"` y ejecutá `terraform apply`.
