@@ -35,6 +35,18 @@ class RepositorioAnalisis(RepositorioBase):
         )
         return [clave for (clave,) in filas]
 
+    def en_curso_de_casos(self, ids_casos):
+        """Análisis en cola o en proceso de varios casos, del más antiguo al más nuevo."""
+        if not ids_casos:
+            return []
+        return (
+            Analisis.query.filter(
+                Analisis.id_caso.in_(ids_casos), Analisis.estado.in_(ESTADOS_EN_CURSO)
+            )
+            .order_by(Analisis.creado_en)
+            .all()
+        )
+
     def en_curso_de_caso(self, id_caso):
         """El análisis en cola o en proceso del caso, o None (RF38 CA3)."""
         return Analisis.query.filter(

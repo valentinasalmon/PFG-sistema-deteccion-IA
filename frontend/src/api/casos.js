@@ -16,12 +16,6 @@ export function listarCasos(filtros = {}) {
   return solicitar('GET', consulta ? `/api/casos?${consulta}` : '/api/casos')
 }
 
-/** Cantidad de casos por estado. */
-export async function resumenDeCasos() {
-  const { por_estado: porEstado } = await solicitar('GET', '/api/casos/resumen')
-  return porEstado
-}
-
 /** Transferencias de casos personales que esperan mi respuesta (RF33 CA2). */
 export async function transferenciasPendientes() {
   const { transferencias } = await solicitar('GET', '/api/casos/transferencias')

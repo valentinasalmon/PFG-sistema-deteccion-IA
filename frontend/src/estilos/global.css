@@ -693,6 +693,15 @@ textarea.campo__control {
   text-decoration: none;
 }
 
+.lista-panel {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.lista-panel li {
+  margin-bottom: 0.4rem;
+}
+
 .campo__control--chico {
   width: auto;
   min-width: 12rem;

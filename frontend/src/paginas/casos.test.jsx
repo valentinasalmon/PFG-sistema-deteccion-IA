@@ -79,28 +79,6 @@ function apiDeCaso({ caso = CASO, accesos = [ACCESO], extra = {} } = {}) {
   })
 }
 
-describe('inicio', () => {
-  it('muestra la cantidad de casos por estado con enlaces al listado filtrado', async () => {
-    simularApi({
-      ...CON_SESION,
-      'GET /api/casos/resumen': { cuerpo: { por_estado: { borrador: 2, cerrado: 1 } } },
-    })
-    renderizarEn('/')
-
-    const borradores = await screen.findByRole('link', { name: /2\s*Borrador/ })
-    expect(borradores).toHaveAttribute('href', '/casos?estado=borrador')
-    expect(screen.getByRole('link', { name: /0\s*En análisis/ })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Nuevo caso' })).toHaveAttribute('href', '/casos/nuevo')
-  })
-
-  it('avisa cuando todavía no hay casos', async () => {
-    simularApi({ ...CON_SESION, 'GET /api/casos/resumen': { cuerpo: { por_estado: {} } } })
-    renderizarEn('/')
-
-    expect(await screen.findByText('Todavía no tenés casos.')).toBeInTheDocument()
-  })
-})
-
 describe('listado de casos', () => {
   it('lista los casos accesibles con su estado y permiso (CA5)', async () => {
     apiDeListado()

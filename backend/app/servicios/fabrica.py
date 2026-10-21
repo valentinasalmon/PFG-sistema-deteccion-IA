@@ -24,6 +24,7 @@ from app.servicios.servicio_datos_personales import ServicioDatosPersonales
 from app.servicios.servicio_imagenes import ArchivosDeCasos, ServicioImagenes
 from app.servicios.servicio_informes import ServicioInformes
 from app.servicios.servicio_organizaciones import ServicioOrganizaciones
+from app.servicios.servicio_panel import ServicioPanel
 from app.servicios.servicio_perfil import ServicioPerfil
 from app.servicios.servicio_sesion import ServicioSesion
 from app.servicios.tokens import GestorTokens
@@ -145,3 +146,11 @@ def crear_servicio_informes(configuracion, enviador, almacenamiento, origen=None
         RepositorioInformes(), crear_servicio_casos(configuracion, enviador, origen),
         almacenamiento, configuracion, crear_servicio_auditoria(origen),
     )
+
+
+def crear_servicio_panel():
+    """Servicio del panel principal (funcionalidad 013)."""
+    return ServicioPanel({
+        "casos": RepositorioCasos(), "analisis": RepositorioAnalisis(),
+        "auditoria": RepositorioAuditoria(), "organizaciones": RepositorioOrganizaciones(),
+    })

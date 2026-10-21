@@ -360,3 +360,34 @@ def test_si_no_se_puede_guardar_el_mapa_el_resultado_sigue_sin_el(aplicacion, an
     resultados = _detalle(ana, id_caso, resumen["id"])["imagenes"][0]["resultados"]
     ela = next(r for r in resultados if r["capa"] == "ela")
     assert (ela["estado"], ela["imagen"]) == ("completado", None)
+
+
+def test_el_aviso_llega_al_solicitante_y_al_responsable(ana, beto, correos):
+    """013 CA5 (RF47): si pide el análisis un Colaborador, también se avisa al Responsable."""
+    id_org = crear_estudio(ana, beto, "beto@ejemplo.com")
+    id_caso = ana.post("/api/casos", json={**CASO, "espacio": str(id_org)}).get_json()["caso"]["id"]
+    ana.post(
+        f"/api/casos/{id_caso}/accesos",
+        json={"nivel": "colaboracion", "id_usuario": beto.id_usuario},
+    )
+    id_imagen = _cargar(beto, id_caso, _png(), "foto.png")
+    antes = len(correos)
+
+    _analizar(beto, id_caso, [id_imagen])
+
+    avisos = [c for c in correos[antes:] if c.asunto.startswith("Terminó el análisis")]
+    assert sorted(c.destinatario for c in avisos) == ["ana@ejemplo.com", "beto@ejemplo.com"]
+    # 013 CA6 (RF47 CA2): solo el número de caso y el enlace, sin datos de las imágenes.
+    for aviso in avisos:
+        assert "CASO-" in aviso.texto and "/casos/" in aviso.texto
+        assert "foto.png" not in aviso.texto + aviso.html
+
+
+def test_el_responsable_que_pide_el_analisis_recibe_un_solo_aviso(ana, caso, correos):
+    """Sin duplicados cuando quien pide es el mismo Responsable."""
+    antes = len(correos)
+
+    _analizar(ana, caso["id"], caso["imagenes"])
+
+    avisos = [c for c in correos[antes:] if c.asunto.startswith("Terminó el análisis")]
+    assert [c.destinatario for c in avisos] == ["ana@ejemplo.com"]
