@@ -2,13 +2,13 @@
 
 Implementaciones intercambiables con la misma interfaz (RF37 CA4):
 
-- ``SelladorBFA``: el servicio público Sello de Tiempo 2.0 de BFA
-  (https://tsa2.buenosaires.gob.ar, el que usa https://bfa.ar/sello2). Solo
-  envía la huella SHA-256, nunca el archivo (RF37). El sello se pide con
-  ``sellar`` y, cuando BFA lo incluye en un bloque, se confirma con
-  ``verificar``. El formato sigue la API pública del proyecto ``tsa2`` de BFA:
-  ``POST /stamp`` con ``{"hashes": [...]}`` y ``GET /verify/<huella>``, que
-  responde ``{"stamped": bool, "stamps": [...]}``.
+- ``SelladorBFA``: el servicio público Sello de Tiempo de BFA
+  (https://tsaapi.bfa.ar, el que usa https://bfa.ar/sello). Solo envía la
+  huella SHA-256, nunca el archivo (RF37). ``sellar`` hace
+  ``POST /api/tsa/stamp/`` con el formulario ``file_hash`` y recibe el recibo
+  temporal (``temporary_rd``); cuando BFA incluye la huella en un bloque,
+  ``verificar`` (``POST /api/tsa/verify/`` con ``file_hash`` y ``rd``) devuelve
+  la confirmación y, si BFA lo entrega, el recibo definitivo.
 - ``SelladorSimulado``: desarrollo y pruebas. Responde al instante y marca
   todo como simulado, para que nunca se confunda con un sello real.
 
@@ -21,9 +21,9 @@ import hashlib
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from urllib import error, request
+from urllib import error, parse, request
 
-URL_BFA = "https://tsa2.buenosaires.gob.ar"
+URL_BFA = "https://tsaapi.bfa.ar"
 TIEMPO_ESPERA = 10  # segundos por solicitud
 
 
@@ -37,6 +37,7 @@ class Confirmacion:
 
     referencia: str
     fecha: datetime
+    recibo: str | None = None  # recibo definitivo, si el servicio lo entrega
 
 
 class SelladorBFA:
@@ -48,12 +49,12 @@ class SelladorBFA:
         self.url = url.rstrip("/")
         self.tiempo_espera = tiempo_espera
 
-    def _enviar(self, ruta, datos=None):
-        """POST con ``datos`` en JSON, o GET si no hay datos; devuelve el JSON de la respuesta."""
-        cuerpo = json.dumps(datos).encode() if datos is not None else None
+    def _enviar(self, ruta, datos):
+        """POST de ``datos`` como formulario, como lo espera BFA; devuelve el JSON."""
         solicitud = request.Request(
-            f"{self.url}{ruta}", data=cuerpo, method="POST" if cuerpo else "GET",
-            headers={"Content-Type": "application/json", "Accept": "application/json"},
+            f"{self.url}{ruta}", data=parse.urlencode(datos).encode(), method="POST",
+            headers={"Content-Type": "application/x-www-form-urlencoded",
+                     "Accept": "application/json"},
         )
         try:
             with request.urlopen(solicitud, timeout=self.tiempo_espera) as respuesta:
@@ -62,26 +63,28 @@ class SelladorBFA:
             raise SelloNoDisponible(f"BFA no respondió: {falla}") from falla
 
     def sellar(self, huella):
-        """Pide el sello de la huella. BFA no entrega recibo: la huella misma lo identifica."""
-        self._enviar("/stamp", {"hashes": [huella]})
-        return huella
+        """Pide el sello de la huella y devuelve el recibo temporal que entrega BFA."""
+        respuesta = self._enviar("/api/tsa/stamp/", {"file_hash": huella})
+        recibo = respuesta.get("temporary_rd")
+        if respuesta.get("status") != "success" or not recibo:
+            raise SelloNoDisponible(f"BFA no devolvió un recibo: {respuesta}")
+        return recibo
 
     def verificar(self, huella, recibo):
         """La ``Confirmacion`` si el sello ya está en un bloque; None si sigue pendiente."""
-        del recibo
-        respuesta = self._enviar(f"/verify/{huella}")
-        sellos = respuesta.get("stamps") or []
-        if not respuesta.get("stamped") or not sellos:
+        respuesta = self._enviar("/api/tsa/verify/", {"file_hash": huella, "rd": recibo})
+        if respuesta.get("status") != "success":
             return None
-        sello = sellos[0]
-        bloque = sello.get("blocknumber") or sello.get("blockNumber") or sello.get("block")
-        momento = sello.get("blocktimestamp") or sello.get("timestamp")
+        # Los campos se buscan en la raíz o en ``attestation``, según la versión del servicio.
+        datos = {**respuesta, **(respuesta.get("attestation") or {})}
+        bloque = datos.get("block") or datos.get("block_number") or datos.get("blockNumber")
+        momento = datos.get("attestation_time") or datos.get("time") or datos.get("timestamp")
         fecha = (
             datetime.fromtimestamp(int(momento), tz=timezone.utc).replace(tzinfo=None)
             if str(momento or "").isdigit() else datetime.now(timezone.utc).replace(tzinfo=None)
         )
         referencia = f"BFA bloque {bloque}" if bloque else "BFA"
-        return Confirmacion(referencia=referencia, fecha=fecha)
+        return Confirmacion(referencia=referencia, fecha=fecha, recibo=datos.get("permanent_rd"))
 
 
 class SelladorSimulado:
