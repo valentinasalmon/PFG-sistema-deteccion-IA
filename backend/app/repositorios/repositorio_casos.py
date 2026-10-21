@@ -167,6 +167,10 @@ class RepositorioCasos(RepositorioBase):
             .all()
         )
 
+    def con_retencion(self):
+        """Todos los casos con el plazo de retención en curso (tarea diaria, RF49, RF50)."""
+        return Caso.query.filter(Caso.retencion_desde.isnot(None)).all()
+
     def con_retencion_a_cargo(self, id_usuario):
         """Casos del Responsable con el plazo de retención en curso (RN30, RN31)."""
         return Caso.query.filter(

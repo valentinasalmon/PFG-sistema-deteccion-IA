@@ -1,0 +1,10 @@
+# Tarea diaria de retención a las 07:00 UTC (04:00 en Argentina), después del respaldo.
+[Unit]
+Description=Retención diaria de los casos de la plataforma
+
+[Timer]
+OnCalendar=*-*-* 07:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

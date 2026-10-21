@@ -1,0 +1,7 @@
+Hola, {{ nombre }}:
+
+El caso {{ numero }} se elimina de forma definitiva el {{ vence }}, cuando se cumplen 5 años desde su cierre (artículo 2560 del Código Civil y Comercial).
+
+Si el caso sigue en trámite, por ejemplo por un juicio, podés prorrogar el plazo 1 año indicando el motivo. Si no hacés nada, se elimina con sus imágenes e informes.
+
+Ver el caso: {{ enlace }}

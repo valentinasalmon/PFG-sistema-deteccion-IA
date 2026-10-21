@@ -7,7 +7,7 @@ en la auditoría en la misma transacción.
 
 Realiza: RF23 a RF33; RN12, RN13, RN16 a RN21, RN30; RNF05, RNF06.
 """
-from datetime import date
+from datetime import date, timedelta
 from uuid import uuid4
 
 from app.modelos.caso import (
@@ -36,6 +36,18 @@ ANIOS_DE_RETENCION = 5  # RN30: plazo de prescripción genérico (CCyC, art. 256
 
 MENSAJE_NO_ENCONTRADO = "El caso no existe o no tenés acceso a él."
 MENSAJE_SOLO_RESPONSABLE = "Solo el Responsable del caso puede hacer esto."
+
+
+DIAS_AVISO_RETENCION = 30  # RN31
+ESTADOS_CON_RETENCION = (ESTADO_CERRADO, ESTADO_ARCHIVADO)
+
+
+def sumar_un_anio(momento):
+    """El mismo instante un año después (el 29 de febrero pasa al 28)."""
+    try:
+        return momento.replace(year=momento.year + 1)
+    except ValueError:
+        return momento.replace(year=momento.year + 1, day=28)
 
 
 def vencimiento_de_retencion(caso):
@@ -558,6 +570,95 @@ class ServicioCasos:  # pylint: disable=too-many-public-methods
             self.archivos.borrar_pendientes()
         for destinatario in avisar:
             self.correos.enviar_aviso_caso_eliminado(destinatario, numero, usuario)
+
+
+class TareasDeRetencion:
+    """Prórroga y tarea diaria de retención de los casos (funcionalidad 015).
+
+    Se separa de ``ServicioCasos`` para que la tarea programada no necesite una
+    sesión de usuario: la ejecuta el sistema y la auditoría la registra sin
+    usuario.
+
+    Realiza: RF49 (CA1, CA2), RF50 (CA1), RF51 (CA1, CA2); RN30 a RN33.
+    """
+
+    def __init__(self, casos):
+        """
+        Args:
+            casos: ``ServicioCasos``, del que se reutilizan el repositorio, los
+                permisos, los correos, los archivos y la auditoría.
+        """
+        self.casos = casos
+
+    def prorrogar(self, id_caso, usuario, motivo):
+        """Extiende 1 año la destrucción de un caso cerrado o archivado (RF51). Solo el Responsable.
+
+        La prórroga corre el inicio del plazo un año: así la fecha de
+        destrucción se extiende 1 año sin agregar columnas.
+
+        Raises:
+            ErrorValidacion: sin motivo.
+            ConflictoDatos: si el caso no está cerrado ni archivado.
+        """
+        # pylint: disable=protected-access
+        accion = auditoria.CASO_PRORROGA_RETENCION
+        caso, _ = self.casos._caso(id_caso, usuario, PERMISO_RESPONSABLE, accion)
+        if caso.estado not in ESTADOS_CON_RETENCION or caso.retencion_desde is None:
+            self.casos._rechazar(ConflictoDatos(
+                "Solo se puede prorrogar un caso cerrado o archivado.", codigo="sin_retencion",
+            ), accion, usuario, caso, "estado")
+        motivo = (motivo or "").strip()
+        if not motivo:
+            mensaje = "Indicá el motivo de la prórroga, por ejemplo, un juicio en trámite."
+            self.casos._rechazar(
+                ErrorValidacion(mensaje, {"motivo": mensaje}), accion, usuario, caso, "sin_motivo"
+            )
+        anterior = vencimiento_de_retencion(caso)
+        caso.retencion_desde = sumar_un_anio(caso.retencion_desde)
+        nuevo = vencimiento_de_retencion(caso)
+        self.casos._auditar(accion, auditoria.EXITOSO, usuario, caso, {
+            "motivo": motivo, "vencia": anterior.isoformat(), "vence": nuevo.isoformat(),
+        })
+        self.casos.repositorio.confirmar()
+        return caso, nuevo
+
+    def procesar(self, ahora=None):
+        """Tarea diaria: avisa a 30 días y destruye los casos vencidos (RF49, RF50).
+
+        El aviso se envía el día en que faltan exactamente 30 días, así una
+        tarea diaria lo manda una sola vez. La destrucción aplica RN21: se
+        audita con el número y las huellas de los archivos y después se borran.
+
+        Returns:
+            Diccionario con las cantidades de ``avisados`` y ``destruidos``.
+        """
+        # pylint: disable=protected-access
+        ahora = ahora or ahora_utc()
+        dia_del_aviso = (ahora + timedelta(days=DIAS_AVISO_RETENCION)).date()
+        avisados = destruidos = 0
+        for caso in self.casos.repositorio.con_retencion():
+            if caso.estado not in ESTADOS_CON_RETENCION:
+                continue
+            vence = vencimiento_de_retencion(caso)
+            if vence <= ahora:
+                huellas = self.casos.archivos.preparar([caso]) if self.casos.archivos else []
+                self.casos._auditar(
+                    auditoria.CASO_DESTRUCCION_RETENCION, auditoria.EXITOSO, None, caso,
+                    {"sha256_eliminados": huellas, "vencio": vence.isoformat()},
+                )
+                self.casos.repositorio.quitar(caso)
+                self.casos.repositorio.confirmar()
+                if self.casos.archivos:
+                    self.casos.archivos.borrar_pendientes()
+                destruidos += 1
+            elif vence.date() == dia_del_aviso and caso.responsable is not None:
+                self.casos.correos.enviar_aviso_retencion(caso.responsable, caso, vence)
+                self.casos._auditar(
+                    auditoria.CASO_AVISO_RETENCION, auditoria.EXITOSO, None, caso,
+                    {"vence": vence.isoformat()}, confirmar=True,
+                )
+                avisados += 1
+        return {"avisados": avisados, "destruidos": destruidos}
 
 
 def _texto(valor):

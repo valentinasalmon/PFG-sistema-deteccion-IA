@@ -19,7 +19,7 @@ from app.repositorios.repositorio_usuarios import RepositorioUsuarios
 from app.servicios.auditoria import ServicioAuditoria
 from app.servicios.servicio_administracion import ServicioAdministracion
 from app.servicios.servicio_analisis import ServicioAnalisis
-from app.servicios.servicio_casos import ServicioCasos
+from app.servicios.servicio_casos import ServicioCasos, TareasDeRetencion
 from app.servicios.servicio_correos import ServicioCorreos
 from app.servicios.servicio_cuentas import ServicioCuentas
 from app.servicios.servicio_datos_personales import ServicioDatosPersonales
@@ -171,3 +171,8 @@ def crear_servicio_planes(configuracion, enviador, origen=None):
 def crear_servicio_administracion(configuracion):
     """Tablero y listados del Administrador (funcionalidad 014)."""
     return ServicioAdministracion(RepositorioEstadisticas(), configuracion)
+
+
+def crear_tareas_de_retencion(configuracion, enviador, almacenamiento=None, origen=None):
+    """Prórroga y tarea diaria de retención de los casos (funcionalidad 015)."""
+    return TareasDeRetencion(crear_servicio_casos(configuracion, enviador, origen, almacenamiento))

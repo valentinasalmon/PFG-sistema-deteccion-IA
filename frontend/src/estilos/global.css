@@ -2716,3 +2716,25 @@ select.campo__control {
 .pago-simulado p {
   margin-top: 0;
 }
+
+/* --- Retención y prórroga (funcionalidad 015) --- */
+.retencion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  background: var(--fondo-2);
+}
+
+.retencion p {
+  margin: 0;
+}
+
+.retencion--proxima {
+  border-color: var(--alerta-borde);
+  background: var(--alerta-fondo);
+  color: var(--alerta);
+}
