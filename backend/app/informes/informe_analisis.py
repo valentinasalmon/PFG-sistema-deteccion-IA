@@ -91,8 +91,8 @@ DESCARGO = (
 )
 
 USO_PREVISTO = (
-    "evidentIA es una herramienta de apoyo para abogados, aseguradoras, peritos y "
-    "criminalistas. Sigue el principio de supervisión humana («persona en el circuito») "
+    "evidentIA es una herramienta de apoyo para abogados y aseguradoras. Sigue el "
+    "principio de supervisión humana («persona en el circuito») "
     "del Reglamento (UE) 2024/1689 de Inteligencia Artificial y el sistema de gestión de "
     "la norma ISO/IEC 42001: la plataforma aporta indicios medibles y trazables, y la "
     "decisión sobre la evidencia siempre la toma una persona.",
