@@ -186,3 +186,15 @@ describe('imágenes del caso', () => {
     expect(await within(seccion()).findByText('El enlace venció.')).toBeInTheDocument()
   })
 })
+
+describe('sello de tiempo en BFA (funcionalidad 016)', () => {
+  it('muestra el sello confirmado, en curso o simulado (RF37)', async () => {
+    const sellada = { ...IMAGEN, sello: { estado: 'sellado', referencia: 'BFA bloque 123', fecha: '2026-10-22T12:00:00', simulado: false } }
+    const enCurso = { ...IMAGEN, id: 2, nombre: 'lateral.jpg', huella: 'b'.repeat(64), sello: { estado: 'enviado', simulado: false } }
+    api({ ...LISTADO, imagenes: [sellada, enCurso] })
+    renderizarEn('/casos/7')
+
+    expect(await screen.findByText(/Sellada en BFA el 22\/10\/2026 .*BFA bloque 123/)).toBeInTheDocument()
+    expect(screen.getByText('Sello en BFA en curso…')).toBeInTheDocument()
+  })
+})
