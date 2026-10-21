@@ -299,6 +299,7 @@ describe('pantalla del caso', () => {
     })
     const { usuario } = renderizarEn('/casos/7')
 
+    await usuario.click(await screen.findByRole('button', { name: 'Editar los datos' }))
     const lugar = await screen.findByLabelText('Lugar del hecho')
     await usuario.clear(lugar)
     await usuario.type(lugar, 'Av. Santa Fe 100')

@@ -1,0 +1,50 @@
+{
+  // Tareas para levantar evidentIA en local: Ctrl+Shift+P → "Tasks: Run Task".
+  // "evidentIA: levantar todo" abre servicios, backend y frontend en terminales separadas.
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "evidentIA: servicios (PostgreSQL, Redis, Mailpit)",
+      "type": "shell",
+      "command": "docker compose up -d && docker compose ps",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "evidentIA: backend (Flask en :5000)",
+      "type": "shell",
+      "command": "source .venv/bin/activate && flask --app wsgi db upgrade && flask --app wsgi run --port 5000 --debug",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "isBackground": true,
+      "problemMatcher": [],
+      "dependsOn": "evidentIA: servicios (PostgreSQL, Redis, Mailpit)"
+    },
+    {
+      "label": "evidentIA: frontend (Vite en :5173)",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "evidentIA: levantar todo",
+      "dependsOn": ["evidentIA: backend (Flask en :5000)", "evidentIA: frontend (Vite en :5173)"],
+      "problemMatcher": []
+    },
+    {
+      "label": "evidentIA: pruebas y calidad del backend",
+      "type": "shell",
+      "command": "source .venv/bin/activate && flake8 app/ && pylint app/ && pytest --cov=app --cov-fail-under=80",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "problemMatcher": []
+    },
+    {
+      "label": "evidentIA: pruebas y calidad del frontend",
+      "type": "shell",
+      "command": "npm run lint && npm run test",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "problemMatcher": []
+    }
+  ]
+}

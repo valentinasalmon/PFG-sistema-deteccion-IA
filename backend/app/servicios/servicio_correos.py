@@ -34,6 +34,8 @@ class ServicioCorreos:  # pylint: disable=too-many-public-methods
     def _enviar(self, destinatario, asunto, plantilla, **datos):
         """Renderiza la plantilla en texto y HTML y envía el correo."""
         datos["asunto"] = asunto
+        # El logo de la cabecera se sirve desde el frontend (guía de identidad visual).
+        datos.setdefault("url_frontend", self.url_frontend)
         texto = _entorno.get_template(f"{plantilla}.txt").render(**datos)
         html = _entorno.get_template(f"{plantilla}.html").render(**datos)
         return self.enviador.enviar(Correo(destinatario, asunto, texto, html))

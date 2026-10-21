@@ -16,6 +16,7 @@ import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
+import { textosDelRubro } from '../utilidades/lenguaje.js'
 import { OPCIONES_ESTADO } from '../utilidades/casos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 
@@ -50,14 +51,6 @@ function CasosPorEstado({ porEstado }) {
           ))}
         </ul>
       )}
-      <div className="acciones-en-linea">
-        <Link to="/casos" className="boton boton--secundario">
-          Ver mis casos
-        </Link>
-        <Link to="/casos/nuevo" className="boton">
-          Nuevo caso
-        </Link>
-      </div>
     </Seccion>
   )
 }
@@ -162,24 +155,37 @@ export default function PaginaInicio() {
 
   return (
     <>
-      <h1>Hola, {usuario.nombre}</h1>
-      <p className="subtitulo">
-        Desde acá vas a poder crear casos, cargar imágenes y descargar los informes de análisis.
-      </p>
+      <div className="encabezado-pagina">
+        <div>
+          <h1>Hola, {usuario.nombre}</h1>
+          <p className="encabezado-pagina__bajada">{textosDelRubro(usuario.perfil).bajadaPanel}</p>
+        </div>
+        <div className="acciones-en-linea">
+          <Link to="/casos" className="boton boton--secundario">
+            Ver mis casos
+          </Link>
+        </div>
+      </div>
       {cargando && <Cargando />}
       {error && <Aviso tipo="error">{error.message}</Aviso>}
       {panel && (
         <>
           <CasosPorEstado porEstado={panel.por_estado} />
-          <Pendientes
-            invitaciones={panel.invitaciones}
-            transferencias={panel.transferencias}
-            proximos={panel.proximos_a_destruir}
-          />
-          <AnalisisEnCurso analisis={panel.analisis_en_curso} />
-          <Compartidos compartidos={panel.compartidos} />
-          <Recientes casos={panel.recientes} />
-          <Actividad eventos={panel.actividad} />
+          <div className="dos-columnas">
+            <div className="dos-columnas__principal">
+              <Recientes casos={panel.recientes} />
+              <Actividad eventos={panel.actividad} />
+            </div>
+            <div className="dos-columnas__lateral">
+              <Pendientes
+                invitaciones={panel.invitaciones}
+                transferencias={panel.transferencias}
+                proximos={panel.proximos_a_destruir}
+              />
+              <AnalisisEnCurso analisis={panel.analisis_en_curso} />
+              <Compartidos compartidos={panel.compartidos} />
+            </div>
+          </div>
         </>
       )}
     </>

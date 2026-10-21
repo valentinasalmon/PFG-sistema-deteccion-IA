@@ -124,13 +124,14 @@ describe('aseguradora pendiente de aprobación', () => {
     renderizarEn('/organizaciones/7')
     expect(await screen.findByText(/pendiente de aprobación/)).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Invitar miembros' })).not.toBeInTheDocument()
-    expect(screen.getByText('30500000127')).toBeInTheDocument()
+    expect(screen.getByText('CUIT 30500000127')).toBeInTheDocument()
   })
 
   it('el nombre de una aseguradora no se edita (CA18)', async () => {
     apiDeAseguradora({ ...ASEGURADORA, estado: 'activa' })
-    renderizarEn('/organizaciones/7')
+    const { usuario } = renderizarEn('/organizaciones/7')
     const seccion = (await screen.findByRole('heading', { name: 'Datos de la organización' })).closest('section')
+    await usuario.click(within(seccion).getByRole('button', { name: 'Editar los datos de la organización' }))
     expect(within(seccion).getByLabelText('Nombre')).toHaveAttribute('readonly')
     expect(screen.getByRole('heading', { name: 'Invitar miembros' })).toBeInTheDocument()
   })

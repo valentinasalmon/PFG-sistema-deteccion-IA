@@ -10,7 +10,7 @@
  * CA6, CA13 y CA18 de la 021.
  */
 import { useCallback, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import {
   abandonarOrganizacion,
   cancelarInvitacion,
@@ -30,6 +30,7 @@ import BotonConfirmar from '../componentes/BotonConfirmar.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
+import Icono from '../componentes/Icono.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useFormulario } from '../hooks/useFormulario.js'
 import { useSesion } from '../hooks/useSesion.js'
@@ -65,7 +66,12 @@ function useAccion(recargar) {
   return { resultado, ejecutar }
 }
 
-function SeccionDatos({ organizacion, esReferente, alGuardar }) {
+/**
+ * Cabecera de la organización (022): nombre, rol y datos debajo; el Referente
+ * los edita en el lugar con el lápiz.
+ */
+function CabeceraOrganizacion({ organizacion, esReferente, cantidadMiembros, alGuardar }) {
+  const [editando, setEditando] = useState(false)
   const { valores, errores, error, enviando, cambiar, enviar } = useFormulario({
     nombre: organizacion.nombre,
     correo_contacto: organizacion.correo_contacto ?? '',
@@ -79,54 +85,61 @@ function SeccionDatos({ organizacion, esReferente, alGuardar }) {
     const resultado = await enviar((datos) => editarOrganizacion(organizacion.id, datos))
     if (resultado.ok) {
       setMensaje(resultado.datos.mensaje)
+      setEditando(false)
       await alGuardar()
     }
   }
 
+  const contacto = [organizacion.correo_contacto, organizacion.telefono].filter(Boolean).join(' · ')
+
   return (
-    <section className="seccion" aria-labelledby="titulo-datos-organizacion">
-      <h2 id="titulo-datos-organizacion">Datos de la organización</h2>
-      <dl className="datos-fijos">
-        <dt>Tipo</dt>
-        <dd>{organizacion.tipo_nombre}</dd>
-        {organizacion.cuit && (
-          <>
-            <dt>CUIT</dt>
-            <dd>{organizacion.cuit}</dd>
-          </>
+    <section className="cabecera-caso" aria-labelledby="titulo-datos-organizacion">
+      <h2 id="titulo-datos-organizacion" className="solo-lectores">
+        Datos de la organización
+      </h2>
+      <div className="cabecera-caso__titulo">
+        <h1>{organizacion.nombre}</h1>
+        <Etiqueta tipo={esReferente ? 'destacada' : 'neutra'}>
+          {esReferente ? 'Sos Referente' : 'Sos miembro'}
+        </Etiqueta>
+        {esReferente && !editando && (
+          <button
+            type="button"
+            className="boton boton--fantasma boton--icono"
+            aria-label="Editar los datos de la organización"
+            onClick={() => setEditando(true)}
+          >
+            <Icono nombre="lapiz" tamanio={18} />
+          </button>
         )}
-        <dt>Plan</dt>
-        <dd>
-          {organizacion.plan.nombre} · hasta {organizacion.plan.limite_miembros} miembros
-        </dd>
-        {!esReferente && (
-          <>
-            <dt>Correo de contacto</dt>
-            <dd>{organizacion.correo_contacto ?? '—'}</dd>
-            <dt>Teléfono</dt>
-            <dd>{organizacion.telefono ?? '—'}</dd>
-          </>
-        )}
-      </dl>
-      {esReferente && (
-        <form onSubmit={manejarEnvio} className="formulario" noValidate>
-          {mensaje && <Aviso tipo="exito">{mensaje}</Aviso>}
+      </div>
+      <ul className="datos-en-linea">
+        <li>{organizacion.tipo_nombre}</li>
+        {organizacion.cuit && <li>CUIT {organizacion.cuit}</li>}
+        <li>
+          Plan {organizacion.plan.nombre} · {cantidadMiembros} de {organizacion.plan.limite_miembros} miembros
+        </li>
+        <li>{contacto || 'Sin datos de contacto'}</li>
+      </ul>
+      {mensaje && <Aviso tipo="exito">{mensaje}</Aviso>}
+      {editando && (
+        <form onSubmit={manejarEnvio} className="formulario edicion-en-lugar" noValidate>
           {error && <Aviso tipo="error">{error.message}</Aviso>}
-          <CampoTexto
-            etiqueta="Nombre"
-            nombre="nombre"
-            value={valores.nombre}
-            onChange={cambiar}
-            error={errores.nombre}
-            readOnly={organizacion.tipo === 'aseguradora'}
-            ayuda={
-              organizacion.tipo === 'aseguradora'
-                ? 'Es la denominación del catálogo de la Superintendencia de Seguros.'
-                : undefined
-            }
-            required
-          />
           <div className="formulario__fila">
+            <CampoTexto
+              etiqueta="Nombre"
+              nombre="nombre"
+              value={valores.nombre}
+              onChange={cambiar}
+              error={errores.nombre}
+              readOnly={organizacion.tipo === 'aseguradora'}
+              ayuda={
+                organizacion.tipo === 'aseguradora'
+                  ? 'Es la denominación del catálogo de la Superintendencia de Seguros.'
+                  : undefined
+              }
+              required
+            />
             <CampoTexto
               etiqueta="Correo de contacto"
               nombre="correo_contacto"
@@ -146,9 +159,14 @@ function SeccionDatos({ organizacion, esReferente, alGuardar }) {
               error={errores.telefono}
             />
           </div>
-          <button type="submit" className="boton" disabled={enviando}>
-            {enviando ? 'Guardando…' : 'Guardar los datos'}
-          </button>
+          <div className="acciones-en-linea">
+            <button type="button" className="boton boton--fantasma" onClick={() => setEditando(false)}>
+              Cancelar
+            </button>
+            <button type="submit" className="boton" disabled={enviando}>
+              {enviando ? 'Guardando…' : 'Guardar los datos'}
+            </button>
+          </div>
         </form>
       )}
     </section>
@@ -485,13 +503,17 @@ export default function PaginaOrganizacion() {
 
   return (
     <>
-      <div className="encabezado-pagina">
-        <h1>{organizacion.nombre}</h1>
-        <Etiqueta tipo={esReferente ? 'destacada' : 'neutra'}>
-          {esReferente ? 'Sos Referente' : 'Sos miembro'}
-        </Etiqueta>
-      </div>
-      <p className="subtitulo">{organizacion.tipo_nombre}</p>
+      <Link to="/organizaciones" className="volver">
+        <Icono nombre="derecha" tamanio={16} />
+        Organizaciones
+      </Link>
+      <CabeceraOrganizacion
+        key={organizacion.nombre}
+        organizacion={organizacion}
+        esReferente={esReferente}
+        cantidadMiembros={miembros.length}
+        alGuardar={recargar}
+      />
       {state?.mensaje && <Aviso tipo="exito">{state.mensaje}</Aviso>}
       {organizacion.estado === 'pendiente' && (
         <Aviso tipo="info">
@@ -515,12 +537,6 @@ export default function PaginaOrganizacion() {
           recargar={recargar}
         />
       )}
-      <SeccionDatos
-        key={organizacion.nombre}
-        organizacion={organizacion}
-        esReferente={esReferente}
-        alGuardar={recargar}
-      />
       <SeccionSalida
         organizacion={organizacion}
         esReferente={esReferente}

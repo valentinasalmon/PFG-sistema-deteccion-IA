@@ -313,6 +313,7 @@ describe('pantalla de la organización como Referente', () => {
     })
     const { usuario } = renderizarEn('/organizaciones/3')
     const seccion = (await screen.findByRole('heading', { name: 'Datos de la organización' })).closest('section')
+    await usuario.click(within(seccion).getByRole('button', { name: 'Editar los datos de la organización' }))
     await usuario.clear(within(seccion).getByLabelText('Nombre'))
     await usuario.type(within(seccion).getByLabelText('Nombre'), 'Estudio Pérez y Asociados')
     await usuario.click(within(seccion).getByRole('button', { name: 'Guardar los datos' }))

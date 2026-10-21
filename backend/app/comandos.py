@@ -26,6 +26,26 @@ def promover(correo):
     click.echo(f"{usuario.nombre} {usuario.apellido} ({usuario.correo}) es Administrador.")
 
 
+CORREO_DE_PRUEBA = "prueba@evidentia.local"
+CONTRASENIA_DE_PRUEBA = "Prueba12345"
+
+
+@administracion_cli.command("cuenta-de-prueba")
+@click.option("--correo", default=CORREO_DE_PRUEBA, show_default=True)
+@click.option("--contrasenia", default=CONTRASENIA_DE_PRUEBA, show_default=True)
+def cuenta_de_prueba(correo, contrasenia):
+    """Crea o restablece una cuenta verificada y Administradora para probar todo.
+
+    Solo funciona fuera de producción: en el servidor real las cuentas se crean
+    desde el registro y los administradores con ``promover``.
+    """
+    if current_app.config.get("NOMBRE") == "produccion":
+        raise click.ClickException("La cuenta de prueba no se puede crear en producción.")
+    servicio = crear_servicio_cuentas(current_app.config, current_app.extensions["enviador_correo"])
+    usuario = servicio.preparar_cuenta_de_prueba(correo, contrasenia)
+    click.echo(f"Cuenta lista: {usuario.correo} / {contrasenia} (Abogado, Administrador).")
+
+
 def registrar_comandos(aplicacion):
     """Registra los grupos de comandos en la aplicación."""
     aplicacion.cli.add_command(administracion_cli)

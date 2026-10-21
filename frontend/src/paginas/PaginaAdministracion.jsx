@@ -151,7 +151,14 @@ export default function PaginaAdministracion() {
   const { usuario } = useSesion()
   return (
     <>
-      <h1>Administración</h1>
+      <div className="encabezado-pagina">
+        <div>
+          <h1>Administración</h1>
+          <p className="encabezado-pagina__bajada">
+            Aprobá las aseguradoras nuevas antes de que puedan invitar a su equipo y crear casos.
+          </p>
+        </div>
+      </div>
       {usuario.rol === 'administrador' ? (
         <Pendientes />
       ) : (
