@@ -68,6 +68,9 @@ CASO_ACCESO_MODIFICACION = "caso.acceso_modificacion"
 CASO_ACCESO_REVOCACION = "caso.acceso_revocacion"
 CASO_TRANSFERENCIA = "caso.transferencia"
 CASO_ELIMINACION = "caso.eliminacion"
+CASO_PRORROGA_RETENCION = "caso.prorroga_retencion"  # funcionalidad 015 (RF51)
+CASO_AVISO_RETENCION = "caso.aviso_retencion"  # RF50
+CASO_DESTRUCCION_RETENCION = "caso.destruccion_retencion"  # RF49
 
 # --- Acciones de datos personales (funcionalidad 019) ---
 CUENTA_ELIMINACION = "cuenta.eliminacion"

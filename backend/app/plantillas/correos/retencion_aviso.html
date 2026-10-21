@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>El caso <strong>{{ numero }}</strong> se elimina de forma definitiva el <strong>{{ vence }}</strong>, cuando se cumplen 5 años desde su cierre (artículo 2560 del Código Civil y Comercial).</p>
+<p style="padding:12px 16px;border-radius:10px;background:#fdf6e3;color:#4a3708;">Si el caso sigue en trámite, por ejemplo por un juicio, podés prorrogar el plazo 1 año indicando el motivo. Si no hacés nada, se elimina con sus imágenes e informes.</p>
+{% with texto_boton = "Ver el caso" %}{% include "_boton.html" %}{% endwith %}
+{% endblock %}
