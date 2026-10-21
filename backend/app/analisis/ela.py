@@ -325,6 +325,10 @@ class CapaELA(CapaAnalisis):
             nivel=nivel,
             anomalias=anomalias,
             conclusion=self.redactar_conclusion(nivel, anomalias, es_png),
-            detalle={"tabla": tabla, "regiones": len(regiones)},
+            detalle={
+                "tabla": tabla, "regiones": len(regiones),
+                # Valor obtenido que el informe compara con el umbral (entrevista del 02/10).
+                "desvio_maximo": round(max((r.desvio for r in regiones), default=0.0), 1),
+            },
             imagen=dibujar_mapa(diferencia, regiones[:MAXIMO_REGIONES_INFORMADAS]),
         )

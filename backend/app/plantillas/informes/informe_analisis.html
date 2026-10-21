@@ -69,6 +69,8 @@
     ol.pasos li, ul.lista li { margin-bottom: 4pt; }
     .glosario td:first-child { width: 28%; font-weight: bold; }
     .salto { page-break-before: always; }
+    .criterios { margin: 6pt 0; }
+    .criterios td:first-child { width: 42%; }
   </style>
 </head>
 <body>
@@ -81,6 +83,7 @@
     Este informe presenta <strong>indicios técnicos</strong> obtenidos de forma automatizada.
     <strong>No emite veredictos</strong> sobre la autenticidad de las imágenes y no reemplaza un
     dictamen pericial. Ante cualquier duda, consultá con un perito especializado en informática forense.
+    <br><br><strong>Descargo.</strong> {{ informe.descargo }}
   </div>
 
   <h2><span class="numero">1</span> Resumen</h2>
@@ -218,6 +221,12 @@
         {% else %}
           <p><strong>No disponible.</strong> {{ capa.motivo }}</p>
         {% endif %}
+        {% if capa.criterios %}
+        <table class="tecnico criterios">
+          <tr><th>Criterio</th><th>Referencia sin edición</th><th>Valor obtenido</th></tr>
+          {% for fila in capa.criterios %}<tr><td>{{ fila.criterio }}</td><td>{{ fila.referencia }}</td><td><strong>{{ fila.obtenido }}</strong></td></tr>{% endfor %}
+        </table>
+        {% endif %}
         <div class="que-significa"><strong>¿Qué significa?</strong> {{ capa.que_significa }}</div>
         {% if capa.disponible and capa.tabla %}
         <table class="tecnico">
@@ -232,7 +241,10 @@
   </section>
   {% endfor %}
 
-  <h2><span class="numero">6</span> Cronología</h2>
+  <h2><span class="numero">6</span> Uso previsto y supervisión humana</h2>
+  <ul class="lista">{% for parrafo in informe.uso_previsto %}<li>{{ parrafo }}</li>{% endfor %}</ul>
+
+  <h2><span class="numero">7</span> Cronología</h2>
   <table class="datos">
     {% for imagen in informe.imagenes %}
     <tr><td>Carga de «{{ imagen.nombre }}»</td><td>{{ imagen.cargada_en | hora_argentina }}</td></tr>
@@ -243,7 +255,7 @@
   </table>
   <p class="nota">La plataforma registra cada acción sobre el caso en su auditoría. La huella SHA-256 de este PDF queda guardada al generarlo y permite comprobar que no se modificó.</p>
 
-  <h2><span class="numero">7</span> Versiones de los componentes</h2>
+  <h2><span class="numero">8</span> Versiones de los componentes</h2>
   <p class="nota">Se registran para que el análisis pueda reproducirse.</p>
   <table class="datos">
     {% for componente, version in informe.versiones.items() %}
@@ -251,12 +263,12 @@
     {% endfor %}
   </table>
 
-  <h2><span class="numero">8</span> Limitaciones y advertencia legal</h2>
+  <h2><span class="numero">9</span> Limitaciones y advertencia legal</h2>
   <ul class="lista">
     {% for limitacion in informe.limitaciones %}<li>{{ limitacion }}</li>{% endfor %}
   </ul>
 
-  <h2><span class="numero">9</span> Glosario</h2>
+  <h2><span class="numero">10</span> Glosario</h2>
   <table class="glosario">
     {% for termino, definicion in informe.glosario %}
     <tr><td>{{ termino }}</td><td>{{ definicion }}</td></tr>

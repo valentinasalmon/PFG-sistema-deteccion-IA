@@ -369,6 +369,11 @@ export default function SeccionAnalisis({ idCaso, puedeGenerar = false, alTermin
         Cada capa informa indicios por separado; no se combinan en un puntaje único. Ante
         cualquier duda, consultá con un perito especializado.
       </p>
+      <p className="descargo">
+        <strong>Herramienta auxiliar.</strong> Estos resultados son parciales: los produce un
+        sistema automatizado que incluye técnicas de inteligencia artificial y no reemplazan el
+        criterio de un perito o criminalista, que toma la decisión final.
+      </p>
       <Escala />
       {historial.length > 1 && (
         <ul className="historial-analisis" aria-label="Historial de análisis">

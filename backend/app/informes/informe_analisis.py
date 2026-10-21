@@ -81,6 +81,27 @@ ESCALA_DE_INDICIO = (
     "suman ni se promedian: cada capa mira un aspecto distinto."
 )
 
+# Descargo pedido en la entrevista del 02/10/2026: resultado parcial, automatizado
+# y que no reemplaza el criterio de un perito (ADR-0017).
+DESCARGO = (
+    "Este resultado es parcial: lo produjo un sistema automatizado de análisis que "
+    "incluye técnicas de inteligencia artificial. Es una herramienta auxiliar y no "
+    "reemplaza el criterio de un perito o criminalista, que es quien debe evaluar la "
+    "evidencia y tomar la decisión final."
+)
+
+USO_PREVISTO = (
+    "evidentIA es una herramienta de apoyo para abogados, aseguradoras, peritos y "
+    "criminalistas. Sigue el principio de supervisión humana («persona en el circuito») "
+    "del Reglamento (UE) 2024/1689 de Inteligencia Artificial y el sistema de gestión de "
+    "la norma ISO/IEC 42001: la plataforma aporta indicios medibles y trazables, y la "
+    "decisión sobre la evidencia siempre la toma una persona.",
+    "Los umbrales de cada capa se publican en este informe para que el resultado pueda "
+    "auditarse y reproducirse. El funcionamiento interno de los algoritmos no se detalla.",
+    "Los porcentajes expresan la intensidad de las señales encontradas, no una "
+    "probabilidad ni una certeza sobre el origen de la imagen.",
+)
+
 LIMITACIONES = (
     "Este informe presenta indicios técnicos obtenidos de forma automatizada. No "
     "constituye un dictamen pericial ni emite una conclusión sobre la autenticidad "
@@ -145,6 +166,14 @@ NOMBRES_SEVERIDAD = {
     "debil": "Débil",
     "neutro": "Informativo",
 }
+ESTADOS_FIRMA = {
+    "confiable": "Firma confiable",
+    "firmante_no_reconocido": "Firmante no reconocido",
+    "contenido_modificado": "Modificada después de firmarse",
+    "firma_invalida": "Credenciales no válidas",
+}
+SEVERIDADES_RELEVANTES = ("directo", "fuerte", "moderado")
+
 NOMBRES_PERFIL = {"abogado": "Abogado", "aseguradora": "Aseguradora"}
 
 
@@ -184,6 +213,49 @@ def _solicitante(analisis):
     }
 
 
+def _criterios(resultado):
+    """Valores de referencia y valores obtenidos de una capa (entrevista del 02/10/2026).
+
+    Muestra los umbrales numéricos con los que se juzga cada señal sin
+    describir el algoritmo. Cada fila es (criterio, referencia sin edición,
+    valor obtenido).
+    """
+    detalle = resultado.detalle or {}
+    relevantes = sum(1 for a in resultado.anomalias if a.severidad in SEVERIDADES_RELEVANTES)
+    hallazgos = str(relevantes) if relevantes else "Ninguna"
+    filas = []
+    if resultado.capa == "metadatos":
+        filas += [
+            ("Datos descriptivos del archivo (EXIF, XMP, IPTC)",
+             "Presentes en una foto original de cámara o teléfono",
+             "Ausentes" if detalle.get("sin_metadatos") else "Presentes"),
+            ("Señales de edición, de generación o incoherencias de fechas",
+             "Ninguna (una modificación más de 24 h después de la captura cuenta como señal)",
+             hallazgos),
+        ]
+    elif resultado.capa == "c2pa":
+        if detalle.get("sin_credenciales"):
+            credenciales = "Ausentes"
+        else:
+            credenciales = ESTADOS_FIRMA.get(detalle.get("estado_firma"), "Presentes")
+        filas += [
+            ("Credenciales de contenido C2PA",
+             "Ausentes, o firma confiable sin declaración de IA", credenciales),
+            ("Declaraciones de IA o de edición en las credenciales", "Ninguna", hallazgos),
+        ]
+    elif resultado.capa == "ela":
+        desvio = detalle.get("desvio_maximo")
+        filas += [
+            ("Regiones que se apartan del resto (mínimo 6 bloques de 16 × 16 píxeles)",
+             "0", str(detalle.get("regiones", "—"))),
+            ("Desvío medio de la región más marcada",
+             "Menos de 10 desvíos robustos (umbral de indicio moderado); un bloque se "
+             "marca desde 4", f"{desvio} desvíos".replace(".", ",") if desvio else "—"),
+        ]
+    filas.append(("Nivel de indicio de la capa", "0 % (sin señales)", f"{resultado.nivel} %"))
+    return [{"criterio": c, "referencia": r, "obtenido": o} for c, r, o in filas]
+
+
 def _resultado(resultado, imagenes_de_capas):
     disponible = resultado.estado == "completado"
     return {
@@ -196,6 +268,7 @@ def _resultado(resultado, imagenes_de_capas):
         "motivo": resultado.motivo,
         "version": resultado.version,
         "que_significa": QUE_SIGNIFICA.get(resultado.capa, QUE_SIGNIFICA_GENERICO),
+        "criterios": _criterios(resultado) if disponible else [],
         "anomalias": [
             {
                 "severidad": NOMBRES_SEVERIDAD.get(a.severidad, a.severidad),
@@ -276,6 +349,8 @@ def armar_datos(analisis, miniaturas, version_plataforma, imagenes_de_capas=None
         },
         "escala": ESCALA_DE_INDICIO,
         "leyenda": LEYENDA_PERICIAL,
+        "descargo": DESCARGO,
+        "uso_previsto": USO_PREVISTO,
         "limitaciones": LIMITACIONES,
     }
 

@@ -176,3 +176,22 @@ def test_resumen_custodia_escala_y_glosario():
 def test_bandas_de_indicio(nivel, banda):
     """Las bandas coinciden con describir_intensidad() de las capas."""
     assert informe_analisis.banda_de_indicio(nivel)["nombre"] == banda
+
+
+def test_valores_de_referencia_descargo_y_uso_previsto():
+    """Entrevista del 02/10/2026: umbrales, descargo de IA y supervisión humana."""
+    analisis = _analisis()
+    ela = _resultado()
+    ela.capa, ela.nivel = "ela", 45
+    ela.detalle = {"tabla": [], "regiones": 1, "desvio_maximo": 12.4}
+    ela.anomalias = [SimpleNamespace(severidad="moderado", descripcion="Zona que se aparta.")]
+    analisis.imagenes[0].resultados.append(ela)
+
+    html = _html(analisis)
+
+    for texto in (
+        "Referencia sin edición", "Valor obtenido", "12,4 desvíos", "Menos de 10 desvíos robustos",
+        "no reemplaza el criterio de un perito", "inteligencia artificial",
+        "Uso previsto y supervisión humana", "Reglamento (UE) 2024/1689", "ISO/IEC 42001",
+    ):
+        assert texto in html, texto
