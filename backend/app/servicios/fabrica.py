@@ -8,6 +8,7 @@ IP) para que la auditoría lo registre sin que los servicios conozcan Flask.
 """
 from app.repositorios.catalogo_aseguradoras import CatalogoAseguradoras
 from app.analisis.registro import crear_capas
+from app.integraciones.sello_tiempo import crear_sellador
 from app.repositorios.repositorio_analisis import RepositorioAnalisis
 from app.repositorios.repositorio_auditoria import RepositorioAuditoria
 from app.repositorios.repositorio_casos import RepositorioCasos
@@ -29,6 +30,7 @@ from app.servicios.servicio_organizaciones import ServicioOrganizaciones
 from app.servicios.servicio_panel import ServicioPanel
 from app.servicios.servicio_perfil import ServicioPerfil
 from app.servicios.servicio_planes import ServicioPlanes
+from app.servicios.servicio_sellos import ServicioSellos
 from app.servicios.servicio_sesion import ServicioSesion
 from app.servicios.tokens import GestorTokens
 
@@ -111,6 +113,7 @@ def crear_servicio_imagenes(configuracion, enviador, almacenamiento, origen=None
     return ServicioImagenes(
         RepositorioImagenes(), crear_servicio_casos(configuracion, enviador, origen),
         almacenamiento, configuracion, crear_servicio_auditoria(origen),
+        crear_servicio_sellos(configuracion, origen),
     )
 
 
@@ -176,3 +179,10 @@ def crear_servicio_administracion(configuracion):
 def crear_tareas_de_retencion(configuracion, enviador, almacenamiento=None, origen=None):
     """Prórroga y tarea diaria de retención de los casos (funcionalidad 015)."""
     return TareasDeRetencion(crear_servicio_casos(configuracion, enviador, origen, almacenamiento))
+
+
+def crear_servicio_sellos(configuracion, origen=None):
+    """Sello de tiempo de las imágenes en BFA (funcionalidad 016)."""
+    return ServicioSellos(
+        RepositorioImagenes(), crear_sellador(configuracion), crear_servicio_auditoria(origen)
+    )

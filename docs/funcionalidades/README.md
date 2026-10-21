@@ -40,8 +40,8 @@ implementación siguiendo tareas.md, con pruebas
 | 012 | Capa 4 (ONNX) | 5 | RF42 | Pendiente |
 | 013 | [Notificaciones y panel principal](013-panel-y-notificaciones/especificacion.md) | 6 | RF47, RF48 | Completado |
 | 014 | [Planes y tablero de administración](014-planes-y-tablero/especificacion.md) | 6 | RF19 – RF22 | Completado |
-| 015 | [Retención y destrucción de datos](015-retencion/especificacion.md) | 7 | RF49 – RF51 | Completado (en revisión) |
-| 016 | Sello de tiempo en Blockchain Federal Argentina | 7 | RF37 | Pendiente |
+| 015 | [Retención y destrucción de datos](015-retencion/especificacion.md) | 7 | RF49 – RF51 | Completado |
+| 016 | [Sello de tiempo en Blockchain Federal Argentina](016-sello-bfa/especificacion.md) | 7 | RF37 | Completado (falta activar BFA real) |
 | 017 | [Infraestructura y despliegue en AWS](017-infraestructura-aws/especificacion.md) | 8 | RNF02, RNF03, RNF15, RNF22 | Desplegada (falta probar la restauración y el dominio) |
 | 018 | Cierre: usabilidad, índice de calidad y documentación final | 9 | RNF10, RNF11, RNF19 | Pendiente |
 | 019 | Eliminación de cuenta y copia de datos personales | 3 | RF08, RF09 | Completado |

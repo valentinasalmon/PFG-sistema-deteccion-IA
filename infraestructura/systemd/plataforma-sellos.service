@@ -1,0 +1,14 @@
+# Sello de tiempo de las imágenes en Blockchain Federal Argentina (funcionalidad 016, RF37).
+[Unit]
+Description=evidentIA - sellos de tiempo en BFA
+After=network.target postgresql.service redis-server.service
+
+[Service]
+Type=oneshot
+User=plataforma
+Group=plataforma
+WorkingDirectory=/opt/plataforma/actual/backend
+EnvironmentFile=/opt/plataforma/.env
+ExecStart=/opt/plataforma/actual/venv/bin/flask --app wsgi sellos procesar
+NoNewPrivileges=true
+PrivateTmp=true

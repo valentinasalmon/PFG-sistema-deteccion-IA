@@ -31,6 +31,7 @@ locals {
     S3_BUCKET        = aws_s3_bucket.bucket["imagenes"].bucket
     S3_REGION        = var.region
     BUCKET_OPERACION = aws_s3_bucket.bucket["operacion"].bucket
+    SELLO_TIEMPO     = var.sello_tiempo
   }
 }
 

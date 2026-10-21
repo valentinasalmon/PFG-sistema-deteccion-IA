@@ -9,7 +9,11 @@ from flask import current_app
 from flask.cli import AppGroup
 
 from app.servicios.errores import NoEncontrado
-from app.servicios.fabrica import crear_servicio_cuentas, crear_tareas_de_retencion
+from app.servicios.fabrica import (
+    crear_servicio_cuentas,
+    crear_servicio_sellos,
+    crear_tareas_de_retencion,
+)
 
 administracion_cli = AppGroup("administracion", help="Tareas del Administrador de la plataforma.")
 
@@ -63,7 +67,18 @@ def procesar_retencion():
     )
 
 
+sellos_cli = AppGroup("sellos", help="Sello de tiempo en Blockchain Federal Argentina (016).")
+
+
+@sellos_cli.command("procesar")
+def procesar_sellos():
+    """Pide y confirma los sellos pendientes. La ejecuta un timer cada 15 minutos (RF37 CA3)."""
+    resultado = crear_servicio_sellos(current_app.config).procesar()
+    click.echo(f"Sellos: {resultado['sellados']} sellado(s), {resultado['en_curso']} en curso.")
+
+
 def registrar_comandos(aplicacion):
     """Registra los grupos de comandos en la aplicación."""
     aplicacion.cli.add_command(administracion_cli)
     aplicacion.cli.add_command(retencion_cli)
+    aplicacion.cli.add_command(sellos_cli)

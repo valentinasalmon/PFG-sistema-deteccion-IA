@@ -2738,3 +2738,30 @@ select.campo__control {
   background: var(--alerta-fondo);
   color: var(--alerta);
 }
+
+/* --- Sello de tiempo en BFA (funcionalidad 016) --- */
+.sello {
+  align-self: flex-start;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radio-chico);
+  background: var(--info-fondo);
+  color: var(--info);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.sello--ok {
+  background: var(--exito-fondo);
+  color: var(--exito);
+}
+
+.sello--simulado {
+  background: var(--fondo);
+  color: var(--tinta-2);
+  border: 1px dashed var(--linea-control);
+}
+
+.sello--fallido {
+  background: var(--alerta-fondo);
+  color: var(--alerta);
+}

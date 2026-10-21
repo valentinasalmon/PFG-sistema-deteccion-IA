@@ -131,3 +131,19 @@ def test_un_caso_reabierto_no_se_destruye(aplicacion, ana):
 
     assert "0 caso(s) destruido(s)" in _procesar(aplicacion)
     assert ana.get(f"/api/casos/{caso['id']}").status_code == 200
+
+
+def test_imagen_cargada_queda_sellada_con_el_simulado(aplicacion, ana):
+    """016: al cargar, la imagen se sella (en pruebas, con el sellador simulado)."""
+    caso = ana.post("/api/casos", json=CASO).get_json()["caso"]
+    salida = io.BytesIO()
+    Image.new("RGB", (64, 48), (10, 20, 30)).save(salida, "PNG")
+    imagen = ana.post(
+        f"/api/casos/{caso['id']}/imagenes",
+        data={"archivo": (io.BytesIO(salida.getvalue()), "frente.png")},
+        content_type="multipart/form-data",
+    ).get_json()["imagen"]
+
+    assert imagen["sello"]["estado"] == "sellado" and imagen["sello"]["simulado"] is True
+    resultado = aplicacion.test_cli_runner().invoke(args=["sellos", "procesar"])
+    assert "0 sellado(s), 0 en curso" in resultado.output

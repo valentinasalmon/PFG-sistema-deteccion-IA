@@ -21,8 +21,8 @@ systemctl reload nginx || systemctl restart nginx
 
 install -m 644 "$SERVIDOR"/systemd/* /etc/systemd/system/
 systemctl daemon-reload
-systemctl enable plataforma-web plataforma-trabajador plataforma-respaldo.timer plataforma-retencion.timer
-systemctl start plataforma-respaldo.timer plataforma-retencion.timer
+systemctl enable plataforma-web plataforma-trabajador plataforma-respaldo.timer plataforma-retencion.timer plataforma-sellos.timer
+systemctl start plataforma-respaldo.timer plataforma-retencion.timer plataforma-sellos.timer
 
 # Recarga Nginx cuando certbot renueva el certificado.
 mkdir -p /etc/letsencrypt/renewal-hooks/deploy

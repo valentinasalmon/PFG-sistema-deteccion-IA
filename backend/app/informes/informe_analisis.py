@@ -283,6 +283,21 @@ def _resultado(resultado, imagenes_de_capas):
     }
 
 
+def _sello(original):
+    """Texto del sello de tiempo de la imagen en BFA (funcionalidad 016, RF37 CA2)."""
+    estado = getattr(original, "sello_estado", None)
+    if estado == "sellado":
+        fecha = original.sello_fecha.strftime("%d/%m/%Y %H:%M UTC") if original.sello_fecha else ""
+        if original.sello_simulado:
+            return f"Sello simulado del entorno de pruebas ({fecha}): no tiene validez."
+        return f"Sellada en Blockchain Federal Argentina el {fecha} · {original.sello_referencia}"
+    if estado in ("pendiente", "enviado"):
+        return "Solicitado a Blockchain Federal Argentina; pendiente de confirmación."
+    if estado == "fallido":
+        return "No se pudo obtener el sello de Blockchain Federal Argentina."
+    return "No solicitado."
+
+
 def _imagen(incluida, miniaturas, imagenes_de_capas):
     """Identificación de una imagen analizada, su cadena de custodia y sus resultados."""
     original = getattr(incluida, "imagen", None)
@@ -299,6 +314,7 @@ def _imagen(incluida, miniaturas, imagenes_de_capas):
         "tamanio": _tamanio_legible(getattr(original, "tamanio", None)),
         "cargada_en": getattr(original, "cargada_en", None),
         "cargada_por": f"{cargo.nombre} {cargo.apellido}" if cargo is not None else "—",
+        "sello": _sello(original),
         "resultados": [_resultado(r, imagenes_de_capas) for r in incluida.resultados],
     }
 
