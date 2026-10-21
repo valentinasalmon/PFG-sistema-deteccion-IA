@@ -154,7 +154,7 @@
       {% if imagen.integridad == "alterada" %}<strong style="color: #b42318">No coincide: se excluyó del análisis</strong>
       {% else %}<span class="ok">Coincide con la huella registrada al cargarla</span>{% endif %}
     </td></tr>
-    <tr><td>Sello de tiempo</td><td>Sello de tiempo en Blockchain Federal Argentina: todavía no disponible en esta versión de la plataforma.</td></tr>
+    <tr><td>Sello de tiempo en Blockchain Federal Argentina</td><td>{{ imagen.sello }}</td></tr>
   </table>
   {% endfor %}
 

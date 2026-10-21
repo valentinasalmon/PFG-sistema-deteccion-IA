@@ -48,6 +48,13 @@ class Imagen(db.Model):  # pylint: disable=too-few-public-methods
     )
     cargada_en = db.Column(db.DateTime, nullable=False, default=ahora_utc)
     # Una imagen incluida en un informe generado ya no puede eliminarse (RN24).
+    # Sello de tiempo en BFA (funcionalidad 016, RF37): pendiente, enviado, sellado o fallido.
+    sello_estado = db.Column(db.String(20), nullable=True)
+    sello_recibo = db.Column(db.Text, nullable=True)
+    sello_referencia = db.Column(db.String(200), nullable=True)
+    sello_fecha = db.Column(db.DateTime, nullable=True)
+    sello_simulado = db.Column(db.Boolean, nullable=False, default=False, server_default=db.false())
+    sello_intentos = db.Column(db.Integer, nullable=False, default=0, server_default="0")
     en_informe = db.Column(db.Boolean, nullable=False, default=False, server_default=db.false())
 
     caso = db.relationship("Caso", back_populates="imagenes")

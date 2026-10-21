@@ -20,4 +20,10 @@ def imagen_a_dict(imagen, enlace_miniatura, analizada=False):
         "en_informe": imagen.en_informe,
         "analizada": analizada,
         "miniatura": enlace_miniatura,
+        "sello": {
+            "estado": imagen.sello_estado,
+            "referencia": imagen.sello_referencia,
+            "fecha": imagen.sello_fecha.isoformat() if imagen.sello_fecha else None,
+            "simulado": imagen.sello_simulado,
+        },
     }

@@ -19,6 +19,10 @@ class RepositorioImagenes(RepositorioBase):
         """Imágenes del caso en el orden en que se cargaron."""
         return Imagen.query.filter_by(id_caso=id_caso).order_by(Imagen.id).all()
 
+    def con_sello_en_curso(self, estados):
+        """Imágenes cuyo sello de tiempo todavía no terminó (funcionalidad 016)."""
+        return Imagen.query.filter(Imagen.sello_estado.in_(estados)).order_by(Imagen.id).all()
+
     def cantidad_de_caso(self, id_caso):
         """Cantidad de imágenes del caso, para el límite del plan (RN15)."""
         return Imagen.query.filter_by(id_caso=id_caso).count()
