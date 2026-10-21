@@ -19,12 +19,16 @@ Realiza: RF37 (CA3, CA4).
 """
 import hashlib
 import json
+import re
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from urllib import error, parse, request
 
 URL_BFA = "https://tsaapi.bfa.ar"
 TIEMPO_ESPERA = 10  # segundos por solicitud
+# BFA informa la fecha en hora argentina (UTC-3, sin horario de verano), "dd/mm/aaaa hh:mm:ss".
+HORA_ARGENTINA = timezone(timedelta(hours=-3))
+FORMATO_FECHA_BFA = "%d/%m/%Y %H:%M:%S"
 
 
 class SelloNoDisponible(Exception):
@@ -75,16 +79,29 @@ class SelladorBFA:
         respuesta = self._enviar("/api/tsa/verify/", {"file_hash": huella, "rd": recibo})
         if respuesta.get("status") != "success":
             return None
-        # Los campos se buscan en la raíz o en ``attestation``, según la versión del servicio.
+        # Respuesta observada el 2026-10-22: {"status", "permanent_rd", "attestation_time":
+        # "21/10/2026 18:05:27", "messages": "... fue ingresado en el bloque 50435901 el ..."}.
         datos = {**respuesta, **(respuesta.get("attestation") or {})}
-        bloque = datos.get("block") or datos.get("block_number") or datos.get("blockNumber")
-        momento = datos.get("attestation_time") or datos.get("time") or datos.get("timestamp")
-        fecha = (
-            datetime.fromtimestamp(int(momento), tz=timezone.utc).replace(tzinfo=None)
-            if str(momento or "").isdigit() else datetime.now(timezone.utc).replace(tzinfo=None)
-        )
+        bloque = datos.get("block") or datos.get("block_number")
+        if not bloque:
+            encontrado = re.search(r"bloque (\d+)", str(datos.get("messages") or ""))
+            bloque = encontrado.group(1) if encontrado else None
         referencia = f"BFA bloque {bloque}" if bloque else "BFA"
+        fecha = _fecha_bfa(datos.get("attestation_time") or datos.get("time"))
         return Confirmacion(referencia=referencia, fecha=fecha, recibo=datos.get("permanent_rd"))
+
+
+def _fecha_bfa(valor):
+    """Fecha UTC (sin zona) del sello: acepta segundos Unix o "dd/mm/aaaa hh:mm:ss" de Argentina."""
+    ahora = datetime.now(timezone.utc).replace(tzinfo=None)
+    texto = str(valor or "").strip()
+    if texto.isdigit():
+        return datetime.fromtimestamp(int(texto), tz=timezone.utc).replace(tzinfo=None)
+    try:
+        local = datetime.strptime(texto, FORMATO_FECHA_BFA).replace(tzinfo=HORA_ARGENTINA)
+    except ValueError:
+        return ahora
+    return local.astimezone(timezone.utc).replace(tzinfo=None)
 
 
 class SelladorSimulado:
