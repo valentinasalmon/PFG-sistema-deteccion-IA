@@ -2,10 +2,13 @@
 
 Implementaciones intercambiables con la misma interfaz (RF37 CA4):
 
-- ``SelladorBFA``: el servicio público de sello de tiempo de BFA
-  (https://tsa.bfa.ar). Solo envía la huella SHA-256, nunca el archivo (RF37).
-  El sello se pide con ``sellar`` y, cuando BFA lo incluye en un bloque, se
-  confirma con ``verificar``.
+- ``SelladorBFA``: el servicio público Sello de Tiempo 2.0 de BFA
+  (https://tsa2.buenosaires.gob.ar, el que usa https://bfa.ar/sello2). Solo
+  envía la huella SHA-256, nunca el archivo (RF37). El sello se pide con
+  ``sellar`` y, cuando BFA lo incluye en un bloque, se confirma con
+  ``verificar``. El formato sigue la API pública del proyecto ``tsa2`` de BFA:
+  ``POST /stamp`` con ``{"hashes": [...]}`` y ``GET /verify/<huella>``, que
+  responde ``{"stamped": bool, "stamps": [...]}``.
 - ``SelladorSimulado``: desarrollo y pruebas. Responde al instante y marca
   todo como simulado, para que nunca se confunda con un sello real.
 
@@ -20,7 +23,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from urllib import error, request
 
-URL_BFA = "https://tsa.bfa.ar"
+URL_BFA = "https://tsa2.buenosaires.gob.ar"
 TIEMPO_ESPERA = 10  # segundos por solicitud
 
 
@@ -45,10 +48,11 @@ class SelladorBFA:
         self.url = url.rstrip("/")
         self.tiempo_espera = tiempo_espera
 
-    def _enviar(self, ruta, datos):
-        cuerpo = json.dumps(datos).encode()
+    def _enviar(self, ruta, datos=None):
+        """POST con ``datos`` en JSON, o GET si no hay datos; devuelve el JSON de la respuesta."""
+        cuerpo = json.dumps(datos).encode() if datos is not None else None
         solicitud = request.Request(
-            f"{self.url}{ruta}", data=cuerpo, method="POST",
+            f"{self.url}{ruta}", data=cuerpo, method="POST" if cuerpo else "GET",
             headers={"Content-Type": "application/json", "Accept": "application/json"},
         )
         try:
@@ -58,21 +62,20 @@ class SelladorBFA:
             raise SelloNoDisponible(f"BFA no respondió: {falla}") from falla
 
     def sellar(self, huella):
-        """Pide el sello de la huella y devuelve el recibo temporal que entrega BFA."""
-        respuesta = self._enviar("/api/tsa/stamp/", {"file_hash": huella})
-        recibo = respuesta.get("temporary_rd")
-        if not recibo:
-            raise SelloNoDisponible(f"BFA no devolvió un recibo: {respuesta}")
-        return recibo
+        """Pide el sello de la huella. BFA no entrega recibo: la huella misma lo identifica."""
+        self._enviar("/stamp", {"hashes": [huella]})
+        return huella
 
     def verificar(self, huella, recibo):
         """La ``Confirmacion`` si el sello ya está en un bloque; None si sigue pendiente."""
-        respuesta = self._enviar("/api/tsa/verify/", {"file_hash": huella, "rd": recibo})
-        if respuesta.get("status") != "success":
+        del recibo
+        respuesta = self._enviar(f"/verify/{huella}")
+        sellos = respuesta.get("stamps") or []
+        if not respuesta.get("stamped") or not sellos:
             return None
-        atestacion = respuesta.get("attestation") or {}
-        bloque = atestacion.get("block") or atestacion.get("block_number")
-        momento = atestacion.get("time") or atestacion.get("timestamp")
+        sello = sellos[0]
+        bloque = sello.get("blocknumber") or sello.get("blockNumber") or sello.get("block")
+        momento = sello.get("blocktimestamp") or sello.get("timestamp")
         fecha = (
             datetime.fromtimestamp(int(momento), tz=timezone.utc).replace(tzinfo=None)
             if str(momento or "").isdigit() else datetime.now(timezone.utc).replace(tzinfo=None)
