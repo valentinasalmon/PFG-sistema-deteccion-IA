@@ -147,3 +147,32 @@ def test_genera_un_pdf_real():
 def test_hora_de_argentina(valor, esperado):
     """Las fechas UTC se muestran en la hora de Argentina (UTC−3)."""
     assert formatear_hora_argentina(valor) == esperado
+
+
+def test_resumen_custodia_escala_y_glosario():
+    """022: resumen por capa en palabras, cadena de custodia, escala única y glosario."""
+    analisis = _analisis()
+    analisis.imagenes[0].imagen = SimpleNamespace(
+        formato="jpeg", ancho=1600, alto=1200, tamanio=162_816,
+        cargada_en=datetime(2026, 10, 19, 17, 0),
+        usuario=SimpleNamespace(nombre="Ana", apellido="López"),
+    )
+    html = _html(analisis)
+    for texto in (
+        "Resumen", "Indicios fuertes · 90 %", "no se suman ni se promedian",
+        "Evidencia analizada y cadena de custodia", "JPEG · 1600 × 1200 píxeles · 159 KB",
+        "19/10/2026 14:00 por Ana López", "Coincide con la huella registrada al cargarla",
+        "Metodología y escala de lectura", "45 % a 69 %", "Sin indicios", "Cronología", "Glosario",
+        "Cadena de custodia",
+    ):
+        assert texto in html, texto
+
+
+@pytest.mark.parametrize("nivel, banda", [
+    (0, "Sin indicios"), (1, "Indicios débiles"), (44, "Indicios débiles"),
+    (45, "Indicios moderados"), (69, "Indicios moderados"), (70, "Indicios fuertes"),
+    (100, "Indicios fuertes"),
+])
+def test_bandas_de_indicio(nivel, banda):
+    """Las bandas coinciden con describir_intensidad() de las capas."""
+    assert informe_analisis.banda_de_indicio(nivel)["nombre"] == banda

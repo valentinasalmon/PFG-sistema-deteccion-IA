@@ -1,14 +1,24 @@
 """Informe PDF de un análisis: datos, textos explicativos y conversión a PDF.
 
-Arma un documento sencillo y explicativo para personas sin formación
-técnica: cada capa tiene un recuadro "¿Qué significa?" y el informe termina
-con las limitaciones y la advertencia legal. Nunca emite un veredicto ni
-combina las capas en un puntaje (RN27). No accede a la base de datos ni al
-almacenamiento: recibe los objetos y las miniaturas ya leídas.
+Sigue el orden de un informe técnico de evidencia digital, pensado para que
+lo lea una persona sin formación técnica sin malentendidos:
+
+1. Resumen: un cuadro con el resultado de cada capa en cada imagen, en
+   palabras y en porcentaje, sin combinar las capas (RN27).
+2. Datos del caso y de la solicitud.
+3. Evidencia analizada: identificación de cada archivo y su cadena de
+   custodia (huella SHA-256 al cargarlo y verificación antes de analizarlo).
+4. Metodología y escala de lectura, iguales para todas las capas.
+5. Resultados por imagen y por capa, con el recuadro "¿Qué significa?".
+6. Cronología, versiones de los componentes (RN29), limitaciones y glosario.
+
+No accede a la base de datos ni al almacenamiento: recibe los objetos y las
+miniaturas ya leídas.
 
 Realiza: RF44 (CA1, CA2), RNF07 (CA3), RNF23 (CA2); RN27, RN29.
 """
 import base64
+from pathlib import Path
 
 from app.esquemas.casos import NOMBRES_TIPO as NOMBRES_TIPO_CASO
 from app.informes.plantillas import html_a_pdf, version_weasyprint
@@ -87,6 +97,47 @@ LIMITACIONES = (
     "resultados antes de utilizarlos en un proceso judicial o administrativo.",
 )
 
+# Bandas de la escala de lectura; coinciden con describir_intensidad() de las capas
+# y con las que muestra la pantalla de resultados.
+BANDAS_DE_INDICIO = (
+    {"desde": 70, "nombre": "Indicios fuertes", "clase": "fuerte", "rango": "70 % a 100 %"},
+    {"desde": 45, "nombre": "Indicios moderados", "clase": "moderado", "rango": "45 % a 69 %"},
+    {"desde": 1, "nombre": "Indicios débiles", "clase": "debil", "rango": "1 % a 44 %"},
+    {"desde": 0, "nombre": "Sin indicios", "clase": "ninguno", "rango": "0 %"},
+)
+
+TITULOS_CORTOS = {
+    "metadatos": "Metadatos",
+    "c2pa": "Credenciales de contenido",
+    "ela": "Niveles de error",
+}
+
+METODOLOGIA = (
+    "Al cargar cada imagen, la plataforma guardó el archivo original sin modificarlo y "
+    "calculó su huella digital SHA-256. Antes de analizarla volvió a calcular la huella y "
+    "la comparó con la registrada: solo se analizan los archivos idénticos al original.",
+    "Cada imagen se examinó con capas independientes, cada una con una técnica distinta. "
+    "Cada capa informa su propio nivel de indicio; los niveles no se combinan en un "
+    "puntaje único porque miden aspectos diferentes.",
+    "El análisis es automático y reproducible: con el mismo archivo y las mismas "
+    "versiones de los componentes, listadas al final, se obtiene el mismo resultado.",
+)
+
+GLOSARIO = (
+    ("Indicio", "Señal técnica que suele aparecer en imágenes editadas o generadas. "
+     "No prueba por sí sola una manipulación."),
+    ("Huella digital SHA-256", "Código de 64 caracteres calculado a partir del archivo. "
+     "Si el archivo cambia aunque sea un punto, la huella cambia por completo."),
+    ("Metadatos", "Datos guardados dentro del archivo además de la imagen: dispositivo, "
+     "fecha, programa de edición, ubicación."),
+    ("C2PA", "Estándar de credenciales de contenido firmadas digitalmente que declaran "
+     "quién creó o editó una imagen y con qué herramienta."),
+    ("ELA", "Análisis de niveles de error: compara cómo cambia cada zona de una imagen "
+     "JPEG al volver a comprimirla."),
+    ("Cadena de custodia", "Registro que permite demostrar que la evidencia analizada es la "
+     "misma que se cargó y que no se modificó en el camino."),
+)
+
 NOMBRES_SEVERIDAD = {
     "directo": "Directo",
     "fuerte": "Fuerte",
@@ -95,6 +146,23 @@ NOMBRES_SEVERIDAD = {
     "neutro": "Informativo",
 }
 NOMBRES_PERFIL = {"abogado": "Abogado", "aseguradora": "Aseguradora"}
+
+
+LOGO = Path(__file__).resolve().parents[1] / "plantillas" / "informes" / "logo.png"
+
+
+def banda_de_indicio(nivel):
+    """Banda de la escala de lectura que corresponde a un nivel de 0 a 100."""
+    return next(b for b in BANDAS_DE_INDICIO if nivel >= b["desde"])
+
+
+def _tamanio_legible(octetos):
+    """Tamaño de archivo en KB o MB, con coma decimal."""
+    if octetos is None:
+        return "—"
+    if octetos >= 1024 * 1024:
+        return f"{octetos / 1024 / 1024:.1f} MB".replace(".", ",")
+    return f"{octetos / 1024:.0f} KB"
 
 
 def _miniatura_como_dato(contenido, tipo="image/jpeg"):
@@ -117,10 +185,13 @@ def _solicitante(analisis):
 
 
 def _resultado(resultado, imagenes_de_capas):
+    disponible = resultado.estado == "completado"
     return {
         "titulo": TITULOS_CAPA.get(resultado.capa, resultado.capa),
-        "disponible": resultado.estado == "completado",
+        "titulo_corto": TITULOS_CORTOS.get(resultado.capa, resultado.capa),
+        "disponible": disponible,
         "nivel": resultado.nivel,
+        "banda": banda_de_indicio(resultado.nivel or 0) if disponible else None,
         "conclusion": resultado.conclusion,
         "motivo": resultado.motivo,
         "version": resultado.version,
@@ -139,6 +210,26 @@ def _resultado(resultado, imagenes_de_capas):
     }
 
 
+def _imagen(incluida, miniaturas, imagenes_de_capas):
+    """Identificación de una imagen analizada, su cadena de custodia y sus resultados."""
+    original = getattr(incluida, "imagen", None)
+    cargo = getattr(original, "usuario", None)
+    return {
+        "nombre": incluida.nombre,
+        "huella": incluida.huella,
+        "miniatura": _miniatura_como_dato(miniaturas.get(incluida.id)),
+        "integridad": incluida.integridad,
+        "formato": (getattr(original, "formato", None) or "—").upper(),
+        "dimensiones": (
+            f"{original.ancho} × {original.alto} píxeles" if original is not None else "—"
+        ),
+        "tamanio": _tamanio_legible(getattr(original, "tamanio", None)),
+        "cargada_en": getattr(original, "cargada_en", None),
+        "cargada_por": f"{cargo.nombre} {cargo.apellido}" if cargo is not None else "—",
+        "resultados": [_resultado(r, imagenes_de_capas) for r in incluida.resultados],
+    }
+
+
 def armar_datos(analisis, miniaturas, version_plataforma, imagenes_de_capas=None):
     """Datos del informe a partir del análisis.
 
@@ -149,6 +240,12 @@ def armar_datos(analisis, miniaturas, version_plataforma, imagenes_de_capas=None
     """
     caso = analisis.caso
     imagenes_de_capas = imagenes_de_capas or {}
+    imagenes = [_imagen(incluida, miniaturas, imagenes_de_capas) for incluida in analisis.imagenes]
+    # Columnas del resumen: las capas en el orden en que aparecen.
+    columnas = list(dict.fromkeys(r["titulo_corto"] for i in imagenes for r in i["resultados"]))
+    for imagen in imagenes:
+        por_capa = {r["titulo_corto"]: r for r in imagen["resultados"]}
+        imagen["resumen"] = [por_capa.get(columna) for columna in columnas]
     return {
         "caso": {
             "numero": caso.numero,
@@ -163,17 +260,14 @@ def armar_datos(analisis, miniaturas, version_plataforma, imagenes_de_capas=None
             "id": analisis.id,
             "pedido_en": analisis.creado_en,
             "iniciado_en": analisis.iniciado_en,
+            "finalizado_en": getattr(analisis, "finalizado_en", None),
         },
-        "imagenes": [
-            {
-                "nombre": incluida.nombre,
-                "huella": incluida.huella,
-                "miniatura": _miniatura_como_dato(miniaturas.get(incluida.id)),
-                "integridad": incluida.integridad,
-                "resultados": [_resultado(r, imagenes_de_capas) for r in incluida.resultados],
-            }
-            for incluida in analisis.imagenes
-        ],
+        "logo": _miniatura_como_dato(LOGO.read_bytes(), "image/png"),
+        "bandas": BANDAS_DE_INDICIO,
+        "metodologia": METODOLOGIA,
+        "glosario": GLOSARIO,
+        "imagenes": imagenes,
+        "columnas_resumen": columnas,
         "versiones": {
             "Plataforma": version_plataforma,
             **{TITULOS_CAPA.get(c, c): v for c, v in (analisis.versiones or {}).items()},
