@@ -242,6 +242,30 @@ class ServicioImagenes:
             self.sellos.intentar(imagen)
         return imagen
 
+    # --- Sello de tiempo pedido desde el navegador (RF37) ---
+
+    @property
+    def sello_en_navegador(self):
+        """True si el navegador tiene que pedir y confirmar el sello en BFA."""
+        return self.sellos is not None and self.sellos.en_navegador
+
+    def registrar_sello(self, id_caso, id_imagen, usuario, datos):
+        """Guarda los recibos de BFA que obtuvo el navegador (RF37).
+
+        Alcanza con poder ver el caso: el sello no cambia la evidencia y los
+        recibos se validan contra la huella de la imagen.
+        """
+        caso, _ = self.casos.caso_con_permiso(id_caso, usuario, NIVEL_LECTURA)
+        imagen = self._imagen_de(caso, id_imagen)
+        if self.sellos is None:
+            raise ConflictoDatos("El sello de tiempo está desactivado.", codigo="sello_desactivado")
+        return self.sellos.registrar_desde_navegador(
+            imagen,
+            recibo=_texto(datos.get("recibo")),
+            recibo_definitivo=_texto(datos.get("recibo_definitivo")),
+            fecha=_texto(datos.get("fecha")),
+        )
+
     # --- Consultar (RF35) ---
 
     def listar(self, id_caso, usuario):
@@ -319,6 +343,11 @@ class ServicioImagenes:
         self.repositorio.confirmar()
         for clave in claves:
             borrar_sin_fallar(self.almacenamiento, clave)
+
+
+def _texto(valor):
+    """El valor si es texto; cualquier otra cosa cuenta como ausente."""
+    return valor if isinstance(valor, str) else None
 
 
 def _error_archivo(mensaje):

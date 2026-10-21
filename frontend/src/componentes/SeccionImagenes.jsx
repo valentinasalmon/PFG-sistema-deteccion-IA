@@ -10,12 +10,23 @@
  * También permite elegir imágenes y pedir su análisis: por defecto quedan
  * elegidas las que todavía no se analizaron (CU27).
  *
- * Realiza: RF34 (CA1 a CA5), RF35, RF36, RF38 (CA1, CA2); CA1 a CA9 de la
- * funcionalidad 006 y CA1, CA2 de la 007.
+ * Si el servidor lo indica (``sello_en_navegador``), el navegador pide a BFA
+ * el sello de las imágenes pendientes y confirma las enviadas cada vez que se
+ * abre el caso (funcionalidad 016): BFA solo acepta conexiones desde Argentina.
+ *
+ * Realiza: RF34 (CA1 a CA5), RF35, RF36, RF37, RF38 (CA1, CA2); CA1 a CA9 de
+ * la funcionalidad 006 y CA1, CA2 de la 007.
  */
-import { useCallback, useId, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { solicitarAnalisis } from '../api/analisis.js'
-import { cargarImagen, eliminarImagen, enlaceDeDescarga, listarImagenes } from '../api/imagenes.js'
+import {
+  cargarImagen,
+  eliminarImagen,
+  enlaceDeDescarga,
+  listarImagenes,
+  registrarSello,
+} from '../api/imagenes.js'
+import { sellarEnBfa, verificarEnBfa } from '../api/selloBfa.js'
 import { useDatos } from '../hooks/useDatos.js'
 import { abrirDescarga, formatearTamanio } from '../utilidades/archivos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
@@ -81,9 +92,7 @@ function Carga({ idCaso, tamanioMaximo, alTerminar }) {
       <label htmlFor={idCampo} className="boton">
         Elegir imágenes
       </label>
-      <p className="nota">
-        JPEG o PNG, hasta {maximoMb} MB cada una. El archivo original no se modifica.
-      </p>
+      <p className="nota">JPEG o PNG, hasta {maximoMb} MB cada una. El archivo original no se modifica.</p>
       <div aria-live="polite">
         {cargando && <Cargando texto={`Cargando ${cargando.actual} de ${cargando.total}…`} />}
         {!cargando && resultados.length > 0 && (
@@ -188,12 +197,7 @@ function BarraAnalisis({ cantidad, total, alElegirTodas, alAnalizar }) {
 
   return (
     <div className="barra-analisis">
-      <button
-        type="button"
-        className="boton"
-        onClick={analizar}
-        disabled={cantidad === 0 || enviando}
-      >
+      <button type="button" className="boton" onClick={analizar} disabled={cantidad === 0 || enviando}>
         {enviando ? 'Pidiendo el análisis…' : `Analizar (${cantidad})`}
       </button>
       <button
@@ -235,16 +239,56 @@ function SelloDeTiempo({ sello }) {
   return <span className="sello">Sello en BFA en curso…</span>
 }
 
+/**
+ * Avanza un paso el sello de una imagen desde el navegador.
+ *
+ * @returns {Promise<boolean>} true si cambió algo en el servidor.
+ */
+async function avanzarSello(idCaso, imagen) {
+  let recibo = imagen.sello.recibo
+  let cambio = false
+  if (imagen.sello.estado === 'pendiente') {
+    recibo = await sellarEnBfa(imagen.huella)
+    await registrarSello(idCaso, imagen.id, { recibo })
+    cambio = true
+  }
+  if (!recibo) return cambio
+  const confirmacion = await verificarEnBfa(imagen.huella, recibo)
+  if (!confirmacion) return cambio
+  await registrarSello(idCaso, imagen.id, confirmacion)
+  return true
+}
+
+/** Pide o confirma en BFA, una vez por imagen, los sellos que siguen en curso. */
+function useSelloDesdeNavegador(idCaso, datos, recargar) {
+  const intentadas = useRef(new Set())
+
+  useEffect(() => {
+    if (!datos?.sello_en_navegador) return
+    const enCurso = datos.imagenes.filter(
+      (imagen) =>
+        ['pendiente', 'enviado'].includes(imagen.sello?.estado) && !intentadas.current.has(imagen.id),
+    )
+    if (enCurso.length === 0) return
+    enCurso.forEach((imagen) => intentadas.current.add(imagen.id))
+    // Si BFA no responde, se reintenta la próxima vez que se abra el caso.
+    Promise.all(enCurso.map((imagen) => avanzarSello(idCaso, imagen).catch(() => false))).then(
+      (cambios) => cambios.some(Boolean) && recargar(),
+    )
+  }, [idCaso, datos, recargar])
+}
+
 export default function SeccionImagenes({ idCaso, alSolicitarAnalisis }) {
   const cargar = useCallback(() => listarImagenes(idCaso), [idCaso])
   const { datos, error, cargando, recargar } = useDatos(cargar)
+  useSelloDesdeNavegador(idCaso, datos, recargar)
   const [aviso, setAviso] = useState(null)
   // Sin elección propia, quedan elegidas las imágenes que todavía no se analizaron.
   const [eleccion, setEleccion] = useState(null)
   const imagenes = datos?.imagenes ?? []
   const elegidas = new Set(
-    (eleccion ?? imagenes.filter((imagen) => !imagen.analizada).map((imagen) => imagen.id)).filter(
-      (id) => imagenes.some((imagen) => imagen.id === id),
+    (eleccion ?? imagenes.filter((imagen) => !imagen.analizada).map((imagen) => imagen.id)).filter((id) =>
+      imagenes.some((imagen) => imagen.id === id),
     ),
   )
 
@@ -277,9 +321,7 @@ export default function SeccionImagenes({ idCaso, alSolicitarAnalisis }) {
 
   return (
     <section className="seccion" aria-labelledby="titulo-imagenes" aria-busy={cargando}>
-      <h2 id="titulo-imagenes">
-        Imágenes{datos ? ` (${datos.imagenes.length} de ${datos.limite})` : ''}
-      </h2>
+      <h2 id="titulo-imagenes">Imágenes{datos ? ` (${datos.imagenes.length} de ${datos.limite})` : ''}</h2>
       {cargando && <Cargando texto="Cargando las imágenes…" />}
       {error && <Aviso tipo="error">{error.message}</Aviso>}
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}

@@ -146,3 +146,26 @@ def test_desactivado_no_hace_nada():
     servicio = ServicioSellos(Repositorio([imagen]), None, None)
     assert servicio.intentar(imagen) is None
     assert servicio.procesar() == {"sellados": 0, "en_curso": 0}
+
+
+def test_recibos_de_bfa():
+    """016, modo navegador: el definitivo debe contener la huella; de él sale el bloque."""
+    definitivo = sello_tiempo.base64.b64encode(f"1x-{HUELLA}-abc-0xdef-50435901".encode()).decode()
+    assert sello_tiempo.leer_recibo_definitivo(definitivo, HUELLA) == "50435901"
+    with pytest.raises(ValueError):
+        sello_tiempo.leer_recibo_definitivo(definitivo, "b" * 64)
+    temporal = sello_tiempo.base64.b64encode(b"0x-abc123-0xdef456").decode()
+    assert sello_tiempo.leer_recibo_temporal(temporal) == temporal
+    for invalido in ("no es base64", sello_tiempo.base64.b64encode(b"otra cosa").decode()):
+        with pytest.raises(ValueError):
+            sello_tiempo.leer_recibo_temporal(invalido)
+
+
+def test_sellador_navegador_no_llama_a_bfa():
+    """En modo navegador el servidor nunca pide el sello por su cuenta."""
+    sellador = crear_sellador({"SELLO_TIEMPO": "navegador"})
+    assert sellador.en_servidor is False
+    with pytest.raises(SelloNoDisponible):
+        sellador.sellar(HUELLA)
+    with pytest.raises(SelloNoDisponible):
+        sellador.verificar(HUELLA, "r")

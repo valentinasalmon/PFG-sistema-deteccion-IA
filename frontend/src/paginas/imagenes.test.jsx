@@ -13,8 +13,14 @@ vi.mock('../utilidades/archivos.js', async (original) => ({
 const { abrirDescarga } = await import('../utilidades/archivos.js')
 
 const ACCIONES = {
-  editar: true, cerrar: true, archivar: false, desarchivar: false, reabrir: false,
-  compartir: false, transferir: true, eliminar: true,
+  editar: true,
+  cerrar: true,
+  archivar: false,
+  desarchivar: false,
+  reabrir: false,
+  compartir: false,
+  transferir: true,
+  eliminar: true,
 }
 const CASO = {
   id: 7,
@@ -122,9 +128,12 @@ describe('imágenes del caso', () => {
   })
 
   it('el Lector solo consulta y descarga (CA6)', async () => {
-    api({ ...LISTADO, puede_modificar: false }, {
-      'GET /api/casos/7/imagenes/11/descarga': { cuerpo: { url: '/api/archivos/token-original' } },
-    })
+    api(
+      { ...LISTADO, puede_modificar: false },
+      {
+        'GET /api/casos/7/imagenes/11/descarga': { cuerpo: { url: '/api/archivos/token-original' } },
+      },
+    )
     const { usuario } = renderizarEn('/casos/7')
 
     await screen.findByRole('img', { name: 'Vista previa de frente.jpg' })
@@ -189,12 +198,78 @@ describe('imágenes del caso', () => {
 
 describe('sello de tiempo en BFA (funcionalidad 016)', () => {
   it('muestra el sello confirmado, en curso o simulado (RF37)', async () => {
-    const sellada = { ...IMAGEN, sello: { estado: 'sellado', referencia: 'BFA bloque 123', fecha: '2026-10-22T12:00:00', simulado: false } }
-    const enCurso = { ...IMAGEN, id: 2, nombre: 'lateral.jpg', huella: 'b'.repeat(64), sello: { estado: 'enviado', simulado: false } }
+    const sellada = {
+      ...IMAGEN,
+      sello: {
+        estado: 'sellado',
+        referencia: 'BFA bloque 123',
+        fecha: '2026-10-22T12:00:00',
+        simulado: false,
+      },
+    }
+    const enCurso = {
+      ...IMAGEN,
+      id: 2,
+      nombre: 'lateral.jpg',
+      huella: 'b'.repeat(64),
+      sello: { estado: 'enviado', simulado: false },
+    }
     api({ ...LISTADO, imagenes: [sellada, enCurso] })
     renderizarEn('/casos/7')
 
     expect(await screen.findByText(/Sellada en BFA el 22\/10\/2026 .*BFA bloque 123/)).toBeInTheDocument()
     expect(screen.getByText('Sello en BFA en curso…')).toBeInTheDocument()
+  })
+
+  it('en modo navegador pide el sello a BFA y le pasa los recibos al servidor (RF37)', async () => {
+    const pendiente = { ...IMAGEN, sello: { estado: 'pendiente', simulado: false } }
+    const sellada = {
+      ...IMAGEN,
+      sello: {
+        estado: 'sellado',
+        referencia: 'BFA bloque 50435901',
+        fecha: '2026-10-21T21:05:27',
+        simulado: false,
+      },
+    }
+    let confirmada = false
+    const { solicitudes } = api(
+      () => ({
+        cuerpo: { ...LISTADO, sello_en_navegador: true, imagenes: [confirmada ? sellada : pendiente] },
+      }),
+      {
+        'POST https://tsaapi.bfa.ar/api/tsa/stamp/': {
+          cuerpo: { status: 'success', temporary_rd: 'temporal' },
+        },
+        'POST https://tsaapi.bfa.ar/api/tsa/verify/': {
+          cuerpo: { status: 'success', permanent_rd: 'definitivo', attestation_time: '21/10/2026 18:05:27' },
+        },
+        'POST /api/casos/7/imagenes/11/sello': (cuerpo) => {
+          confirmada = Boolean(cuerpo.recibo_definitivo)
+          return { cuerpo: { imagen: sellada } }
+        },
+      },
+    )
+    renderizarEn('/casos/7')
+
+    expect(await screen.findByText(/Sellada en BFA el .*BFA bloque 50435901/)).toBeInTheDocument()
+    const alServidor = solicitudes
+      .filter((s) => s.ruta === '/api/casos/7/imagenes/11/sello')
+      .map((s) => s.cuerpo)
+    expect(alServidor).toEqual([
+      { recibo: 'temporal' },
+      { recibo_definitivo: 'definitivo', fecha: '21/10/2026 18:05:27' },
+    ])
+    const aBfa = solicitudes.find((s) => s.ruta.endsWith('/stamp/'))
+    expect(aBfa.cuerpo).toEqual({ file_hash: IMAGEN.huella })
+  })
+
+  it('sin modo navegador no llama a BFA', async () => {
+    const pendiente = { ...IMAGEN, sello: { estado: 'pendiente', simulado: false } }
+    const { solicitudes } = api({ ...LISTADO, imagenes: [pendiente] })
+    renderizarEn('/casos/7')
+
+    expect(await screen.findByText('Sello en BFA en curso…')).toBeInTheDocument()
+    expect(solicitudes.some((s) => s.ruta.startsWith('https://tsaapi.bfa.ar'))).toBe(false)
   })
 })

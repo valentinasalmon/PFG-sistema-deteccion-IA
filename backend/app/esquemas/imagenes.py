@@ -25,5 +25,7 @@ def imagen_a_dict(imagen, enlace_miniatura, analizada=False):
             "referencia": imagen.sello_referencia,
             "fecha": imagen.sello_fecha.isoformat() if imagen.sello_fecha else None,
             "simulado": imagen.sello_simulado,
+            # El navegador lo necesita para confirmar el sello en BFA (modo navegador).
+            "recibo": imagen.sello_recibo if imagen.sello_estado == "enviado" else None,
         },
     }

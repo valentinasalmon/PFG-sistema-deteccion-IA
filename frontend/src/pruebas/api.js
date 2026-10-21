@@ -13,15 +13,19 @@ export function simularApi(respuestas = {}) {
   const fetchSimulado = vi.fn(async (ruta, opciones = {}) => {
     const metodo = opciones.method ?? 'GET'
     let cuerpoEnviado
-    if (opciones.body instanceof FormData) cuerpoEnviado = Object.fromEntries(opciones.body)
-    else if (opciones.body) cuerpoEnviado = JSON.parse(opciones.body)
+    if (opciones.body instanceof FormData || opciones.body instanceof URLSearchParams) {
+      cuerpoEnviado = Object.fromEntries(opciones.body)
+    } else if (opciones.body) cuerpoEnviado = JSON.parse(opciones.body)
     solicitudes.push({ metodo, ruta, cuerpo: cuerpoEnviado, cabeceras: opciones.headers ?? {} })
 
     let respuesta = respuestas[`${metodo} ${ruta}`]
     if (typeof respuesta === 'function') respuesta = respuesta(cuerpoEnviado)
     if (!respuesta && ruta === '/api/sesion/csrf') respuesta = { estado: 200, cuerpo: { csrf: 'token-csrf' } }
     if (!respuesta && metodo === 'GET' && ruta === '/api/sesion') {
-      respuesta = { estado: 401, cuerpo: { codigo: 'sesion_requerida', mensaje: 'Tenés que iniciar sesión.' } }
+      respuesta = {
+        estado: 401,
+        cuerpo: { codigo: 'sesion_requerida', mensaje: 'Tenés que iniciar sesión.' },
+      }
     }
     if (!respuesta) throw new Error(`Solicitud no simulada: ${metodo} ${ruta}`)
 

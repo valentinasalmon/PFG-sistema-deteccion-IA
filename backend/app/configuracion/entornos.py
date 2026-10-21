@@ -178,7 +178,7 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
             CARPETA_CONFIANZA
         )
         self.COLA_ANALISIS = os.getenv("COLA_ANALISIS", "hilo")
-        # Sello de tiempo en BFA (funcionalidad 016): bfa | simulado | desactivado.
+        # Sello de tiempo en BFA (funcionalidad 016): bfa | navegador | simulado | desactivado.
         # En producción no se simula nunca: sin configurar, queda desactivado.
         self.SELLO_TIEMPO = os.getenv(
             "SELLO_TIEMPO", "desactivado" if self.NOMBRE == "produccion" else "simulado"

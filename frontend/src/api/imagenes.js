@@ -29,3 +29,8 @@ export async function enlaceDeDescarga(idCaso, idImagen) {
 export function eliminarImagen(idCaso, idImagen) {
   return solicitar('DELETE', `${base(idCaso)}/${idImagen}`)
 }
+
+/** Guarda en el servidor un recibo de BFA obtenido por el navegador (RF37, funcionalidad 016). */
+export function registrarSello(idCaso, idImagen, datos) {
+  return solicitar('POST', `${base(idCaso)}/${idImagen}/sello`, datos)
+}

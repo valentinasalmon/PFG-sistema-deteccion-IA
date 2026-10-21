@@ -11,5 +11,6 @@ correo_alertas      = "tu-correo@ejemplo.com"
 # dominio                 = "plataforma.com.ar"   # al comprar el dominio
 
 # Sello de tiempo en Blockchain Federal Argentina (funcionalidad 016):
-# "bfa" cuando se compruebe que el servidor llega a https://tsaapi.bfa.ar (Sello de Tiempo de BFA).
+# "navegador": el navegador de quien usa la plataforma pide el sello a https://tsaapi.bfa.ar,
+# porque BFA no acepta conexiones desde fuera de Argentina. "bfa" solo si el servidor llega a BFA.
 sello_tiempo = "desactivado"

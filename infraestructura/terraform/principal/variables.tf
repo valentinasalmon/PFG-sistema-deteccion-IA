@@ -77,12 +77,12 @@ variable "id_repositorio_github" {
 }
 
 variable "sello_tiempo" {
-  description = "Sello de tiempo de las imágenes en Blockchain Federal Argentina (016): bfa o desactivado."
+  description = "Sello de tiempo de las imágenes en Blockchain Federal Argentina (016): navegador, bfa o desactivado. BFA solo acepta conexiones desde Argentina: con el servidor en Irlanda, el sello lo pide el navegador."
   type        = string
   default     = "desactivado"
 
   validation {
-    condition     = contains(["bfa", "desactivado"], var.sello_tiempo)
-    error_message = "En producción el sello es bfa o desactivado: nunca simulado."
+    condition     = contains(["navegador", "bfa", "desactivado"], var.sello_tiempo)
+    error_message = "En producción el sello es navegador, bfa o desactivado: nunca simulado."
   }
 }

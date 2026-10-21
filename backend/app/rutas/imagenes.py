@@ -4,6 +4,7 @@ GET    /api/casos/<id>/imagenes                       Imágenes con su vista pre
 POST   /api/casos/<id>/imagenes                       Cargar una imagen, campo ``archivo`` (RF34)
 GET    /api/casos/<id>/imagenes/<id_imagen>/descarga  Enlace firmado al original
 DELETE /api/casos/<id>/imagenes/<id_imagen>           Eliminar una imagen (RF36)
+POST   /api/casos/<id>/imagenes/<id_imagen>/sello     Recibos de BFA del navegador (RF37)
 GET    /api/archivos/<token>                          Archivo del almacenamiento local
 
 La última ruta solo sirve al almacenamiento local (desarrollo y pruebas): con
@@ -41,6 +42,7 @@ def listar(id_caso):
         "limite": servicio.limite_de_imagenes(caso),
         "tamanio_maximo": current_app.config["TAMANIO_MAXIMO_IMAGEN"],
         "puede_modificar": servicio.puede_modificar(caso, permiso),
+        "sello_en_navegador": servicio.sello_en_navegador,
     })
 
 
@@ -72,6 +74,18 @@ def eliminar(id_caso, id_imagen):
     """Elimina la imagen y sus archivos (RF36)."""
     _servicio().eliminar(id_caso, id_imagen, usuario_actual())
     return jsonify({"mensaje": "La imagen fue eliminada."})
+
+
+@imagenes_bp.post("/casos/<int:id_caso>/imagenes/<int:id_imagen>/sello")
+@login_required
+def registrar_sello(id_caso, id_imagen):
+    """Guarda el recibo temporal o el definitivo que el navegador obtuvo de BFA (RF37)."""
+    servicio = _servicio()
+    datos = request.get_json(silent=True)
+    imagen = servicio.registrar_sello(
+        id_caso, id_imagen, usuario_actual(), datos if isinstance(datos, dict) else {}
+    )
+    return jsonify({"imagen": imagen_a_dict(imagen, servicio.enlace_miniatura(imagen))})
 
 
 @imagenes_bp.get("/archivos/<token>")
