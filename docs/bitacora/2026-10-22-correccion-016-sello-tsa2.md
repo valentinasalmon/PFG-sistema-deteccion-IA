@@ -16,3 +16,4 @@
 
 - El 2026-10-22 el servicio respondía 404 en `/stamp` y `/verify`, y la propia página de BFA daba error al sellar. Se registró como CP-25.
 - Cuando responda: repetir la prueba con curl desde la PC y desde el servidor, ajustar los campos si hace falta y activar `sello_tiempo = "bfa"`.
+- Decisión de la autora: pedirle a BFA una cuenta habilitada y esperar hasta el 2026-10-29. Si no hay respuesta, cambiar a otro servicio de sello de tiempo (CP-25).
