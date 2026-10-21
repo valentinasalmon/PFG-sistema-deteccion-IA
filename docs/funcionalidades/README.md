@@ -38,7 +38,7 @@ implementación siguiendo tareas.md, con pruebas
 | 010 | Red neuronal: entrenamiento y exportación (pista paralela) | 2 – 5 | RNF24 | Pendiente |
 | 011 | [Capa 3 (ELA)](011-capa-ela/especificacion.md) | 5 | RF41 | Completado |
 | 012 | Capa 4 (ONNX) | 5 | RF42 | Pendiente |
-| 013 | Notificaciones y panel principal | 6 | RF47, RF48 | Pendiente |
+| 013 | [Notificaciones y panel principal](013-panel-y-notificaciones/especificacion.md) | 6 | RF47, RF48 | Completado |
 | 014 | Planes y tablero de administración | 6 | RF19 – RF22 | Pendiente |
 | 015 | Retención y destrucción de datos | 7 | RF49 – RF51 | Pendiente |
 | 016 | Sello de tiempo en Blockchain Federal Argentina | 7 | RF37 | Pendiente |

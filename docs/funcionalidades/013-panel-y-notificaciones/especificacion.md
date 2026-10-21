@@ -1,7 +1,7 @@
 # Especificación: 013 — Panel principal y notificaciones
 
 - **Rama**: `funcionalidad/013-panel-y-notificaciones`
-- **Estado**: En desarrollo
+- **Estado**: Completada (pendiente de revisión de la autora en el Pull Request)
 - **Requisitos que realiza**: RF47 (CA1 a CA3), RF48 (CA1 a CA3)
 - **Reglas de negocio aplicadas**: RN31 (aviso de destrucción próxima en el panel), RNF06 (la actividad sale de la auditoría)
 - **Casos de uso**: CU30
@@ -47,12 +47,12 @@ Además, los correos se envían en el momento, dentro de la operación que los o
 
 ## Criterios de aceptación
 
-- [ ] **CA1**: Dado un usuario con casos, cuando entra al inicio, entonces ve los casos por estado, los últimos actualizados, los análisis en curso, los casos compartidos recientemente, las invitaciones y transferencias pendientes, y los casos próximos a destruirse (RF48 CA1).
-- [ ] **CA2**: La actividad reciente muestra los últimos eventos de los casos a los que el usuario tiene acceso, redactados en lenguaje común, y no muestra eventos de casos ajenos (RF48 CA2).
-- [ ] **CA3**: Cada elemento del panel lleva al caso, a la invitación o a la transferencia correspondiente (RF48 CA3).
-- [ ] **CA4**: Los correos se envían en segundo plano, en una cola propia; una falla no revierte la operación y se reintenta hasta tres veces en total, registrando cada falla (RF47 CA1, CA3).
-- [ ] **CA5**: El aviso de análisis finalizado o fallido llega a quien lo pidió y al Responsable, sin duplicarse si es la misma persona (RF47).
-- [ ] **CA6**: Los correos contienen solo el número de caso y enlaces a la plataforma, sin imágenes, informes ni datos sensibles (RF47 CA2).
+- [x] **CA1**: Dado un usuario con casos, cuando entra al inicio, entonces ve los casos por estado, los últimos actualizados, los análisis en curso, los casos compartidos recientemente, las invitaciones y transferencias pendientes, y los casos próximos a destruirse (RF48 CA1).
+- [x] **CA2**: La actividad reciente muestra los últimos eventos de los casos a los que el usuario tiene acceso, redactados en lenguaje común, y no muestra eventos de casos ajenos (RF48 CA2).
+- [x] **CA3**: Cada elemento del panel lleva al caso, a la invitación o a la transferencia correspondiente (RF48 CA3).
+- [x] **CA4**: Los correos se envían en segundo plano, en una cola propia; una falla no revierte la operación y se reintenta hasta tres veces en total, registrando cada falla (RF47 CA1, CA3).
+- [x] **CA5**: El aviso de análisis finalizado o fallido llega a quien lo pidió y al Responsable, sin duplicarse si es la misma persona (RF47).
+- [x] **CA6**: Los correos contienen solo el número de caso y enlaces a la plataforma, sin imágenes, informes ni datos sensibles (RF47 CA2).
 
 ## Preguntas abiertas
 
