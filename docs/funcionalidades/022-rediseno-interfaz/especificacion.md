@@ -32,3 +32,6 @@ Dar a evidentIA una identidad visual única y quitar fricciones en todas las pan
 - **CA8**: el informe, la pantalla de resultados y el correo de fin de análisis incluyen el descargo de IA y la supervisión humana (ADR-0017, RNF23 CA4).
 - **CA9**: cada capa del informe muestra sus criterios, el valor de referencia sin edición y el valor obtenido (RNF23 CA5).
 - **CA10**: los correos usan el diseño de marca y el remitente «evidentIA».
+- **CA11**: los avisos de éxito son flotantes y se cierran solos; los errores quedan junto al campo o la sección.
+- **CA12**: Panel, Perfil, Organizaciones, Organización y Administración siguen la misma estructura de cabecera y columnas.
+- **CA13**: en desarrollo existe una cuenta de prueba que entra a todas las pantallas; nunca en producción.

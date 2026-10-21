@@ -24,9 +24,9 @@ La autora presentó evidentIA: casos, huella digital de los archivos y análisis
 | 5 | Porcentajes y términos estadísticos en lugar de certezas, con la recomendación de consultar a un experto | **Aplicada** (ya existía; ahora con una escala única) | Escala Sin indicios / débiles / moderados / fuertes, igual en la pantalla y en el informe |
 | 6 | Trazabilidad con métodos deterministas y funciones hash | **Aplicada** (ya existía; ahora visible) | Sección «Evidencia analizada y cadena de custodia»: SHA-256 al cargar y verificación antes del análisis. Cronología. Auditoría (RNF06) |
 | 7 | Blockchain Federal Argentina para hashes y marcas de tiempo | **Planificada** | Funcionalidad 016 (RF37). El informe ya reserva el campo «Sello de tiempo» |
-| 8 | ELA se considera superado desde 2018: investigar métodos más actuales | **Abierta** | CP-23. Mientras tanto, ELA nunca supera el nivel moderado y se presenta como señal complementaria |
-| 9 | Incluir a peritos y criminalistas como destinatarios, para mitigar la resistencia institucional | **Abierta (decisión de producto)** | CP-22. El informe y los textos ya los mencionan como destinatarios de la herramienta |
-| 10 | Ampliar los casos de uso de aseguradoras: robo, incendio, fotos de talleres | **Abierta (decisión de producto)** | CP-24 |
+| 8 | ELA se considera superado desde 2018: investigar métodos más actuales | **Descartada por la autora** (22/10/2026) | CP-23. ELA sigue como señal complementaria que nunca supera el nivel moderado |
+| 9 | Incluir a peritos y criminalistas como destinatarios, para mitigar la resistencia institucional | **Descartada por la autora** (22/10/2026) | CP-22. El público sigue siendo abogados y aseguradoras; el descargo igual recomienda consultar a un perito |
+| 10 | Ampliar los casos de uso de aseguradoras: robo, incendio, fotos de talleres | **Descartada por la autora** (22/10/2026) | CP-24 |
 | 11 | Mantener un corpus de investigación sólido: datos de entrenamiento, bibliografía | **En curso** | Funcionalidad 010 (RNF24 CA2: el conjunto de datos queda documentado) |
 
 ## Validación del problema

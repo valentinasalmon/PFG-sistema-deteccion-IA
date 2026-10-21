@@ -45,8 +45,21 @@
 - **Especificación**: RNF23 suma CA4 y CA5. Quedan abiertas CP-22 (peritos), CP-23 (alternativas a ELA) y CP-24 (tipos de caso de aseguradoras).
 - **Entorno local**: [guía para levantar el proyecto](../guias/levantar-en-local.md), con tareas y depuración de VS Code en `.vscode/`.
 
+## Cuarta entrega (22/10/2026)
+
+- **CP-22, CP-23 y CP-24**: descartadas por la autora. Se quitó a peritos y criminalistas de los destinatarios del informe.
+- **Cuenta de prueba**: `flask --app wsgi administracion cuenta-de-prueba` crea o restablece `prueba@evidentia.local` / `Prueba12345`. La cuenta queda verificada y Administradora, con un estudio jurídico. Está rechazada en producción y tiene pruebas.
+- **Avisos flotantes**: todo aviso de éxito aparece abajo a la derecha y se cierra a los 6 segundos o con su botón. Los que traen instrucciones o enlaces (cambio de contraseña, cambio de correo, copia de datos) siguen en su lugar.
+- **Pantallas rediseñadas**:
+  - Panel: acciones en la cabecera y dos columnas.
+  - Perfil: tarjeta de la cuenta con el visor e índice de secciones.
+  - Organizaciones: tarjetas en grilla con ícono y estado vacío.
+  - Organización: cabecera, miembros e invitaciones a la izquierda, datos y salida a la derecha.
+  - Administración: cabecera con bajada.
+  - Botones de formulario a su ancho natural.
+- **Guías**: paso a paso del remitente en AWS (Terraform, Session Manager, verificación) y cuenta de prueba en la guía local.
+
 ## Pendiente
 
 - Cambios que pida la autora sobre las capturas.
 - Plantillas de correo con el nuevo diseño.
-- Avisos breves flotantes.

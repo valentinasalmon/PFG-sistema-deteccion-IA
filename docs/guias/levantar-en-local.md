@@ -34,6 +34,25 @@ cd ../frontend
 npm install
 ```
 
+### Cuenta de prueba (entra a todas las pantallas)
+
+Con los servicios levantados (paso 3), en una terminal:
+
+```bash
+cd ~/PFG-sistema-deteccion-IA/backend && source .venv/bin/activate
+flask --app wsgi db upgrade
+flask --app wsgi administracion cuenta-de-prueba
+```
+
+Deja lista la cuenta:
+- **Correo**: `prueba@evidentia.local`
+- **Contraseña**: `Prueba12345`
+- **Características**:
+  - perfil Abogado, verificada y con rol de Administrador;
+  - con el «Estudio de prueba evidentIA», así se ven Organizaciones y Administración.
+
+Si la bloqueaste por intentos fallidos, volvé a ejecutar el comando: la restablece. El comando no funciona en producción.
+
 Para que un correo propio tenga el rol de Administrador, completá `ADMINISTRADORES=` en `backend/.env`.
 
 ## 3. Levantar todo desde VS Code
@@ -82,6 +101,7 @@ cd ~/PFG-sistema-deteccion-IA/frontend && npm run dev
 |---|---|
 | `port is already allocated` al levantar Docker | Otro PostgreSQL o Redis usa el puerto: `sudo service postgresql stop` o cerrá el otro contenedor. |
 | La pantalla dice «Error del servidor» | Mirá la terminal del backend. Si falta una tabla, ejecutá `flask db upgrade`. |
+| «No me deja entrar» | Usá la cuenta de prueba de arriba, o confirmá el correo desde Mailpit (http://localhost:8025) antes de iniciar sesión. |
 | No llega el correo de verificación | Abrí http://localhost:8025. En desarrollo los correos quedan en Mailpit. |
 | La capa de metadatos sale «No disponible» | Falta ExifTool: `sudo apt install libimage-exiftool-perl`. |
 | El PDF no se genera | Faltan las bibliotecas de WeasyPrint: `sudo apt install libpango-1.0-0 libpangoft2-1.0-0`. |

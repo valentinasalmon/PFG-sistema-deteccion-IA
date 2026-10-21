@@ -138,13 +138,40 @@ Para repetir un despliegue sin cambios: en *Actions*, abrí la última ejecució
 La infraestructura ya está creada: para publicar alcanza con integrar en `main`.
 1. Integrá los Pull Requests en orden hacia `desarrollo`: primero `funcionalidad/013-panel-y-notificaciones` y después `funcionalidad/022-rediseno-interfaz`, que sale de la 013.
 2. Abrí el Pull Request de `desarrollo` hacia `main` e integralo. El trabajo **Despliegue en AWS** publica la versión sola, en unos 3 minutos.
-3. La 022 cambia el remitente de los correos a «evidentIA». Para que tome efecto en el servidor, una sola vez:
-   1. En WSL, ejecutá `terraform -chdir=infraestructura/terraform/principal apply` y confirmá con `yes`. Solo actualiza el parámetro del remitente.
-   2. En la terminal de Session Manager de la instancia, ejecutá:
-      ```bash
-      sudo bash /opt/plataforma/servidor/scripts/generar_entorno.sh
-      sudo systemctl restart plataforma-web plataforma-trabajador
-      ```
+3. La 022 cambia el remitente de los correos a «evidentIA». Se aplica una sola vez, después del despliegue del paso 2:
+
+   **A. Actualizar el parámetro en AWS, desde tu WSL**
+
+   ```bash
+   cd ~/PFG-sistema-deteccion-IA
+   git switch main && git pull
+   cd infraestructura/terraform/principal
+   terraform init -backend-config=backend.hcl   # solo si es otra computadora o se borró .terraform
+   terraform plan    # tiene que decir: 1 to change (el parámetro REMITENTE_CORREO)
+   terraform apply   # escribí "yes"
+   ```
+
+   Si `terraform plan` muestra algo que no sea ese parámetro, no apliques y pasame la salida.
+
+   **B. Abrir la terminal del servidor (Session Manager)**
+
+   1. Entrá a la consola de AWS, en la región **Irlanda (eu-west-1)**: el nombre arriba a la derecha.
+   2. Buscá **EC2** → **Instances** → marcá `deteccion-imagenes-servidor` → botón **Connect**.
+   3. Pestaña **Session Manager** → **Connect**. Se abre una terminal negra en el navegador.
+
+   **C. Regenerar la configuración y reiniciar, en esa terminal**
+
+   ```bash
+   sudo bash /opt/plataforma/servidor/scripts/generar_entorno.sh
+   sudo systemctl restart plataforma-web plataforma-trabajador
+   sudo grep REMITENTE_CORREO /opt/plataforma/.env   # tiene que decir evidentIA <...>
+   ```
+
+   **D. Probar**: desde la plataforma, pedí «¿Olvidaste tu contraseña?» con tu correo. El correo llega con el remitente «evidentIA» y el diseño nuevo. Si no lo ves, revisá Spam.
+
+   Para cerrar la terminal, escribí `exit` o tocá **Terminate**.
+
+4. **Cuenta de prueba en el servidor**: no se crea en producción. Registrate normalmente; tu correo ya figura en `administradores`, así que al ingresar tenés el rol de Administrador.
 
 ## Cuando compres el dominio
 

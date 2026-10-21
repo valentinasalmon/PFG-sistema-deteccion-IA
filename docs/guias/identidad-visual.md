@@ -46,7 +46,9 @@ El verde nunca representa «auténtica».
 
 - **Botones**: un solo botón principal azul por zona. El secundario va con borde y el terciario como «fantasma». En formularios y confirmaciones: Cancelar a la izquierda, acción principal a la derecha.
 - **Formularios**: etiqueta siempre visible, ayuda debajo y el error junto al campo con su ícono.
-- **Avisos**: llevan ícono, de éxito, error o información. Los errores usan `role="alert"`.
+- **Avisos**: llevan ícono, de éxito, error o información. Los errores usan `role="alert"` y quedan junto a lo que los causó.
+- **Avisos de éxito**: son flotantes, abajo a la derecha. Se cierran a los 6 segundos o con su botón. Si traen instrucciones o enlaces, se usa `<Aviso tipo="exito" flotante={false}>`.
+- **Pantallas de trabajo**: cabecera (título, bajada y acción principal) y dos columnas: el trabajo a la izquierda, los datos y la gestión a la derecha. La zona de riesgo va siempre al final de la columna derecha.
 - **Movimiento**:
   - las esquinas del visor se encuadran al aparecer;
   - una línea de escaneo recorre el progreso del análisis;
