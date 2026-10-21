@@ -21,6 +21,7 @@ import Icono from '../componentes/Icono.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { OPCIONES_ESTADO, OPCIONES_TIPO, tipoDeEtiquetaDeEstado } from '../utilidades/casos.js'
+import { textosDelRubro } from '../utilidades/lenguaje.js'
 import { formatearDia, formatearFecha } from '../utilidades/fechas.js'
 
 const CAMPOS_FILTRO = ['numero', 'expediente', 'estado', 'tipo', 'espacio', 'desde', 'hasta']
@@ -82,7 +83,7 @@ function Transferencias({ transferencias, alResponder }) {
   )
 }
 
-function Filtros({ filtros, espacios, alAplicar }) {
+function Filtros({ filtros, espacios, alAplicar, etiquetaReferencia }) {
   const [valores, setValores] = useState(filtros)
   const hayFiltros = CAMPOS_FILTRO.some((campo) => filtros[campo])
 
@@ -108,7 +109,7 @@ function Filtros({ filtros, espacios, alAplicar }) {
     <form className="filtros" onSubmit={aplicar} role="search" aria-label="Buscar casos">
       <div className="filtros__principal">
         <CampoTexto etiqueta="Número de caso" nombre="numero" value={valores.numero} onChange={cambiar} />
-        <CampoTexto etiqueta="Expediente" nombre="expediente" value={valores.expediente} onChange={cambiar} />
+        <CampoTexto etiqueta={etiquetaReferencia} nombre="expediente" value={valores.expediente} onChange={cambiar} />
         <CampoSeleccion
           etiqueta="Estado"
           nombre="estado"
@@ -192,7 +193,7 @@ export default function PaginaCasos() {
       <div className="encabezado-pagina">
         <div>
           <h1>Casos</h1>
-          <p className="encabezado-pagina__bajada">Los casos que creaste y los que compartieron con vos.</p>
+          <p className="encabezado-pagina__bajada">{textosDelRubro(usuario.perfil).bajadaCasos}</p>
         </div>
         <Link to="/casos/nuevo" className="boton">
           <Icono nombre="mas" tamanio={18} />
@@ -205,7 +206,13 @@ export default function PaginaCasos() {
       )}
       <section className="seccion seccion--filtros" aria-labelledby="titulo-buscar">
         <h2 id="titulo-buscar" className="solo-lectores">Buscar</h2>
-        <Filtros key={clave} filtros={filtros} espacios={espacios} alAplicar={aplicarFiltros} />
+        <Filtros
+          key={clave}
+          filtros={filtros}
+          espacios={espacios}
+          alAplicar={aplicarFiltros}
+          etiquetaReferencia={textosDelRubro(usuario.perfil).etiquetaReferencia}
+        />
       </section>
 
       <section className="seccion seccion--lista" aria-labelledby="titulo-resultados" aria-busy={cargando}>

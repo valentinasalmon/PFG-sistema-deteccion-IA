@@ -40,7 +40,9 @@ import SeccionImagenes from '../componentes/SeccionImagenes.jsx'
 import SeccionInformes from '../componentes/SeccionInformes.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useFormulario } from '../hooks/useFormulario.js'
+import { useSesion } from '../hooks/useSesion.js'
 import { OPCIONES_NIVEL, OPCIONES_TIPO, tipoDeEtiquetaDeEstado } from '../utilidades/casos.js'
+import { textosDelRubro } from '../utilidades/lenguaje.js'
 import { formatearDia, formatearFecha, hoyIso } from '../utilidades/fechas.js'
 
 async function cargarCaso(id) {
@@ -54,6 +56,8 @@ async function cargarCaso(id) {
 
 function SeccionDatos({ caso, alGuardar }) {
   const [editando, setEditando] = useState(false)
+  const { usuario } = useSesion()
+  const referencia = textosDelRubro(usuario.perfil).etiquetaReferencia
   const { valores, errores, error, enviando, cambiar, enviar } = useFormulario({
     tipo: caso.tipo,
     fecha_hecho: caso.fecha_hecho,
@@ -91,7 +95,7 @@ function SeccionDatos({ caso, alGuardar }) {
             <dd>{caso.tipo_nombre}</dd>
             <dt>Fecha del hecho</dt>
             <dd>{formatearDia(caso.fecha_hecho)}</dd>
-            <dt>Expediente</dt>
+            <dt>{referencia}</dt>
             <dd>{caso.expediente ?? '—'}</dd>
             <dt>Descripción</dt>
             <dd>{caso.descripcion ?? '—'}</dd>
@@ -470,6 +474,38 @@ function PasosDelCaso({ estado }) {
   )
 }
 
+/**
+ * Acción que conviene hacer ahora según el estado del caso (022): lleva a la
+ * sección correspondiente para que nunca haya que buscar qué sigue.
+ */
+function SiguientePaso({ caso }) {
+  if (caso.estado === 'borrador' && caso.acciones.editar) {
+    return (
+      <a href="#titulo-imagenes" className="boton">
+        <Icono nombre="imagen" tamanio={18} />
+        Cargar y analizar imágenes
+      </a>
+    )
+  }
+  if (caso.estado === 'en_analisis') {
+    return (
+      <a href="#titulo-analisis" className="boton boton--secundario">
+        <Icono nombre="analisis" tamanio={18} />
+        Ver el progreso del análisis
+      </a>
+    )
+  }
+  if (caso.estado === 'analizado' || caso.estado === 'cerrado') {
+    return (
+      <a href="#titulo-analisis" className="boton">
+        <Icono nombre="analisis" tamanio={18} />
+        Ver los resultados
+      </a>
+    )
+  }
+  return null
+}
+
 export default function PaginaCaso() {
   const { id } = useParams()
   const { state } = useLocation()
@@ -520,7 +556,10 @@ export default function PaginaCaso() {
         <p className="subtitulo">
           {caso.tipo_nombre} · {caso.espacio.nombre} · Hecho del {formatearDia(caso.fecha_hecho)}
         </p>
-        <PasosDelCaso estado={caso.estado} />
+        <div className="cabecera-caso__pie">
+          <PasosDelCaso estado={caso.estado} />
+          <SiguientePaso caso={caso} />
+        </div>
       </header>
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
 
@@ -549,10 +588,15 @@ export default function PaginaCaso() {
           {caso.espacio.tipo === 'organizacion' && (
             <SeccionAccesos caso={caso} accesos={accesos} miembros={miembros} ejecutar={ejecutar} />
           )}
-          {caso.acciones.transferir && (
-            <SeccionTransferir caso={caso} miembros={miembros} ejecutar={ejecutar} />
+          {(caso.acciones.transferir || caso.acciones.eliminar) && (
+            <details className="mas-acciones" open={Boolean(caso.transferencia_pendiente)}>
+              <summary>Transferir o eliminar el caso</summary>
+              {caso.acciones.transferir && (
+                <SeccionTransferir caso={caso} miembros={miembros} ejecutar={ejecutar} />
+              )}
+              {caso.acciones.eliminar && <SeccionEliminar caso={caso} />}
+            </details>
           )}
-          {caso.acciones.eliminar && <SeccionEliminar caso={caso} />}
         </div>
       </div>
     </>

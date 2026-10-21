@@ -1,7 +1,7 @@
 /**
  * Disposiciones (layouts) de las pantallas.
  *
- * - DisposicionInterna: pantallas con sesión, con encabezado.
+ * - DisposicionInterna: pantallas con sesión, con el menú lateral (022).
  * - DisposicionAcceso: pantallas de acceso (registro, inicio de sesión,
  *   recuperación), divididas en un panel de marca verde bosque, con el logo
  *   centrado dentro de las esquinas de visor y el eslogan, y el formulario en
@@ -14,7 +14,6 @@
  */
 import { Link, Outlet } from 'react-router'
 import Encabezado from './Encabezado.jsx'
-import Icono from './Icono.jsx'
 
 function Pie() {
   return (
@@ -34,15 +33,17 @@ function Pie() {
 
 export function DisposicionInterna() {
   return (
-    <div className="disposicion">
+    <div className="disposicion disposicion--interna">
       <a href="#contenido" className="saltar-al-contenido">
         Saltar al contenido
       </a>
       <Encabezado />
-      <main id="contenido" className="disposicion__principal">
-        <Outlet />
-      </main>
-      <Pie />
+      <div className="disposicion__area">
+        <main id="contenido" className="disposicion__principal">
+          <Outlet />
+        </main>
+        <Pie />
+      </div>
     </div>
   )
 }
@@ -54,25 +55,40 @@ export function DisposicionAcceso() {
         <div className="acceso__mensaje">
           <div className="visor acceso__visor">
             <img src="/marca/logo-tipografia-blanca.png" alt="evidentIA" />
+            <span className="acceso__escaneo" aria-hidden="true" />
           </div>
           <p className="acceso__eslogan">Tu primera línea de defensa contra el fraude visual</p>
           <p className="acceso__bajada">
-            Analizá las imágenes de cada siniestro o reclamo, guardá la evidencia con su huella
-            digital y obtené un informe listo para presentar.
+            Detectá fotos editadas o generadas con inteligencia artificial antes de que lleguen a un
+            expediente o a la liquidación de un siniestro.
           </p>
         </div>
-        <ul className="acceso__garantias">
+        <div className="acceso__muestra" aria-hidden="true">
+          <div className="acceso__muestra-cabecera">
+            <span>frente.jpg</span>
+            <span className="acceso__muestra-ok">Integridad verificada</span>
+          </div>
+          <div className="acceso__muestra-fila">
+            <span>Metadatos</span>
+            <span className="nivel nivel--ninguno">Sin indicios · 0 %</span>
+          </div>
+          <div className="acceso__muestra-fila">
+            <span>Credenciales de contenido</span>
+            <span className="nivel nivel--ninguno">Sin indicios · 0 %</span>
+          </div>
+          <div className="acceso__muestra-fila">
+            <span>Niveles de error</span>
+            <span className="nivel nivel--moderado">Indicios moderados · 45 %</span>
+          </div>
+        </div>
+        <ul className="acceso__servicios">
           <li>
-            <Icono nombre="administracion" tamanio={18} />
-            Evidencia con huella digital
+            <strong>Legal</strong>
+            Prueba documentada para demandas, mediaciones y reclamos.
           </li>
           <li>
-            <Icono nombre="reloj" tamanio={18} />
-            Conservación por 5 años
-          </li>
-          <li>
-            <Icono nombre="documento" tamanio={18} />
-            Informe en PDF
+            <strong>Seguros</strong>
+            Fotos de siniestros verificadas antes de liquidar.
           </li>
         </ul>
       </section>

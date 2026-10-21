@@ -12,11 +12,11 @@
 import { Link } from 'react-router'
 import { obtenerPanel } from '../api/panel.js'
 import Aviso from '../componentes/Aviso.jsx'
-import Icono from '../componentes/Icono.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
+import { textosDelRubro } from '../utilidades/lenguaje.js'
 import { OPCIONES_ESTADO } from '../utilidades/casos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 
@@ -158,17 +158,11 @@ export default function PaginaInicio() {
       <div className="encabezado-pagina">
         <div>
           <h1>Hola, {usuario.nombre}</h1>
-          <p className="encabezado-pagina__bajada">
-            Desde acá vas a poder crear casos, cargar imágenes y descargar los informes de análisis.
-          </p>
+          <p className="encabezado-pagina__bajada">{textosDelRubro(usuario.perfil).bajadaPanel}</p>
         </div>
         <div className="acciones-en-linea">
           <Link to="/casos" className="boton boton--secundario">
             Ver mis casos
-          </Link>
-          <Link to="/casos/nuevo" className="boton">
-            <Icono nombre="mas" tamanio={18} />
-            Nuevo caso
           </Link>
         </div>
       </div>

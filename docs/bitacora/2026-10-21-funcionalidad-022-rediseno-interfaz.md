@@ -59,6 +59,22 @@
   - Botones de formulario a su ancho natural.
 - **Guías**: paso a paso del remitente en AWS (Terraform, Session Manager, verificación) y cuenta de prueba en la guía local.
 
+## Quinta entrega (22/10/2026)
+
+- **Menú lateral**: reemplaza al encabezado, que se saturaba. Tiene el logo, el servicio (Legal o Seguros), «Nuevo caso», la navegación con indicador azul y la cuenta abajo. En pantallas angostas pasa a ser una barra con «Menú».
+- **Lenguaje por rubro** (`utilidades/lenguaje.js`): los dos servicios hablan el idioma de su rubro.
+  - **Legal** (abogados): habla de expediente y de la prueba para una demanda o mediación.
+  - **Seguros** (aseguradoras): habla de número de siniestro y de verificar antes de liquidar.
+  - Cambian las bajadas del panel, de casos y de nuevo caso, y la etiqueta del campo de referencia. Los datos del backend no cambian.
+- **Acceso**:
+  - el panel de marca suma una retícula de puntos y una línea de escaneo sobre el logo;
+  - una tarjeta de muestra con un resultado real del producto;
+  - los dos servicios, Legal y Seguros.
+- **Organización**: una sola columna. Los datos (tipo, plan, miembros y contacto) van bajo el nombre y se editan en el lugar con el lápiz. Después siguen los miembros, las invitaciones y la salida.
+- **Caso**:
+  - la cabecera muestra el botón del **siguiente paso** según el estado: cargar y analizar, ver el progreso o ver los resultados;
+  - transferir y eliminar quedan dentro de «Transferir o eliminar el caso», porque se usan poco.
+
 ## Pendiente
 
 - Cambios que pida la autora sobre las capturas.

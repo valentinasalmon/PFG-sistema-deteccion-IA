@@ -24,10 +24,12 @@ import OpcionTarjeta from '../componentes/OpcionTarjeta.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useFormulario } from '../hooks/useFormulario.js'
 import { useSesion } from '../hooks/useSesion.js'
+import { textosDelRubro } from '../utilidades/lenguaje.js'
 import { hoyIso } from '../utilidades/fechas.js'
 
 function Formulario({ espacios }) {
   const navegar = useNavigate()
+  const { usuario } = useSesion()
   const { valores, errores, error, enviando, cambiar, enviar, marcarErrores } = useFormulario({
     espacio: espacios[0].valor,
     tipo: '',
@@ -109,7 +111,7 @@ function Formulario({ espacios }) {
           required
         />
         <CampoTexto
-          etiqueta="Expediente"
+          etiqueta={textosDelRubro(usuario.perfil).etiquetaReferencia}
           nombre="expediente"
           opcional
           value={valores.expediente}
@@ -163,7 +165,7 @@ export default function PaginaNuevoCaso() {
       <div className="encabezado-pagina">
         <div>
           <h1>Nuevo caso</h1>
-          <p className="encabezado-pagina__bajada">Los datos del hecho identifican el caso en el informe.</p>
+          <p className="encabezado-pagina__bajada">{textosDelRubro(usuario.perfil).bajadaNuevoCaso}</p>
         </div>
       </div>
       {error && <Aviso tipo="error">{error.message}</Aviso>}
