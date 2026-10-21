@@ -121,6 +121,7 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
     # Flask corta antes las solicitudes más grandes; se deja margen para el formulario.
     MAX_CONTENT_LENGTH = TAMANIO_MAXIMO_IMAGEN + 1024 * 1024
     VIGENCIA_ENLACE_ARCHIVO = timedelta(minutes=5)  # RF35 CA2
+    REINTENTOS_CORREO = (30, 120)  # segundos de espera antes de cada reintento (RF47 CA3)
     LADO_MINIATURA = 480  # píxeles del lado mayor de la vista previa
 
     # --- Análisis (funcionalidad 007) ---

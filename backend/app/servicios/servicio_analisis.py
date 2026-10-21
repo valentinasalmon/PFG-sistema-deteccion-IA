@@ -284,9 +284,9 @@ class ServicioAnalisis:
              "integridad_alterada": alteradas, "informe": con_informe},
         )
         self._avanzar(analisis)
-        if analisis.solicitante:
+        for usuario in _destinatarios_del_aviso(analisis, caso):
             self.correos.enviar_aviso_analisis_finalizado(
-                analisis.solicitante, caso, len(analisis.imagenes), con_informe
+                usuario, caso, len(analisis.imagenes), con_informe
             )
 
     def _fallar(self, id_analisis, motivo):
@@ -305,8 +305,8 @@ class ServicioAnalisis:
             {"id_analisis": analisis.id, "motivo": motivo},
         )
         self._avanzar(analisis)
-        if analisis.solicitante:
-            self.correos.enviar_aviso_analisis_fallido(analisis.solicitante, caso, motivo)
+        for usuario in _destinatarios_del_aviso(analisis, caso):
+            self.correos.enviar_aviso_analisis_fallido(usuario, caso, motivo)
 
     def verificar_interrumpidos(self, caso):
         """Marca como Fallido el análisis en curso que dejó de avanzar (RF46 CA2)."""
@@ -342,3 +342,12 @@ class ServicioAnalisis:
         if analisis is None or analisis.id_caso != caso.id:
             raise NoEncontrado("El análisis no existe o no tenés acceso a él.")
         return analisis
+
+
+def _destinatarios_del_aviso(analisis, caso):
+    """Quien pidió el análisis y el Responsable del caso, sin repetir (RF47)."""
+    destinatarios = []
+    for usuario in (analisis.solicitante, caso.responsable):
+        if usuario is not None and usuario not in destinatarios:
+            destinatarios.append(usuario)
+    return destinatarios

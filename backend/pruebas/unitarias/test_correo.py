@@ -3,7 +3,16 @@ import smtplib
 from datetime import datetime
 from types import SimpleNamespace
 
-from app.integraciones.correo import Correo, EnviadorMemoria, EnviadorSMTP, crear_enviador
+from app import crear_app
+from app.integraciones import correo as modulo_correo
+from app.integraciones.cola import ColaSincronica
+from app.integraciones.correo import (
+    Correo,
+    EnviadorEnSegundoPlano,
+    EnviadorMemoria,
+    EnviadorSMTP,
+    crear_enviador,
+)
 from app.servicios.servicio_correos import ServicioCorreos
 
 
@@ -140,3 +149,54 @@ def test_smtp_con_tls_y_autenticacion(monkeypatch):
     enviador = EnviadorSMTP("smtp.ejemplo", 587, "a@b.c", "usuario", "clave", usar_tls=True)
     assert enviador.enviar(Correo("x@y.z", "Asunto", "texto", "<p>html</p>")) is True
     assert llamadas == ["conectar", "starttls", "login:usuario", "enviar:x@y.z"]
+
+
+# --- Envío en segundo plano (funcionalidad 013, RF47 CA1 y CA3) ---
+
+class EnviadorQueFalla:
+    """Falla las primeras veces que se le pide entregar un correo."""
+
+    def __init__(self, fallas):
+        self.fallas = fallas
+        self.entregados = []
+
+    def entregar(self, correo):
+        """Falla mientras queden fallas; después guarda el correo."""
+        if self.fallas:
+            self.fallas -= 1
+            raise smtplib.SMTPServerDisconnected("sin conexión")
+        self.entregados.append(correo)
+
+
+CORREO = Correo("ana@ejemplo.com", "Asunto", "texto", "<p>html</p>")
+
+
+def test_en_segundo_plano_reintenta_hasta_entregar(aplicacion):
+    """Dos fallas del servidor y la tercera vez se entrega."""
+    directo = EnviadorQueFalla(2)
+    aplicacion.extensions["enviador_directo"] = directo
+    with aplicacion.app_context():
+        assert EnviadorEnSegundoPlano(ColaSincronica()).enviar(CORREO) is True
+    assert directo.entregados == [CORREO]
+
+
+def test_en_segundo_plano_una_falla_no_interrumpe(aplicacion, caplog, monkeypatch):
+    """Agotados los reintentos, se registra en el log y no se propaga (RF47 CA1)."""
+    # Las pruebas de migraciones configuran el log de Alembic y apagan los existentes.
+    monkeypatch.setattr(modulo_correo.registro, "disabled", False)
+    aplicacion.extensions["enviador_directo"] = EnviadorQueFalla(3)
+    with aplicacion.app_context():
+        assert EnviadorEnSegundoPlano(ColaSincronica()).enviar(CORREO) is False
+    assert "No se pudo encolar el correo 'Asunto'" in caplog.text
+
+
+def test_la_aplicacion_envia_en_segundo_plano_salvo_en_pruebas(monkeypatch):
+    """Con SMTP los correos van a la cola ``correos``; en pruebas, a la memoria."""
+    monkeypatch.setenv("URL_BASE_DATOS", "sqlite://")
+    monkeypatch.setenv("COLA_ANALISIS", "sincronica")
+    aplicacion = crear_app("desarrollo")
+
+    assert isinstance(aplicacion.extensions["enviador_correo"], EnviadorEnSegundoPlano)
+    assert isinstance(aplicacion.extensions["enviador_directo"], EnviadorSMTP)
+    assert aplicacion.extensions["enviador_correo"].reintentos == (30, 120)
+    assert isinstance(crear_app("pruebas").extensions["enviador_correo"], EnviadorMemoria)
