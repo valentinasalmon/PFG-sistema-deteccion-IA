@@ -505,3 +505,33 @@ describe('pantalla del caso', () => {
     expect(screen.getByRole('heading', { name: 'CASO-2026-000007' })).toBeInTheDocument()
   })
 })
+
+describe('retención (funcionalidad 015)', () => {
+  const CERRADO = {
+    ...CASO, estado: 'cerrado', estado_nombre: 'Cerrado',
+    retencion_desde: '2021-11-01T12:00:00', retencion_vence: '2026-11-01T12:00:00',
+    acciones: { ...TODAS, editar: false, cerrar: false, archivar: true, reabrir: true, prorrogar: true },
+  }
+
+  it('muestra cuándo se elimina y prorroga con motivo obligatorio (RF51)', async () => {
+    const { solicitudes } = apiDeCaso({
+      caso: CERRADO,
+      extra: {
+        'POST /api/casos/7/prorroga': {
+          cuerpo: { caso: { ...CERRADO, retencion_vence: '2027-11-01T12:00:00' }, accesos: [ACCESO], mensaje: 'Listo: el caso se conserva hasta el 01/11/2027.' },
+        },
+      },
+    })
+    const { usuario } = renderizarEn('/casos/7')
+
+    await usuario.click(await screen.findByRole('button', { name: 'Prorrogar 1 año' }))
+    await usuario.click(screen.getByRole('button', { name: 'Prorrogar' }))
+    expect(screen.getByText(/Indicá el motivo de la prórroga/)).toBeInTheDocument()
+
+    await usuario.type(screen.getByLabelText('Motivo de la prórroga'), 'Juicio en trámite')
+    await usuario.click(screen.getByRole('button', { name: 'Prorrogar' }))
+
+    expect(await screen.findByText('Listo: el caso se conserva hasta el 01/11/2027.')).toBeInTheDocument()
+    expect(solicitudes.find((s) => s.ruta === '/api/casos/7/prorroga').cuerpo).toEqual({ motivo: 'Juicio en trámite' })
+  })
+})

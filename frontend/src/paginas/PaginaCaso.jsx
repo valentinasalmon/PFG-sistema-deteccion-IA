@@ -23,6 +23,7 @@ import {
   eliminarCaso,
   modificarAcceso,
   obtenerCaso,
+  prorrogarRetencion,
   revocarAcceso,
   transferirCaso,
 } from '../api/casos.js'
@@ -174,9 +175,58 @@ function SeccionDatos({ caso, alGuardar }) {
   )
 }
 
+/** Prórroga de la retención con motivo obligatorio (RF51, funcionalidad 015). */
+function FormularioProrroga({ caso, ejecutar }) {
+  const [abierto, setAbierto] = useState(false)
+  const [motivo, setMotivo] = useState('')
+  const [error, setError] = useState(null)
+
+  if (!abierto) {
+    return (
+      <button type="button" className="boton boton--secundario" onClick={() => setAbierto(true)}>
+        Prorrogar 1 año
+      </button>
+    )
+  }
+  return (
+    <form
+      className="formulario formulario--compacto"
+      noValidate
+      onSubmit={async (evento) => {
+        evento.preventDefault()
+        if (!motivo.trim()) {
+          setError('Indicá el motivo de la prórroga, por ejemplo, un juicio en trámite.')
+          return
+        }
+        await ejecutar(() => prorrogarRetencion(caso.id, motivo))
+      }}
+    >
+      <CampoTexto
+        etiqueta="Motivo de la prórroga"
+        nombre="motivo"
+        value={motivo}
+        onChange={(evento) => setMotivo(evento.target.value)}
+        error={error}
+        ayuda="Queda registrado en la auditoría del caso."
+        required
+      />
+      <div className="acciones-en-linea">
+        <button type="button" className="boton boton--fantasma" onClick={() => setAbierto(false)}>
+          Cancelar
+        </button>
+        <button type="submit" className="boton">
+          Prorrogar
+        </button>
+      </div>
+    </form>
+  )
+}
+
 function SeccionEstado({ caso, ejecutar }) {
   const { acciones } = caso
   if (!acciones.cerrar && !acciones.archivar && !acciones.desarchivar && !acciones.reabrir) return null
+  const vence = caso.retencion_vence ? new Date(caso.retencion_vence) : null
+  const diasRestantes = vence ? Math.ceil((vence - new Date()) / 86400000) : null
   return (
     <section className="seccion" aria-labelledby="titulo-estado">
       <h2 id="titulo-estado">Estado</h2>
@@ -184,6 +234,15 @@ function SeccionEstado({ caso, ejecutar }) {
         Cerrar deja el caso en solo lectura y comienza el plazo de retención de 5 años; al reabrirlo, el plazo
         se detiene.
       </p>
+      {vence && (
+        <div className={`retencion ${diasRestantes <= 30 ? 'retencion--proxima' : ''}`}>
+          <p>
+            Se elimina el <strong>{formatearFecha(caso.retencion_vence)}</strong>
+            {diasRestantes <= 30 && ` (en ${Math.max(diasRestantes, 0)} días)`}.
+          </p>
+          {acciones.prorrogar && <FormularioProrroga caso={caso} ejecutar={ejecutar} />}
+        </div>
+      )}
       <div className="acciones-en-linea">
         {acciones.cerrar && (
           <BotonConfirmar
