@@ -57,6 +57,8 @@ class ServicioSellos:
                 imagen.sello_estado = SELLO_SELLADO
                 imagen.sello_referencia = confirmacion.referencia
                 imagen.sello_fecha = confirmacion.fecha
+                if confirmacion.recibo:
+                    imagen.sello_recibo = confirmacion.recibo
                 self.registro.registrar(
                     auditoria.IMAGEN_SELLO, auditoria.EXITOSO,
                     recurso=(auditoria.TIPO_CASO, imagen.id_caso),

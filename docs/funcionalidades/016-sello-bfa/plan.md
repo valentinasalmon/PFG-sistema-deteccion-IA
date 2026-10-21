@@ -1,7 +1,7 @@
 # Plan técnico · 016
 
 - **`integraciones/sello_tiempo.py`**:
-  - `SelladorBFA`: `POST https://tsa.bfa.ar/api/tsa/stamp/` con `{file_hash}` devuelve `temporary_rd`; `POST /api/tsa/verify/` con `{file_hash, rd}` devuelve `status` y `attestation` (bloque y fecha). Usa `urllib`, sin dependencias nuevas, con un tiempo de espera de 10 s.
+  - `SelladorBFA`: servicio Sello de Tiempo de BFA en `https://tsaapi.bfa.ar`, el mismo que usa `https://bfa.ar/sello`. `POST /api/tsa/stamp/` con el formulario `file_hash` devuelve `{status, temporary_rd}`; `POST /api/tsa/verify/` con `file_hash` y `rd` confirma el sello (bloque, fecha y, si viene, el recibo definitivo `permanent_rd`). Los datos se envían como formulario, no como JSON. Usa `urllib`, sin dependencias nuevas, con un tiempo de espera de 10 s. (Corregido el 2026-10-22 a partir de la captura del navegador: la primera versión apuntaba a `tsa.bfa.ar`, que no existe, y la segunda a Sello de Tiempo 2.0, que estaba caído.)
   - `SelladorSimulado` y `crear_sellador(config)`.
 - **Modelo**: columnas `sello_*` en `imagenes` (migración `e5a1f0c3b016`).
 - **`ServicioSellos`**:
@@ -17,4 +17,4 @@
 
 ## Por qué el modo real arranca desactivado
 
-Desde el entorno de desarrollo del agente no se llega a `tsa.bfa.ar`, y no está comprobado que el servidor de AWS en Irlanda llegue. La autora lo prueba primero y después lo activa: los pasos están en la bitácora y en la guía de despliegue.
+Desde el entorno de desarrollo del agente no se llega a BFA, y no está comprobado que el servidor de AWS en Irlanda llegue. El 2026-10-22 la autora comprobó desde su PC que `tsaapi.bfa.ar` sella (200, `status: success`); Sello de Tiempo 2.0 estaba caído (ver CP-25). La autora lo prueba primero y después lo activa: los pasos están en la bitácora y en la guía de despliegue.

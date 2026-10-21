@@ -183,7 +183,7 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
         self.SELLO_TIEMPO = os.getenv(
             "SELLO_TIEMPO", "desactivado" if self.NOMBRE == "produccion" else "simulado"
         )
-        self.URL_SELLO_BFA = os.getenv("URL_SELLO_BFA", "https://tsa.bfa.ar")
+        self.URL_SELLO_BFA = os.getenv("URL_SELLO_BFA", "https://tsaapi.bfa.ar")
         # Proxies delante de la aplicación: 0 en desarrollo, 1 (Nginx) en producción.
         self.PROXIES_DE_CONFIANZA = int(os.getenv("PROXIES_DE_CONFIANZA", "0"))
 

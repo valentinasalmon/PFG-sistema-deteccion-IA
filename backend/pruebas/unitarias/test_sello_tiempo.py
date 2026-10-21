@@ -5,6 +5,7 @@ nunca se llama al servicio real desde las pruebas.
 """
 import io
 import json
+from datetime import datetime
 from types import SimpleNamespace
 
 import pytest
@@ -35,7 +36,8 @@ def _servidor(monkeypatch, respuestas):
     pedidos = []
 
     def urlopen(solicitud, timeout):  # pylint: disable=unused-argument
-        pedidos.append((solicitud.full_url, json.loads(solicitud.data)))
+        datos = dict(sello_tiempo.parse.parse_qsl(solicitud.data.decode()))
+        pedidos.append((solicitud.full_url, datos))
         respuesta = respuestas.pop(0)
         if isinstance(respuesta, Exception):
             raise respuesta
@@ -49,7 +51,9 @@ def test_bfa_envia_solo_la_huella_y_confirma(monkeypatch):
     """RF37: solo viaja la huella; el recibo se verifica y devuelve bloque y fecha."""
     pedidos = _servidor(monkeypatch, [
         {"status": "success", "temporary_rd": "recibo-temporal"},
-        {"status": "success", "attestation": {"block": 123456, "time": "1792560000"}},
+        {"status": "success", "permanent_rd": "recibo-definitivo",
+         "attestation_time": "21/10/2026 18:05:27",
+         "messages": f"El archivo {HUELLA} fue ingresado en el bloque 50435901 el 21/10/2026"},
     ])
     sellador = SelladorBFA("https://tsa.prueba")
 
@@ -57,14 +61,18 @@ def test_bfa_envia_solo_la_huella_y_confirma(monkeypatch):
     confirmacion = sellador.verificar(HUELLA, recibo)
 
     assert pedidos[0] == ("https://tsa.prueba/api/tsa/stamp/", {"file_hash": HUELLA})
-    assert pedidos[1][1] == {"file_hash": HUELLA, "rd": "recibo-temporal"}
-    assert confirmacion.referencia == "BFA bloque 123456"
-    assert confirmacion.fecha.year == 2026
+    assert pedidos[1] == ("https://tsa.prueba/api/tsa/verify/", {"file_hash": HUELLA, "rd": recibo})
+    assert recibo == "recibo-temporal"
+    assert confirmacion.recibo == "recibo-definitivo"
+    assert confirmacion.referencia == "BFA bloque 50435901"
+    assert confirmacion.fecha == datetime(2026, 10, 21, 21, 5, 27)  # 18:05:27 en Argentina
 
 
 def test_bfa_pendiente_y_caido(monkeypatch):
     """Sin bloque todavía devuelve None; un error de red es SelloNoDisponible."""
-    _servidor(monkeypatch, [{"status": "pending"}, sello_tiempo.error.URLError("sin red")])
+    _servidor(monkeypatch, [
+        {"status": "pending"}, sello_tiempo.error.URLError("sin red"),
+    ])
     sellador = SelladorBFA()
     assert sellador.verificar(HUELLA, "r") is None
     with pytest.raises(SelloNoDisponible):

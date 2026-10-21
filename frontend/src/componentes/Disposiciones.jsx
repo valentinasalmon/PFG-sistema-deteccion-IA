@@ -5,7 +5,7 @@
  * - DisposicionAcceso: pantallas de acceso (registro, inicio de sesión,
  *   recuperación), divididas en un panel de marca verde bosque, con el logo
  *   centrado dentro de las esquinas de visor y el eslogan, y el formulario en
- *   una tarjeta. En un celular el panel de marca se reduce al logo.
+ *   una tarjeta (sin tarjeta de muestra ni servicios, por pedido de la autora). En un celular el panel de marca se reduce al logo.
  *
  * Ambas incluyen el pie con los enlaces a los Términos de Uso y a la
  * Política de Privacidad.
@@ -63,34 +63,6 @@ export function DisposicionAcceso() {
             expediente o a la liquidación de un siniestro.
           </p>
         </div>
-        <div className="acceso__muestra" aria-hidden="true">
-          <div className="acceso__muestra-cabecera">
-            <span>frente.jpg</span>
-            <span className="acceso__muestra-ok">Integridad verificada</span>
-          </div>
-          <div className="acceso__muestra-fila">
-            <span>Metadatos</span>
-            <span className="nivel nivel--ninguno">Sin indicios · 0 %</span>
-          </div>
-          <div className="acceso__muestra-fila">
-            <span>Credenciales de contenido</span>
-            <span className="nivel nivel--ninguno">Sin indicios · 0 %</span>
-          </div>
-          <div className="acceso__muestra-fila">
-            <span>Niveles de error</span>
-            <span className="nivel nivel--moderado">Indicios moderados · 45 %</span>
-          </div>
-        </div>
-        <ul className="acceso__servicios">
-          <li>
-            <strong>Legal</strong>
-            Prueba documentada para demandas, mediaciones y reclamos.
-          </li>
-          <li>
-            <strong>Seguros</strong>
-            Fotos de siniestros verificadas antes de liquidar.
-          </li>
-        </ul>
       </section>
       <div className="acceso__formulario">
         <main id="contenido" className="tarjeta-acceso">
