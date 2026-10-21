@@ -31,6 +31,7 @@ import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
 import Icono from '../componentes/Icono.jsx'
+import SeccionPlan from '../componentes/SeccionPlan.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useFormulario } from '../hooks/useFormulario.js'
 import { useSesion } from '../hooks/useSesion.js'
@@ -523,6 +524,7 @@ export default function PaginaOrganizacion() {
         </Aviso>
       )}
 
+      <SeccionPlan idOrganizacion={organizacion.id} />
       <SeccionMiembros
         organizacion={organizacion}
         miembros={miembros}

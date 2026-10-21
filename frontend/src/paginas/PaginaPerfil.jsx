@@ -27,6 +27,7 @@ import Aviso from '../componentes/Aviso.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import ReglasContrasenia from '../componentes/ReglasContrasenia.jsx'
+import SeccionPlan from '../componentes/SeccionPlan.jsx'
 import { useFormulario } from '../hooks/useFormulario.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { formatearFecha } from '../utilidades/fechas.js'
@@ -440,6 +441,12 @@ function TarjetaDeCuenta() {
   )
 }
 
+/** Plan del espacio personal; solo los abogados tienen espacio personal (RN12). */
+function PlanPersonal() {
+  const { usuario } = useSesion()
+  return usuario.perfil === 'abogado' ? <SeccionPlan /> : null
+}
+
 export default function PaginaPerfil() {
   return (
     <>
@@ -452,6 +459,7 @@ export default function PaginaPerfil() {
       <div className="dos-columnas dos-columnas--invertidas">
         <div className="dos-columnas__lateral">
           <TarjetaDeCuenta />
+          <PlanPersonal />
         </div>
         <div className="dos-columnas__principal">
           <SeccionDatos />
