@@ -249,6 +249,14 @@ class ServicioCorreos:  # pylint: disable=too-many-public-methods
             responsable=f"{responsable.nombre} {responsable.apellido}",
         )
 
+    def enviar_aviso_retencion(self, usuario, caso, vence):
+        """Aviso al Responsable 30 días antes de destruir el caso (RF50, RN31)."""
+        return self._enviar(
+            usuario.correo, f"El caso {caso.numero} se elimina en 30 días", "retencion_aviso",
+            nombre=usuario.nombre, numero=caso.numero, vence=vence.strftime("%d/%m/%Y"),
+            enlace=f"{self.url_frontend}/casos/{caso.id}",
+        )
+
     def enviar_aviso_copia_de_datos(self, usuario):
         """Aviso de que se generó una copia de los datos personales, sin enlace (RF09 CA2)."""
         return self._enviar(

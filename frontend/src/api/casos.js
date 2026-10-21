@@ -43,6 +43,11 @@ export function cambiarEstadoCaso(id, operacion) {
   return solicitar('POST', `${base(id)}/estado`, { operacion })
 }
 
+/** Extiende 1 año la retención indicando el motivo (RF51, funcionalidad 015). */
+export function prorrogarRetencion(id, motivo) {
+  return solicitar('POST', `${base(id)}/prorroga`, { motivo })
+}
+
 /** Comparte con un miembro o, sin idUsuario, con toda la organización (RF30). */
 export function compartirCaso(id, nivel, idUsuario = null) {
   return solicitar('POST', `${base(id)}/accesos`, { nivel, id_usuario: idUsuario })
