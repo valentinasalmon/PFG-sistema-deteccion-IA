@@ -495,3 +495,28 @@ def test_la_lista_de_administradores_se_lee_del_entorno(monkeypatch):
     assert ConfiguracionDesarrollo().ADMINISTRADORES == frozenset(
         {"ana@ejemplo.com", "beto@ejemplo.com"}
     )
+
+
+def test_cuenta_de_prueba_lista_para_ingresar(aplicacion):
+    """022: el comando deja una cuenta verificada, Administradora y con un estudio."""
+    corredor = aplicacion.test_cli_runner()
+    for _ in range(2):  # se puede repetir: la segunda vez restablece la cuenta
+        resultado = corredor.invoke(args=["administracion", "cuenta-de-prueba"])
+        assert resultado.exit_code == 0, resultado.output
+    cliente = aplicacion.test_client()
+    csrf = cliente.get("/api/sesion/csrf").get_json()["csrf"]
+    respuesta = cliente.post(
+        "/api/sesion", json={"correo": "prueba@evidentia.local", "contrasenia": "Prueba12345"},
+        headers={"X-CSRFToken": csrf},
+    )
+    assert respuesta.status_code == 200, respuesta.get_json()
+    assert respuesta.get_json()["usuario"]["rol"] == "administrador"
+    assert len(cliente.get("/api/organizaciones").get_json()["organizaciones"]) == 1
+
+
+def test_cuenta_de_prueba_rechazada_en_produccion(aplicacion):
+    """En producción el comando no hace nada."""
+    aplicacion.config["NOMBRE"] = "produccion"
+    resultado = aplicacion.test_cli_runner().invoke(args=["administracion", "cuenta-de-prueba"])
+    assert resultado.exit_code != 0
+    assert "producción" in resultado.output

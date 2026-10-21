@@ -130,6 +130,49 @@ class RepositorioCasos(RepositorioBase):
             .all()
         )
 
+    def ids_accesibles(self, id_usuario):
+        """Ids de todos los casos que el usuario puede ver (panel, RF48)."""
+        filas = db.session.query(Caso.id).filter(self._condicion_de_acceso(id_usuario)).all()
+        return [id_caso for (id_caso,) in filas]
+
+    def recientes(self, id_usuario, cantidad):
+        """Casos accesibles actualizados más recientemente, incluidos los archivados."""
+        return (
+            Caso.query.filter(self._condicion_de_acceso(id_usuario))
+            .order_by(Caso.actualizado_en.desc(), Caso.id.desc())
+            .limit(cantidad)
+            .all()
+        )
+
+    def compartidos_desde(self, id_usuario, desde, cantidad):
+        """Accesos otorgados al usuario (o a toda su organización) desde una fecha.
+
+        Solo cuenta casos de los que no es Responsable y de organizaciones de las
+        que sigue siendo miembro (RF30 CA2).
+        """
+        es_miembro = exists().where(
+            Membresia.id_organizacion == Caso.id_organizacion,
+            Membresia.id_usuario == id_usuario,
+        )
+        return (
+            AccesoCaso.query.join(Caso)
+            .filter(
+                or_(AccesoCaso.id_usuario == id_usuario, AccesoCaso.toda_organizacion.is_(True)),
+                es_miembro,
+                Caso.id_responsable != id_usuario,
+                AccesoCaso.otorgado_en >= desde,
+            )
+            .order_by(AccesoCaso.otorgado_en.desc())
+            .limit(cantidad)
+            .all()
+        )
+
+    def con_retencion_a_cargo(self, id_usuario):
+        """Casos del Responsable con el plazo de retención en curso (RN30, RN31)."""
+        return Caso.query.filter(
+            Caso.id_responsable == id_usuario, Caso.retencion_desde.isnot(None)
+        ).all()
+
     def cantidad_por_estado(self, id_usuario):
         """Cantidad de casos accesibles por estado, para el inicio."""
         filas = (

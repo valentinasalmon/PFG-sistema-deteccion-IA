@@ -33,7 +33,8 @@ from app.esquemas.organizaciones import (
 )
 from app.seguridad.autenticacion import cerrar_sesion, usuario_actual
 from app.seguridad.origen import origen_de_la_solicitud
-from app.servicios.fabrica import crear_servicio_organizaciones
+from app.esquemas.administracion import SolicitudCambioPlan
+from app.servicios.fabrica import crear_servicio_organizaciones, crear_servicio_planes
 from app.servicios.servicio_sesion import MOTIVO_CIERRE_CUENTA_DESACTIVADA
 from app.utilidades.tiempo import ahora_utc
 
@@ -207,3 +208,29 @@ def cancelar_invitacion(id_organizacion, id_invitacion):
     """Cancela una invitación pendiente (RF12 CA4)."""
     _servicio().cancelar_invitacion(id_organizacion, usuario_actual(), id_invitacion)
     return jsonify({"mensaje": "La invitación fue cancelada."})
+
+
+def _planes():
+    return crear_servicio_planes(
+        current_app.config, current_app.extensions["enviador_correo"], origen_de_la_solicitud()
+    )
+
+
+@organizaciones_bp.get("/<int:id_organizacion>/plan")
+@login_required
+def plan(id_organizacion):
+    """Plan, límites y consumo de la organización (RF20 CA1, funcionalidad 014)."""
+    return jsonify({"plan": _planes().plan_de_organizacion(id_organizacion, usuario_actual())})
+
+
+@organizaciones_bp.post("/<int:id_organizacion>/plan")
+@login_required
+def cambiar_plan(id_organizacion):
+    """Cambia el plan después del pago simulado (RF20 CA2). Solo el Referente."""
+    solicitud = validar(SolicitudCambioPlan, request.get_json(silent=True))
+    servicio = _planes()
+    organizacion = servicio.cambiar_plan(id_organizacion, usuario_actual(), solicitud.plan)
+    return jsonify({
+        "plan": servicio.plan_de_organizacion(organizacion.id, usuario_actual()),
+        "mensaje": "Listo: el plan nuevo ya está activo. El pago fue simulado; no se cobró nada.",
+    })

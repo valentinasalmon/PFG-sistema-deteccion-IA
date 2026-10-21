@@ -12,6 +12,8 @@
     "test:cobertura": "vitest run --coverage"
   },
   "dependencies": {
+    "@fontsource-variable/figtree": "5.3.0",
+    "@fontsource-variable/sora": "5.3.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-router": "8.4.0"

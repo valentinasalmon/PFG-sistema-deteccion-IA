@@ -24,8 +24,10 @@ import {
   solicitarCopiaDeDatos,
 } from '../api/perfil.js'
 import Aviso from '../componentes/Aviso.jsx'
+import Etiqueta from '../componentes/Etiqueta.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import ReglasContrasenia from '../componentes/ReglasContrasenia.jsx'
+import SeccionPlan from '../componentes/SeccionPlan.jsx'
 import { useFormulario } from '../hooks/useFormulario.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { formatearFecha } from '../utilidades/fechas.js'
@@ -132,7 +134,7 @@ function SeccionContrasenia() {
   return (
     <section className="seccion" aria-labelledby="titulo-contrasenia">
       <h2 id="titulo-contrasenia">Contraseña</h2>
-      {mensaje && <Aviso tipo="exito">{mensaje}</Aviso>}
+      {mensaje && <Aviso tipo="exito" flotante={false}>{mensaje}</Aviso>}
       {error && <Aviso tipo="error">{error.message}</Aviso>}
       <form onSubmit={manejarEnvio} className="formulario" noValidate>
         <CampoTexto
@@ -199,7 +201,7 @@ function SeccionCorreo() {
   return (
     <section className="seccion" aria-labelledby="titulo-correo">
       <h2 id="titulo-correo">Correo electrónico</h2>
-      {mensaje && <Aviso tipo="exito">{mensaje}</Aviso>}
+      {mensaje && <Aviso tipo="exito" flotante={false}>{mensaje}</Aviso>}
       {error && <Aviso tipo="error">{error.message}</Aviso>}
       <form onSubmit={manejarEnvio} className="formulario" noValidate>
         <CampoTexto
@@ -259,7 +261,7 @@ function SeccionCopia() {
       {error && <Aviso tipo="error">{error}</Aviso>}
       {copia ? (
         <>
-          <Aviso tipo="exito">
+          <Aviso tipo="exito" flotante={false}>
             {copia.mensaje} Vencen el {formatearFecha(copia.vence_en)}.
           </Aviso>
           <div className="acciones-en-linea">
@@ -401,15 +403,72 @@ function SeccionEliminar() {
   )
 }
 
+const SECCIONES_PERFIL = [
+  ['titulo-datos', 'Datos personales'],
+  ['titulo-contrasenia', 'Contraseña'],
+  ['titulo-correo', 'Correo electrónico'],
+  ['titulo-copia', 'Copia de tus datos'],
+  ['titulo-eliminar-cuenta', 'Eliminar mi cuenta'],
+]
+
+/** Tarjeta lateral con la identidad de la cuenta y el índice de secciones (022). */
+function TarjetaDeCuenta() {
+  const { usuario } = useSesion()
+  const iniciales = `${usuario.nombre?.[0] ?? ''}${usuario.apellido?.[0] ?? ''}`.toUpperCase()
+  return (
+    <aside className="seccion tarjeta-cuenta" aria-label="Tu cuenta">
+      <div className="visor tarjeta-cuenta__visor">
+        <span className="tarjeta-cuenta__avatar" aria-hidden="true">
+          {iniciales}
+        </span>
+      </div>
+      <p className="tarjeta-cuenta__nombre">
+        {usuario.nombre} {usuario.apellido}
+      </p>
+      <p className="tarjeta-cuenta__correo">{usuario.correo}</p>
+      <div className="acciones-en-linea tarjeta-cuenta__etiquetas">
+        <Etiqueta tipo="destacada">{usuario.perfil === 'abogado' ? 'Abogado' : 'Aseguradora'}</Etiqueta>
+        {usuario.rol === 'administrador' && <Etiqueta>Administrador</Etiqueta>}
+      </div>
+      <nav aria-label="Secciones del perfil" className="indice-secciones">
+        {SECCIONES_PERFIL.map(([id, texto]) => (
+          <a key={id} href={`#${id}`}>
+            {texto}
+          </a>
+        ))}
+      </nav>
+    </aside>
+  )
+}
+
+/** Plan del espacio personal; solo los abogados tienen espacio personal (RN12). */
+function PlanPersonal() {
+  const { usuario } = useSesion()
+  return usuario.perfil === 'abogado' ? <SeccionPlan /> : null
+}
+
 export default function PaginaPerfil() {
   return (
     <>
-      <h1>Mi perfil</h1>
-      <SeccionDatos />
-      <SeccionContrasenia />
-      <SeccionCorreo />
-      <SeccionCopia />
-      <SeccionEliminar />
+      <div className="encabezado-pagina">
+        <div>
+          <h1>Mi perfil</h1>
+          <p className="encabezado-pagina__bajada">Tus datos aparecen en los informes que generás.</p>
+        </div>
+      </div>
+      <div className="dos-columnas dos-columnas--invertidas">
+        <div className="dos-columnas__lateral">
+          <TarjetaDeCuenta />
+          <PlanPersonal />
+        </div>
+        <div className="dos-columnas__principal">
+          <SeccionDatos />
+          <SeccionContrasenia />
+          <SeccionCorreo />
+          <SeccionCopia />
+          <SeccionEliminar />
+        </div>
+      </div>
     </>
   )
 }

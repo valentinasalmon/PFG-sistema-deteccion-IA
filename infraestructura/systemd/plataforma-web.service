@@ -1,6 +1,6 @@
 # API de la plataforma con Gunicorn, detrás de Nginx (RNF22 CA3).
 [Unit]
-Description=Plataforma de análisis de imágenes - API (Gunicorn)
+Description=evidentIA - API (Gunicorn)
 After=network.target postgresql.service redis-server.service
 Requires=postgresql.service redis-server.service
 

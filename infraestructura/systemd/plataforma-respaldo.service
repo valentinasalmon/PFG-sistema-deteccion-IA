@@ -1,6 +1,6 @@
 # Respaldo de la base de datos en S3 (RNF15 CA2).
 [Unit]
-Description=Plataforma de análisis de imágenes - respaldo de PostgreSQL
+Description=evidentIA - respaldo de PostgreSQL
 After=postgresql.service
 
 [Service]

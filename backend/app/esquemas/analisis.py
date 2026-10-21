@@ -50,7 +50,7 @@ def analisis_resumen_a_dict(analisis):
     }
 
 
-def _resultado_a_dict(resultado):
+def _resultado_a_dict(resultado, enlaces):
     return {
         "capa": resultado.capa,
         "estado": resultado.estado,
@@ -59,6 +59,8 @@ def _resultado_a_dict(resultado):
         "motivo": resultado.motivo,
         "version": resultado.version,
         "detalle": resultado.detalle,
+        # Enlace firmado de la imagen del resultado (mapa ELA), si tiene (011).
+        "imagen": enlaces.get(resultado.id),
         "anomalias": [
             {
                 "campo": a.campo, "valor": a.valor, "descripcion": a.descripcion,
@@ -83,8 +85,13 @@ def informe_a_dict(informe):
     }
 
 
-def analisis_a_dict(analisis):
-    """Análisis completo, con los resultados de cada capa por imagen (RF43) y su informe."""
+def analisis_a_dict(analisis, enlaces=None):
+    """Análisis completo, con los resultados de cada capa por imagen (RF43) y su informe.
+
+    Args:
+        enlaces: diccionario ``id de resultado -> enlace firmado`` de sus imágenes.
+    """
+    enlaces = enlaces or {}
     datos = analisis_resumen_a_dict(analisis)
     datos["versiones"] = analisis.versiones
     datos["informe"] = informe_a_dict(analisis.informe) if analisis.informe else None
@@ -94,7 +101,7 @@ def analisis_a_dict(analisis):
             "nombre": incluida.nombre,
             "huella": incluida.huella,
             "integridad": incluida.integridad,
-            "resultados": [_resultado_a_dict(r) for r in incluida.resultados],
+            "resultados": [_resultado_a_dict(r, enlaces) for r in incluida.resultados],
         }
         for incluida in analisis.imagenes
     ]

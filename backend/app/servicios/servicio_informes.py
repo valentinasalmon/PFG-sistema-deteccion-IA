@@ -57,6 +57,19 @@ class ServicioInformes:
                 registro_log.warning("Falta la miniatura de la imagen %s", incluida.id_imagen)
         return miniaturas
 
+    def _imagenes_de_capas(self, analisis):
+        """Imágenes de los resultados (mapas ELA); una que falte no impide el informe."""
+        imagenes = {}
+        for incluida in analisis.imagenes:
+            for resultado in incluida.resultados:
+                if not resultado.clave_imagen:
+                    continue
+                try:
+                    imagenes[resultado.id] = self.almacenamiento.leer(resultado.clave_imagen)
+                except Exception:  # pylint: disable=broad-exception-caught
+                    registro_log.warning("Falta la imagen del resultado %s", resultado.id)
+        return imagenes
+
     def generar(self, analisis):
         """Genera el PDF, lo guarda y suma el ``Informe`` a la transacción, sin confirmarla.
 
@@ -66,7 +79,8 @@ class ServicioInformes:
         """
         generado_en = ahora_utc()
         datos = informe_analisis.armar_datos(
-            analisis, self._miniaturas(analisis), self.version_plataforma
+            analisis, self._miniaturas(analisis), self.version_plataforma,
+            self._imagenes_de_capas(analisis),
         )
         contenido = informe_analisis.generar_pdf(datos, generado_en)
         informe = Informe(

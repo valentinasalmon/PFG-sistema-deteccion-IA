@@ -103,3 +103,14 @@ export function aceptarInvitacion(idInvitacion) {
 export function rechazarInvitacion(idInvitacion) {
   return solicitar('POST', `/api/invitaciones/${idInvitacion}/rechazo`)
 }
+
+/** Plan, límites y consumo de la organización (RF20, funcionalidad 014). */
+export async function obtenerPlan(idOrganizacion) {
+  const { plan } = await solicitar('GET', `/api/organizaciones/${idOrganizacion}/plan`)
+  return plan
+}
+
+/** Aplica otro plan después del pago simulado (RF20 CA2). */
+export function cambiarPlan(idOrganizacion, plan) {
+  return solicitar('POST', `/api/organizaciones/${idOrganizacion}/plan`, { plan })
+}

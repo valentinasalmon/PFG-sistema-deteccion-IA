@@ -255,6 +255,39 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
         self.repositorio.guardar(usuario)
         self.correos.enviar_aviso_contrasenia_cambiada(usuario)
 
+    def preparar_cuenta_de_prueba(self, correo, contrasenia):
+        """Deja lista una cuenta para recorrer todas las pantallas en desarrollo (022).
+
+        Crea, o restablece si ya existe, una cuenta Abogado verificada, activa,
+        sin bloqueos y con rol de Administrador, y le crea un estudio jurídico si
+        no tiene ninguna organización. Solo se usa desde la terminal (``flask
+        administracion cuenta-de-prueba``), que la rechaza en producción.
+
+        Returns:
+            La cuenta preparada.
+        """
+        usuario = self.repositorio.obtener_por_correo(correo.lower())
+        if usuario is None:
+            usuario = Usuario(
+                nombre="Valentina", apellido="Prueba", correo=correo.lower(),
+                hash_contrasenia="", perfil=PERFIL_ABOGADO, colegio="CPACF",
+                version_terminos=self.configuracion["VERSION_TERMINOS"],
+                aceptacion_terminos_en=ahora_utc(),
+            )
+            self.repositorio.preparar(usuario)
+        usuario.hash_contrasenia = contrasenias.generar_hash(
+            contrasenia, self.configuracion["BCRYPT_COSTO"]
+        )
+        usuario.correo_verificado_en = usuario.correo_verificado_en or ahora_utc()
+        usuario.intentos_fallidos, usuario.bloqueado_hasta = 0, None
+        usuario.activo, usuario.rol = True, ROL_ADMINISTRADOR
+        self.repositorio.guardar(usuario)
+        if not self.organizaciones.listar(usuario):
+            self.organizaciones.crear(
+                usuario, {"nombre": "Estudio de prueba evidentIA", "tipo": "estudio_juridico"}
+            )
+        return usuario
+
     def promover_administrador(self, correo):
         """Da el rol de Administrador a una cuenta verificada (funcionalidad 021).
 

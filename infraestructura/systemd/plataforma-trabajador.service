@@ -1,6 +1,6 @@
 # Trabajador de RQ que ejecuta los análisis en segundo plano (ADR-0004).
 [Unit]
-Description=Plataforma de análisis de imágenes - trabajador de análisis (RQ)
+Description=evidentIA - trabajador de análisis (RQ)
 After=network.target postgresql.service redis-server.service
 Requires=postgresql.service redis-server.service
 

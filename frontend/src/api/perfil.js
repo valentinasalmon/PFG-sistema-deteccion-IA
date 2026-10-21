@@ -48,3 +48,9 @@ export async function eliminarCuenta(contrasenia) {
   definirTokenCsrf(null)
   return respuesta
 }
+
+/** Plan y consumo del espacio personal (RF20, funcionalidad 014). */
+export async function obtenerPlanPersonal() {
+  const { plan } = await solicitar('GET', '/api/perfil/plan')
+  return plan
+}

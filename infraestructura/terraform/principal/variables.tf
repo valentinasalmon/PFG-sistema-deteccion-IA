@@ -63,3 +63,15 @@ variable "repositorio_github" {
   type        = string
   default     = "valentinasalmon/PFG-sistema-deteccion-IA"
 }
+
+variable "id_propietario_github" {
+  description = "Número de la cuenta de GitHub dueña del repositorio (figura en la identidad OIDC)."
+  type        = string
+  default     = "141863784"
+}
+
+variable "id_repositorio_github" {
+  description = "Número del repositorio en GitHub (figura en la identidad OIDC)."
+  type        = string
+  default     = "1410365187"
+}

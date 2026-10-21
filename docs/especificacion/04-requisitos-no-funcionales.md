@@ -231,6 +231,8 @@ Toda acción relevante queda registrada con fines de trazabilidad legal. No se i
 - **CA1:** Todo resultado presentado en la interfaz o en el informe incluye una explicación en lenguaje no técnico y sus limitaciones.
 - **CA2:** El informe incluye en todas sus páginas la leyenda: "Este informe no constituye un dictamen pericial. Consulte a un profesional especializado."
 - **CA3:** Los textos de las conclusiones provienen de un catálogo revisado y versionado, no de redacción libre.
+- **CA4:** El informe, la pantalla de resultados y el correo de fin de análisis incluyen un descargo: el resultado es parcial, lo produce un sistema automatizado con técnicas de inteligencia artificial y no reemplaza el criterio de un perito (ADR-0017).
+- **CA5:** Cada capa presenta en el informe una tabla con los criterios, el valor de referencia de una imagen sin edición y el valor obtenido, con sus umbrales numéricos, sin describir el algoritmo interno (ADR-0017).
 
 ### RNF24 — Desempeño y trazabilidad del modelo de red neuronal
 **Prioridad:** Debe

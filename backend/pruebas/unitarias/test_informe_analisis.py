@@ -100,6 +100,21 @@ def test_capa_de_credenciales_con_su_titulo_y_su_explicacion():
         assert texto in html, texto
 
 
+def test_mapa_ela_embebido_en_el_informe():
+    """011 CA4: el mapa se incluye como imagen PNG con su aclaración."""
+    analisis = _analisis()
+    ela = _resultado()
+    ela.capa, ela.id = "ela", 41
+    analisis.imagenes[0].resultados.append(ela)
+
+    datos = informe_analisis.armar_datos(analisis, {}, "0.2.0", {41: b"\x89PNGmapa"})
+    html = entorno.get_template("informe_analisis.html").render(informe=datos, generado_en=GENERADO)
+
+    assert "Capa 3 · Niveles de error (ELA)" in html
+    assert "data:image/png;base64," in html
+    assert "señal complementaria" in html
+
+
 def test_capa_no_disponible_e_imagen_alterada():
     """La capa no disponible muestra el motivo; la imagen alterada, la aclaración."""
     assert "ExifTool no está instalado." in _html(_analisis(estado="no_disponible"))
@@ -132,3 +147,51 @@ def test_genera_un_pdf_real():
 def test_hora_de_argentina(valor, esperado):
     """Las fechas UTC se muestran en la hora de Argentina (UTC−3)."""
     assert formatear_hora_argentina(valor) == esperado
+
+
+def test_resumen_custodia_escala_y_glosario():
+    """022: resumen por capa en palabras, cadena de custodia, escala única y glosario."""
+    analisis = _analisis()
+    analisis.imagenes[0].imagen = SimpleNamespace(
+        formato="jpeg", ancho=1600, alto=1200, tamanio=162_816,
+        cargada_en=datetime(2026, 10, 19, 17, 0),
+        usuario=SimpleNamespace(nombre="Ana", apellido="López"),
+    )
+    html = _html(analisis)
+    for texto in (
+        "Resumen", "Indicios fuertes · 90 %", "no se suman ni se promedian",
+        "Evidencia analizada y cadena de custodia", "JPEG · 1600 × 1200 píxeles · 159 KB",
+        "19/10/2026 14:00 por Ana López", "Coincide con la huella registrada al cargarla",
+        "Metodología y escala de lectura", "45 % a 69 %", "Sin indicios", "Cronología", "Glosario",
+        "Cadena de custodia",
+    ):
+        assert texto in html, texto
+
+
+@pytest.mark.parametrize("nivel, banda", [
+    (0, "Sin indicios"), (1, "Indicios débiles"), (44, "Indicios débiles"),
+    (45, "Indicios moderados"), (69, "Indicios moderados"), (70, "Indicios fuertes"),
+    (100, "Indicios fuertes"),
+])
+def test_bandas_de_indicio(nivel, banda):
+    """Las bandas coinciden con describir_intensidad() de las capas."""
+    assert informe_analisis.banda_de_indicio(nivel)["nombre"] == banda
+
+
+def test_valores_de_referencia_descargo_y_uso_previsto():
+    """Entrevista del 02/10/2026: umbrales, descargo de IA y supervisión humana."""
+    analisis = _analisis()
+    ela = _resultado()
+    ela.capa, ela.nivel = "ela", 45
+    ela.detalle = {"tabla": [], "regiones": 1, "desvio_maximo": 12.4}
+    ela.anomalias = [SimpleNamespace(severidad="moderado", descripcion="Zona que se aparta.")]
+    analisis.imagenes[0].resultados.append(ela)
+
+    html = _html(analisis)
+
+    for texto in (
+        "Referencia sin edición", "Valor obtenido", "12,4 desvíos", "Menos de 10 desvíos robustos",
+        "no reemplaza el criterio de un perito", "inteligencia artificial",
+        "Uso previsto y supervisión humana", "Reglamento (UE) 2024/1689", "ISO/IEC 42001",
+    ):
+        assert texto in html, texto
