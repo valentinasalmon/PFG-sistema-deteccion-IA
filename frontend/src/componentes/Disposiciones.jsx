@@ -3,8 +3,9 @@
  *
  * - DisposicionInterna: pantallas con sesión, con encabezado.
  * - DisposicionAcceso: pantallas de acceso (registro, inicio de sesión,
- *   recuperación), divididas en un panel de marca con el eslogan y el
- *   formulario. En un celular el panel de marca se reduce al logo.
+ *   recuperación), divididas en un panel de marca verde bosque, con el logo
+ *   centrado dentro de las esquinas de visor y el eslogan, y el formulario en
+ *   una tarjeta. En un celular el panel de marca se reduce al logo.
  *
  * Ambas incluyen el pie con los enlaces a los Términos de Uso y a la
  * Política de Privacidad.
@@ -50,10 +51,9 @@ export function DisposicionAcceso() {
   return (
     <div className="acceso">
       <section className="acceso__marca" aria-label="evidentIA">
-        <img className="acceso__logo" src="/marca/logo-tipografia-negra.png" alt="evidentIA" />
         <div className="acceso__mensaje">
           <div className="visor acceso__visor">
-            <img src="/marca/isotipo.png" alt="" />
+            <img src="/marca/logo-tipografia-blanca.png" alt="evidentIA" />
           </div>
           <p className="acceso__eslogan">Tu primera línea de defensa contra el fraude visual</p>
           <p className="acceso__bajada">

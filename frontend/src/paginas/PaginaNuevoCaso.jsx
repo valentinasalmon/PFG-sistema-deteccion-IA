@@ -5,7 +5,10 @@
  * Los abogados pueden elegir su espacio personal o un estudio; quienes
  * trabajan en una aseguradora solo ven sus aseguradoras activas (RN12, 021).
  *
- * Realiza: RF23; CA1 a CA3 de la funcionalidad 005 (CU18).
+ * Al costado se muestra qué pasa después de crear el caso, para que el flujo
+ * completo se entienda antes de empezar (022).
+ *
+ * Realiza: RF23; CA1 a CA3 de la funcionalidad 005 (CU18); RNF10.
  */
 import { useCallback } from 'react'
 import { Link, useNavigate } from 'react-router'
@@ -16,6 +19,7 @@ import CampoAreaTexto from '../componentes/CampoAreaTexto.jsx'
 import CampoSeleccion from '../componentes/CampoSeleccion.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
+import Icono from '../componentes/Icono.jsx'
 import OpcionTarjeta from '../componentes/OpcionTarjeta.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useFormulario } from '../hooks/useFormulario.js'
@@ -69,7 +73,7 @@ function Formulario({ espacios }) {
           Espacio de trabajo: <strong>{espacios[0].texto}</strong>
         </p>
       )}
-      <fieldset className="opciones-tarjeta" aria-describedby={errores.tipo ? 'error-tipo' : undefined}>
+      <fieldset className="opciones-tarjeta opciones-tarjeta--dos" aria-describedby={errores.tipo ? 'error-tipo' : undefined}>
         <legend className="campo__etiqueta">Tipo de caso</legend>
         <OpcionTarjeta
           nombre="tipo"
@@ -156,16 +160,44 @@ export default function PaginaNuevoCaso() {
 
   return (
     <>
-      <h1>Nuevo caso</h1>
+      <div className="encabezado-pagina">
+        <div>
+          <h1>Nuevo caso</h1>
+          <p className="encabezado-pagina__bajada">Los datos del hecho identifican el caso en el informe.</p>
+        </div>
+      </div>
       {error && <Aviso tipo="error">{error.message}</Aviso>}
       {espacios.length === 0 ? (
         <Aviso tipo="info">
           Para crear casos tenés que pertenecer a una aseguradora aprobada por el Administrador.
         </Aviso>
       ) : (
-        <section className="seccion">
-          <Formulario espacios={espacios} />
-        </section>
+        <div className="dos-columnas">
+          <section className="seccion dos-columnas__principal">
+            <Formulario espacios={espacios} />
+          </section>
+          <aside className="seccion dos-columnas__lateral" aria-labelledby="titulo-despues">
+            <h2 id="titulo-despues">Qué sigue</h2>
+            <ol className="pasos-flujo">
+              <li>
+                <Icono nombre="casos" tamanio={18} />
+                <span><strong>Creás el caso</strong> con los datos del hecho.</span>
+              </li>
+              <li>
+                <Icono nombre="imagen" tamanio={18} />
+                <span><strong>Cargás las imágenes.</strong> Se guarda el original y su huella SHA-256.</span>
+              </li>
+              <li>
+                <Icono nombre="analisis" tamanio={18} />
+                <span><strong>Pedís el análisis.</strong> Te avisamos por correo cuando termina.</span>
+              </li>
+              <li>
+                <Icono nombre="documento" tamanio={18} />
+                <span><strong>Descargás el informe PDF</strong> con los indicios de cada imagen.</span>
+              </li>
+            </ol>
+          </aside>
+        </div>
       )}
     </>
   )

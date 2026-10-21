@@ -48,6 +48,34 @@ const TRAZOS = {
       <path d="M14 3v5h5M9 13h6M9 17h4" />
     </>
   ),
+  mas: <path d="M12 5v14M5 12h14" />,
+  buscar: (
+    <>
+      <circle cx="11" cy="11" r="7" />
+      <path d="M20 20l-3.5-3.5" />
+    </>
+  ),
+  derecha: <path d="M9 6l6 6-6 6" />,
+  descargar: <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />,
+  imagen: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="3" />
+      <circle cx="9" cy="11" r="2" />
+      <path d="M21 16l-5-5-8 8" />
+    </>
+  ),
+  analisis: (
+    <>
+      <path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  verificado: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M8 12l3 3 5-6" />
+    </>
+  ),
 }
 
 /**

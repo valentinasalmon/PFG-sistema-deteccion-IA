@@ -6,10 +6,15 @@
  * en ``SeccionImagenes`` (006), los análisis en ``SeccionAnalisis`` (007) y los
  * informes PDF en ``SeccionInformes`` (008).
  *
- * Realiza: RF24, RF25, RF27 a RF33; CA4, CA7 a CA19 de la funcionalidad 005.
+ * Disposición (022): a la izquierda el trabajo sobre la evidencia (imágenes,
+ * análisis e informes) y a la derecha los datos del caso y su gestión. Arriba,
+ * los pasos del flujo indican en qué punto está el caso. Los datos se ven
+ * resumidos y se editan al tocar "Editar los datos".
+ *
+ * Realiza: RF24, RF25, RF27 a RF33; CA4, CA7 a CA19 de la funcionalidad 005; RNF10.
  */
 import { useCallback, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import {
   cambiarEstadoCaso,
   cancelarTransferencia,
@@ -29,6 +34,7 @@ import CampoSeleccion from '../componentes/CampoSeleccion.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
+import Icono from '../componentes/Icono.jsx'
 import SeccionAnalisis from '../componentes/SeccionAnalisis.jsx'
 import SeccionImagenes from '../componentes/SeccionImagenes.jsx'
 import SeccionInformes from '../componentes/SeccionInformes.jsx'
@@ -47,6 +53,7 @@ async function cargarCaso(id) {
 }
 
 function SeccionDatos({ caso, alGuardar }) {
+  const [editando, setEditando] = useState(false)
   const { valores, errores, error, enviando, cambiar, enviar } = useFormulario({
     tipo: caso.tipo,
     fecha_hecho: caso.fecha_hecho,
@@ -58,7 +65,10 @@ function SeccionDatos({ caso, alGuardar }) {
   async function manejarEnvio(evento) {
     evento.preventDefault()
     const resultado = await enviar((datos) => editarCaso(caso.id, datos))
-    if (resultado.ok) await alGuardar(resultado.datos.mensaje)
+    if (resultado.ok) {
+      setEditando(false)
+      await alGuardar(resultado.datos.mensaje)
+    }
   }
 
   return (
@@ -75,14 +85,12 @@ function SeccionDatos({ caso, alGuardar }) {
             <dd>Los datos se conservan hasta el {formatearFecha(caso.retencion_vence)}</dd>
           </>
         )}
-        {!caso.acciones.editar && (
+        {!editando && (
           <>
             <dt>Tipo</dt>
             <dd>{caso.tipo_nombre}</dd>
             <dt>Fecha del hecho</dt>
             <dd>{formatearDia(caso.fecha_hecho)}</dd>
-            <dt>Lugar</dt>
-            <dd>{caso.lugar}</dd>
             <dt>Expediente</dt>
             <dd>{caso.expediente ?? '—'}</dd>
             <dt>Descripción</dt>
@@ -90,54 +98,74 @@ function SeccionDatos({ caso, alGuardar }) {
           </>
         )}
       </dl>
+      {caso.acciones.editar && !editando && (
+        <button
+          type="button"
+          className="boton boton--secundario boton--ancho"
+          onClick={() => setEditando(true)}
+        >
+          Editar los datos
+        </button>
+      )}
       {caso.acciones.editar ? (
-        <form onSubmit={manejarEnvio} className="formulario" noValidate>
-          {error && <Aviso tipo="error">{error.message}</Aviso>}
-          <div className="formulario__fila">
-            <CampoSeleccion
-              etiqueta="Tipo"
-              nombre="tipo"
-              value={valores.tipo}
+        editando && (
+          <form onSubmit={manejarEnvio} className="formulario" noValidate>
+            {error && <Aviso tipo="error">{error.message}</Aviso>}
+            <div className="formulario__fila formulario__fila--apilada">
+              <CampoSeleccion
+                etiqueta="Tipo"
+                nombre="tipo"
+                value={valores.tipo}
+                onChange={cambiar}
+                opciones={OPCIONES_TIPO}
+                error={errores.tipo}
+              />
+              <CampoTexto
+                etiqueta="Fecha del hecho"
+                nombre="fecha_hecho"
+                tipo="date"
+                max={hoyIso()}
+                value={valores.fecha_hecho}
+                onChange={cambiar}
+                error={errores.fecha_hecho}
+              />
+            </div>
+            <CampoTexto
+              etiqueta="Lugar del hecho"
+              nombre="lugar"
+              value={valores.lugar}
               onChange={cambiar}
-              opciones={OPCIONES_TIPO}
-              error={errores.tipo}
+              error={errores.lugar}
             />
             <CampoTexto
-              etiqueta="Fecha del hecho"
-              nombre="fecha_hecho"
-              tipo="date"
-              max={hoyIso()}
-              value={valores.fecha_hecho}
+              etiqueta="Expediente"
+              nombre="expediente"
+              opcional
+              value={valores.expediente}
               onChange={cambiar}
-              error={errores.fecha_hecho}
+              error={errores.expediente}
             />
-          </div>
-          <CampoTexto etiqueta="Lugar del hecho" nombre="lugar" value={valores.lugar} onChange={cambiar} error={errores.lugar} />
-          <CampoTexto
-            etiqueta="Expediente"
-            nombre="expediente"
-            opcional
-            value={valores.expediente}
-            onChange={cambiar}
-            error={errores.expediente}
-          />
-          <CampoAreaTexto
-            etiqueta="Descripción"
-            nombre="descripcion"
-            opcional
-            value={valores.descripcion}
-            onChange={cambiar}
-            error={errores.descripcion}
-          />
-          <button type="submit" className="boton" disabled={enviando}>
-            {enviando ? 'Guardando…' : 'Guardar los datos'}
-          </button>
-        </form>
-      ) : (
-        caso.estado === 'cerrado' || caso.estado === 'archivado' ? (
-          <p className="nota">El caso es de solo lectura. Para editarlo, su Responsable tiene que reabrirlo.</p>
-        ) : null
-      )}
+            <CampoAreaTexto
+              etiqueta="Descripción"
+              nombre="descripcion"
+              opcional
+              value={valores.descripcion}
+              onChange={cambiar}
+              error={errores.descripcion}
+            />
+            <div className="pasos__acciones">
+              <button type="button" className="boton boton--fantasma" onClick={() => setEditando(false)}>
+                Cancelar
+              </button>
+              <button type="submit" className="boton" disabled={enviando}>
+                {enviando ? 'Guardando…' : 'Guardar los datos'}
+              </button>
+            </div>
+          </form>
+        )
+      ) : caso.estado === 'cerrado' || caso.estado === 'archivado' ? (
+        <p className="nota">El caso es de solo lectura. Para editarlo, su Responsable tiene que reabrirlo.</p>
+      ) : null}
     </section>
   )
 }
@@ -149,8 +177,8 @@ function SeccionEstado({ caso, ejecutar }) {
     <section className="seccion" aria-labelledby="titulo-estado">
       <h2 id="titulo-estado">Estado</h2>
       <p className="nota">
-        Cerrar deja el caso en solo lectura y comienza el plazo de retención de 5 años; al
-        reabrirlo, el plazo se detiene.
+        Cerrar deja el caso en solo lectura y comienza el plazo de retención de 5 años; al reabrirlo, el plazo
+        se detiene.
       </p>
       <div className="acciones-en-linea">
         {acciones.cerrar && (
@@ -198,7 +226,10 @@ function SeccionAccesos({ caso, accesos, miembros, ejecutar }) {
     { valor: 'organizacion', texto: 'Toda la organización' },
     ...miembros
       .filter((miembro) => miembro.id_usuario !== caso.responsable.id)
-      .map((miembro) => ({ valor: String(miembro.id_usuario), texto: `${miembro.nombre} ${miembro.apellido}` })),
+      .map((miembro) => ({
+        valor: String(miembro.id_usuario),
+        texto: `${miembro.nombre} ${miembro.apellido}`,
+      })),
   ]
 
   return (
@@ -225,7 +256,9 @@ function SeccionAccesos({ caso, accesos, miembros, ejecutar }) {
                       id={`nivel-${acceso.id}`}
                       className="campo__control campo__control--chico"
                       value={acceso.nivel}
-                      onChange={(evento) => ejecutar(() => modificarAcceso(caso.id, acceso.id, evento.target.value))}
+                      onChange={(evento) =>
+                        ejecutar(() => modificarAcceso(caso.id, acceso.id, evento.target.value))
+                      }
                     >
                       <option value="lectura">Lectura</option>
                       <option value="colaboracion">Colaboración</option>
@@ -291,8 +324,8 @@ function SeccionTransferir({ caso, miembros, ejecutar }) {
       <section className="seccion" aria-labelledby="titulo-transferir">
         <h2 id="titulo-transferir">Transferir</h2>
         <Aviso tipo="info">
-          Le pediste a {caso.transferencia_pendiente.nombre} ({caso.transferencia_pendiente.correo})
-          que acepte el caso. Seguís siendo Responsable hasta que lo acepte.
+          Le pediste a {caso.transferencia_pendiente.nombre} ({caso.transferencia_pendiente.correo}) que
+          acepte el caso. Seguís siendo Responsable hasta que lo acepte.
         </Aviso>
         <button
           type="button"
@@ -387,8 +420,8 @@ function SeccionEliminar({ caso }) {
     <section className="seccion zona-riesgo" aria-labelledby="titulo-eliminar">
       <h2 id="titulo-eliminar">Eliminar el caso</h2>
       <p>
-        Se eliminan el caso y sus datos de forma definitiva, y se avisa a quienes tenían acceso. No
-        se puede deshacer.
+        Se eliminan el caso y sus datos de forma definitiva, y se avisa a quienes tenían acceso. No se puede
+        deshacer.
       </p>
       {error && <Aviso tipo="error">{error}</Aviso>}
       <form className="formulario" onSubmit={eliminar} noValidate>
@@ -404,6 +437,36 @@ function SeccionEliminar({ caso }) {
         </button>
       </form>
     </section>
+  )
+}
+
+const PASOS = ['Cargar imágenes', 'Analizar', 'Descargar el informe']
+
+/** Paso del flujo en el que está el caso, según su estado. */
+function pasoActual(estado) {
+  if (estado === 'borrador') return 0
+  if (estado === 'en_analisis') return 1
+  return 2
+}
+
+function PasosDelCaso({ estado }) {
+  const actual = pasoActual(estado)
+  return (
+    <ol className="pasos-caso" aria-label="Pasos del caso">
+      {PASOS.map((paso, indice) => {
+        const situacion = indice < actual ? 'hecho' : indice === actual ? 'actual' : 'pendiente'
+        return (
+          <li
+            key={paso}
+            className={`pasos-caso__paso pasos-caso__paso--${situacion}`}
+            aria-current={situacion === 'actual' ? 'step' : undefined}
+          >
+            <span className="pasos-caso__numero">{indice + 1}</span>
+            {paso}
+          </li>
+        )
+      })}
+    </ol>
   )
 }
 
@@ -441,41 +504,57 @@ export default function PaginaCaso() {
   const { caso, accesos, miembros } = datos
   return (
     <>
-      <div className="encabezado-pagina">
-        <h1>{caso.numero}</h1>
-        <div className="acciones-en-linea">
-          <Etiqueta tipo={tipoDeEtiquetaDeEstado(caso.estado)}>{caso.estado_nombre}</Etiqueta>
-          <Etiqueta>{caso.mi_permiso_nombre}</Etiqueta>
+      <Link to="/casos" className="volver">
+        <Icono nombre="derecha" tamanio={16} />
+        Casos
+      </Link>
+      <header className="cabecera-caso">
+        <div className="cabecera-caso__titulo">
+          <h1>{caso.numero}</h1>
+          <div className="acciones-en-linea">
+            <Etiqueta tipo={tipoDeEtiquetaDeEstado(caso.estado)}>{caso.estado_nombre}</Etiqueta>
+            <Etiqueta>{caso.mi_permiso_nombre}</Etiqueta>
+          </div>
         </div>
-      </div>
-      <p className="subtitulo">
-        {caso.tipo_nombre} · {caso.espacio.nombre} · Hecho del {formatearDia(caso.fecha_hecho)}
-      </p>
+        <p className="cabecera-caso__lugar">{caso.lugar}</p>
+        <p className="subtitulo">
+          {caso.tipo_nombre} · {caso.espacio.nombre} · Hecho del {formatearDia(caso.fecha_hecho)}
+        </p>
+        <PasosDelCaso estado={caso.estado} />
+      </header>
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
 
-      <SeccionDatos
-        key={`${caso.actualizado_en}-${caso.estado}`}
-        caso={caso}
-        alGuardar={async (mensaje) => {
-          setAviso({ tipo: 'exito', texto: mensaje })
-          await recargar()
-        }}
-      />
-      {/* Se vuelve a montar al cambiar el estado: cerrar o reabrir cambia qué se puede hacer. */}
-      <SeccionImagenes key={caso.estado} idCaso={caso.id} alSolicitarAnalisis={recargar} />
-      <SeccionAnalisis
-        key={`analisis-${caso.estado}`}
-        idCaso={caso.id}
-        puedeGenerar={caso.acciones.editar}
-        alTerminar={recargar}
-      />
-      <SeccionInformes key={`informes-${caso.actualizado_en}`} idCaso={caso.id} />
-      <SeccionEstado caso={caso} ejecutar={ejecutar} />
-      {caso.espacio.tipo === 'organizacion' && (
-        <SeccionAccesos caso={caso} accesos={accesos} miembros={miembros} ejecutar={ejecutar} />
-      )}
-      {caso.acciones.transferir && <SeccionTransferir caso={caso} miembros={miembros} ejecutar={ejecutar} />}
-      {caso.acciones.eliminar && <SeccionEliminar caso={caso} />}
+      <div className="dos-columnas dos-columnas--caso">
+        <div className="dos-columnas__principal">
+          {/* Se vuelve a montar al cambiar el estado: cerrar o reabrir cambia qué se puede hacer. */}
+          <SeccionImagenes key={caso.estado} idCaso={caso.id} alSolicitarAnalisis={recargar} />
+          <SeccionAnalisis
+            key={`analisis-${caso.estado}`}
+            idCaso={caso.id}
+            puedeGenerar={caso.acciones.editar}
+            alTerminar={recargar}
+          />
+          <SeccionInformes key={`informes-${caso.actualizado_en}`} idCaso={caso.id} />
+        </div>
+        <div className="dos-columnas__lateral">
+          <SeccionDatos
+            key={`${caso.actualizado_en}-${caso.estado}`}
+            caso={caso}
+            alGuardar={async (mensaje) => {
+              setAviso({ tipo: 'exito', texto: mensaje })
+              await recargar()
+            }}
+          />
+          <SeccionEstado caso={caso} ejecutar={ejecutar} />
+          {caso.espacio.tipo === 'organizacion' && (
+            <SeccionAccesos caso={caso} accesos={accesos} miembros={miembros} ejecutar={ejecutar} />
+          )}
+          {caso.acciones.transferir && (
+            <SeccionTransferir caso={caso} miembros={miembros} ejecutar={ejecutar} />
+          )}
+          {caso.acciones.eliminar && <SeccionEliminar caso={caso} />}
+        </div>
+      </div>
     </>
   )
 }
