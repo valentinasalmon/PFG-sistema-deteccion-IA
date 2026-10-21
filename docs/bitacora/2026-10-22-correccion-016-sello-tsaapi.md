@@ -13,3 +13,10 @@
 ## Pendiente
 
 - La autora prueba `stamp` y `verify` con curl desde su PC y desde el servidor. Si funcionan, se activa `sello_tiempo = "bfa"`.
+
+## Prueba completa desde la PC de la autora (2026-10-22)
+
+- `stamp` respondió `{"status":"success","temporary_rd":"..."}`.
+- Cinco minutos después, `verify` respondió 200 con `{"status":"success","permanent_rd":"...","attestation_time":"21/10/2026 18:05:27","messages":"El archivo <huella> fue ingresado en el bloque 50435901 el 21/10/2026 18:05:27"}`.
+- Se ajustó el cliente a ese formato. El número de bloque se toma del texto de `messages`. La fecha viene en hora argentina (UTC-3) y se guarda en UTC.
+- Pendiente: repetir la prueba desde el servidor de AWS y activar `sello_tiempo = "bfa"`.
