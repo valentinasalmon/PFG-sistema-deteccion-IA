@@ -14,7 +14,7 @@ Cada requisito indica su prioridad, las reglas de negocio que aplica y sus crite
 | M6. Análisis e informes | RF38 – RF46 |
 | M7. Notificaciones y panel | RF47 – RF48 |
 | M8. Retención de datos | RF49 – RF51 |
-| M9. Ampliaciones del 2026-10-25 | RF52 – RF55 |
+| M9. Ampliaciones del 2026-10-25 | RF52 – RF56 |
 
 ---
 
@@ -530,7 +530,7 @@ El sistema debe permitir al Responsable prorrogar el plazo de retención por 1 a
 
 ## M9. Ampliaciones del 2026-10-25
 
-Requisitos agregados a pedido de la autora. Los marcados **[PROPUESTA]** dependen de las cuestiones abiertas CP-26 a CP-31.
+Requisitos agregados a pedido de la autora. Los marcados **[PROPUESTA]** dependen de las cuestiones abiertas CP-26 a CP-31. El detalle de la carga desde el celular está en `docs/investigacion/2026-10-25-carga-desde-el-celular.md`.
 
 ### RF52 — Iniciar sesión y registrarse con Google
 **Prioridad:** Debería · **Reglas:** RN01, RN02 **[PROPUESTA]**
@@ -568,4 +568,12 @@ El sistema debe registrar la huella SHA-256 de cada informe PDF en Hedera y perm
 - **CA1:** Dado un informe generado, entonces su huella se registra en Hedera y la referencia queda guardada junto al informe.
 - **CA2:** El PDF incluye un código QR y un código de verificación que llevan a una página pública de la plataforma.
 - **CA3:** Dada una persona sin cuenta que sube un PDF en la página de verificación, cuando su huella coincide con la registrada, entonces ve la fecha de registro en Hedera y el enlace al explorador público. Si no coincide, se le informa que el documento fue modificado o no pertenece a la plataforma.
-- **CA4:** El PDF se firma digitalmente con el certificado de la plataforma, de modo que los lectores de PDF muestren una advertencia si se lo altera (CP-27).
+- **CA4:** (Opcional, CP-27) El PDF se firma digitalmente con el certificado de la plataforma, de modo que los lectores de PDF muestren una advertencia si se lo altera.
+
+### RF56 — Registrar en Hedera cada versión desplegada
+**Prioridad:** Debería · **Reglas:** RN29
+
+El sistema debe registrar en Hedera la huella de cada versión que se despliega en producción, y cada análisis debe guardar con qué versión se hizo ("host tokenizado", CP-29).
+
+- **CA1:** Dado un despliegue en producción, entonces se registra en Hedera un mensaje con el commit y la huella SHA-256 de los artefactos desplegados, y la referencia queda guardada.
+- **CA2:** Dado un análisis, entonces el informe indica la versión del sistema con la que se hizo y su referencia en Hedera.

@@ -51,9 +51,9 @@ implementación siguiendo tareas.md, con pruebas
 | 023 | Sello de tiempo en Hedera (reemplaza a la 016) | 10 | RF37 | Pendiente |
 | 024 | Carga de imágenes desde el celular (web móvil, QR y HEIC) | 10 | RF53 | Pendiente |
 | 025 | Informe por rubro, breve y autosuficiente | 10 | RF44, RF54 | Pendiente (espera el detalle de la autora, CP-28) |
-| 026 | Informe inalterable: huella en Hedera, firma digital y verificación pública | 10 | RF55 | Pendiente |
+| 026 | Informe inalterable: huella en Hedera y verificación pública | 10 | RF55 | Pendiente |
 | 027 | Inicio de sesión y registro con Google | 10 | RF52 | Pendiente |
 | 028 | Mejoras de usabilidad e interfaz | 10 | RNF10 | Pendiente |
-| 029 | "Host tokenizado" | 10 | — | Por definir (CP-29) |
+| 029 | Huella de cada versión desplegada en Hedera ("host tokenizado") | 10 | RF56 | Pendiente |
 
 Las fases, los hitos y el ciclo de trabajo están en [docs/guias/hoja-de-ruta.md](../guias/hoja-de-ruta.md).

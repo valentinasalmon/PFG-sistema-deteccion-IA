@@ -69,11 +69,11 @@ La autora agregó cambios el 2026-10-25: Hedera en lugar de BFA (ADR-0018), carg
 | Semana | Funcionalidades | Depende de |
 |---|---|---|
 | 26/10 – 01/11 | **023** Sello en Hedera (cuenta y tema en *testnet*) · **024** Carga desde el celular (cámara, galería, QR y HEIC) · **027** Inicio con Google (modo de prueba) | Cuenta de Hedera y credenciales de Google creadas por la autora |
-| 02/11 – 08/11 | **025** Informe por rubro y autosuficiente · **026** Informe inalterable y verificación pública · **012** Capa 4, si el modelo está listo | Detalle del informe (CP-28); modelo ONNX (010) |
-| 09/11 – 15/11 | **028** Usabilidad e interfaz · **018** Cierre: pruebas con usuarios, índice de calidad, dominio, SES y Google en producción, Hedera *mainnet* | Dominio comprado; HBAR (CP-26) |
+| 02/11 – 08/11 | **025** Informe por rubro y autosuficiente · **026** Informe inalterable y verificación pública · **029** Huella de cada versión en Hedera · **012** Capa 4, si el modelo está listo | Detalle del informe (CP-28); modelo ONNX (010) |
+| 09/11 – 15/11 | **028** Usabilidad e interfaz · **018** Cierre (incluye las secciones nuevas del informe final, CP-31): pruebas con usuarios, índice de calidad, dominio, SES y Google en producción, Hedera *mainnet* | Dominio comprado; HBAR (CP-26) |
 | 16/11 – 19/11 | Congelamiento del código, informe final, ensayo de la defensa | — |
 
-**Fuera de la ruta crítica:** "host tokenizado" (029) hasta aclarar CP-29. Una aplicación nativa para Android o iOS queda como trabajo futuro: la web móvil cubre la carga desde el celular sin pasar por las tiendas de aplicaciones.
+Una aplicación nativa para Android o iOS queda como trabajo futuro: la web móvil cubre la carga desde el celular sin pasar por las tiendas de aplicaciones.
 
 ## 3. Ciclo de trabajo de cada funcionalidad
 

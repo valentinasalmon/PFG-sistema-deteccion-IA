@@ -21,7 +21,16 @@
 - **Carga desde el celular por la web**, sin aplicación nativa: funciona en Android e iOS sin pasar por las tiendas de aplicaciones. Se agrega un QR para pasar de la computadora al celular, y soporte de HEIC para los iPhone.
 - **Inalterabilidad del PDF**: huella en Hedera, más firma digital, más página pública de verificación. El NFT queda como opción (CP-27).
 
+## Respuestas de la autora (mismo día)
+
+- **Host tokenizado:** opción (a), la huella de cada versión desplegada en Hedera. Se agrega RF56 y la funcionalidad 029.
+- **PDF:** alcanza con la huella en Hedera, sin NFT. La firma digital queda como opcional.
+- **Hedera para imágenes:** se aplica a lo mismo que antes se hacía con BFA.
+- **"Informe":** se refiere al **informe final del proyecto**. Se creó `docs/informe-final/insumos.md` para juntar todo lo que tiene que quedar en ese documento.
+- **Red:** se recomendó *testnet* para desarrollar y *mainnet* para la defensa (CP-26).
+- **Carga desde el celular:** se investigó y se propusieron diez ideas con pros y contras (`docs/investigacion/2026-10-25-carga-desde-el-celular.md`). La autora las revisa.
+
 ## Pendiente
 
-- La autora define CP-26 (red y HBAR), CP-27 (alcance de "tokenizado"), CP-28 (secciones del informe), CP-29 ("host tokenizado") y CP-31 (a qué informe se refiere).
+- La autora confirma CP-26 (compra de HBAR para *mainnet*), detalla CP-28 (secciones del PDF de resultados) y las secciones nuevas del informe final, y elige las ideas de carga desde el celular.
 - La autora crea una cuenta en el portal de desarrolladores de Hedera y un cliente OAuth en Google Cloud (pasos en el mensaje de la sesión).
