@@ -23,3 +23,12 @@
 
 - Prueba en un celular real, Android e iPhone.
 - Etapa 2: QR de un solo uso y huella calculada en el celular.
+
+## Cambio de rumbo (mismo día)
+
+- **La autora no quiere una plataforma móvil**: se quitaron los botones "Sacar foto" y "Elegir de la galería" de la pantalla del caso. La etapa 1 queda solo con el soporte de HEIC. El ícono `camara` se conserva para la etapa 2.
+- **Propuesta final enviada al tutor:**
+  - código de carga (QR y 6 dígitos);
+  - "compartir desde la galería": Web Share Target (PWA) en Android y Atajo de Apple en iPhone.
+  
+  Quedó registrada en la investigación y en los insumos del informe final.

@@ -28,6 +28,16 @@ La autora marcó como prioritario poder subir las fotos desde el celular, en And
 
 **Propuesta provisoria** (a confirmar con la autora): para la entrega, ideas **1, 2 y 5**, más soporte de HEIC. Si sobra tiempo, la **3** porque aporta mucho a aseguradoras. La **9** va como trabajo futuro y la **8** se descarta.
 
+## 3. Decisión de la autora y propuesta final al tutor (2026-10-26)
+
+- **La plataforma no se adapta para usarse en el celular**: la persona trabaja en la computadora y las fotos se suben desde el celular a ese caso.
+- **Sin instalar apps de las tiendas y en pocos pasos.** Se descartaron las opciones con cable. Las inalámbricas que pasan por la computadora (AirDrop, Quick Share, iCloud, LocalSend) se descartaron porque agregan pasos y dependen de la configuración del celular.
+- **Propuesta enviada al tutor:**
+  - *código de carga* de un solo uso (QR y 6 dígitos, 15 minutos, solo carga en ese caso, auditado);
+  - **compartir desde la galería**: en Android con **Web Share Target API** (la plataforma instalada como PWA desde Chrome, una sola vez); en iPhone con un **Atajo de Apple (Shortcuts)** en la hoja para compartir (agregado una sola vez desde un enlace de iCloud), porque Safari no implementa Web Share Target ([WebKit #194593](https://bugs.webkit.org/show_bug.cgi?id=194593));
+  - el QR queda como alternativa sin preparación.
+- **A verificar:** si el Atajo envía el original (HEIC con metadatos) y no una copia convertida. Web Share Target funciona en Chrome y Samsung Internet, no en Firefox.
+
 ## Fuentes
 
 - Conversión a HEIC en Safari 17 o posterior: https://bugs.webkit.org/show_bug.cgi?id=303803
@@ -35,3 +45,5 @@ La autora marcó como prioritario poder subir las fotos desde el celular, en And
 - Pérdida de metadatos al convertir HEIC: https://phabricator.wikimedia.org/T211745
 - Trampas de formato y orientación al subir desde el celular: https://hackernoon.com/uploading-jpg-files-on-mobile-with-orientation-size-and-format-traps-a-quick-guide
 - Fecha de modificación incorrecta en iOS 16.6: https://bugs.webkit.org/show_bug.cgi?id=232561
+- Web Share Target en Chrome: https://developer.chrome.com/docs/android/trusted-web-activity/web-share-target
+- Subir fotos con Atajos ("Obtener contenido de URL"): https://dev.to/chatgptnexus/2025011522-22-09-article-2eia y https://community.zapier.com/featured-articles-65/how-to-send-photos-from-ios-to-zap-workflows-using-shortcuts-webhooks-by-zapier-12951

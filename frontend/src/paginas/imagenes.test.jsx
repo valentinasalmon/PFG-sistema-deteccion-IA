@@ -227,31 +227,15 @@ describe('sello de tiempo en Hedera (funcionalidades 016 y 023)', () => {
   })
 })
 
-describe('carga desde el celular (funcionalidad 024)', () => {
-  it('en un celular ofrece sacar la foto con la cámara o elegirla de la galería (RF53)', async () => {
-    vi.stubGlobal('matchMedia', (consulta) => ({ matches: consulta === '(pointer: coarse)' }))
+describe('fotos HEIC del iPhone (funcionalidad 024)', () => {
+  it('el selector acepta HEIC para que el navegador entregue el original (RF53 CA3)', async () => {
     api({ ...LISTADO, imagenes: [] })
     renderizarEn('/casos/7')
 
-    const camara = await within(await screen.findByRole('region', { name: /^Imágenes/ })).findByLabelText(
-      'Sacar foto',
+    const campo = await within(await screen.findByRole('region', { name: /^Imágenes/ })).findByLabelText(
+      'Elegir imágenes',
     )
-    expect(camara).toHaveAttribute('capture', 'environment')
-    const galeria = within(seccion()).getByLabelText('Elegir de la galería')
-    expect(galeria.getAttribute('accept')).toContain('image/heic')
-    expect(within(seccion()).getByText(/algunos celulares quitan la ubicación/)).toBeInTheDocument()
-    vi.unstubAllGlobals()
-  })
-
-  it('en la computadora no muestra el botón de la cámara', async () => {
-    api({ ...LISTADO, imagenes: [] })
-    renderizarEn('/casos/7')
-
-    expect(
-      await within(await screen.findByRole('region', { name: /^Imágenes/ })).findByLabelText(
-        'Elegir imágenes',
-      ),
-    ).toBeInTheDocument()
-    expect(within(seccion()).queryByLabelText('Sacar foto')).not.toBeInTheDocument()
+    expect(campo.getAttribute('accept')).toContain('image/heic')
+    expect(within(seccion()).getByText(/JPEG, PNG o HEIC/)).toBeInTheDocument()
   })
 })

@@ -8,33 +8,27 @@ Permitir subir las fotos desde el celular (Android e iOS) directamente al caso, 
 
 ## Etapas
 
-La propuesta enviada al tutor tiene dos partes:
-- **A:** web en el celular.
-- **B:** QR desde la computadora.
+El 2026-10-26 la autora decidió que la plataforma **no** se adapte para usarse en el celular: las fotos se suben desde el celular hacia un caso abierto en la computadora. La propuesta de cómo hacerlo se consultó con el tutor (ver la investigación): código de carga con QR y 6 dígitos, y "compartir desde la galería" con Web Share Target (PWA) en Android y un Atajo de Apple en iPhone. La etapa 1 no depende de esa respuesta.
 
-La etapa 1 no depende de su respuesta. La etapa 2 se hace cuando el tutor conteste.
+### Etapa 1 — Fotos HEIC del iPhone
 
-### Etapa 1 — Web en el celular y HEIC
-
-- [x] **CA1 (RF53 CA1)**: en un celular o una tableta, la sección de imágenes ofrece dos botones:
-  - "Sacar foto", que abre la cámara trasera (`capture="environment"`);
-  - "Elegir de la galería".
-  
-  En la computadora sigue el botón "Elegir imágenes". Las validaciones son las de RF34.
 - [x] **CA3 (RF53 CA3)**: se aceptan fotos HEIC/HEIF, el formato del iPhone:
   - se detectan por la caja `ftyp` y no por la extensión;
   - el original se guarda sin convertir;
   - la vista previa se genera en JPEG.
   
-  El selector lista HEIC explícitamente para que Safari entregue el original sin convertirlo.
-- [x] **CA4 (RF53 CA4)**: en el celular se avisa que sacar la foto en el momento conserva más datos, y que algunos celulares quitan la ubicación al elegir la foto de la galería.
+  El selector lista HEIC explícitamente para que el navegador entregue el original sin convertirlo.
 - [x] **CA5**: el análisis ELA aclara que en HEIC tiene validez limitada (comprime distinto que JPEG) e informa solo indicios débiles, igual que en PNG. Las capas de metadatos (ExifTool) y C2PA leen HEIC.
-- [ ] **CA6**: prueba en un celular real, Android e iPhone (autora).
+- [x] Se descartaron los botones "Sacar foto" y "Elegir de la galería" en la pantalla del caso: la autora no quiere una plataforma móvil.
 
-### Etapa 2 — QR desde la computadora (espera la respuesta del tutor)
+### Etapa 2 — Carga desde el celular (espera la respuesta del tutor)
 
-- [ ] **CA2 (RF53 CA2)**: "Cargar desde el celular" muestra un QR de un solo uso. El QR:
+- [ ] **CA2 (RF53 CA2)**: código de carga de un solo uso, con QR y 6 dígitos. El código:
   - vence a los 15 minutos y se puede cancelar;
-  - solo permite cargar fotos en ese caso;
-  - queda auditado a nombre de quien lo generó.
-- [ ] Huella calculada en el celular y comparada con la del servidor (complemento propuesto).
+  - solo permite subir fotos a ese caso;
+  - queda auditado a nombre de quien lo generó;
+  - tiene un límite de intentos fallidos.
+- [ ] Página de carga para el celular, sin iniciar sesión.
+- [ ] Android: "Compartir con evidentIA" con Web Share Target API (PWA: manifest con `share_target` y service worker).
+- [ ] iPhone: Atajo de Apple "Enviar a evidentIA" en la hoja para compartir (acción "Obtener contenido de URL"). Hay que verificar que suba el original.
+- [ ] Página de ayuda "Compartir desde la galería".
