@@ -30,6 +30,10 @@ S3_BUCKET=${P[S3_BUCKET]}
 S3_REGION=${P[S3_REGION]}
 PROXIES_DE_CONFIANZA=1
 SELLO_TIEMPO=${P[SELLO_TIEMPO]:-desactivado}
+HEDERA_RED=${P[HEDERA_RED]:-testnet}
+HEDERA_CUENTA=${P[HEDERA_CUENTA]:-}
+HEDERA_TEMA=${P[HEDERA_TEMA]:-}
+HEDERA_CLAVE=${P[HEDERA_CLAVE]:-}
 FIN
 install -o plataforma -g plataforma -m 600 "$temporal" /opt/plataforma/.env
 rm -f "$temporal"

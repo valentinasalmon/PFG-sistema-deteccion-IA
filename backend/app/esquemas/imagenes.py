@@ -2,6 +2,7 @@
 
 Realiza: RF35 (CA1).
 """
+from app.integraciones.sello_tiempo import enlace_explorador
 
 
 def imagen_a_dict(imagen, enlace_miniatura, analizada=False):
@@ -25,5 +26,9 @@ def imagen_a_dict(imagen, enlace_miniatura, analizada=False):
             "referencia": imagen.sello_referencia,
             "fecha": imagen.sello_fecha.isoformat() if imagen.sello_fecha else None,
             "simulado": imagen.sello_simulado,
+            # Enlace público para que cualquiera verifique el sello (RF37 CA5).
+            "enlace": (
+                enlace_explorador(imagen.sello_recibo) if imagen.sello_estado == "sellado" else None
+            ),
         },
     }

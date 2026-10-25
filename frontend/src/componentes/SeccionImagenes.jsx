@@ -217,7 +217,7 @@ function BarraAnalisis({ cantidad, total, alElegirTodas, alAnalizar }) {
   )
 }
 
-/** Estado del sello de la huella en Blockchain Federal Argentina (funcionalidad 016, RF37). */
+/** Estado del sello de la huella en Hedera, con enlace al explorador público (funcionalidad 023, RF37). */
 function SelloDeTiempo({ sello }) {
   if (!sello?.estado) return null
   if (sello.estado === 'sellado') {
@@ -225,14 +225,22 @@ function SelloDeTiempo({ sello }) {
       <span className={`sello sello--${sello.simulado ? 'simulado' : 'ok'}`}>
         {sello.simulado
           ? 'Sello simulado (entorno de pruebas)'
-          : `Sellada en BFA el ${formatearFecha(sello.fecha)} · ${sello.referencia}`}
+          : `Registrada en Hedera el ${formatearFecha(sello.fecha)} · ${sello.referencia}`}
+        {sello.enlace && (
+          <>
+            {' · '}
+            <a href={sello.enlace} target="_blank" rel="noopener noreferrer">
+              Verificar en HashScan
+            </a>
+          </>
+        )}
       </span>
     )
   }
   if (sello.estado === 'fallido') {
-    return <span className="sello sello--fallido">Sin sello de BFA</span>
+    return <span className="sello sello--fallido">Sin sello de Hedera</span>
   }
-  return <span className="sello">Sello en BFA en curso…</span>
+  return <span className="sello">Sello en Hedera en curso…</span>
 }
 
 export default function SeccionImagenes({ idCaso, alSolicitarAnalisis }) {

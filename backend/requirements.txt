@@ -36,3 +36,6 @@ c2pa-python==0.38.0         # Lectura y verificación de la firma de los manifie
 
 # --- Funcionalidad 011: capa 3 (ELA) ---
 numpy==2.4.6                # Cálculo por bloques del análisis de niveles de error
+
+# --- Funcionalidad 023: sello de tiempo en Hedera (ADR-0018) ---
+hiero-sdk-python==0.3.0     # SDK oficial de Hiero/Hedera: publicar huellas en Consensus Service

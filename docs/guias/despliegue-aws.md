@@ -173,6 +173,36 @@ La infraestructura ya está creada: para publicar alcanza con integrar en `main`
 
 4. **Cuenta de prueba en el servidor**: no se crea en producción. Registrate normalmente; tu correo ya figura en `administradores`, así que al ingresar tenés el rol de Administrador.
 
+## Activar el sello de tiempo en Hedera (funcionalidad 023)
+
+La cuenta de Hedera se crea en https://portal.hedera.com con clave **ED25519**. El **Account ID** y el **Topic ID** no son secretos, pero no se suben al repositorio: van en `terraform.tfvars`. La **clave privada** no se escribe en ningún archivo: se pide sin mostrarla en pantalla y se guarda cifrada en SSM.
+
+1. **Crear el tema (una sola vez por red)**, desde WSL, en la carpeta del backend con el entorno local activo (ver `levantar-en-local.md`):
+   ```bash
+   cd ~/PFG-sistema-deteccion-IA/backend && source .venv/bin/activate
+   pip install -r requirements.txt
+   flask --app wsgi sellos crear-tema --red testnet
+   ```
+   Pide el Account ID y la clave privada; esta última no se muestra mientras se escribe. Responde `Tema creado en testnet: 0.0.…`.
+2. **Guardar la clave privada cifrada en SSM** (no queda en el historial de la terminal):
+   ```bash
+   read -rs CLAVE && aws ssm put-parameter --name /deteccion-imagenes/produccion/HEDERA_CLAVE \
+     --type SecureString --value "$CLAVE" --overwrite --region eu-west-1 && unset CLAVE
+   ```
+   Se pega la clave, se aprieta Enter y no se ve nada: es normal. El prefijo `/deteccion-imagenes/produccion` es el de la variable `proyecto` de Terraform; si la cambiaste en `terraform.tfvars`, usá ese nombre.
+3. **Completar `terraform.tfvars`**:
+   ```hcl
+   sello_tiempo  = "hedera"
+   hedera_red    = "testnet"
+   hedera_cuenta = "0.0.…"   # Account ID
+   hedera_tema   = "0.0.…"   # Topic ID del paso 1
+   ```
+   Después: `terraform plan` (tiene que crear 3 parámetros y cambiar SELLO_TIEMPO) y `terraform apply`.
+4. **Desplegar** (PR de `desarrollo` a `main`). El despliegue regenera el `.env` del servidor con los datos de Hedera.
+5. **Probar**: cargar una imagen en un caso. En unos segundos (o en la próxima pasada del temporizador, cada 15 minutos) tiene que aparecer "Registrada en Hedera" con el enlace "Verificar en HashScan".
+
+**Pasar a la red real (*mainnet*)**: crear una cuenta de *mainnet* con HBAR, repetir los pasos 1 a 3 con `--red mainnet` y la cuenta nueva, y desplegar. Los sellos de *testnet* no se migran (CP-26).
+
 ## Cuando compres el dominio
 
 1. En `terraform.tfvars`, poné `dominio = "tu-dominio.com.ar"` y ejecutá `terraform apply`.

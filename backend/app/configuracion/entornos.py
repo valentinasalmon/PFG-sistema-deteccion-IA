@@ -178,12 +178,18 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
             CARPETA_CONFIANZA
         )
         self.COLA_ANALISIS = os.getenv("COLA_ANALISIS", "hilo")
-        # Sello de tiempo en BFA (funcionalidad 016): bfa | simulado | desactivado.
+        # Sello de tiempo en Hedera (funcionalidad 023, ADR-0018): hedera | simulado | desactivado.
         # En producción no se simula nunca: sin configurar, queda desactivado.
         self.SELLO_TIEMPO = os.getenv(
             "SELLO_TIEMPO", "desactivado" if self.NOMBRE == "produccion" else "simulado"
         )
-        self.URL_SELLO_BFA = os.getenv("URL_SELLO_BFA", "https://tsaapi.bfa.ar")
+        # Cuenta, clave y tema de Hedera: solo por variables de entorno (SSM en producción),
+        # nunca en el repositorio.
+        self.HEDERA_RED = os.getenv("HEDERA_RED", "testnet")
+        self.HEDERA_CUENTA = os.getenv("HEDERA_CUENTA", "")
+        self.HEDERA_CLAVE = os.getenv("HEDERA_CLAVE", "")
+        self.HEDERA_TEMA = os.getenv("HEDERA_TEMA", "")
+        self.HEDERA_URL_MIRROR = os.getenv("HEDERA_URL_MIRROR", "")
         # Proxies delante de la aplicación: 0 en desarrollo, 1 (Nginx) en producción.
         self.PROXIES_DE_CONFIANZA = int(os.getenv("PROXIES_DE_CONFIANZA", "0"))
 

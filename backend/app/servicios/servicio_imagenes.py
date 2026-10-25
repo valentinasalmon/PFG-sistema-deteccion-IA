@@ -238,7 +238,7 @@ class ServicioImagenes:
             borrar_sin_fallar(self.almacenamiento, imagen.clave_miniatura)
             raise
         if self.sellos is not None:
-            # Primer intento en el momento; si BFA no responde, lo retoma la tarea (RF37 CA3).
+            # Primer intento en el momento; si Hedera no responde, lo retoma la tarea (RF37 CA3).
             self.sellos.intentar(imagen)
         return imagen
 

@@ -187,14 +187,18 @@ describe('imágenes del caso', () => {
   })
 })
 
-describe('sello de tiempo en BFA (funcionalidad 016)', () => {
+describe('sello de tiempo en Hedera (funcionalidades 016 y 023)', () => {
   it('muestra el sello confirmado, en curso o simulado (RF37)', async () => {
-    const sellada = { ...IMAGEN, sello: { estado: 'sellado', referencia: 'BFA bloque 123', fecha: '2026-10-22T12:00:00', simulado: false } }
+    const sellada = { ...IMAGEN, sello: { estado: 'sellado', referencia: 'Hedera testnet · tema 0.0.2002 · mensaje 7', fecha: '2026-10-22T12:00:00', simulado: false, enlace: 'https://hashscan.io/testnet/topic/0.0.2002/message/7' } }
     const enCurso = { ...IMAGEN, id: 2, nombre: 'lateral.jpg', huella: 'b'.repeat(64), sello: { estado: 'enviado', simulado: false } }
     api({ ...LISTADO, imagenes: [sellada, enCurso] })
     renderizarEn('/casos/7')
 
-    expect(await screen.findByText(/Sellada en BFA el 22\/10\/2026 .*BFA bloque 123/)).toBeInTheDocument()
-    expect(screen.getByText('Sello en BFA en curso…')).toBeInTheDocument()
+    expect(await screen.findByText(/Registrada en Hedera el 22\/10\/2026 .*mensaje 7/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Verificar en HashScan' })).toHaveAttribute(
+      'href',
+      'https://hashscan.io/testnet/topic/0.0.2002/message/7',
+    )
+    expect(screen.getByText('Sello en Hedera en curso…')).toBeInTheDocument()
   })
 })

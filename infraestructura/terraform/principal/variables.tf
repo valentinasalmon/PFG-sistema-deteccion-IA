@@ -77,12 +77,35 @@ variable "id_repositorio_github" {
 }
 
 variable "sello_tiempo" {
-  description = "Sello de tiempo de las imágenes en Blockchain Federal Argentina (016): bfa o desactivado."
+  description = "Sello de tiempo de las imágenes en Hedera (funcionalidad 023, ADR-0018): hedera o desactivado."
   type        = string
   default     = "desactivado"
 
   validation {
-    condition     = contains(["bfa", "desactivado"], var.sello_tiempo)
-    error_message = "En producción el sello es bfa o desactivado: nunca simulado."
+    condition     = contains(["hedera", "desactivado"], var.sello_tiempo)
+    error_message = "En producción el sello es hedera o desactivado: nunca simulado."
   }
+}
+
+variable "hedera_red" {
+  description = "Red de Hedera: testnet para desarrollar, mainnet para la defensa (CP-26)."
+  type        = string
+  default     = "testnet"
+
+  validation {
+    condition     = contains(["testnet", "mainnet"], var.hedera_red)
+    error_message = "La red de Hedera es testnet o mainnet."
+  }
+}
+
+variable "hedera_cuenta" {
+  description = "Account ID de Hedera que paga los sellos (0.0.…). La clave privada NO va acá: se carga a mano en SSM como SecureString."
+  type        = string
+  default     = ""
+}
+
+variable "hedera_tema" {
+  description = "Topic ID de Hedera donde se publican las huellas (lo devuelve `flask sellos crear-tema`)."
+  type        = string
+  default     = ""
 }
