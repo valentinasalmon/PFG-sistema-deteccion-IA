@@ -32,6 +32,7 @@ Fase 6  013 Notificaciones y panel · 014 Planes y admin  v0.2┘
 Fase 7  015 Retención · 016 Sello BFA
 Fase 8  017 Infraestructura y despliegue en AWS          v0.3
 Fase 9  018 Cierre: usabilidad, QI, documentación final  v1.0
+Fase 10 023 Hedera · 024 Celular · 025/026 Informe · 027 Google · 028 Usabilidad
 ```
 
 | Fase | N.° | Funcionalidad | Requisitos | Resultado verificable |
@@ -55,11 +56,24 @@ Fase 9  018 Cierre: usabilidad, QI, documentación final  v1.0
 | 6 | 013 | Notificaciones y panel | RF47, RF48 | Correos por evento y panel principal |
 | 6 | 014 | Planes y administración | RF19 – RF22 | Límites por plan y tablero del Administrador → **versión v0.2** |
 | 7 | 015 | Retención de datos | RF49 – RF51 | Destrucción automática, aviso y prórroga |
-| 7 | 016 | Sello de tiempo BFA | RF37 | Huella registrada en Blockchain Federal Argentina |
+| 7 | 016 | Sello de tiempo BFA (reemplazada por la 023) | RF37 | Huella registrada en Blockchain Federal Argentina |
 | 8 | 017 | Infraestructura y despliegue | RNF02, RNF03, RNF15, RNF22 | Plataforma en AWS con dominio y TLS → **versión v0.3** |
 | 9 | 018 | Cierre del proyecto | RNF10, RNF11, RNF19 | Pruebas de usabilidad, medición del QI, documentación final → **versión v1.0** |
 
 > Respecto de la numeración inicial de `docs/funcionalidades/README.md`, se reordenó para obtener antes un flujo completo: el informe PDF pasa a la 008 (antes 012) y se agrega la 018 de cierre.
+
+## 2.1 Fase 10: ampliaciones del 2026-10-25 y calendario hasta la entrega
+
+La autora agregó cambios el 2026-10-25: Hedera en lugar de BFA (ADR-0018), carga desde el celular, informe por rubro e inalterable, inicio con Google y mejoras de usabilidad. La entrega es antes del 2026-11-19 (CP-16), así que se priorizan por valor para la defensa y por dependencias.
+
+| Semana | Funcionalidades | Depende de |
+|---|---|---|
+| 26/10 – 01/11 | **023** Sello en Hedera (cuenta y tema en *testnet*) · **024** Carga desde el celular (cámara, galería, QR y HEIC) · **027** Inicio con Google (modo de prueba) | Cuenta de Hedera y credenciales de Google creadas por la autora |
+| 02/11 – 08/11 | **025** Informe por rubro y autosuficiente · **026** Informe inalterable y verificación pública · **029** Huella de cada versión en Hedera · **012** Capa 4, si el modelo está listo | Detalle del informe (CP-28); modelo ONNX (010) |
+| 09/11 – 15/11 | **028** Usabilidad e interfaz · **018** Cierre (incluye las secciones nuevas del informe final, CP-31): pruebas con usuarios, índice de calidad, dominio, SES y Google en producción, Hedera *mainnet* | Dominio comprado; HBAR (CP-26) |
+| 16/11 – 19/11 | Congelamiento del código, informe final, ensayo de la defensa | — |
+
+Una aplicación nativa para Android o iOS queda como trabajo futuro: la web móvil cubre la carga desde el celular sin pasar por las tiendas de aplicaciones.
 
 ## 3. Ciclo de trabajo de cada funcionalidad
 
@@ -91,7 +105,7 @@ git push origin v0.1
 | v0.1 | Una persona se registra, crea un caso, carga imágenes, las analiza y descarga un informe PDF con la capa de metadatos. |
 | v0.2 | Las cuatro capas, organizaciones con casos compartidos, correos, panel y planes. |
 | v0.3 | La plataforma publicada en AWS con dominio y HTTPS. |
-| v1.0 | Producto final con retención, sello de tiempo, pruebas de usabilidad y métricas de calidad. |
+| v1.0 | Producto final con retención, sello de tiempo en Hedera, informe inalterable por rubro, carga desde el celular, inicio con Google, pruebas de usabilidad y métricas de calidad. |
 
 ## 5. Estado
 

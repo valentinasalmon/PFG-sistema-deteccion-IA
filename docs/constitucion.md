@@ -22,7 +22,7 @@ Componentes transversales:
 esquemas/      Validación y serialización de entradas y salidas de la API.
 seguridad/     Decoradores de control de acceso y utilidades de autenticación.
 analisis/      Capas de análisis (Strategy). No acceden a la base de datos.
-integraciones/ Adaptadores a servicios externos: S3, SES, Blockchain Federal Argentina.
+integraciones/ Adaptadores a servicios externos: S3, SES, Hedera (sello de tiempo).
 tareas/        Trabajos en segundo plano (RQ): análisis, correos, retención.
 informes/      Generación del informe PDF.
 ```
