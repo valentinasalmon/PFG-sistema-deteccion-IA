@@ -1,3 +1,5 @@
+> **Reemplazada (2026-10-25):** la autora decidió usar Hedera en lugar de BFA ([ADR-0018](../../arquitectura/decisiones/0018-sello-de-tiempo-en-hedera.md)). La funcionalidad 023 reutiliza los estados, la pantalla y el reintento de esta funcionalidad, y cambia solo el sellador.
+
 # 016 · Sello de tiempo en Blockchain Federal Argentina
 
 **Requisitos**: RF37, RNF20 (CA1) · **Regla**: RN23
