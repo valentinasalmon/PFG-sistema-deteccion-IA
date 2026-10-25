@@ -284,17 +284,20 @@ def _resultado(resultado, imagenes_de_capas):
 
 
 def _sello(original):
-    """Texto del sello de tiempo de la imagen en BFA (funcionalidad 016, RF37 CA2)."""
+    """Texto del sello de tiempo de la imagen en Hedera (funcionalidad 023, RF37 CA2)."""
     estado = getattr(original, "sello_estado", None)
     if estado == "sellado":
         fecha = original.sello_fecha.strftime("%d/%m/%Y %H:%M UTC") if original.sello_fecha else ""
         if original.sello_simulado:
             return f"Sello simulado del entorno de pruebas ({fecha}): no tiene validez."
-        return f"Sellada en Blockchain Federal Argentina el {fecha} · {original.sello_referencia}"
+        return (
+            f"Registrada en Hedera el {fecha} · {original.sello_referencia}. "
+            "Se puede verificar en https://hashscan.io con esa referencia."
+        )
     if estado in ("pendiente", "enviado"):
-        return "Solicitado a Blockchain Federal Argentina; pendiente de confirmación."
+        return "Solicitado a Hedera; pendiente de confirmación."
     if estado == "fallido":
-        return "No se pudo obtener el sello de Blockchain Federal Argentina."
+        return "No se pudo obtener el sello de Hedera."
     return "No solicitado."
 
 

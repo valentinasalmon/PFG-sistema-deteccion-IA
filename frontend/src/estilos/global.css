@@ -2668,7 +2668,7 @@ select.campo__control {
   color: var(--alerta);
 }
 
-/* --- Sello de tiempo en BFA (funcionalidad 016) --- */
+/* --- Sello de tiempo en Hedera (funcionalidades 016 y 023) --- */
 .sello {
   align-self: flex-start;
   padding: 0.125rem 0.5rem;

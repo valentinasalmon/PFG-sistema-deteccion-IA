@@ -24,6 +24,13 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   1. huella de cada imagen al cargarla (lo que antes hacía BFA);
   2. huella de cada informe PDF, con página de verificación;
   3. huella de cada versión desplegada del sistema ("host tokenizado", CP-29).
+- **Implementación (funcionalidad 023):**
+  - mensaje mínimo `{"v":1,"tipo":"imagen","sha256":...}`;
+  - recibo `<red>:<tema>/<secuencia>`;
+  - verificación en el *mirror node* comparando la huella;
+  - enlace público a HashScan;
+  - clave privada solo en SSM (nunca en el repositorio ni en el estado de Terraform), pedida sin mostrarla al crear el tema;
+  - SDK oficial `hiero-sdk-python`, importado solo cuando el modo es Hedera.
 - **Lección para el informe:** depender de un servicio externo sin documentación pública. El patrón Strategy permitió cambiar de proveedor sin tocar el resto del sistema.
 
 ## Carga desde el celular

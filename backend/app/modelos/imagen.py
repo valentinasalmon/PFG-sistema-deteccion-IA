@@ -48,7 +48,7 @@ class Imagen(db.Model):  # pylint: disable=too-few-public-methods
     )
     cargada_en = db.Column(db.DateTime, nullable=False, default=ahora_utc)
     # Una imagen incluida en un informe generado ya no puede eliminarse (RN24).
-    # Sello de tiempo en BFA (funcionalidad 016, RF37): pendiente, enviado, sellado o fallido.
+    # Sello de tiempo en Hedera (016 y 023, RF37): pendiente, enviado, sellado o fallido.
     sello_estado = db.Column(db.String(20), nullable=True)
     sello_recibo = db.Column(db.Text, nullable=True)
     sello_referencia = db.Column(db.String(200), nullable=True)

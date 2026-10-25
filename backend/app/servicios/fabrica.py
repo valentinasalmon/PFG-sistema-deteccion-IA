@@ -8,7 +8,7 @@ IP) para que la auditoría lo registre sin que los servicios conozcan Flask.
 """
 from app.repositorios.catalogo_aseguradoras import CatalogoAseguradoras
 from app.analisis.registro import crear_capas
-from app.integraciones.sello_tiempo import crear_sellador
+from app.integraciones.sello_tiempo import crear_sellador, crear_tema_hedera
 from app.repositorios.repositorio_analisis import RepositorioAnalisis
 from app.repositorios.repositorio_auditoria import RepositorioAuditoria
 from app.repositorios.repositorio_casos import RepositorioCasos
@@ -181,8 +181,13 @@ def crear_tareas_de_retencion(configuracion, enviador, almacenamiento=None, orig
     return TareasDeRetencion(crear_servicio_casos(configuracion, enviador, origen, almacenamiento))
 
 
+def crear_tema_de_sellos(red, cuenta, clave):
+    """Crea en Hedera el tema donde la plataforma publica las huellas (funcionalidad 023)."""
+    return crear_tema_hedera(red, cuenta, clave)
+
+
 def crear_servicio_sellos(configuracion, origen=None):
-    """Sello de tiempo de las imágenes en BFA (funcionalidad 016)."""
+    """Sello de tiempo de las imágenes en Hedera (funcionalidades 016 y 023)."""
     return ServicioSellos(
         RepositorioImagenes(), crear_sellador(configuracion), crear_servicio_auditoria(origen)
     )

@@ -1,6 +1,8 @@
 # Configuración de la aplicación en Parameter Store (/<proyecto>/produccion/).
 # La EC2 la lee al arrancar y en cada despliegue y arma su archivo .env
 # (scripts/generar_entorno.sh). Los secretos se generan acá y van cifrados.
+# Excepción: la clave privada de Hedera (HEDERA_CLAVE) la carga la autora a mano
+# como SecureString, para que no quede en el estado de Terraform.
 
 resource "random_password" "clave_secreta" {
   length  = 64
@@ -33,6 +35,12 @@ locals {
     BUCKET_OPERACION = aws_s3_bucket.bucket["operacion"].bucket
     SELLO_TIEMPO     = var.sello_tiempo
   }
+  # SSM no admite valores vacíos: los datos de Hedera se crean solo cuando están completos.
+  parametros_hedera = var.hedera_cuenta != "" && var.hedera_tema != "" ? {
+    HEDERA_RED    = var.hedera_red
+    HEDERA_CUENTA = var.hedera_cuenta
+    HEDERA_TEMA   = var.hedera_tema
+  } : {}
 }
 
 resource "aws_ssm_parameter" "secreto" {
@@ -43,7 +51,7 @@ resource "aws_ssm_parameter" "secreto" {
 }
 
 resource "aws_ssm_parameter" "valor" {
-  for_each = local.parametros
+  for_each = merge(local.parametros, local.parametros_hedera)
   name     = "${local.prefijo_parametros}/${each.key}"
   type     = "String"
   value    = each.value
