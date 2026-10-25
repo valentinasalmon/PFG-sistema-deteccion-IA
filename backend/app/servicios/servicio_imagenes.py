@@ -172,7 +172,8 @@ class ServicioImagenes:
         formato = lector.detectar_formato(contenido)
         if formato is None:
             raise rechazar(_error_archivo(
-                "El formato real del archivo no es válido: solo se aceptan imágenes JPEG o PNG."
+                "El formato real del archivo no es válido: solo se aceptan imágenes "
+                "JPEG, PNG o HEIC."
             ), "formato")
         try:
             dimensiones = lector.leer_dimensiones(contenido, formato)

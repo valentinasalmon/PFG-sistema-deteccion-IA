@@ -37,6 +37,12 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
 
 - Hallazgos sobre la web móvil, HEIC, pérdida de ubicación en iOS, fotos sin EXIF y compresión de WhatsApp.
 - Diez ideas con pros y contras, y la propuesta elegida.
+- Se envió al tutor una propuesta con dos partes: A, web en el celular, y B, QR desde la computadora.
+- Etapa 1 implementada (funcionalidad 024):
+  - botones "Sacar foto" y "Elegir de la galería";
+  - soporte de HEIC sin convertir el original, detectado por la caja `ftyp`;
+  - aviso sobre la pérdida de ubicación;
+  - ELA con validez limitada en HEIC.
 - Ver `docs/investigacion/2026-10-25-carga-desde-el-celular.md`.
 
 ## Otros temas ya registrados

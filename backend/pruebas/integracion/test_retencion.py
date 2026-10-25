@@ -48,8 +48,13 @@ def _mover_inicio(aplicacion, id_caso, hace):
 
 
 def _vence_en(aplicacion, id_caso, dias):
-    """Ubica el inicio del plazo para que la retención venza dentro de ``dias``."""
-    vence = ahora_utc() + timedelta(days=dias, hours=1)
+    """Ubica el inicio del plazo para que la retención venza dentro de ``dias``.
+
+    El vencimiento queda a las 23:59 de ese día, para que caiga en la misma fecha
+    a cualquier hora en que corra la prueba (antes, entre las 23 y las 24 UTC
+    sumar una hora pasaba al día siguiente).
+    """
+    vence = (ahora_utc() + timedelta(days=dias)).replace(hour=23, minute=59, second=0)
     with aplicacion.app_context():
         db.session.get(Caso, id_caso).retencion_desde = vence.replace(year=vence.year - 5)
         db.session.commit()

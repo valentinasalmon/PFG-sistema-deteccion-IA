@@ -13,8 +13,14 @@ vi.mock('../utilidades/archivos.js', async (original) => ({
 const { abrirDescarga } = await import('../utilidades/archivos.js')
 
 const ACCIONES = {
-  editar: true, cerrar: true, archivar: false, desarchivar: false, reabrir: false,
-  compartir: false, transferir: true, eliminar: true,
+  editar: true,
+  cerrar: true,
+  archivar: false,
+  desarchivar: false,
+  reabrir: false,
+  compartir: false,
+  transferir: true,
+  eliminar: true,
 }
 const CASO = {
   id: 7,
@@ -122,9 +128,12 @@ describe('imágenes del caso', () => {
   })
 
   it('el Lector solo consulta y descarga (CA6)', async () => {
-    api({ ...LISTADO, puede_modificar: false }, {
-      'GET /api/casos/7/imagenes/11/descarga': { cuerpo: { url: '/api/archivos/token-original' } },
-    })
+    api(
+      { ...LISTADO, puede_modificar: false },
+      {
+        'GET /api/casos/7/imagenes/11/descarga': { cuerpo: { url: '/api/archivos/token-original' } },
+      },
+    )
     const { usuario } = renderizarEn('/casos/7')
 
     await screen.findByRole('img', { name: 'Vista previa de frente.jpg' })
@@ -189,8 +198,23 @@ describe('imágenes del caso', () => {
 
 describe('sello de tiempo en Hedera (funcionalidades 016 y 023)', () => {
   it('muestra el sello confirmado, en curso o simulado (RF37)', async () => {
-    const sellada = { ...IMAGEN, sello: { estado: 'sellado', referencia: 'Hedera testnet · tema 0.0.2002 · mensaje 7', fecha: '2026-10-22T12:00:00', simulado: false, enlace: 'https://hashscan.io/testnet/topic/0.0.2002/message/7' } }
-    const enCurso = { ...IMAGEN, id: 2, nombre: 'lateral.jpg', huella: 'b'.repeat(64), sello: { estado: 'enviado', simulado: false } }
+    const sellada = {
+      ...IMAGEN,
+      sello: {
+        estado: 'sellado',
+        referencia: 'Hedera testnet · tema 0.0.2002 · mensaje 7',
+        fecha: '2026-10-22T12:00:00',
+        simulado: false,
+        enlace: 'https://hashscan.io/testnet/topic/0.0.2002/message/7',
+      },
+    }
+    const enCurso = {
+      ...IMAGEN,
+      id: 2,
+      nombre: 'lateral.jpg',
+      huella: 'b'.repeat(64),
+      sello: { estado: 'enviado', simulado: false },
+    }
     api({ ...LISTADO, imagenes: [sellada, enCurso] })
     renderizarEn('/casos/7')
 
@@ -200,5 +224,34 @@ describe('sello de tiempo en Hedera (funcionalidades 016 y 023)', () => {
       'https://hashscan.io/testnet/topic/0.0.2002/message/7',
     )
     expect(screen.getByText('Sello en Hedera en curso…')).toBeInTheDocument()
+  })
+})
+
+describe('carga desde el celular (funcionalidad 024)', () => {
+  it('en un celular ofrece sacar la foto con la cámara o elegirla de la galería (RF53)', async () => {
+    vi.stubGlobal('matchMedia', (consulta) => ({ matches: consulta === '(pointer: coarse)' }))
+    api({ ...LISTADO, imagenes: [] })
+    renderizarEn('/casos/7')
+
+    const camara = await within(await screen.findByRole('region', { name: /^Imágenes/ })).findByLabelText(
+      'Sacar foto',
+    )
+    expect(camara).toHaveAttribute('capture', 'environment')
+    const galeria = within(seccion()).getByLabelText('Elegir de la galería')
+    expect(galeria.getAttribute('accept')).toContain('image/heic')
+    expect(within(seccion()).getByText(/algunos celulares quitan la ubicación/)).toBeInTheDocument()
+    vi.unstubAllGlobals()
+  })
+
+  it('en la computadora no muestra el botón de la cámara', async () => {
+    api({ ...LISTADO, imagenes: [] })
+    renderizarEn('/casos/7')
+
+    expect(
+      await within(await screen.findByRole('region', { name: /^Imágenes/ })).findByLabelText(
+        'Elegir imágenes',
+      ),
+    ).toBeInTheDocument()
+    expect(within(seccion()).queryByLabelText('Sacar foto')).not.toBeInTheDocument()
   })
 })

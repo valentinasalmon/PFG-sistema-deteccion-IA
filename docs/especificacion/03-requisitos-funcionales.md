@@ -339,7 +339,7 @@ El sistema debe permitir al Responsable transferir la responsabilidad de un caso
 ### RF34 — Cargar imágenes
 **Prioridad:** Debe · **Reglas:** RN15, RN19, RN22, RN23
 
-El sistema debe permitir al Responsable y a los Colaboradores cargar una o más imágenes JPEG o PNG en un caso en estado Borrador o Analizado.
+El sistema debe permitir al Responsable y a los Colaboradores cargar una o más imágenes JPEG, PNG o HEIC (funcionalidad 024) en un caso en estado Borrador o Analizado.
 
 - **CA1:** Dado un archivo cuyo contenido corresponde a JPEG o PNG y no supera el tamaño máximo, cuando se carga, entonces se almacena en S3 cifrado, se calcula su huella SHA-256 y se registran nombre original, tamaño, formato, dimensiones, huella y usuario que lo cargó.
 - **CA2:** Dado un archivo con extensión `.jpg` cuyo contenido no es JPEG, entonces se rechaza indicando que el formato real no es válido.

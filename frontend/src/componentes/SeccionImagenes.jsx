@@ -22,11 +22,21 @@ import { formatearFecha } from '../utilidades/fechas.js'
 import Aviso from './Aviso.jsx'
 import BotonConfirmar from './BotonConfirmar.jsx'
 import Cargando from './Cargando.jsx'
+import Icono from './Icono.jsx'
 
-const TIPOS_ACEPTADOS = 'image/jpeg,image/png,.jpg,.jpeg,.png'
+// HEIC/HEIF: formato por defecto del iPhone. Se lista explícitamente para que el
+// navegador entregue el original sin convertirlo (funcionalidad 024).
+const TIPOS_ACEPTADOS = 'image/jpeg,image/png,image/heic,image/heif,.jpg,.jpeg,.png,.heic,.heif'
+
+/** True en celulares y tabletas: ahí se ofrece abrir directamente la cámara (RF53). */
+function esDispositivoTactil() {
+  return typeof window !== 'undefined' && Boolean(window.matchMedia?.('(pointer: coarse)').matches)
+}
 
 function Carga({ idCaso, tamanioMaximo, alTerminar }) {
   const idCampo = useId()
+  const idCamara = useId()
+  const [tactil] = useState(esDispositivoTactil)
   const [cargando, setCargando] = useState(null)
   const [resultados, setResultados] = useState([])
   const maximoMb = Math.round(tamanioMaximo / (1024 * 1024))
@@ -78,12 +88,38 @@ function Carga({ idCaso, tamanioMaximo, alTerminar }) {
         onChange={alElegir}
         disabled={Boolean(cargando)}
       />
-      <label htmlFor={idCampo} className="boton">
-        Elegir imágenes
-      </label>
+      {tactil && (
+        <input
+          id={idCamara}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="solo-lectores"
+          onChange={alElegir}
+          disabled={Boolean(cargando)}
+        />
+      )}
+      <div className="acciones-en-linea">
+        {tactil && (
+          <label htmlFor={idCamara} className="boton">
+            <Icono nombre="camara" tamanio={18} />
+            Sacar foto
+          </label>
+        )}
+        <label htmlFor={idCampo} className={tactil ? 'boton boton--secundario' : 'boton'}>
+          <Icono nombre="imagen" tamanio={18} />
+          {tactil ? 'Elegir de la galería' : 'Elegir imágenes'}
+        </label>
+      </div>
       <p className="nota">
-        JPEG o PNG, hasta {maximoMb} MB cada una. El archivo original no se modifica.
+        JPEG, PNG o HEIC (iPhone), hasta {maximoMb} MB cada una. El archivo original no se modifica.
       </p>
+      {tactil && (
+        <p className="nota">
+          Sacar la foto en el momento conserva más datos, como la ubicación. Al elegirla de la galería,
+          algunos celulares quitan la ubicación de la foto.
+        </p>
+      )}
       <div aria-live="polite">
         {cargando && <Cargando texto={`Cargando ${cargando.actual} de ${cargando.total}…`} />}
         {!cargando && resultados.length > 0 && (
@@ -188,12 +224,7 @@ function BarraAnalisis({ cantidad, total, alElegirTodas, alAnalizar }) {
 
   return (
     <div className="barra-analisis">
-      <button
-        type="button"
-        className="boton"
-        onClick={analizar}
-        disabled={cantidad === 0 || enviando}
-      >
+      <button type="button" className="boton" onClick={analizar} disabled={cantidad === 0 || enviando}>
         {enviando ? 'Pidiendo el análisis…' : `Analizar (${cantidad})`}
       </button>
       <button
@@ -251,8 +282,8 @@ export default function SeccionImagenes({ idCaso, alSolicitarAnalisis }) {
   const [eleccion, setEleccion] = useState(null)
   const imagenes = datos?.imagenes ?? []
   const elegidas = new Set(
-    (eleccion ?? imagenes.filter((imagen) => !imagen.analizada).map((imagen) => imagen.id)).filter(
-      (id) => imagenes.some((imagen) => imagen.id === id),
+    (eleccion ?? imagenes.filter((imagen) => !imagen.analizada).map((imagen) => imagen.id)).filter((id) =>
+      imagenes.some((imagen) => imagen.id === id),
     ),
   )
 
@@ -285,9 +316,7 @@ export default function SeccionImagenes({ idCaso, alSolicitarAnalisis }) {
 
   return (
     <section className="seccion" aria-labelledby="titulo-imagenes" aria-busy={cargando}>
-      <h2 id="titulo-imagenes">
-        Imágenes{datos ? ` (${datos.imagenes.length} de ${datos.limite})` : ''}
-      </h2>
+      <h2 id="titulo-imagenes">Imágenes{datos ? ` (${datos.imagenes.length} de ${datos.limite})` : ''}</h2>
       {cargando && <Cargando texto="Cargando las imágenes…" />}
       {error && <Aviso tipo="error">{error.message}</Aviso>}
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}

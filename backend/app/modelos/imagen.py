@@ -12,8 +12,9 @@ from app.utilidades.tiempo import ahora_utc
 
 FORMATO_JPEG = "jpeg"
 FORMATO_PNG = "png"
-FORMATOS_IMAGEN = (FORMATO_JPEG, FORMATO_PNG)
-TIPOS_MIME = {FORMATO_JPEG: "image/jpeg", FORMATO_PNG: "image/png"}
+FORMATO_HEIC = "heic"  # formato por defecto de las fotos del iPhone (funcionalidad 024)
+FORMATOS_IMAGEN = (FORMATO_JPEG, FORMATO_PNG, FORMATO_HEIC)
+TIPOS_MIME = {FORMATO_JPEG: "image/jpeg", FORMATO_PNG: "image/png", FORMATO_HEIC: "image/heic"}
 
 
 class Imagen(db.Model):  # pylint: disable=too-few-public-methods
