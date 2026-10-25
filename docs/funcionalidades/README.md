@@ -41,12 +41,19 @@ implementación siguiendo tareas.md, con pruebas
 | 013 | [Notificaciones y panel principal](013-panel-y-notificaciones/especificacion.md) | 6 | RF47, RF48 | Completado |
 | 014 | [Planes y tablero de administración](014-planes-y-tablero/especificacion.md) | 6 | RF19 – RF22 | Completado |
 | 015 | [Retención y destrucción de datos](015-retencion/especificacion.md) | 7 | RF49 – RF51 | Completado |
-| 016 | [Sello de tiempo en Blockchain Federal Argentina](016-sello-bfa/especificacion.md) | 7 | RF37 | Completado (falta activar BFA real) |
+| 016 | [Sello de tiempo en Blockchain Federal Argentina](016-sello-bfa/especificacion.md) | 7 | RF37 | Reemplazada por la 023 (ADR-0018) |
 | 017 | [Infraestructura y despliegue en AWS](017-infraestructura-aws/especificacion.md) | 8 | RNF02, RNF03, RNF15, RNF22 | Desplegada (falta probar la restauración y el dominio) |
 | 018 | Cierre: usabilidad, índice de calidad y documentación final | 9 | RNF10, RNF11, RNF19 | Pendiente |
 | 019 | Eliminación de cuenta y copia de datos personales | 3 | RF08, RF09 | Completado |
 | 020 | Registro guiado por pasos | 2 | RF01 (interfaz), RNF10 | Completado |
 | 021 | Organizaciones de aseguradoras | 3 | RF01, RF10, RF12 – RF17 (ajustes), RN36 – RN40 | Completado |
 | 022 | [Rediseño de la interfaz y del informe PDF](022-rediseno-interfaz/especificacion.md) | 9 | RNF10, RF44 | Completado |
+| 023 | Sello de tiempo en Hedera (reemplaza a la 016) | 10 | RF37 | Pendiente |
+| 024 | Carga de imágenes desde el celular (web móvil, QR y HEIC) | 10 | RF53 | Pendiente |
+| 025 | Informe por rubro, breve y autosuficiente | 10 | RF44, RF54 | Pendiente (espera el detalle de la autora, CP-28) |
+| 026 | Informe inalterable: huella en Hedera, firma digital y verificación pública | 10 | RF55 | Pendiente |
+| 027 | Inicio de sesión y registro con Google | 10 | RF52 | Pendiente |
+| 028 | Mejoras de usabilidad e interfaz | 10 | RNF10 | Pendiente |
+| 029 | "Host tokenizado" | 10 | — | Por definir (CP-29) |
 
 Las fases, los hitos y el ciclo de trabajo están en [docs/guias/hoja-de-ruta.md](../guias/hoja-de-ruta.md).
