@@ -22,7 +22,7 @@ from app.extensiones import proteccion_csrf
 from app.seguridad.autenticacion import usuario_actual
 from app.seguridad.origen import origen_de_la_solicitud
 from app.servicios.fabrica import crear_servicio_enlaces_carga
-from app.servicios.servicio_enlaces_carga import DIAS_MAXIMOS, MAXIMO_CARGAS
+from app.servicios.servicio_enlaces_carga import DIAS_MAXIMOS
 from app.utilidades.qr import qr_svg
 
 enlaces_carga_bp = Blueprint("enlaces_carga", __name__, url_prefix="/api")
@@ -51,7 +51,6 @@ def crear(id_caso):
         "enlace": {
             "url": url, "qr": qr_svg(url),
             "vence_en": enlace.vence_en.isoformat(timespec="seconds"),
-            "maximo": MAXIMO_CARGAS,
         },
     }), 201
 

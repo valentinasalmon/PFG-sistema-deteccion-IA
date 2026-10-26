@@ -11,7 +11,6 @@ from PIL import Image
 
 from app.extensiones import db
 from app.modelos.enlace_carga import EnlaceCarga
-from app.servicios import servicio_enlaces_carga
 from app.utilidades.tiempo import ahora_utc
 from pruebas.conftest import entradas_auditoria
 
@@ -61,7 +60,7 @@ def test_qr_y_carga_sin_sesion(aplicacion, ana, caso):
 
     celular = aplicacion.test_client()  # sin sesión
     datos = celular.get(f"/api/carga/{token}").get_json()
-    assert datos["numero"] == caso["numero"] and datos["restantes"] == 30
+    assert datos["numero"] == caso["numero"] and datos["restantes"] == 20  # plan Personal
 
     subida = _subir(celular, token, _foto())
     assert subida.status_code == 201, subida.get_json()
@@ -70,7 +69,7 @@ def test_qr_y_carga_sin_sesion(aplicacion, ana, caso):
     assert [i["cargada_por"] for i in imagenes] == ["Ana López"]
     carga = entradas_auditoria(aplicacion, "imagen.carga")[-1]
     assert carga["detalle"]["origen"] == "celular"
-    assert celular.get(f"/api/carga/{token}").get_json()["restantes"] == 29
+    assert celular.get(f"/api/carga/{token}").get_json()["restantes"] == 19
     with aplicacion.app_context():
         assert token not in {e.huella_token for e in EnlaceCarga.query.all()}
 
@@ -98,15 +97,17 @@ def test_enlace_cancelado_vencido_o_inventado(aplicacion, ana, caso):
     assert operaciones == ["crear", "crear", "crear", "cancelar"]
 
 
-def test_limite_de_fotos_y_validaciones(aplicacion, ana, caso, monkeypatch):
-    """El enlace tiene un tope de fotos y aplica las validaciones de siempre."""
-    monkeypatch.setattr(servicio_enlaces_carga, "MAXIMO_CARGAS", 1)
+def test_sin_tope_por_enlace_solo_el_limite_del_plan(aplicacion, ana, caso):
+    """El enlace no limita la cantidad de fotos; rige el límite del plan (RN15)."""
+    plan = aplicacion.config["PLAN_PERSONAL"]
+    aplicacion.config["PLAN_PERSONAL"] = {**plan, "imagenes_por_caso": 3}
     token = _token(ana.post(f"/api/casos/{caso['id']}/enlace-carga"))
     celular = aplicacion.test_client()
     assert _subir(celular, token, b"no es una imagen", "texto.jpg").status_code == 400
-    assert _subir(celular, token, _foto()).status_code == 201
-    agotado = _subir(celular, token, _foto((1, 2, 3)))
-    assert agotado.status_code == 409 and agotado.get_json()["codigo"] == "enlace_agotado"
+    for color in ((1, 1, 1), (2, 2, 2), (3, 3, 3)):
+        assert _subir(celular, token, _foto(color)).status_code == 201
+    assert celular.get(f"/api/carga/{token}").get_json()["restantes"] == 0
+    assert _subir(celular, token, _foto((4, 4, 4))).status_code == 409
 
 
 def test_solo_quien_puede_cargar_genera_el_enlace(aplicacion, ana, caso, cuenta):
