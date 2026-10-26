@@ -558,7 +558,7 @@ El informe PDF debe usar el lenguaje del rubro de quien lo solicita (Legal o Seg
 
 - **CA1:** Dado un solicitante con perfil Abogado, entonces el informe usa términos de expediente, prueba y perito; con perfil Aseguradora, términos de siniestro, liquidación y verificación.
 - **CA2:** El informe se entiende por sí mismo: explica qué se analizó, cómo leer los niveles, qué limitaciones tiene y cómo verificar su autenticidad, sin depender de la plataforma.
-- **CA3:** El detalle de las secciones lo define la autora (CP-28).
+- **CA3:** Distingue los resultados **deterministas** (integridad, metadatos, C2PA) de los **probabilísticos** (ELA, red neuronal), y explica la diferencia (funcionalidad 025, CP-28).
 
 ### RF55 — Informe inalterable y verificable
 **Prioridad:** Debe · **Reglas:** RN23, RN29 **[PROPUESTA]**

@@ -163,6 +163,7 @@ def crear_servicio_informes(configuracion, enviador, almacenamiento, origen=None
     return ServicioInformes(
         RepositorioInformes(), crear_servicio_casos(configuracion, enviador, origen),
         almacenamiento, configuracion, crear_servicio_auditoria(origen),
+        crear_servicio_sellos(configuracion, origen),
     )
 
 
@@ -200,5 +201,6 @@ def crear_tema_de_sellos(red, cuenta, clave):
 def crear_servicio_sellos(configuracion, origen=None):
     """Sello de tiempo de las imágenes en Hedera (funcionalidades 016 y 023)."""
     return ServicioSellos(
-        RepositorioImagenes(), crear_sellador(configuracion), crear_servicio_auditoria(origen)
+        RepositorioImagenes(), crear_sellador(configuracion), crear_servicio_auditoria(origen),
+        RepositorioInformes(),
     )

@@ -19,12 +19,13 @@ function Pie() {
   return (
     <footer className="pie">
       <p>
-        La plataforma ofrece indicios para una evaluación preliminar y no emite veredictos.
-        Ante cualquier duda, consultá con un perito especializado.
+        La plataforma ofrece indicios para una evaluación preliminar y no emite veredictos. Ante cualquier
+        duda, consultá con un perito especializado.
       </p>
       <nav aria-label="Información legal" className="pie__enlaces">
         <Link to="/terminos">Términos de Uso</Link>
         <Link to="/privacidad">Política de Privacidad</Link>
+        <Link to="/verificar">Verificar un informe</Link>
         <Link to="/estado">Estado del sistema</Link>
       </nav>
     </footer>

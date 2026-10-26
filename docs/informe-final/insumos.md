@@ -60,6 +60,24 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - una declaración de autorización (Ley 25.326).
 - Ver `docs/investigacion/2026-10-25-carga-desde-el-celular.md`.
 
+## Informe PDF breve, por rubro y verificable (funcionalidades 025 y 026)
+
+- **Por qué:** quien analiza imágenes todos los días no puede leer un PDF de 8 o 9 páginas. Se redujo a unas 4 páginas, sin numeración ni saltos de página, y con más espacio.
+- **Orden aprobado por la autora:** caso; custodia con cronología; escala; resultados deterministas y probabilísticos; resultados por imagen; qué hacer ahora; verificación; y el aviso final.
+- **Lenguaje por rubro:**
+  - Abogado: expediente, prueba, pericia.
+  - Aseguradora: siniestro, liquidación, verificación o inspección.
+- **Deterministas y probabilísticos:**
+  - deterministas: integridad, metadatos y C2PA (hechos verificables, reproducibles y comprobables por terceros);
+  - probabilísticos: ELA y la red neuronal (estimaciones que pueden fallar en los dos sentidos).
+  
+  Un indicio determinista pesa más.
+- **PDF verificable:**
+  - la huella del PDF se sella en Hedera;
+  - QR y código de 12 caracteres;
+  - página pública donde el navegador calcula la huella (el PDF nunca se sube);
+  - nunca se muestran datos del caso.
+
 ## Otros temas ya registrados
 
 - Metodología: desarrollo guiado por especificaciones, arnés para agentes de IA (CLAUDE.md, constitución) y trazabilidad con `Co-Authored-By`.

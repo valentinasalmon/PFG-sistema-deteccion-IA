@@ -291,6 +291,9 @@ class ServicioAnalisis:
              "integridad_alterada": alteradas, "informe": con_informe},
         )
         self._avanzar(analisis)
+        if con_informe:
+            # Después de confirmar: el sello en Hedera nunca demora ni impide el informe (026).
+            self.ejecucion["informes"].sellar(analisis.informe)
         for usuario in _destinatarios_del_aviso(analisis, caso):
             self.correos.enviar_aviso_analisis_finalizado(
                 usuario, caso, len(analisis.imagenes), con_informe

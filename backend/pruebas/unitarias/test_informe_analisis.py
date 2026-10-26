@@ -1,4 +1,4 @@
-"""Pruebas del contenido del informe PDF (CA2 y CA3 de la funcionalidad 008).
+"""Pruebas del contenido del informe PDF (funcionalidades 008, 025 y 026).
 
 Se arma el informe con objetos simples en lugar de modelos de la base y se
 revisa el HTML que se convierte a PDF; además se genera un PDF real.
@@ -53,74 +53,117 @@ def _html(analisis, miniaturas=None):
     return entorno.get_template("informe_analisis.html").render(informe=datos, generado_en=GENERADO)
 
 
-def test_el_informe_tiene_todos_los_datos_pedidos():
-    """CA2 (RF44 CA1, RNF07 CA3, RN29)."""
-    html = _html(_analisis(), {1: b"\xff\xd8\xffjpeg"})
+def _con_original(analisis):
+    analisis.imagenes[0].imagen = SimpleNamespace(
+        formato="jpeg", ancho=1600, alto=1200, tamanio=162_816,
+        cargada_en=datetime(2026, 10, 19, 17, 0),
+        usuario=SimpleNamespace(nombre="Ana", apellido="López"),
+        sello_estado="sellado", sello_fecha=datetime(2026, 10, 19, 17, 1), sello_simulado=False,
+        sello_referencia="Hedera testnet · tema 0.0.2002 · mensaje 7",
+    )
+    return analisis
+
+
+def test_el_informe_tiene_los_datos_del_caso_y_la_custodia():
+    """RF44 CA1, RNF07 CA3, RN29: caso, solicitud, custodia, cronología y versiones."""
+    html = _html(_con_original(_analisis()), {1: b"\xff\xd8\xffjpeg"})
     for texto in (
         "CASO-2026-000007", "EXP-12/2026", "Automovilístico", "01/09/2026", "Av. Corrientes 1234",
-        "Ana López", "Abogado", "Colegio de abogados", "CPACF",
-        "19/10/2026 15:00",  # pedido a las 18:00 UTC, en la hora de Argentina
-        "data:image/jpeg;base64,", "a" * 64, "Sello de tiempo en Hedera",
-        "Nivel de indicio: 90 %", "Photoshop", "Adobe Photoshop 25.0",
-        "Plataforma", "0.2.0", "Capa 1 · Metadatos", "1.0 (ExifTool 12.76)", "WeasyPrint",
-        "Limitaciones y advertencia legal", "perito especializado",
+        "Ana López (Abogado)", "Colegio de abogados", "CPACF",
+        "Evidencia y cadena de custodia", "a" * 64, "Coincide", "Hedera, 19/10/2026 17:01 UTC",
+        "Cronología:", "primera carga 19/10/2026 14:00", "análisis pedido 19/10/2026 15:00",
+        "data:image/jpeg;base64,", "Escala de lectura", "45 % a 69 %",
+        "Plataforma 0.2.0", "Capa 1 · Metadatos 1.0 (ExifTool 12.76)", "WeasyPrint",
         "Este informe no constituye un dictamen pericial. Consulte a un profesional especializado.",
     ):
         assert texto in html, texto
+    for texto in ("Resumen", "Glosario", "Limitaciones", "Uso previsto", "class=\"numero\""):
+        assert texto not in html, texto
 
 
-def test_que_significa_por_capa_y_sin_veredictos():
-    """CA3 (RF44 CA2, RN27): recuadro explicativo y ningún término de veredicto."""
-    html = _html(_analisis())
-    assert "¿Qué significa?" in html
-    assert "datos ocultos además de la imagen" in html
-    datos = informe_analisis.armar_datos(_analisis(), {}, "0.2.0")
-    textos = " ".join(
-        [datos["escala"], *datos["limitaciones"], *informe_analisis.QUE_SIGNIFICA.values()]
-    ).lower()
+def test_orden_de_las_secciones():
+    """025: caso, custodia, escala, tipos de resultado, resultados, qué hacer y aviso final."""
+    html = _html(_con_original(_analisis()))
+    titulos = ("Caso y solicitud", "Evidencia y cadena de custodia", "Escala de lectura",
+               "Resultados deterministas y probabilísticos", "Resultados por imagen",
+               "Qué hacer ahora", "Este informe presenta")
+    posiciones = [html.index(titulo) for titulo in titulos]
+    assert posiciones == sorted(posiciones)
+    assert "page-break-before" not in html and "page-break-inside" not in html
+
+
+def test_resultado_breve_con_su_tipo():
+    """025: cada técnica dice si es determinista o probabilística y lo que encontró en breve."""
+    analisis = _analisis()
+    ela = _resultado()
+    ela.capa, ela.nivel = "ela", 45
+    ela.conclusion = "El análisis presenta indicios moderados. Detalle largo que no va."
+    ela.anomalias = [SimpleNamespace(severidad="moderado", descripcion="Zona que se aparta. Más.")]
+    analisis.imagenes[0].resultados.append(ela)
+
+    html = _html(analisis)
+
+    assert "Los metadatos presentan indicios fuertes." in html
+    assert "Se recomienda consultar a un perito" not in html  # solo la primera oración
+    assert "Zona que se aparta." in html and "Más." not in html
+    assert html.count("tipo tipo-determinista") >= 2 and "tipo tipo-probabilistico" in html
+    assert "Integridad del archivo" in html and "señalar una imagen sin ediciones" in html
+
+
+@pytest.mark.parametrize("perfil, titulo, referencia, paso", [
+    ("abogado", "Informe técnico de imágenes", "Expediente", "antes de ofrecerla como prueba"),
+    ("aseguradora", "Informe de verificación de fotos del siniestro", "N.° de siniestro",
+     "antes de liquidar"),
+])
+def test_lenguaje_segun_el_rubro(perfil, titulo, referencia, paso):
+    """RF54: título, etiqueta de la referencia y pasos según el perfil del solicitante."""
+    analisis = _analisis()
+    analisis.solicitante.perfil = perfil
+    html = _html(analisis)
+    assert titulo in html and f"<td>{referencia}</td>" in html and paso in html
+
+
+def test_sin_veredictos():
+    """RN27: ningún texto fijo del informe usa términos de veredicto."""
+    textos = " ".join([
+        informe_analisis.DESCARGO, *informe_analisis.EXPLICACION_TIPOS.values(),
+        *informe_analisis.QUE_MIRA.values(),
+        *(p for r in informe_analisis.TEXTOS_RUBRO.values() for p in (r["intro"], *r["que_hacer"])),
+    ]).lower()
     palabras = set(textos.replace(".", " ").replace(",", " ").replace(":", " ").split())
     assert not palabras & set(TERMINOS_DE_VEREDICTO)
 
 
-def test_capa_de_credenciales_con_su_titulo_y_su_explicacion():
-    """009 CA7: la capa 2 aparece con su título, su tabla y su recuadro."""
-    analisis = _analisis()
-    credenciales = _resultado()
-    credenciales.capa = "c2pa"
-    credenciales.detalle = {"tabla": [{"campo": "Firmante", "valor": "OpenAI OpCo, LLC"}]}
-    analisis.imagenes[0].resultados.append(credenciales)
-    analisis.versiones["c2pa"] = "1.0 (c2pa-python 0.38.0, lista de confianza abc/def)"
-
-    html = _html(analisis)
-
-    for texto in (
-        "Capa 2 · Credenciales de contenido (C2PA)", "OpenAI OpCo, LLC",
-        "lista de confianza del consorcio C2PA", "1.0 (c2pa-python 0.38.0",
-    ):
-        assert texto in html, texto
+def test_bloque_de_verificacion():
+    """026 (RF55 CA2): el PDF lleva el QR y el código para verificarlo."""
+    datos = informe_analisis.armar_datos(_analisis(), {}, "0.2.0")
+    datos["verificacion"] = {"codigo": "ABCD-EFGH-JKMN", "url": "http://x/verificar/ABCDEFGHJKMN",
+                             "qr": "data:image/svg+xml,qr", "pagina": "http://x/verificar"}
+    html = entorno.get_template("informe_analisis.html").render(informe=datos, generado_en=GENERADO)
+    assert "Verificación de este informe" in html and "ABCD-EFGH-JKMN" in html
+    assert "data:image/svg+xml,qr" in html and "http://x/verificar" in html
 
 
-def test_mapa_ela_embebido_en_el_informe():
-    """011 CA4: el mapa se incluye como imagen PNG con su aclaración."""
+def test_mapa_ela_solo_si_encontro_algo():
+    """011: el mapa se incluye chico y solo si la capa encontró señales."""
     analisis = _analisis()
     ela = _resultado()
-    ela.capa, ela.id = "ela", 41
+    ela.capa, ela.id, ela.nivel = "ela", 41, 30
     analisis.imagenes[0].resultados.append(ela)
-
     datos = informe_analisis.armar_datos(analisis, {}, "0.2.0", {41: b"\x89PNGmapa"})
     html = entorno.get_template("informe_analisis.html").render(informe=datos, generado_en=GENERADO)
-
-    assert "Capa 3 · Niveles de error (ELA)" in html
-    assert "data:image/png;base64," in html
-    assert "señal complementaria" in html
+    assert 'alt="Mapa de Niveles de error"' in html
+    ela.nivel = 0
+    datos = informe_analisis.armar_datos(analisis, {}, "0.2.0", {41: b"\x89PNGmapa"})
+    html = entorno.get_template("informe_analisis.html").render(informe=datos, generado_en=GENERADO)
+    assert 'alt="Mapa de Niveles de error"' not in html
 
 
 def test_capa_no_disponible_e_imagen_alterada():
     """La capa no disponible muestra el motivo; la imagen alterada, la aclaración."""
     assert "ExifTool no está instalado." in _html(_analisis(estado="no_disponible"))
     alterada = _html(_analisis(integridad="alterada"))
-    assert "se\n        excluyó del análisis" in alterada or "excluyó del análisis" in alterada
-    assert "Nivel de indicio" not in alterada
+    assert "por eso no se analizó" in alterada and "No coincide" in alterada
 
 
 def test_solicitante_de_una_aseguradora_y_cuenta_eliminada():
@@ -149,25 +192,6 @@ def test_hora_de_argentina(valor, esperado):
     assert formatear_hora_argentina(valor) == esperado
 
 
-def test_resumen_custodia_escala_y_glosario():
-    """022: resumen por capa en palabras, cadena de custodia, escala única y glosario."""
-    analisis = _analisis()
-    analisis.imagenes[0].imagen = SimpleNamespace(
-        formato="jpeg", ancho=1600, alto=1200, tamanio=162_816,
-        cargada_en=datetime(2026, 10, 19, 17, 0),
-        usuario=SimpleNamespace(nombre="Ana", apellido="López"),
-    )
-    html = _html(analisis)
-    for texto in (
-        "Resumen", "Indicios fuertes · 90 %", "no se suman ni se promedian",
-        "Evidencia analizada y cadena de custodia", "JPEG · 1600 × 1200 píxeles · 159 KB",
-        "19/10/2026 14:00 por Ana López", "Coincide con la huella registrada al cargarla",
-        "Metodología y escala de lectura", "45 % a 69 %", "Sin indicios", "Cronología", "Glosario",
-        "Cadena de custodia",
-    ):
-        assert texto in html, texto
-
-
 @pytest.mark.parametrize("nivel, banda", [
     (0, "Sin indicios"), (1, "Indicios débiles"), (44, "Indicios débiles"),
     (45, "Indicios moderados"), (69, "Indicios moderados"), (70, "Indicios fuertes"),
@@ -176,22 +200,3 @@ def test_resumen_custodia_escala_y_glosario():
 def test_bandas_de_indicio(nivel, banda):
     """Las bandas coinciden con describir_intensidad() de las capas."""
     assert informe_analisis.banda_de_indicio(nivel)["nombre"] == banda
-
-
-def test_valores_de_referencia_descargo_y_uso_previsto():
-    """Entrevista del 02/10/2026: umbrales, descargo de IA y supervisión humana."""
-    analisis = _analisis()
-    ela = _resultado()
-    ela.capa, ela.nivel = "ela", 45
-    ela.detalle = {"tabla": [], "regiones": 1, "desvio_maximo": 12.4}
-    ela.anomalias = [SimpleNamespace(severidad="moderado", descripcion="Zona que se aparta.")]
-    analisis.imagenes[0].resultados.append(ela)
-
-    html = _html(analisis)
-
-    for texto in (
-        "Referencia sin edición", "Valor obtenido", "12,4 desvíos", "Menos de 10 desvíos robustos",
-        "no reemplaza el criterio de un perito", "inteligencia artificial",
-        "Uso previsto y supervisión humana", "Reglamento (UE) 2024/1689", "ISO/IEC 42001",
-    ):
-        assert texto in html, texto

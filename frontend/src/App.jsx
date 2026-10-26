@@ -35,6 +35,7 @@ import PaginaRegistro from './paginas/PaginaRegistro.jsx'
 import PaginaRestablecerContrasenia from './paginas/PaginaRestablecerContrasenia.jsx'
 import PaginaTerminos from './paginas/PaginaTerminos.jsx'
 import PaginaVerificarCorreo from './paginas/PaginaVerificarCorreo.jsx'
+import PaginaVerificarInforme from './paginas/PaginaVerificarInforme.jsx'
 
 export default function App() {
   return (
@@ -50,6 +51,8 @@ export default function App() {
         <Route path="/confirmar-correo" element={<PaginaConfirmarCorreo />} />
         <Route path="/invitaciones/responder" element={<PaginaInvitacion />} />
         <Route path="/cargar/:token" element={<PaginaCargaCelular />} />
+        <Route path="/verificar" element={<PaginaVerificarInforme />} />
+        <Route path="/verificar/:codigo" element={<PaginaVerificarInforme />} />
         <Route path="/terminos" element={<PaginaTerminos />} />
         <Route path="/privacidad" element={<PaginaPrivacidad />} />
         <Route path="/estado" element={<PaginaEstado />} />

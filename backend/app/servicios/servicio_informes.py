@@ -6,10 +6,15 @@ PDF. Nunca se modifica: un análisis nuevo genera un informe nuevo
 (RF44 CA4). Las imágenes incluidas quedan marcadas y ya no se pueden
 eliminar (RN24).
 
-Realiza: RF44, RF45; RN24, RN25, RN27, RN29; RNF07 (CA3).
+Cada informe lleva un código de verificación y un QR hacia una página
+pública, y la huella de su PDF se sella en Hedera: cualquiera puede
+comprobar que un PDF no fue modificado (funcionalidad 026).
+
+Realiza: RF44, RF45, RF55; RN24, RN25, RN27, RN29; RNF07 (CA3).
 """
 import hashlib
 import logging
+import secrets
 from uuid import uuid4
 
 from app.informes import informe_analisis
@@ -18,7 +23,28 @@ from app.modelos.caso import NIVEL_COLABORACION, NIVEL_LECTURA
 from app.modelos.informe import Informe
 from app.servicios import auditoria
 from app.servicios.errores import ConflictoDatos, NoEncontrado
+from app.utilidades.qr import qr_svg
 from app.utilidades.tiempo import ahora_utc
+
+# Sin letras ni números que se confundan al leerlos (0/O, 1/I/L).
+ALFABETO_CODIGO = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+LARGO_CODIGO = 12
+
+
+def nuevo_codigo():
+    """Código de verificación aleatorio de 12 caracteres (unos 59 bits)."""
+    return "".join(secrets.choice(ALFABETO_CODIGO) for _ in range(LARGO_CODIGO))
+
+
+def normalizar_codigo(codigo):
+    """El código sin guiones ni espacios y en mayúsculas, como se guarda."""
+    return "".join(c for c in (codigo or "").upper() if c.isalnum())
+
+
+def codigo_legible(codigo):
+    """El código en grupos de cuatro, como se imprime en el PDF: ``ABCD-EFGH-JKMN``."""
+    return "-".join(codigo[i:i + 4] for i in range(0, len(codigo), 4))
+
 
 registro_log = logging.getLogger(__name__)
 
@@ -27,7 +53,7 @@ class ServicioInformes:
     """Genera, lista y entrega los informes de un caso."""
 
     def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        self, repositorio, casos, almacenamiento, configuracion, registro
+        self, repositorio, casos, almacenamiento, configuracion, registro, sellos=None
     ):
         """
         Args:
@@ -35,8 +61,11 @@ class ServicioInformes:
             casos: ``ServicioCasos``, que resuelve los permisos sobre el caso.
             almacenamiento: donde se guardan los PDF y se leen las miniaturas.
             registro: ``ServicioAuditoria``.
+            sellos: ``ServicioSellos``, que sella la huella del PDF (026); opcional.
         """
         self.registro = registro
+        self.sellos = sellos
+        self.url_frontend = configuracion["URL_FRONTEND"].rstrip("/")
         self.repositorio = repositorio
         self.casos = casos
         self.almacenamiento = almacenamiento
@@ -78,16 +107,23 @@ class ServicioInformes:
                 decide qué hacer (el análisis igual finaliza, CA6).
         """
         generado_en = ahora_utc()
+        codigo = nuevo_codigo()
         datos = informe_analisis.armar_datos(
             analisis, self._miniaturas(analisis), self.version_plataforma,
             self._imagenes_de_capas(analisis),
         )
+        url = f"{self.url_frontend}/verificar/{codigo}"
+        datos["verificacion"] = {
+            "codigo": codigo_legible(codigo), "url": url, "qr": qr_svg(url),
+            "pagina": f"{self.url_frontend}/verificar",
+        }
         contenido = informe_analisis.generar_pdf(datos, generado_en)
         informe = Informe(
             id_caso=analisis.id_caso, id_analisis=analisis.id,
             clave=f"informes/{uuid4().hex}.pdf",
             huella=hashlib.sha256(contenido).hexdigest(), tamanio=len(contenido),
-            generado_en=generado_en,
+            generado_en=generado_en, codigo_verificacion=codigo,
+            sello_estado="pendiente" if self.sellos and self.sellos.activo else None,
         )
         self.almacenamiento.guardar(informe.clave, contenido, "application/pdf")
         analisis.informe = informe
@@ -117,6 +153,38 @@ class ServicioInformes:
         informe = self.generar(analisis)
         caso.actualizado_en = ahora_utc()
         self.repositorio.confirmar()
+        self.sellar(informe)
+        return informe
+
+    def sellar(self, informe):
+        """Primer intento de sellar la huella del PDF; si falla, lo retoma la tarea (RF55 CA1).
+
+        Se llama después de confirmar el informe: el sello nunca impide generarlo.
+        """
+        if informe is not None and self.sellos is not None and informe.sello_estado:
+            self.sellos.intentar(informe)
+
+    # --- Verificación pública (RF55 CA3) ---
+
+    def verificar(self, codigo=None, huella=None):
+        """Datos públicos de un informe, buscado por su código o por la huella del PDF.
+
+        Solo devuelve lo necesario para comprobar el documento (fecha, huella y
+        sello), nunca datos del caso.
+
+        Raises:
+            NoEncontrado: si no hay un informe con ese código o esa huella.
+        """
+        informe = None
+        if codigo:
+            informe = self.repositorio.por_codigo(normalizar_codigo(codigo))
+        elif huella:
+            informe = self.repositorio.por_huella((huella or "").lower())
+        if informe is None:
+            raise NoEncontrado(
+                "No hay ningún informe de evidentIA con ese código o con ese archivo.",
+                codigo="informe_no_encontrado",
+            )
         return informe
 
     # --- Historial y descarga (RF45) ---
