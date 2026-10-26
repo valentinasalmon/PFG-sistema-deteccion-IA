@@ -109,3 +109,9 @@ variable "hedera_tema" {
   type        = string
   default     = ""
 }
+
+variable "google_id_cliente" {
+  description = "Client ID de OAuth de Google para \"Continuar con Google\" (funcionalidad 027). El secreto NO va acá: se carga a mano en SSM como SecureString (GOOGLE_SECRETO_CLIENTE)."
+  type        = string
+  default     = ""
+}

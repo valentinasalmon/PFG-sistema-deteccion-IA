@@ -17,7 +17,7 @@ Con una interfaz React es habitual autenticar con tokens JWT. La propuesta del p
 
 ## Decisión
 
-Flask-Login con cookie de sesión `Secure`, `HttpOnly` y `SameSite=Strict`, más un token CSRF en cada solicitud que modifica datos.
+Flask-Login con cookie de sesión `Secure`, `HttpOnly` y `SameSite=Strict` (desde 2026-10-28, `Lax`: ver ADR-0019), más un token CSRF en cada solicitud que modifica datos.
 
 ## Consecuencias
 

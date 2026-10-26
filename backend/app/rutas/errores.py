@@ -18,6 +18,7 @@ from app.servicios.errores import (
     CuentaNoVerificada,
     ErrorDominio,
     ErrorValidacion,
+    InicioGoogleRechazado,
     NoEncontrado,
     TokenInvalido,
 )
@@ -25,6 +26,7 @@ from app.servicios.errores import (
 CODIGOS_HTTP = {
     ErrorValidacion: 400,
     TokenInvalido: 400,
+    InicioGoogleRechazado: 400,
     CredencialesInvalidas: 401,
     CuentaNoVerificada: 403,
     CuentaDesactivada: 403,

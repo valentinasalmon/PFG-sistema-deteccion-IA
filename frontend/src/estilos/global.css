@@ -2792,3 +2792,42 @@ select.campo__control {
 .verificar-informe__archivo {
   margin: 1.25rem 0 1rem;
 }
+
+/* --- Inicio con Google (funcionalidad 027) --- */
+.acceso-google {
+  display: grid;
+  gap: 1rem;
+  margin-block: 1rem;
+}
+
+.boton-google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.boton-google__logo {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+}
+
+.acceso-google__separador {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  color: var(--tinta-2);
+  font-size: 0.875rem;
+}
+
+.acceso-google__separador::before,
+.acceso-google__separador::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--linea-control);
+}

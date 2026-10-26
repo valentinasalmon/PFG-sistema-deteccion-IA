@@ -1,6 +1,6 @@
 """Modelo de usuario de la plataforma.
 
-Realiza: RF01, RF02, RF03, RF05, RF07; RN01, RN02, RN03, RN39.
+Realiza: RF01, RF02, RF03, RF05, RF07, RF52; RN01, RN02, RN03, RN39.
 """
 from flask_login import UserMixin
 
@@ -41,6 +41,8 @@ class Usuario(UserMixin, db.Model):  # pylint: disable=too-few-public-methods
     version_terminos = db.Column(db.String(20), nullable=False)
     aceptacion_terminos_en = db.Column(db.DateTime, nullable=False)
     correo_verificado_en = db.Column(db.DateTime, nullable=True)
+    # Identificador estable de la cuenta de Google vinculada (``sub``), si la hay (RF52).
+    google_sub = db.Column(db.String(255), nullable=True, unique=True)
 
     intentos_fallidos = db.Column(db.Integer, nullable=False, default=0)
     bloqueado_hasta = db.Column(db.DateTime, nullable=True)

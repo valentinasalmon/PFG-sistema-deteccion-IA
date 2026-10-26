@@ -533,7 +533,7 @@ El sistema debe permitir al Responsable prorrogar el plazo de retención por 1 a
 Requisitos agregados a pedido de la autora. Los marcados **[PROPUESTA]** dependen de las cuestiones abiertas CP-26 a CP-31. El detalle de la carga desde el celular está en `docs/investigacion/2026-10-25-carga-desde-el-celular.md`.
 
 ### RF52 — Iniciar sesión y registrarse con Google
-**Prioridad:** Debería · **Reglas:** RN01, RN02 **[PROPUESTA]**
+**Prioridad:** Debería · **Reglas:** RN01, RN02 · Aprobado por la autora el 2026-10-28; el paso de completar el perfil es obligatorio la primera vez (funcionalidad 027)
 
 El sistema debe permitir iniciar sesión y registrarse con una cuenta de Google (OpenID Connect), además del correo y la contraseña.
 

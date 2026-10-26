@@ -20,6 +20,8 @@ export function simularApi(respuestas = {}) {
     let respuesta = respuestas[`${metodo} ${ruta}`]
     if (typeof respuesta === 'function') respuesta = respuesta(cuerpoEnviado)
     if (!respuesta && ruta === '/api/sesion/csrf') respuesta = { estado: 200, cuerpo: { csrf: 'token-csrf' } }
+    // Sin indicar otra cosa, el inicio con Google (027) no está configurado.
+    if (!respuesta && ruta === '/api/google/estado') respuesta = { estado: 200, cuerpo: { habilitado: false } }
     if (!respuesta && metodo === 'GET' && ruta === '/api/sesion') {
       respuesta = { estado: 401, cuerpo: { codigo: 'sesion_requerida', mensaje: 'Tenés que iniciar sesión.' } }
     }

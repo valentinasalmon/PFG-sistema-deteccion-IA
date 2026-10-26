@@ -93,7 +93,11 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
     DURACION_MAXIMA_SESION = timedelta(hours=8)
     SESSION_COOKIE_NAME = "sesion"
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = "Strict"
+    # "Lax" y no "Strict": la vuelta desde Google (027) es una navegación desde
+    # otro sitio y con "Strict" llegaría sin la cookie, y se perdería el
+    # "state". Las solicitudes que modifican datos siguen protegidas por el
+    # token CSRF (RNF02 CA3) y "Lax" no envía la cookie en POST de otros sitios.
+    SESSION_COOKIE_SAMESITE = "Lax"
     SESSION_COOKIE_SECURE = False
     REMEMBER_COOKIE_DURATION = timedelta(0)
 
@@ -112,6 +116,8 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
     VIGENCIA_TOKEN_RECUPERACION = timedelta(hours=1)
     VIGENCIA_TOKEN_CAMBIO_CORREO = timedelta(hours=24)
     VIGENCIA_COPIA_DATOS = timedelta(minutes=15)  # RF09 CA2
+    # Tiempo para completar el registro después de volver de Google (027).
+    VIGENCIA_REGISTRO_GOOGLE = timedelta(minutes=15)
 
     # --- Organizaciones (funcionalidad 004) ---
     # Límites de cada plan (CP-02, valores propuestos). Son datos configurables
@@ -201,6 +207,10 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
         self.HEDERA_CLAVE = os.getenv("HEDERA_CLAVE", "")
         self.HEDERA_TEMA = os.getenv("HEDERA_TEMA", "")
         self.HEDERA_URL_MIRROR = os.getenv("HEDERA_URL_MIRROR", "")
+        # Inicio de sesión con Google (funcionalidad 027): sin estos dos valores,
+        # el botón no se muestra. El secreto solo llega por el entorno (SSM).
+        self.GOOGLE_ID_CLIENTE = os.getenv("GOOGLE_ID_CLIENTE", "")
+        self.GOOGLE_SECRETO_CLIENTE = os.getenv("GOOGLE_SECRETO_CLIENTE", "")
         # Proxies delante de la aplicación: 0 en desarrollo, 1 (Nginx) en producción.
         self.PROXIES_DE_CONFIANZA = int(os.getenv("PROXIES_DE_CONFIANZA", "0"))
 
