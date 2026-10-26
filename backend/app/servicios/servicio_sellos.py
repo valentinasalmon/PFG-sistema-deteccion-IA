@@ -27,12 +27,17 @@ registro_log = logging.getLogger(__name__)
 class ServicioSellos:
     """Pide, confirma y reintenta los sellos de tiempo."""
 
-    def __init__(self, repositorio, sellador, registro, repositorio_informes=None):
+    def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        self, repositorio, sellador, registro, repositorio_informes=None,
+        repositorio_versiones=None,
+    ):
         """
         Args:
             repositorio: ``RepositorioImagenes``.
             repositorio_informes: ``RepositorioInformes``, para sellar también la
                 huella de los informes PDF (funcionalidad 026).
+            repositorio_versiones: ``RepositorioVersiones``, para sellar la huella de
+                cada versión desplegada (funcionalidad 029).
             sellador: implementación de ``app.integraciones.sello_tiempo``, o
                 None si el sellado está desactivado.
             registro: ``ServicioAuditoria``.
@@ -41,6 +46,7 @@ class ServicioSellos:
         self.sellador = sellador
         self.registro = registro
         self.repositorio_informes = repositorio_informes
+        self.repositorio_versiones = repositorio_versiones
 
     @property
     def activo(self):
@@ -73,7 +79,10 @@ class ServicioSellos:
                     imagen.sello_recibo = confirmacion.recibo
                 self.registro.registrar(
                     auditoria.IMAGEN_SELLO, auditoria.EXITOSO,
-                    recurso=(auditoria.TIPO_CASO, imagen.id_caso),
+                    recurso=(
+                        (auditoria.TIPO_CASO, imagen.id_caso) if hasattr(imagen, "id_caso")
+                        else (auditoria.TIPO_VERSION, imagen.id)
+                    ),
                     detalle={"sha256": imagen.huella, "referencia": confirmacion.referencia,
                              "simulado": imagen.sello_simulado,
                              "tipo": getattr(imagen, "TIPO_SELLO", "imagen")},
@@ -99,8 +108,9 @@ class ServicioSellos:
             return {"sellados": 0, "en_curso": 0}
         en_curso_estados = (SELLO_PENDIENTE, SELLO_ENVIADO)
         pendientes = list(self.repositorio.con_sello_en_curso(en_curso_estados))
-        if self.repositorio_informes is not None:
-            pendientes += self.repositorio_informes.con_sello_en_curso(en_curso_estados)
+        for extra in (self.repositorio_informes, self.repositorio_versiones):
+            if extra is not None:
+                pendientes += extra.con_sello_en_curso(en_curso_estados)
         for imagen in pendientes:
             estado = self.intentar(imagen)
             if estado == SELLO_SELLADO:

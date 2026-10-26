@@ -6,3 +6,4 @@
 - [x] Plantilla nueva.
 - [x] Pruebas.
 - [x] Documentación y bitácora.
+- [x] Ajustes del 2026-10-27: sin cortes entre páginas, resultados más descriptivos, sin las secciones de tipos y "qué hacer", y sin versiones.

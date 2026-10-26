@@ -78,6 +78,14 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - página pública donde el navegador calcula la huella (el PDF nunca se sube);
   - nunca se muestran datos del caso.
 
+- **Ajustes después de probarlo (2026-10-27):**
+  - ningún bloque se corta entre páginas;
+  - resultados más descriptivos (qué revisó, qué encontró, hallazgos y datos relevantes);
+  - se quitaron la sección de tipos, "qué hacer" y las versiones.
+  
+  Criterio: la plataforma muestra la versión breve y el PDF, el detalle legible.
+- **"Host tokenizado" (029):** cada despliegue sella en Hedera la huella de su artefacto, y cada análisis guarda su commit. La verificación pública muestra con qué versión se analizó: refuerza la cadena de custodia sobre el propio software.
+
 ## Otros temas ya registrados
 
 - Metodología: desarrollo guiado por especificaciones, arnés para agentes de IA (CLAUDE.md, constitución) y trazabilidad con `Co-Authored-By`.

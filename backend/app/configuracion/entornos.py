@@ -47,6 +47,15 @@ from cachelib import SimpleCache
 # al repositorio (constitución: nada de imágenes de casos reales).
 DIRECTORIO_ALMACENAMIENTO_LOCAL = Path(__file__).resolve().parents[2] / "almacenamiento_local"
 CARPETA_CONFIANZA = Path(__file__).resolve().parents[2] / "recursos" / "confianza_c2pa"
+# desplegar.sh escribe el commit desplegado en la raíz de la versión (funcionalidad 029).
+ARCHIVO_COMMIT = Path(__file__).resolve().parents[3] / "COMMIT"
+
+
+def _commit_desplegado():
+    """Commit de la versión en ejecución: variable COMMIT o el archivo COMMIT; vacío si no hay."""
+    if os.getenv("COMMIT"):
+        return os.getenv("COMMIT").strip()
+    return ARCHIVO_COMMIT.read_text().strip() if ARCHIVO_COMMIT.is_file() else ""
 
 
 class ErrorConfiguracion(Exception):
@@ -62,7 +71,9 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
     """
 
     NOMBRE = "base"
-    VERSION_APLICACION = "0.2.0"
+    VERSION_APLICACION = "0.3.0"
+    # Commit desplegado, guardado con cada análisis (RF56 CA2).
+    COMMIT = _commit_desplegado()
     DEBUG = False
     TESTING = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False

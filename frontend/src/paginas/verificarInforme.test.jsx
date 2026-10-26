@@ -24,6 +24,16 @@ async function informeCon(huella) {
       simulado: false,
       enlace: 'https://hashscan.io/testnet/topic/0.0.2002/message/9',
     },
+    version: {
+      numero: '0.3.0',
+      commit: 'abc1234',
+      huella: 'b'.repeat(64),
+      sello: {
+        estado: 'sellado',
+        simulado: false,
+        enlace: 'https://hashscan.io/testnet/topic/0.0.2002/message/3',
+      },
+    },
   }
 }
 
@@ -40,6 +50,8 @@ describe('verificar un informe (RF55 CA3)', () => {
       'href',
       'https://hashscan.io/testnet/topic/0.0.2002/message/9',
     )
+    expect(screen.getByText(/Analizado con evidentIA 0.3.0 \(código abc1234\)/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Ver la versión en HashScan' })).toBeInTheDocument()
     const campo = screen.getByLabelText('Elegir el PDF para comprobarlo')
     await usuario.upload(campo, pdf())
     expect(await screen.findByText('El PDF coincide con el registrado.')).toBeInTheDocument()
