@@ -27,6 +27,7 @@ weasyprint==70.0            # HTML y CSS a PDF; requiere Pango del sistema (ADR-
 # --- Funcionalidad 006: imágenes de los casos ---
 Pillow==13.0.0              # Dimensiones, verificación y miniaturas de JPEG y PNG
 pillow-heif==1.8.1          # Lectura de fotos HEIC/HEIF del iPhone (funcionalidad 024)
+segno==1.6.6                # Códigos QR de los enlaces de carga desde el celular (024)
 boto3==1.43.114             # Almacenamiento en Amazon S3 (producción)
 
 # --- Funcionalidad 007: motor de análisis ---

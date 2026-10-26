@@ -38,6 +38,22 @@ La autora marcó como prioritario poder subir las fotos desde el celular, en And
   - el QR queda como alternativa sin preparación.
 - **A verificar:** si el Atajo envía el original (HEIC con metadatos) y no una copia convertida. Web Share Target funciona en Chrome y Samsung Internet, no en Firefox.
 
+## 4. Decisión del tutor (2026-10-26)
+
+El tutor indicó probar el **QR desde la computadora hacia la galería del celular**, y se implementó (funcionalidad 024, etapa 2). El código de 6 dígitos y el "compartir desde la galería" quedan como mejora futura.
+
+**Drive y Dropbox se descartaron:**
+- duplican los pasos;
+- agregan un custodio intermedio sin trazabilidad, que puede comprimir o convertir la foto;
+- sacan la evidencia del control de la plataforma.
+
+Como ampliación futura, importar desde un enlace enviado por un tercero requeriría:
+- descargar solo ese archivo, sin acceder a cuentas;
+- no guardar el enlace;
+- aceptar solo dominios de Drive y Dropbox;
+- marcar el origen como "enviado por un tercero, sin garantía de origen";
+- una declaración del usuario de que tiene autorización (Ley 25.326 de Protección de Datos Personales).
+
 ## Fuentes
 
 - Conversión a HEIC en Safari 17 o posterior: https://bugs.webkit.org/show_bug.cgi?id=303803

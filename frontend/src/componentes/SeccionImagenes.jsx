@@ -21,6 +21,7 @@ import { abrirDescarga, formatearTamanio } from '../utilidades/archivos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 import Aviso from './Aviso.jsx'
 import BotonConfirmar from './BotonConfirmar.jsx'
+import CargaDesdeCelular from './CargaDesdeCelular.jsx'
 import Cargando from './Cargando.jsx'
 
 // HEIC/HEIF: formato por defecto del iPhone. Se lista explícitamente para que el
@@ -80,9 +81,12 @@ function Carga({ idCaso, tamanioMaximo, alTerminar }) {
         onChange={alElegir}
         disabled={Boolean(cargando)}
       />
-      <label htmlFor={idCampo} className="boton">
-        Elegir imágenes
-      </label>
+      <div className="acciones-en-linea">
+        <label htmlFor={idCampo} className="boton">
+          Elegir imágenes
+        </label>
+        <CargaDesdeCelular idCaso={idCaso} alActualizar={alTerminar} />
+      </div>
       <p className="nota">
         JPEG, PNG o HEIC (iPhone), hasta {maximoMb} MB cada una. El archivo original no se modifica.
       </p>

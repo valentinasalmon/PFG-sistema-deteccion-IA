@@ -18,3 +18,18 @@
   - ELA en HEIC;
   - el selector acepta HEIC.
 - **Corrección de paso**: la prueba del aviso de retención a 30 días fallaba si corría entre las 23 y las 24 UTC; el vencimiento de prueba ahora queda a las 23:59.
+
+# Etapa 2 — QR
+
+- **`EnlaceCarga`**:
+  - campos `huella_token` (único), `id_caso`, `id_usuario`, `creado_en`, `vence_en`, `revocado_en` y `cargas`;
+  - se borra con el caso (relación con cascada);
+  - el token es `secrets.token_urlsafe(24)` (192 bits) y solo se guarda su huella.
+- **`ServicioEnlacesCarga`**:
+  - `crear` usa `ServicioImagenes.caso_para_cargar` (mismos permisos y estados que la carga), cancela los enlaces anteriores del mismo usuario en el caso y audita `imagen.enlace_carga`;
+  - `cargar` delega en `ServicioImagenes.cargar(..., origen="celular")` y suma la carga al enlace.
+- **Rutas**: las públicas (`carga_celular_bp`) quedan exentas de CSRF, porque no usan cookies de sesión y el token es la credencial. Solo devuelven el nombre y la huella de la foto subida.
+- **QR**: `segno` genera un SVG como `data:` URI, que la CSP ya admite (`img-src data:`). No hace falta ninguna biblioteca en el frontend.
+- **Frontend**:
+  - `CargaDesdeCelular`: botón, panel con QR, pasos, cuenta regresiva y actualización de la lista cada 4 s; al cerrarlo, `DELETE`;
+  - `PaginaCargaCelular`: ruta pública `/cargar/:token` dentro de la disposición de acceso, con galería (varias fotos, HEIC) y cámara (`capture="environment"`).

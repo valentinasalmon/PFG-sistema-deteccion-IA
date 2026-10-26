@@ -7,9 +7,13 @@
 - [x] Selector de archivos con HEIC.
 - [x] Pruebas de backend y de frontend.
 
-## Etapa 2 — Carga desde el celular (después de la respuesta del tutor)
-- [ ] Código de carga (QR y 6 dígitos) y página de carga para el celular.
-- [ ] Android: Web Share Target (PWA).
-- [ ] iPhone: Atajo de Apple.
-- [ ] Página de ayuda.
-- [ ] Prueba en un celular real, Android e iPhone.
+## Etapa 2 — QR (aprobada por el tutor)
+- [x] Modelo `EnlaceCarga`, migración `a7c3e9d2b024` y repositorio.
+- [x] `ServicioEnlacesCarga`: crear, cancelar, consultar y cargar; `ServicioImagenes.cargar` con `origen`.
+- [x] Rutas: `POST/DELETE /api/casos/<id>/enlace-carga` (con sesión) y `GET/POST /api/carga/<token>` (públicas, sin CSRF).
+- [x] QR en SVG generado en el servidor con `segno`.
+- [x] Panel "Cargar desde el celular" con QR, pasos, cuenta regresiva y actualización automática.
+- [x] Página del celular `/cargar/:token` con galería y cámara.
+- [x] Pruebas de backend y de frontend.
+- [ ] Prueba en un celular real, Android e iPhone (autora).
+- [ ] *(Opcional)* Código de 6 dígitos y "compartir desde la galería".

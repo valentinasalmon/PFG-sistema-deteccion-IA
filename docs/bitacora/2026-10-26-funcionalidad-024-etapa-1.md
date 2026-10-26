@@ -32,3 +32,22 @@
   - "compartir desde la galería": Web Share Target (PWA) en Android y Atajo de Apple en iPhone.
   
   Quedó registrada en la investigación y en los insumos del informe final.
+
+## Etapa 2: QR hacia la galería del celular (aprobada por el tutor)
+
+- **Panel "Cargar desde el celular"** en la pantalla del caso:
+  - QR de un enlace de un solo uso (15 minutos, hasta 30 fotos, solo carga en ese caso);
+  - cuenta regresiva;
+  - la lista de imágenes se actualiza sola mientras está abierto;
+  - al cerrarlo, el enlace se cancela.
+- **Página del celular `/cargar/:token`**: sin iniciar sesión, con "Elegir de la galería" (varias fotos, acepta HEIC) y "Sacar una foto". Usa las mismas validaciones, huella, sello en Hedera y auditoría que la carga normal (origen `celular`).
+- **Seguridad**:
+  - token aleatorio de 192 bits, del que solo se guarda la huella SHA-256;
+  - carga a nombre de quien generó el QR, con sus permisos vigentes;
+  - rutas públicas sin CSRF, porque no hay cookie de sesión;
+  - la respuesta no expone datos del caso más allá del número.
+- **QR en SVG** generado en el servidor con `segno`, sin bibliotecas nuevas en el frontend.
+- **Calidad**:
+  - backend: 476 pruebas;
+  - frontend: 199 pruebas.
+- **Pendiente:** prueba en un celular real (Android e iPhone).

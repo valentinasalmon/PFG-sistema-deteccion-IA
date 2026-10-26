@@ -12,6 +12,7 @@ from app.integraciones.sello_tiempo import crear_sellador, crear_tema_hedera
 from app.repositorios.repositorio_analisis import RepositorioAnalisis
 from app.repositorios.repositorio_auditoria import RepositorioAuditoria
 from app.repositorios.repositorio_casos import RepositorioCasos
+from app.repositorios.repositorio_enlaces_carga import RepositorioEnlacesCarga
 from app.repositorios.repositorio_estadisticas import RepositorioEstadisticas
 from app.repositorios.repositorio_imagenes import RepositorioImagenes
 from app.repositorios.repositorio_informes import RepositorioInformes
@@ -31,6 +32,7 @@ from app.servicios.servicio_panel import ServicioPanel
 from app.servicios.servicio_perfil import ServicioPerfil
 from app.servicios.servicio_planes import ServicioPlanes
 from app.servicios.servicio_sellos import ServicioSellos
+from app.servicios.servicio_enlaces_carga import ServicioEnlacesCarga
 from app.servicios.servicio_sesion import ServicioSesion
 from app.servicios.tokens import GestorTokens
 
@@ -114,6 +116,15 @@ def crear_servicio_imagenes(configuracion, enviador, almacenamiento, origen=None
         RepositorioImagenes(), crear_servicio_casos(configuracion, enviador, origen),
         almacenamiento, configuracion, crear_servicio_auditoria(origen),
         crear_servicio_sellos(configuracion, origen),
+    )
+
+
+def crear_servicio_enlaces_carga(configuracion, enviador, almacenamiento, origen=None):
+    """Enlaces de carga desde el celular (funcionalidad 024)."""
+    return ServicioEnlacesCarga(
+        RepositorioEnlacesCarga(),
+        crear_servicio_imagenes(configuracion, enviador, almacenamiento, origen),
+        crear_servicio_auditoria(origen),
     )
 
 
