@@ -5,8 +5,8 @@ GET /api/verificacion?huella=<sha256>   Datos del informe cuyo PDF tiene esa hue
 
 También muestra con qué versión de la plataforma se hizo el análisis y su
 sello en Hedera (funcionalidad 029). No requiere sesión: la usa quien recibe
-el PDF (un juzgado, un perito, un liquidador). La huella del archivo se calcula en el navegador, así el PDF
-nunca se sube al servidor.
+el PDF (un juzgado, un perito, un liquidador). La huella del archivo se
+calcula en el navegador, así el PDF nunca se sube al servidor.
 
 Realiza: RF55 (CA3).
 """

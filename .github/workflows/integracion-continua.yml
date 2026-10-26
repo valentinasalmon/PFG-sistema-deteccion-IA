@@ -61,7 +61,13 @@ jobs:
 
   commits:
     name: Mensajes de commit (Conventional Commits en español)
-    if: github.event_name == 'pull_request'
+    # Los Pull Requests de integración (desarrollo → main, o main → desarrollo)
+    # traen commits ya validados en su propio Pull Request y los de fusión
+    # escritos en GitHub; volver a validarlos solo repite fallas pasadas.
+    if: >
+      github.event_name == 'pull_request'
+      && github.head_ref != 'desarrollo'
+      && github.head_ref != 'main'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
