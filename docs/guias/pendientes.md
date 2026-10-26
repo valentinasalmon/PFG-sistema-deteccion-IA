@@ -27,7 +27,7 @@ Lista para ordenar con la autora y pasar a Trello. La entrega es antes del 2026-
 | P1 | **Pasar Hedera a la red real (*mainnet*)** antes de la defensa: cuenta nueva, unos US$ 10 de HBAR, tema nuevo (CP-26) | Compra de HBAR | Autora compra, agente guía |
 | P2 | Probar la restauración de la copia de seguridad de la base (pendiente de la 017) | — | Autora, con la guía |
 | P2 | Logo como foto del remitente de los correos | Dominio; según el proveedor, BIMI | Agente investiga |
-| P3 | Limitar la cantidad de pedidos por minuto en las páginas públicas (verificación y carga desde el celular) | — | Agente |
+| ✓ | Limitar la cantidad de pedidos por minuto (030, hecho) | — | Agente |
 | P3 | Borrar la rama abandonada `funcionalidad/016-sello-desde-navegador` | — | Autora |
 
 ## Calidad y cierre (018)
@@ -36,7 +36,7 @@ Lista para ordenar con la autora y pasar a Trello. La entrega es antes del 2026-
 |---|---|---|---|
 | P1 | **Pruebas de usabilidad** con 3 a 5 abogados o liquidadores: guion, tareas, cuestionario SUS y conclusiones | Participantes | Agente arma, autora conduce |
 | P1 | **Índice de calidad (QI ≥ 0,75)**: definir la fórmula y medir (cobertura, análisis estático, pruebas, usabilidad) | CP-04 (tutor) | Agente mide, tutor valida |
-| P2 | Revisión final de seguridad (dependencias, cabeceras, permisos) | — | Agente |
+| ✓ | Revisión de seguridad (030, hecha: `docs/arquitectura/seguridad.md`) | — | Agente |
 | P2 | Guía de uso para la persona usuaria (abogado y aseguradora) | — | Agente |
 
 ## Documento final del proyecto (informe para la facultad)

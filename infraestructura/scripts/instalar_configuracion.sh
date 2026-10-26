@@ -12,6 +12,10 @@ if [ -f "/etc/letsencrypt/live/$DOMINIO/fullchain.pem" ]; then
 else
   plantilla="$SERVIDOR/nginx/plataforma-sin-tls.conf"
 fi
+# Límites de pedidos (zonas en el bloque http) y rutas de la API (030).
+install -m 644 "$SERVIDOR/nginx/limites.conf" /etc/nginx/conf.d/plataforma-limites.conf
+install -d /etc/nginx/snippets
+install -m 644 "$SERVIDOR/nginx/api.conf" /etc/nginx/snippets/plataforma-api.conf
 sed "s/__DOMINIO__/$DOMINIO/g" "$plantilla" > /etc/nginx/sites-available/plataforma
 ln -sfn /etc/nginx/sites-available/plataforma /etc/nginx/sites-enabled/plataforma
 rm -f /etc/nginx/sites-enabled/default
