@@ -126,7 +126,12 @@ class ServicioAnalisis:
         analisis = Analisis(
             id_caso=caso.id, id_solicitante=usuario.id, estado=ESTADO_EN_COLA,
             estado_anterior_caso=caso.estado,
-            versiones={capa.nombre: capa.version() for capa in self.ejecucion["capas"]},
+            versiones={
+                **{capa.nombre: capa.version() for capa in self.ejecucion["capas"]},
+                # Commit de la plataforma: enlaza el análisis con su versión en Hedera (029).
+                **({"commit": self.configuracion["COMMIT"]}
+                   if self.configuracion.get("COMMIT") else {}),
+            },
         )
         for orden, imagen in enumerate(elegidas, start=1):
             analisis.imagenes.append(AnalisisImagen(

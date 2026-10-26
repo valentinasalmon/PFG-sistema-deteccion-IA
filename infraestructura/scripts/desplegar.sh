@@ -15,6 +15,8 @@ echo "== Instalando la versión $VERSION"
 rm -rf "$DESTINO"
 mkdir -p "$DESTINO"
 tar -xzf "$ARTEFACTO" -C "$DESTINO"
+# Commit desplegado: cada análisis lo guarda para saber con qué código se hizo (029).
+echo "$VERSION" > "$DESTINO/COMMIT"
 python3 -m venv "$DESTINO/venv"
 "$DESTINO/venv/bin/pip" install -q --upgrade pip
 "$DESTINO/venv/bin/pip" install -q -r "$DESTINO/backend/requirements.txt"
@@ -39,6 +41,11 @@ echo "== Verificación de salud"
 for _ in $(seq 1 30); do
   if curl -fsS http://127.0.0.1:8000/api/salud >/dev/null; then
     echo "Versión $VERSION desplegada."
+    # Huella del artefacto sellada en Hedera ("host tokenizado", 029). Si Hedera no
+    # responde, lo reintenta la tarea de sellos; nunca impide el despliegue.
+    HUELLA=$(sha256sum "$ARTEFACTO" | cut -d' ' -f1)
+    sudo -u plataforma bash -c "set -a; source $BASE/.env; set +a; cd $DESTINO/backend; $DESTINO/venv/bin/flask --app wsgi sellos registrar-version --commit $VERSION --huella $HUELLA" \
+      || echo "Aviso: no se pudo registrar la versión en Hedera; se reintentará."
     # Se conservan las tres versiones más recientes para volver atrás.
     ls -1dt "$BASE"/versiones/*/ | tail -n +4 | xargs -r rm -rf
     exit 0

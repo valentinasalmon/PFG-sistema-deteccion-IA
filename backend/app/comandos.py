@@ -8,10 +8,11 @@ import click
 from flask import current_app
 from flask.cli import AppGroup
 
-from app.servicios.errores import NoEncontrado
+from app.servicios.errores import ErrorValidacion, NoEncontrado
 from app.servicios.fabrica import (
     crear_servicio_cuentas,
     crear_servicio_sellos,
+    crear_servicio_versiones,
     crear_tema_de_sellos,
     crear_tareas_de_retencion,
 )
@@ -76,6 +77,19 @@ def procesar_sellos():
     """Pide y confirma los sellos pendientes. La ejecuta un timer cada 15 minutos (RF37 CA3)."""
     resultado = crear_servicio_sellos(current_app.config).procesar()
     click.echo(f"Sellos: {resultado['sellados']} sellado(s), {resultado['en_curso']} en curso.")
+
+
+@sellos_cli.command("registrar-version")
+@click.option("--commit", required=True, help="Commit desplegado (40 caracteres).")
+@click.option("--huella", required=True, help="SHA-256 del artefacto desplegado.")
+def registrar_version(commit, huella):
+    """Registra la versión desplegada y sella su huella en Hedera (029). Lo llama desplegar.sh."""
+    try:
+        version = crear_servicio_versiones(current_app.config).registrar(commit, huella)
+    except ErrorValidacion as error:
+        raise click.ClickException(error.mensaje) from error
+    estado = version.sello_estado or "desactivado"
+    click.echo(f"Versión {version.version} ({commit[:7]}): sello {estado}.")
 
 
 @sellos_cli.command("crear-tema")

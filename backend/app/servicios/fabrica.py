@@ -18,6 +18,7 @@ from app.repositorios.repositorio_imagenes import RepositorioImagenes
 from app.repositorios.repositorio_informes import RepositorioInformes
 from app.repositorios.repositorio_organizaciones import RepositorioOrganizaciones
 from app.repositorios.repositorio_usuarios import RepositorioUsuarios
+from app.repositorios.repositorio_versiones import RepositorioVersiones
 from app.servicios.auditoria import ServicioAuditoria
 from app.servicios.servicio_administracion import ServicioAdministracion
 from app.servicios.servicio_analisis import ServicioAnalisis
@@ -32,6 +33,7 @@ from app.servicios.servicio_panel import ServicioPanel
 from app.servicios.servicio_perfil import ServicioPerfil
 from app.servicios.servicio_planes import ServicioPlanes
 from app.servicios.servicio_sellos import ServicioSellos
+from app.servicios.servicio_versiones import ServicioVersiones
 from app.servicios.servicio_enlaces_carga import ServicioEnlacesCarga
 from app.servicios.servicio_sesion import ServicioSesion
 from app.servicios.tokens import GestorTokens
@@ -202,5 +204,13 @@ def crear_servicio_sellos(configuracion, origen=None):
     """Sello de tiempo de las imágenes en Hedera (funcionalidades 016 y 023)."""
     return ServicioSellos(
         RepositorioImagenes(), crear_sellador(configuracion), crear_servicio_auditoria(origen),
-        RepositorioInformes(),
+        RepositorioInformes(), RepositorioVersiones(),
+    )
+
+
+def crear_servicio_versiones(configuracion, origen=None):
+    """Registro de las versiones desplegadas en Hedera (funcionalidad 029)."""
+    return ServicioVersiones(
+        RepositorioVersiones(), crear_servicio_sellos(configuracion, origen),
+        crear_servicio_auditoria(origen), configuracion["VERSION_APLICACION"],
     )
