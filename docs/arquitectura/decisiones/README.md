@@ -28,3 +28,4 @@ Un ADR (*Architecture Decision Record*) documenta una decisión de arquitectura 
 | [0016](0016-despliegue-con-terraform-y-systems-manager.md) | Despliegue con Terraform, Systems Manager y OIDC | Aceptada |
 | [0017](0017-marco-normativo-y-supervision-humana.md) | Marco normativo de referencia y supervisión humana | Aceptada |
 | [0018](0018-sello-de-tiempo-en-hedera.md) | Sello de tiempo en Hedera en lugar de Blockchain Federal Argentina | Aceptada |
+| [0019](0019-inicio-de-sesion-con-google.md) | Inicio de sesión con Google por OpenID Connect del lado del servidor | Aceptada |

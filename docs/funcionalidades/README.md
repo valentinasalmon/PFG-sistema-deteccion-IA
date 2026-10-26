@@ -52,7 +52,7 @@ implementación siguiendo tareas.md, con pruebas
 | 024 | [Carga de imágenes desde el celular (web móvil, QR y HEIC)](024-carga-desde-celular/especificacion.md) | 10 | RF53 | Completado: HEIC y QR hacia la galería del celular (falta la prueba en un celular real) |
 | 025 | [Informe por rubro, breve y autosuficiente](025-informe-por-rubro/especificacion.md) | 10 | RF44, RF54 | Completado |
 | 026 | [Informe inalterable: huella en Hedera y verificación pública](026-informe-verificable/especificacion.md) | 10 | RF55 | Completado (firma digital opcional) |
-| 027 | Inicio de sesión y registro con Google | 10 | RF52 | Pendiente |
+| 027 | [Inicio de sesión y registro con Google](027-inicio-con-google/especificacion.md) | 10 | RF52 | Implementada |
 | 028 | Mejoras de usabilidad e interfaz | 10 | RNF10 | Pendiente |
 | 029 | [Huella de cada versión desplegada en Hedera ("host tokenizado")](029-version-en-hedera/especificacion.md) | 10 | RF56 | Completado (se activa en el próximo despliegue) |
 

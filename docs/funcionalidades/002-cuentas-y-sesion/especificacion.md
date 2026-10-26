@@ -84,7 +84,7 @@ Para usar la plataforma, abogados y personal de aseguradoras necesitan una cuent
 
 ### Seguridad
 - [x] **CA20**: Las contraseñas se almacenan únicamente como hash bcrypt con costo 12 o mayor.
-- [x] **CA21**: La cookie de sesión tiene los atributos `HttpOnly` y `SameSite=Strict` (y `Secure` en producción), y toda solicitud que modifica datos sin un token CSRF válido es rechazada.
+- [x] **CA21**: La cookie de sesión tiene los atributos `HttpOnly` y `SameSite=Strict` (y `Secure` en producción) — *desde la 027, `SameSite=Lax`; ver ADR-0019*, y toda solicitud que modifica datos sin un token CSRF válido es rechazada.
 - [x] **CA22**: Sin sesión iniciada, las pantallas protegidas redirigen al inicio de sesión y la API responde 401.
 
 ## Preguntas abiertas

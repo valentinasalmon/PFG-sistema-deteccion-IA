@@ -2,7 +2,8 @@
 # La EC2 la lee al arrancar y en cada despliegue y arma su archivo .env
 # (scripts/generar_entorno.sh). Los secretos se generan acá y van cifrados.
 # Excepción: la clave privada de Hedera (HEDERA_CLAVE) la carga la autora a mano
-# como SecureString, para que no quede en el estado de Terraform.
+# como SecureString, para que no quede en el estado de Terraform. Lo mismo el
+# secreto del cliente de Google (GOOGLE_SECRETO_CLIENTE, funcionalidad 027).
 
 resource "random_password" "clave_secreta" {
   length  = 64
@@ -41,6 +42,10 @@ locals {
     HEDERA_CUENTA = var.hedera_cuenta
     HEDERA_TEMA   = var.hedera_tema
   } : {}
+  # Inicio con Google (027): el identificador del cliente es público; sin él no se crea.
+  parametros_google = var.google_id_cliente != "" ? {
+    GOOGLE_ID_CLIENTE = var.google_id_cliente
+  } : {}
 }
 
 resource "aws_ssm_parameter" "secreto" {
@@ -51,7 +56,7 @@ resource "aws_ssm_parameter" "secreto" {
 }
 
 resource "aws_ssm_parameter" "valor" {
-  for_each = merge(local.parametros, local.parametros_hedera)
+  for_each = merge(local.parametros, local.parametros_hedera, local.parametros_google)
   name     = "${local.prefijo_parametros}/${each.key}"
   type     = "String"
   value    = each.value

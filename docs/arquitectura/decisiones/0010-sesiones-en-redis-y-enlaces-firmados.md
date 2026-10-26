@@ -25,7 +25,7 @@ La ADR-0003 eligió una sesión en cookie `HttpOnly`. Quedaban dos preguntas abi
 
 ## Decisión
 
-- **Sesiones en Redis** con Flask-Session (prefijo `sesion:`). La cookie solo contiene un identificador aleatorio, con `HttpOnly`, `SameSite=Strict` y, en producción, `Secure`. La inactividad máxima (30 minutos) es el vencimiento en Redis, que se renueva en cada solicitud; la duración máxima (8 horas) se controla con la hora de inicio guardada en la sesión. El identificador de sesión se regenera al iniciar sesión.
+- **Sesiones en Redis** con Flask-Session (prefijo `sesion:`). La cookie solo contiene un identificador aleatorio, con `HttpOnly`, `SameSite=Strict` (desde la 027, `Lax`: ver ADR-0019) y, en producción, `Secure`. La inactividad máxima (30 minutos) es el vencimiento en Redis, que se renueva en cada solicitud; la duración máxima (8 horas) se controla con la hora de inicio guardada en la sesión. El identificador de sesión se regenera al iniciar sesión.
 - **Cierre de todas las sesiones**: Flask-Login guarda `"id:version_sesion"`. Restablecer o cambiar la contraseña incrementa `version_sesion` y las sesiones anteriores dejan de coincidir. Al cambiar la contraseña desde el perfil, la sesión actual se renueva para no obligar a volver a ingresar.
 - **Enlaces firmados** con `itsdangerous`, con un propósito distinto para cada tipo de enlace y su vencimiento. Cada token incluye un dato que cambia al usarse: la cuenta pasa a verificada; cambia el hash de la contraseña (se compara una huella); cambia el correo actual.
 - En las pruebas, las sesiones usan `cachelib` en memoria, con el mismo comportamiento.

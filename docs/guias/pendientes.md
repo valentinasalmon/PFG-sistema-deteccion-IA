@@ -12,7 +12,7 @@ Lista para ordenar con la autora y pasar a Trello. La entrega es antes del 2026-
 |---|---|---|---|
 | P1 | **Red neuronal (010 y 012)**: terminar el entrenamiento, exportar a ONNX y conectarla como capa 4 probabilística | Modelo de la autora; conjunto de datos y desempeño mínimo (CP-07) | Autora entrena, agente integra |
 | P1 | **Mejoras de interfaz (028)**: página de carga desde el celular, pantalla del caso, coherencia general | Lista de ajustes de la autora | Agente |
-| P2 | **Inicio de sesión con Google (027)**, primero en modo de prueba | La autora crea el cliente OAuth en Google Cloud | Agente; autora (credenciales) |
+| P2 | **Inicio de sesión con Google (027)**: implementado; falta crear el cliente OAuth y probarlo | La autora crea el cliente en Google Cloud (guía en `despliegue-aws.md`) | Autora |
 | P2 | **Probar la 029 en producción**: que la verificación de un informe nuevo muestre la versión | Próximo despliegue | Autora |
 | P3 | Código de carga de 6 dígitos y "compartir desde la galería" (Web Share Target en Android, Atajo de Apple en iPhone) | — | Agente |
 | P3 | Firma digital del PDF (CP-27) | Certificado | Agente |

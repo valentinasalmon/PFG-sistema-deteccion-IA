@@ -34,7 +34,7 @@ Los requisitos no funcionales se agrupan según las características de calidad 
 **Prioridad:** Debe
 
 - **CA1:** Todo el tráfico se sirve por HTTPS con TLS 1.2 o superior; las solicitudes HTTP se redirigen a HTTPS y se envía la cabecera HSTS.
-- **CA2:** Las cookies de sesión tienen los atributos `Secure`, `HttpOnly` y `SameSite=Strict`.
+- **CA2:** Las cookies de sesión tienen los atributos `Secure`, `HttpOnly` y `SameSite=Lax` (era `Strict` hasta la funcionalidad 027; ver ADR-0019), con token CSRF en toda solicitud que modifica datos.
 - **CA3:** Toda solicitud que modifica datos exige un token CSRF válido.
 - **CA4:** Las respuestas incluyen las cabeceras `Content-Security-Policy`, `X-Content-Type-Options`, `Referrer-Policy` y `X-Frame-Options`.
 
