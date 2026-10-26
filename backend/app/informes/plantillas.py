@@ -3,7 +3,12 @@
 Lo comparten la copia de datos personales (019) y el informe de análisis
 (008), para que tengan los mismos filtros de fecha y el mismo motor.
 
-Realiza: RF09, RF44.
+Las imágenes del documento (logo, QR, mapa ELA) van incrustadas como
+``data:``. WeasyPrint no descarga nada más: así, aunque un texto cargado por
+una persona llegara a colarse en el HTML, el servidor no se puede usar para
+pedir direcciones internas (SSRF, funcionalidad 030).
+
+Realiza: RF09, RF44; RNF02.
 """
 from datetime import datetime, timezone
 from pathlib import Path
@@ -48,12 +53,26 @@ entorno.filters["hora_argentina"] = formatear_hora_argentina
 entorno.filters["dia"] = formatear_dia
 
 
+PROTOCOLOS_PERMITIDOS = frozenset({"data"})
+
+
+def obtenedor_de_recursos():
+    """Obtenedor de WeasyPrint que solo acepta recursos ``data:`` (sin red ni archivos)."""
+    # pylint: disable=import-outside-toplevel
+    from weasyprint.urls import URLFetcher
+
+    return URLFetcher(allowed_protocols=PROTOCOLOS_PERMITIDOS, allow_redirects=False)
+
+
 def html_a_pdf(plantilla, **datos):
     """Renderiza la plantilla y la convierte a PDF con WeasyPrint."""
     # Se importa aquí: WeasyPrint tarda en cargar y solo hace falta al generar un PDF.
     from weasyprint import HTML  # pylint: disable=import-outside-toplevel
 
-    return HTML(string=entorno.get_template(plantilla).render(**datos)).write_pdf()
+    return HTML(
+        string=entorno.get_template(plantilla).render(**datos),
+        url_fetcher=obtenedor_de_recursos(),
+    ).write_pdf()
 
 
 def version_weasyprint():

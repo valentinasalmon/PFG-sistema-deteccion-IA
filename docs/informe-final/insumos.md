@@ -93,6 +93,14 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - para la sección de seguridad: la cookie de sesión pasó de `SameSite=Strict` a `Lax`, porque con `Strict` se perdía la sesión al volver desde Google, y la protección CSRF compensa el cambio.
 - **Integración continua (2026-10-28):** la validación de commits se limitó a los Pull Requests de funcionalidades, porque fallaba en los de integración por commits ya validados. Es un ejemplo de ajuste del arnés a la práctica real.
 
+- **Seguridad (030, 2026-10-28):**
+  - revisión completa según OWASP Top 10 (2021), con evidencia y riesgos aceptados en `docs/arquitectura/seguridad.md`; sirve directamente para la sección de seguridad del informe;
+  - límites de pedidos por IP en Nginx (respuesta 429 en JSON), cabeceras `Permissions-Policy` y `Cross-Origin-Opener-Policy`;
+  - auditoría automática de dependencias en cada Pull Request y cada semana, como condición para desplegar;
+  - WeasyPrint limitado a recursos `data:` (defensa en profundidad contra SSRF);
+  - búsqueda de secretos en todo el historial de Git: sin hallazgos reales.
+  - Hallazgo para contar: npm 10 fallaba al instalar ("edgesOut") por un error con las dependencias opcionales de Vite; con npm 11, el mismo que usa la integración continua, se resolvió.
+
 ## Otros temas ya registrados
 
 - Metodología: desarrollo guiado por especificaciones, arnés para agentes de IA (CLAUDE.md, constitución) y trazabilidad con `Co-Authored-By`.

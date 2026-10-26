@@ -37,3 +37,4 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-20 | [Funcionalidad 011: capa 3, niveles de error (ELA)](2026-10-20-funcionalidad-011-capa-ela.md) |
 | 2026-10-21 | [Funcionalidad 013: panel principal y notificaciones](2026-10-21-funcionalidad-013-panel-y-notificaciones.md) |
 | 2026-10-28 | [Integración continua en verde e inicio con Google (027)](2026-10-28-funcionalidad-027-inicio-con-google.md) |
+| 2026-10-28 | [Revisión y refuerzo de la seguridad (030)](2026-10-28-funcionalidad-030-seguridad.md) |
