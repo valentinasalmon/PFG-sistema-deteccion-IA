@@ -16,7 +16,6 @@
     body { font-family: "DejaVu Sans", sans-serif; font-size: 9.4pt; color: #14201a; line-height: 1.6; }
     h1 { font-size: 19pt; line-height: 1.2; margin: 14pt 0 4pt; letter-spacing: -0.3pt; }
     h2 { font-size: 12.5pt; margin: 26pt 0 10pt; padding-bottom: 5pt; border-bottom: 1.5pt solid #14201a; page-break-after: avoid; }
-    h2 .numero { color: #2f5da8; margin-right: 5pt; }
     h3 { font-size: 11pt; margin: 0 0 6pt; page-break-after: avoid; }
     p { margin: 0 0 9pt; }
     .portada-logo { height: 1.1cm; }
@@ -47,8 +46,6 @@
     .cronologia { margin-top: 10pt; font-size: 8.6pt; color: #3a4640; }
     .cronologia span { white-space: nowrap; }
     .imagen { margin: 0 0 18pt; }
-    .resultados tr { page-break-inside: avoid; }
-    .ficha { page-break-after: avoid; }
     .ficha { width: 100%; margin-bottom: 8pt; }
     .ficha > tbody > tr > td { border: 0; padding: 0; vertical-align: top; }
     .ficha img { width: 3.8cm; max-height: 3cm; object-fit: contain; border: 0.6pt solid #d9e0dc; border-radius: 3pt; }
@@ -68,7 +65,11 @@
     .tipos .que-mira { display: block; color: #4e5b54; font-size: 7.8pt; line-height: 1.4; margin: 1pt 0 5pt; }
     ol.pasos { margin: 4pt 0; padding-left: 15pt; }
     ol.pasos li { margin-bottom: 6pt; }
-    .aviso { border: 1pt solid #2f5da8; background: #eef3fb; padding: 10pt 12pt; border-radius: 4pt; margin: 26pt 0 0; page-break-inside: avoid; }
+    .verificacion td { border: 0; padding: 0; vertical-align: middle; }
+    .verificacion td.qr { width: 3.3cm; }
+    .verificacion img { width: 2.9cm; height: 2.9cm; }
+    .codigo { font-family: "DejaVu Sans Mono", monospace; letter-spacing: 0.5pt; }
+    .aviso { border: 1pt solid #2f5da8; background: #eef3fb; padding: 10pt 12pt; border-radius: 4pt; margin: 26pt 0 0; }
     .aviso p:last-child { margin-bottom: 0; }
     .aviso strong { color: #1e3f7a; }
   </style>
@@ -80,7 +81,7 @@
   <p class="subtitulo">Caso {{ informe.caso.numero }} · Análisis N.° {{ informe.analisis.id }} · Generado el {{ generado_en | hora_argentina }} (hora de Argentina)</p>
   <p class="intro">{{ informe.rubro.intro }}</p>
 
-  <h2><span class="numero">1</span> Caso y solicitud</h2>
+  <h2>Caso y solicitud</h2>
   <table class="dos-columnas"><tr>
     <td>
       <table class="datos">
@@ -102,7 +103,7 @@
     </td>
   </tr></table>
 
-  <h2><span class="numero">2</span> Evidencia y cadena de custodia</h2>
+  <h2>Evidencia y cadena de custodia</h2>
   <p>Cada archivo se guardó tal cual se cargó. Su huella SHA-256 se calculó al cargarlo y se volvió a comprobar antes del análisis; el sello en Hedera acredita que existía en esa fecha.</p>
   <table class="custodia">
     <tr><th>Imagen</th><th>Huella SHA-256 del original</th><th>Integridad</th><th>Sello de tiempo</th></tr>
@@ -122,8 +123,8 @@
     <span>informe generado {{ generado_en | hora_argentina }}</span> (hora de Argentina).
   </p>
 
-  <h2><span class="numero">3</span> Escala de lectura</h2>
-  <table class="escala" style="page-break-inside: avoid">
+  <h2>Escala de lectura</h2>
+  <table class="escala">
     <tr><th>Nivel</th><th>Se lee como</th><th>Qué significa</th></tr>
     {% for banda in informe.bandas %}
     <tr>
@@ -140,8 +141,8 @@
   </table>
   <p class="nota" style="margin-top: 7pt">Cada técnica mira un aspecto distinto: sus niveles no se suman ni se promedian.</p>
 
-  <h2><span class="numero">4</span> Resultados deterministas y probabilísticos</h2>
-  <table class="tipos" style="page-break-inside: avoid">
+  <h2>Resultados deterministas y probabilísticos</h2>
+  <table class="tipos">
     <tr><th>Tipo</th><th>Qué significa</th><th>Técnicas</th></tr>
     {% for tipo in informe.tipos %}
     <tr>
@@ -153,7 +154,7 @@
   </table>
   <p class="nota" style="margin-top: 7pt">Un indicio en un resultado determinista pesa más que en uno probabilístico.</p>
 
-  <h2><span class="numero">5</span> Resultados por imagen</h2>
+  <h2>Resultados por imagen</h2>
   {% for imagen in informe.imagenes %}
   <section class="imagen">
     <table class="ficha"><tr>
@@ -197,8 +198,21 @@
   </section>
   {% endfor %}
 
-  <h2><span class="numero">6</span> Qué hacer ahora</h2>
+  <h2>Qué hacer ahora</h2>
   <ol class="pasos">{% for paso in informe.rubro.que_hacer %}<li>{{ paso }}</li>{% endfor %}</ol>
+
+  {% if informe.verificacion %}
+  <h2>Verificación de este informe</h2>
+  <table class="verificacion"><tr>
+    <td class="qr"><img src="{{ informe.verificacion.qr }}" alt="Código QR de verificación"></td>
+    <td>
+      <p>Para comprobar que este PDF no fue modificado, escaneá el código o entrá a
+        <strong>{{ informe.verificacion.pagina }}</strong> e ingresá el código
+        <strong class="codigo">{{ informe.verificacion.codigo }}</strong>.</p>
+      <p class="nota">La página compara la huella SHA-256 del archivo con la registrada al generarlo, que además queda sellada en la red pública Hedera. Si el PDF cambió aunque sea en un carácter, la huella no coincide.</p>
+    </td>
+  </tr></table>
+  {% endif %}
 
   <div class="aviso">
     <p>Este informe presenta <strong>indicios técnicos</strong> obtenidos de forma automatizada.

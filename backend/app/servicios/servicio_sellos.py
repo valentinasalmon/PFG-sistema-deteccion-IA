@@ -27,10 +27,12 @@ registro_log = logging.getLogger(__name__)
 class ServicioSellos:
     """Pide, confirma y reintenta los sellos de tiempo."""
 
-    def __init__(self, repositorio, sellador, registro):
+    def __init__(self, repositorio, sellador, registro, repositorio_informes=None):
         """
         Args:
             repositorio: ``RepositorioImagenes``.
+            repositorio_informes: ``RepositorioInformes``, para sellar también la
+                huella de los informes PDF (funcionalidad 026).
             sellador: implementación de ``app.integraciones.sello_tiempo``, o
                 None si el sellado está desactivado.
             registro: ``ServicioAuditoria``.
@@ -38,6 +40,7 @@ class ServicioSellos:
         self.repositorio = repositorio
         self.sellador = sellador
         self.registro = registro
+        self.repositorio_informes = repositorio_informes
 
     @property
     def activo(self):
@@ -45,12 +48,20 @@ class ServicioSellos:
         return self.sellador is not None
 
     def intentar(self, imagen):
-        """Avanza el sello de una imagen un paso; nunca lanza (RF37 CA3)."""
+        """Avanza un paso el sello de una imagen o de un informe; nunca lanza (RF37 CA3).
+
+        Funciona con cualquier objeto con ``huella``, ``id_caso`` y las columnas
+        ``sello_*``; ``TIPO_SELLO`` indica qué se publica (``"informe"`` en la 026).
+        """
         if not self.activo or imagen.sello_estado in (SELLO_SELLADO, SELLO_FALLIDO):
             return imagen.sello_estado
         try:
             if imagen.sello_estado in (None, SELLO_PENDIENTE):
-                imagen.sello_recibo = self.sellador.sellar(imagen.huella)
+                tipo = getattr(imagen, "TIPO_SELLO", "imagen")
+                imagen.sello_recibo = (
+                    self.sellador.sellar(imagen.huella) if tipo == "imagen"
+                    else self.sellador.sellar(imagen.huella, tipo=tipo)
+                )
                 imagen.sello_estado = SELLO_ENVIADO
                 imagen.sello_simulado = self.sellador.simulado
             confirmacion = self.sellador.verificar(imagen.huella, imagen.sello_recibo)
@@ -64,7 +75,8 @@ class ServicioSellos:
                     auditoria.IMAGEN_SELLO, auditoria.EXITOSO,
                     recurso=(auditoria.TIPO_CASO, imagen.id_caso),
                     detalle={"sha256": imagen.huella, "referencia": confirmacion.referencia,
-                             "simulado": imagen.sello_simulado},
+                             "simulado": imagen.sello_simulado,
+                             "tipo": getattr(imagen, "TIPO_SELLO", "imagen")},
                 )
         except SelloNoDisponible as falla:
             imagen.sello_intentos = (imagen.sello_intentos or 0) + 1
@@ -85,7 +97,11 @@ class ServicioSellos:
         sellados = en_curso = 0
         if not self.activo:
             return {"sellados": 0, "en_curso": 0}
-        for imagen in self.repositorio.con_sello_en_curso((SELLO_PENDIENTE, SELLO_ENVIADO)):
+        en_curso_estados = (SELLO_PENDIENTE, SELLO_ENVIADO)
+        pendientes = list(self.repositorio.con_sello_en_curso(en_curso_estados))
+        if self.repositorio_informes is not None:
+            pendientes += self.repositorio_informes.con_sello_en_curso(en_curso_estados)
+        for imagen in pendientes:
             estado = self.intentar(imagen)
             if estado == SELLO_SELLADO:
                 sellados += 1

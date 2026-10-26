@@ -27,3 +27,10 @@ export function regenerarInforme(idCaso, idAnalisis) {
 export async function descargarInforme(idCaso, idInforme) {
   abrirDescarga(await enlaceDeInforme(idCaso, idInforme))
 }
+
+/** Verificación pública de un informe por su código o por la huella del PDF (funcionalidad 026). */
+export async function verificarInforme({ codigo, huella }) {
+  const parametros = new URLSearchParams(codigo ? { codigo } : { huella })
+  const { informe } = await solicitar('GET', `/api/verificacion?${parametros}`)
+  return informe
+}
