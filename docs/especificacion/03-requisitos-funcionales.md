@@ -533,7 +533,7 @@ El sistema debe permitir al Responsable prorrogar el plazo de retención por 1 a
 Requisitos agregados a pedido de la autora. Los marcados **[PROPUESTA]** dependen de las cuestiones abiertas CP-26 a CP-31. El detalle de la carga desde el celular está en `docs/investigacion/2026-10-25-carga-desde-el-celular.md`.
 
 ### RF52 — Iniciar sesión y registrarse con Google
-**Prioridad:** Debería · **Reglas:** RN01, RN02 **[PROPUESTA]**
+**Prioridad:** Debería · **Reglas:** RN01, RN02 · Aprobado por la autora el 2026-10-28; el paso de completar el perfil es obligatorio la primera vez (funcionalidad 027)
 
 El sistema debe permitir iniciar sesión y registrarse con una cuenta de Google (OpenID Connect), además del correo y la contraseña.
 
@@ -558,7 +558,7 @@ El informe PDF debe usar el lenguaje del rubro de quien lo solicita (Legal o Seg
 
 - **CA1:** Dado un solicitante con perfil Abogado, entonces el informe usa términos de expediente, prueba y perito; con perfil Aseguradora, términos de siniestro, liquidación y verificación.
 - **CA2:** El informe se entiende por sí mismo: explica qué se analizó, cómo leer los niveles, qué limitaciones tiene y cómo verificar su autenticidad, sin depender de la plataforma.
-- **CA3:** Distingue los resultados **deterministas** (integridad, metadatos, C2PA) de los **probabilísticos** (ELA, red neuronal), y explica la diferencia (funcionalidad 025, CP-28).
+- **CA3:** Cada técnica se etiqueta como **determinista** (integridad, metadatos, C2PA) o **probabilística** (ELA, red neuronal), con una línea que explica la diferencia (funcionalidad 025, CP-28).
 
 ### RF55 — Informe inalterable y verificable
 **Prioridad:** Debe · **Reglas:** RN23, RN29 **[PROPUESTA]**
@@ -576,4 +576,4 @@ El sistema debe registrar la huella SHA-256 de cada informe PDF en Hedera y perm
 El sistema debe registrar en Hedera la huella de cada versión que se despliega en producción, y cada análisis debe guardar con qué versión se hizo ("host tokenizado", CP-29).
 
 - **CA1:** Dado un despliegue en producción, entonces se registra en Hedera un mensaje con el commit y la huella SHA-256 de los artefactos desplegados, y la referencia queda guardada.
-- **CA2:** Dado un análisis, entonces el informe indica la versión del sistema con la que se hizo y su referencia en Hedera.
+- **CA2:** Dado un análisis, entonces se guarda el commit de la plataforma con el que se hizo, y la página pública de verificación del informe muestra esa versión y su referencia en Hedera. Por pedido de la autora (2026-10-27), no se imprime en el PDF.

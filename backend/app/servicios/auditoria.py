@@ -28,6 +28,7 @@ CUENTA_REGISTRO = "cuenta.registro"
 CUENTA_VERIFICACION = "cuenta.verificacion"
 CUENTA_REENVIO_VERIFICACION = "cuenta.reenvio_verificacion"
 CUENTA_BLOQUEO = "cuenta.bloqueo"
+CUENTA_VINCULACION_GOOGLE = "cuenta.vinculacion_google"  # funcionalidad 027 (RF52 CA2)
 SESION_INICIO = "sesion.inicio"
 SESION_CIERRE = "sesion.cierre"
 CONTRASENIA_RECUPERACION = "contrasenia.recuperacion"
@@ -83,6 +84,7 @@ IMAGEN_DESCARGA = "imagen.descarga"
 IMAGEN_ELIMINACION = "imagen.eliminacion"
 IMAGEN_SELLO = "imagen.sello"  # funcionalidad 016 (RF37)
 IMAGEN_ENLACE_CARGA = "imagen.enlace_carga"  # funcionalidad 024 (RF53 CA2)
+VERSION_DESPLIEGUE = "version.despliegue"  # funcionalidad 029 (RF56)
 
 # --- Acciones de análisis (funcionalidad 007) ---
 ANALISIS_SOLICITUD = "analisis.solicitud"
@@ -98,6 +100,7 @@ TIPO_USUARIO = "usuario"
 TIPO_CASO = "caso"
 TIPO_ORGANIZACION = "organizacion"
 TIPO_INVITACION = "invitacion"
+TIPO_VERSION = "version"
 
 # Fragmentos de claves que nunca se guardan en el detalle (RNF06 CA4).
 # "huella" y "hash" se refieren a la contraseña. La huella SHA-256 de una

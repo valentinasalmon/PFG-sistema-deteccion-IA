@@ -34,6 +34,8 @@ HEDERA_RED=${P[HEDERA_RED]:-testnet}
 HEDERA_CUENTA=${P[HEDERA_CUENTA]:-}
 HEDERA_TEMA=${P[HEDERA_TEMA]:-}
 HEDERA_CLAVE=${P[HEDERA_CLAVE]:-}
+GOOGLE_ID_CLIENTE=${P[GOOGLE_ID_CLIENTE]:-}
+GOOGLE_SECRETO_CLIENTE=${P[GOOGLE_SECRETO_CLIENTE]:-}
 FIN
 install -o plataforma -g plataforma -m 600 "$temporal" /opt/plataforma/.env
 rm -f "$temporal"

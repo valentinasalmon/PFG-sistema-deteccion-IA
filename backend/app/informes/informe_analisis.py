@@ -1,19 +1,22 @@
 """Informe PDF de un análisis: datos, textos explicativos y conversión a PDF.
 
-Versión breve y autosuficiente (funcionalidad 025), pensada para quien
-analiza imágenes todos los días y necesita leer el informe en pocos minutos:
+Versión breve y autosuficiente (funcionalidades 025 y 026), pensada para
+quien analiza imágenes todos los días:
 
 1. Caso y solicitud.
 2. Evidencia y cadena de custodia: cada archivo con su huella, la
    verificación de integridad y el sello en Hedera, y una cronología breve.
 3. Escala de lectura: la tabla de niveles de indicio.
-4. Resultados por imagen: por cada capa, si su resultado es determinista o
-   probabilístico, el nivel y lo que encontró en una o dos frases.
-5. Resultados deterministas y probabilísticos: qué diferencia hay.
-6. Qué hacer ahora, y al final el aviso de alcance y el descargo (ADR-0017).
+4. Resultados por imagen: por cada técnica, qué revisó, si su resultado es
+   determinista o probabilístico, el nivel, lo que encontró, los datos más
+   relevantes y los hallazgos principales.
+5. Verificación del informe (QR y código, 026) y el aviso de alcance con el
+   descargo (ADR-0017).
 
-El lenguaje cambia según el perfil de quien pidió el análisis (Abogado o
-Aseguradora, RF54). Nunca emite veredictos (RN27).
+Las secciones no se cortan entre páginas: si no entran, pasan enteras a la
+siguiente. El lenguaje cambia según el perfil de quien pidió el análisis
+(Abogado o Aseguradora, RF54). Nunca emite veredictos (RN27). Las versiones
+de los componentes (RN29) se guardan con el análisis, pero no se imprimen.
 
 No accede a la base de datos ni al almacenamiento: recibe los objetos y las
 miniaturas ya leídas.
@@ -23,10 +26,12 @@ Realiza: RF44 (CA1, CA2), RF54, RNF07 (CA3), RNF23 (CA2); RN27, RN29.
 import base64
 from pathlib import Path
 
+from app.analisis.base import RECOMENDACION
+
 from app.esquemas.casos import NOMBRES_TIPO as NOMBRES_TIPO_CASO
 from app.informes.plantillas import html_a_pdf, version_weasyprint
 
-VERSION_PLANTILLA = "2.0"
+VERSION_PLANTILLA = "2.1"
 
 TITULOS_CAPA = {
     "metadatos": "Capa 1 · Metadatos",
@@ -86,7 +91,6 @@ TIPO_DE_RESULTADO = {
     "ela": "probabilistico",
     "red_neuronal": "probabilistico",
 }
-NOMBRES_TIPO_RESULTADO = {"determinista": "Determinista", "probabilistico": "Probabilístico"}
 
 QUE_MIRA = {
     "metadatos": "Revisa los datos internos del archivo: dispositivo, fechas y programas de "
@@ -95,20 +99,6 @@ QUE_MIRA = {
             "ediciones.",
     "ela": "Compara cómo se comprime cada zona para detectar partes pegadas o retocadas.",
     "red_neuronal": "Un modelo entrenado estima si la imagen se parece a una generada por IA.",
-}
-
-EXPLICACION_TIPOS = {
-    "determinista": (
-        "Comprueban hechos verificables: si el archivo es idéntico al cargado, qué datos "
-        "internos tiene o si trae una firma digital válida. Con el mismo archivo dan siempre "
-        "el mismo resultado, y otra persona puede comprobarlo con sus propias herramientas."
-    ),
-    "probabilistico": (
-        "Estiman, con umbrales estadísticos o modelos entrenados, qué tan parecida es la "
-        "imagen a una editada o generada. Son reproducibles, pero son una estimación: pueden "
-        "señalar una imagen sin ediciones o no detectar una edición cuidadosa. "
-        "Por eso su nivel nunca debe leerse como una certeza."
-    ),
 }
 
 # Lenguaje según el perfil de quien pidió el análisis (RF54).
@@ -120,14 +110,6 @@ TEXTOS_RUBRO = {
             "Resultado del análisis automatizado de las imágenes del caso, para evaluar si "
             "conviene ofrecerlas como prueba o pedir una pericia."
         ),
-        "que_hacer": (
-            "Si alguna imagen tiene indicios moderados o fuertes, pedí una pericia informática "
-            "antes de ofrecerla como prueba.",
-            "Si todas están sin indicios o con indicios débiles, el análisis no encontró "
-            "señales relevantes, pero eso no garantiza su autenticidad.",
-            "Conservá este PDF junto con la huella de cada archivo: le permiten al perito "
-            "comprobar que analiza la misma evidencia.",
-        ),
     },
     "aseguradora": {
         "titulo": "Informe de verificación de fotos del siniestro",
@@ -135,14 +117,6 @@ TEXTOS_RUBRO = {
         "intro": (
             "Resultado del análisis automatizado de las fotos presentadas en el siniestro, "
             "como apoyo para decidir si se liquida o se deriva a verificación."
-        ),
-        "que_hacer": (
-            "Si alguna foto tiene indicios moderados o fuertes, derivá el siniestro a "
-            "verificación o inspección antes de liquidar.",
-            "Si todas están sin indicios o con indicios débiles, el análisis no encontró "
-            "señales relevantes, pero eso no garantiza su autenticidad.",
-            "Ante una posible presentación irregular, pedí la evaluación de un perito antes "
-            "de rechazar el reclamo.",
         ),
     },
 }
@@ -184,28 +158,41 @@ def _solicitante(analisis):
     }
 
 
-def _primera_oracion(texto):
-    """La primera oración de un texto, para la versión breve del informe."""
-    texto = (texto or "").strip()
-    corte = texto.find(". ")
-    return texto if corte == -1 else texto[:corte + 1]
+MAXIMO_HALLAZGOS = 3
+MAXIMO_DATOS = 4
 
 
-def _hallazgos_principales(anomalias, maximo=2):
-    """Hasta ``maximo`` hallazgos relevantes, cada uno en una oración."""
+def _sin_recomendacion(texto):
+    """La conclusión sin la recomendación genérica, que el informe dice una sola vez al final."""
+    return (texto or "").replace(RECOMENDACION, "").strip()
+
+
+def _hallazgos_principales(anomalias, maximo=MAXIMO_HALLAZGOS):
+    """Hasta ``maximo`` hallazgos relevantes (directos, fuertes o moderados)."""
     relevantes = [a for a in anomalias if a.severidad in SEVERIDADES_RELEVANTES]
-    return [_primera_oracion(a.descripcion) for a in relevantes[:maximo]]
+    return [a.descripcion for a in relevantes[:maximo]]
+
+
+def _datos_relevantes(resultado, maximo=MAXIMO_DATOS):
+    """Los primeros datos técnicos de la capa, sin repetir las dimensiones de la imagen."""
+    filas = (resultado.detalle or {}).get("tabla", [])
+    return [f for f in filas if f.get("campo") != "Dimensiones"][:maximo]
 
 
 def _resultado(resultado, imagenes_de_capas):
     disponible = resultado.estado == "completado"
+    texto = _sin_recomendacion(resultado.conclusion)
     return {
         "titulo": TITULOS_CAPA.get(resultado.capa, resultado.capa),
         "titulo_corto": TITULOS_CORTOS.get(resultado.capa, resultado.capa),
         "tipo": TIPO_DE_RESULTADO.get(resultado.capa, "probabilistico"),
         "que_mira": QUE_MIRA.get(resultado.capa, QUE_SIGNIFICA_GENERICO),
-        "lectura": _primera_oracion(resultado.conclusion),
-        "principales": _hallazgos_principales(resultado.anomalias) if disponible else [],
+        "texto": texto,
+        "datos": _datos_relevantes(resultado) if disponible else [],
+        # Los hallazgos que la conclusión ya menciona no se repiten.
+        "principales": [
+            h for h in _hallazgos_principales(resultado.anomalias) if h not in texto
+        ] if disponible else [],
         "disponible": disponible,
         "nivel": resultado.nivel,
         "banda": banda_de_indicio(resultado.nivel or 0) if disponible else None,
@@ -252,26 +239,6 @@ def _imagen(incluida, miniaturas, imagenes_de_capas):
     }
 
 
-def _tipos(imagenes):
-    """Los dos tipos de resultado, con las técnicas de este informe que usan cada uno."""
-    integridad = {"nombre": "Integridad del archivo",
-                  "que_mira": "Compara la huella SHA-256 con la registrada al cargarlo."}
-    tecnicas = {"determinista": [integridad], "probabilistico": []}
-    vistas = set()
-    for imagen in imagenes:
-        for resultado in imagen["resultados"]:
-            if resultado["titulo_corto"] not in vistas:
-                vistas.add(resultado["titulo_corto"])
-                tecnicas[resultado["tipo"]].append(
-                    {"nombre": resultado["titulo_corto"], "que_mira": resultado["que_mira"]}
-                )
-    return [
-        {"clave": clave, "nombre": NOMBRES_TIPO_RESULTADO[clave], "explicacion": texto,
-         "tecnicas": tecnicas[clave]}
-        for clave, texto in EXPLICACION_TIPOS.items()
-    ]
-
-
 def armar_datos(analisis, miniaturas, version_plataforma, imagenes_de_capas=None):
     """Datos del informe a partir del análisis.
 
@@ -289,7 +256,6 @@ def armar_datos(analisis, miniaturas, version_plataforma, imagenes_de_capas=None
         "rubro": rubro,
         # Código, URL y QR de verificación: los agrega ServicioInformes (026).
         "verificacion": None,
-        "tipos": _tipos(imagenes),
         "caso": {
             "numero": caso.numero,
             "expediente": caso.expediente,

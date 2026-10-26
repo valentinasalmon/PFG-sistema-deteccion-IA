@@ -5,9 +5,10 @@
  * comprueba que el PDF no fue modificado: elige el archivo, el navegador
  * calcula su huella SHA-256 y la compara con la registrada al generarlo, que
  * además está sellada en Hedera. El PDF nunca se sube al servidor. Se puede
- * entrar con el código del PDF (o su QR) o solo con el archivo.
+ * entrar con el código del PDF (o su QR) o solo con el archivo. También
+ * muestra con qué versión de la plataforma se hizo el análisis (029).
  *
- * Realiza: RF55 (CA3).
+ * Realiza: RF55 (CA3), RF56 (CA2).
  */
 import { useEffect, useId, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
@@ -43,6 +44,27 @@ function DatosDelInforme({ informe }) {
         {sello.estado === 'sellado' && sello.simulado && 'Sello simulado del entorno de pruebas'}
         {sello.estado !== 'sellado' && 'Todavía sin sello en Hedera'}
       </dd>
+      {informe.version && (
+        <>
+          <dt>Versión de la plataforma</dt>
+          <dd>
+            Analizado con evidentIA {informe.version.numero} (código {informe.version.commit})
+            {informe.version.sello.estado === 'sellado' && !informe.version.sello.simulado && (
+              <>
+                {' · '}registrada en Hedera
+                {informe.version.sello.enlace && (
+                  <>
+                    {' · '}
+                    <a href={informe.version.sello.enlace} target="_blank" rel="noopener noreferrer">
+                      Ver la versión en HashScan
+                    </a>
+                  </>
+                )}
+              </>
+            )}
+          </dd>
+        </>
+      )}
     </dl>
   )
 }

@@ -4,6 +4,8 @@
 # verde. Cada envío a main que pasa las verificaciones se despliega en la EC2
 # (funcionalidad 017); el despliegue se omite mientras no estén cargadas las
 # variables de AWS en el repositorio.
+# Además corre una vez por semana para detectar vulnerabilidades nuevas en las
+# dependencias aunque no haya cambios (funcionalidad 030).
 
 name: Integración continua
 
@@ -11,6 +13,8 @@ on:
   pull_request:
   push:
     branches: [main, desarrollo]
+  schedule:
+    - cron: "17 9 * * 1"  # lunes 09:17 UTC
 
 jobs:
   backend:
@@ -61,7 +65,13 @@ jobs:
 
   commits:
     name: Mensajes de commit (Conventional Commits en español)
-    if: github.event_name == 'pull_request'
+    # Los Pull Requests de integración (desarrollo → main, o main → desarrollo)
+    # traen commits ya validados en su propio Pull Request y los de fusión
+    # escritos en GitHub; volver a validarlos solo repite fallas pasadas.
+    if: >
+      github.event_name == 'pull_request'
+      && github.head_ref != 'desarrollo'
+      && github.head_ref != 'main'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -97,9 +107,42 @@ jobs:
       - name: Scripts del servidor (shellcheck)
         run: shellcheck -S warning infraestructura/scripts/*.sh
 
+  seguridad:
+    name: Seguridad (dependencias y configuración de Nginx)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Solo las dependencias que llegan a producción: las de desarrollo y
+      # pruebas no se despliegan.
+      - name: Vulnerabilidades conocidas del backend (pip-audit)
+        run: pip install pip-audit==2.10.1 && pip-audit -r backend/requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Vulnerabilidades altas o críticas del frontend (npm audit)
+        working-directory: frontend
+        run: npm audit --omit=dev --audit-level=high
+      - name: Configuración de Nginx (límites de pedidos y cabeceras)
+        run: |
+          sudo apt-get update && sudo apt-get install -y nginx
+          D=prueba.local
+          sudo mkdir -p /etc/letsencrypt/live/$D /etc/nginx/snippets
+          sudo openssl req -x509 -nodes -newkey rsa:2048 -days 1 -subj "/CN=$D" \
+            -keyout /etc/letsencrypt/live/$D/privkey.pem -out /etc/letsencrypt/live/$D/fullchain.pem
+          sudo install -m 644 infraestructura/nginx/limites.conf /etc/nginx/conf.d/plataforma-limites.conf
+          sudo install -m 644 infraestructura/nginx/api.conf /etc/nginx/snippets/plataforma-api.conf
+          sudo rm -f /etc/nginx/sites-enabled/default
+          for plantilla in plataforma plataforma-sin-tls; do
+            sed "s/__DOMINIO__/$D/g" "infraestructura/nginx/$plantilla.conf" | sudo tee /etc/nginx/sites-enabled/plataforma > /dev/null
+            sudo nginx -t
+          done
+
   desplegar:
     name: Despliegue en AWS
-    needs: [backend, frontend, infraestructura]
+    needs: [backend, frontend, infraestructura, seguridad]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ID_INSTANCIA != ''
     runs-on: ubuntu-24.04
     concurrency: despliegue-produccion

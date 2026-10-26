@@ -43,3 +43,4 @@ backend/almacenamiento_local/
 terraform.tfvars
 backend.hcl
 plan.tfplan
+/COMMIT

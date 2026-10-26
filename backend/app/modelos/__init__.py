@@ -10,9 +10,11 @@ from app.modelos.imagen import Imagen
 from app.modelos.informe import Informe
 from app.modelos.organizacion import Invitacion, Membresia, Organizacion
 from app.modelos.usuario import Usuario
+from app.modelos.version_sistema import VersionSistema
 
 __all__ = [
     "AccesoCaso", "Analisis", "AnalisisImagen", "Anomalia", "Caso", "EnlaceCarga",
     "EntradaAuditoria",
     "Imagen", "Informe", "Invitacion", "Membresia", "Organizacion", "ResultadoCapa", "Usuario",
+    "VersionSistema",
 ]

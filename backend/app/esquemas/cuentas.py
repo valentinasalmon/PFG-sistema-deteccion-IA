@@ -70,6 +70,39 @@ class SolicitudRegistro(EsquemaBase):
         return valor
 
 
+class SolicitudRegistroGoogle(EsquemaBase):
+    """Datos que completa quien entra con Google por primera vez (RF52 CA1).
+
+    El correo no se recibe del navegador: lo informa Google y el servicio lo
+    toma de la sesión. Tampoco hay contraseña.
+    """
+
+    nombre: str = TextoCorto
+    apellido: str = TextoCorto
+    perfil: Literal["abogado", "aseguradora"]
+    colegio: Optional[str] = TextoInstitucion
+    empresa: Optional[str] = TextoInstitucion
+    acepta_terminos: bool
+    id_aseguradora: Optional[int] = None
+    token_invitacion: Optional[str] = Field(default=None, max_length=500)
+    # Lo completa el servicio con el correo de Google; no se acepta del navegador.
+    correo: Optional[str] = None
+
+    @field_validator("correo")
+    @classmethod
+    def rechazar_correo(cls, valor):
+        """El correo siempre es el que informó Google."""
+        if valor is not None:
+            raise ValueError("El correo es el de tu cuenta de Google y no se puede cambiar.")
+        return valor
+
+    @field_validator("acepta_terminos")
+    @classmethod
+    def exigir_aceptacion(cls, valor):
+        """La aceptación expresa de los términos es obligatoria (RF01 CA2)."""
+        return SolicitudRegistro.exigir_aceptacion(valor)
+
+
 class SolicitudInicioSesion(EsquemaBase):
     """Credenciales de inicio de sesión (RF03)."""
 

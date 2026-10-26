@@ -32,6 +32,7 @@ import PaginaPerfil from './paginas/PaginaPerfil.jsx'
 import PaginaPrivacidad from './paginas/PaginaPrivacidad.jsx'
 import PaginaRecuperarContrasenia from './paginas/PaginaRecuperarContrasenia.jsx'
 import PaginaRegistro from './paginas/PaginaRegistro.jsx'
+import PaginaRegistroGoogle from './paginas/PaginaRegistroGoogle.jsx'
 import PaginaRestablecerContrasenia from './paginas/PaginaRestablecerContrasenia.jsx'
 import PaginaTerminos from './paginas/PaginaTerminos.jsx'
 import PaginaVerificarCorreo from './paginas/PaginaVerificarCorreo.jsx'
@@ -44,6 +45,7 @@ export default function App() {
         <Route element={<RutaSoloVisitantes />}>
           <Route path="/iniciar-sesion" element={<PaginaIniciarSesion />} />
           <Route path="/registro" element={<PaginaRegistro />} />
+          <Route path="/registro/google" element={<PaginaRegistroGoogle />} />
           <Route path="/recuperar-contrasenia" element={<PaginaRecuperarContrasenia />} />
         </Route>
         <Route path="/verificar-correo" element={<PaginaVerificarCorreo />} />

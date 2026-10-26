@@ -46,23 +46,28 @@
     .cronologia { margin-top: 10pt; font-size: 8.6pt; color: #3a4640; }
     .cronologia span { white-space: nowrap; }
     .imagen { margin: 0 0 18pt; }
+    /* Ningún bloque se corta entre páginas: si no entra, pasa entero a la siguiente. */
+    h2, h3, .ficha, .intro-resultados { break-after: avoid; page-break-after: avoid; }
+    table tr, .tecnica, .ficha, .verificacion, .aviso, .alerta, figure, .cronologia { break-inside: avoid; page-break-inside: avoid; }
+    .ficha td.vista { width: 4cm; }
+    .tecnica { border: 0.6pt solid #d9e0dc; border-radius: 4pt; padding: 9pt 11pt; margin: 0 0 10pt; }
+    .tecnica-cabecera td { border: 0; padding: 0 0 6pt; vertical-align: middle; }
+    .tecnica-cabecera td.derecha { text-align: right; }
+    .tecnica p { margin: 0 0 6pt; }
+    .que-reviso { color: #4e5b54; font-size: 8.6pt; }
+    .hallazgos { margin: 2pt 0 8pt; padding-left: 14pt; }
+    .hallazgos li { margin-bottom: 4pt; }
+    .datos-tecnica { margin: 4pt 0 2pt; font-size: 8.4pt; }
+    .datos-tecnica td { padding: 3pt 6pt; }
+    .datos-tecnica td:first-child { width: 34%; color: #4e5b54; }
     .ficha { width: 100%; margin-bottom: 8pt; }
     .ficha > tbody > tr > td { border: 0; padding: 0; vertical-align: top; }
-    .ficha img { width: 3.8cm; max-height: 3cm; object-fit: contain; border: 0.6pt solid #d9e0dc; border-radius: 3pt; }
+    .ficha img { width: 3.8cm; max-height: 4.2cm; object-fit: contain; border: 0.6pt solid #d9e0dc; border-radius: 3pt; }
     .ficha .texto { padding-left: 12pt; }
-    .resultados td { vertical-align: top; }
-    .resultados td.capa { width: 24%; }
-    .resultados td.nivel-celda { width: 19%; }
-    .resultados .que-mira { display: block; color: #4e5b54; font-size: 7.8pt; line-height: 1.4; margin-top: 3pt; }
-    .resultados ul { margin: 4pt 0 0; padding-left: 12pt; }
-    .resultados li { margin-bottom: 2pt; }
     .mapa { margin: 8pt 0 0; }
     .mapa img { max-width: 7.5cm; max-height: 5.5cm; border-radius: 3pt; }
     .nota { color: #4e5b54; font-size: 8pt; }
     .alerta { border: 1pt solid #b42318; background: #fef3f2; color: #7a1a12; padding: 8pt 10pt; border-radius: 4pt; }
-    .tipos td:first-child { width: 17%; }
-    .tipos td:last-child { width: 36%; }
-    .tipos .que-mira { display: block; color: #4e5b54; font-size: 7.8pt; line-height: 1.4; margin: 1pt 0 5pt; }
     ol.pasos { margin: 4pt 0; padding-left: 15pt; }
     ol.pasos li { margin-bottom: 6pt; }
     .verificacion td { border: 0; padding: 0; vertical-align: middle; }
@@ -141,65 +146,51 @@
   </table>
   <p class="nota" style="margin-top: 7pt">Cada técnica mira un aspecto distinto: sus niveles no se suman ni se promedian.</p>
 
-  <h2>Resultados deterministas y probabilísticos</h2>
-  <table class="tipos">
-    <tr><th>Tipo</th><th>Qué significa</th><th>Técnicas</th></tr>
-    {% for tipo in informe.tipos %}
-    <tr>
-      <td><span class="tipo tipo-{{ tipo.clave }}">{{ tipo.nombre }}</span></td>
-      <td>{{ tipo.explicacion }}</td>
-      <td>{% for tecnica in tipo.tecnicas %}<strong>{{ tecnica.nombre }}</strong><span class="que-mira">{{ tecnica.que_mira }}</span>{% endfor %}</td>
-    </tr>
-    {% endfor %}
-  </table>
-  <p class="nota" style="margin-top: 7pt">Un indicio en un resultado determinista pesa más que en uno probabilístico.</p>
-
   <h2>Resultados por imagen</h2>
+  <p class="intro-resultados">Cada técnica revisa un aspecto distinto de la imagen. Las <span class="tipo tipo-determinista">deterministas</span> comprueban datos verificables del archivo; las <span class="tipo tipo-probabilistico">probabilísticas</span> estiman con umbrales estadísticos y pueden equivocarse en los dos sentidos.</p>
   {% for imagen in informe.imagenes %}
   <section class="imagen">
     <table class="ficha"><tr>
-      {% if imagen.miniatura %}<td style="width: 4cm"><img src="{{ imagen.miniatura }}" alt="Vista reducida de {{ imagen.nombre }}"></td>{% endif %}
+      {% if imagen.miniatura %}<td class="vista"><img src="{{ imagen.miniatura }}" alt="Vista reducida de {{ imagen.nombre }}"></td>{% endif %}
       <td class="texto">
         <h3>{{ loop.index }}. {{ imagen.nombre }}</h3>
-        <p class="nota">{{ imagen.formato }} · {{ imagen.dimensiones }} · cargada por {{ imagen.cargada_por }}</p>
+        <p class="nota">{{ imagen.formato }} · {{ imagen.dimensiones }} · {{ imagen.tamanio }}<br>Cargada por {{ imagen.cargada_por }}</p>
       </td>
     </tr></table>
     {% if imagen.integridad == "alterada" %}
       <p class="alerta">El archivo guardado ya no coincide con el original, por eso no se analizó.</p>
     {% else %}
-      <table class="resultados">
-        <tr><th>Técnica</th><th>Resultado</th><th>Lo que encontró</th></tr>
-        {% for capa in imagen.resultados %}
-        <tr>
-          <td class="capa">
-            <strong>{{ capa.titulo_corto }}</strong><br>
-            <span class="tipo tipo-{{ capa.tipo }}">{{ "Determinista" if capa.tipo == "determinista" else "Probabilístico" }}</span>
-          </td>
-          <td class="nivel-celda">
-            {% if capa.disponible %}<span class="nivel nivel-{{ capa.banda.clase }}">{{ capa.banda.nombre }}</span><br><span class="nota">{{ capa.nivel }} %</span>
-            {% else %}<span class="nivel nivel-nd">No disponible</span>{% endif %}
-          </td>
-          <td>
-            {% if capa.disponible %}
-              {{ capa.lectura }}
-              {% if capa.principales %}<ul>{% for hallazgo in capa.principales %}<li>{{ hallazgo }}</li>{% endfor %}</ul>{% endif %}
-              {% if capa.imagen and capa.nivel %}
-              <figure class="mapa">
-                <img src="{{ capa.imagen }}" alt="Mapa de {{ capa.titulo_corto }}">
-                <figcaption class="nota">Zonas recuadradas: se comprimieron distinto que el resto.</figcaption>
-              </figure>
-              {% endif %}
-            {% else %}{{ capa.motivo }}{% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </table>
+      {% for capa in imagen.resultados %}
+      <div class="tecnica">
+        <table class="tecnica-cabecera"><tr>
+          <td><strong>{{ capa.titulo_corto }}</strong> <span class="tipo tipo-{{ capa.tipo }}">{{ "Determinista" if capa.tipo == "determinista" else "Probabilístico" }}</span></td>
+          <td class="derecha">{% if capa.disponible %}<span class="nivel nivel-{{ capa.banda.clase }}">{{ capa.banda.nombre }} · {{ capa.nivel }} %</span>{% else %}<span class="nivel nivel-nd">No disponible</span>{% endif %}</td>
+        </tr></table>
+        <p class="que-reviso"><strong>Qué revisó:</strong> {{ capa.que_mira }}</p>
+        {% if capa.disponible %}
+          <p><strong>Qué encontró:</strong> {{ capa.texto }}</p>
+          {% if capa.principales %}
+          <ul class="hallazgos">{% for hallazgo in capa.principales %}<li>{{ hallazgo }}</li>{% endfor %}</ul>
+          {% endif %}
+          {% if capa.datos %}
+          <table class="datos-tecnica">
+            {% for fila in capa.datos %}<tr><td>{{ fila.campo }}</td><td>{{ fila.valor }}</td></tr>{% endfor %}
+          </table>
+          {% endif %}
+          {% if capa.imagen and capa.nivel %}
+          <figure class="mapa">
+            <img src="{{ capa.imagen }}" alt="Mapa de {{ capa.titulo_corto }}">
+            <figcaption class="nota">Zonas recuadradas: se comprimieron distinto que el resto. Los bordes y los textos también pueden verse claros sin que haya edición.</figcaption>
+          </figure>
+          {% endif %}
+        {% else %}
+          <p>{{ capa.motivo }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
     {% endif %}
   </section>
   {% endfor %}
-
-  <h2>Qué hacer ahora</h2>
-  <ol class="pasos">{% for paso in informe.rubro.que_hacer %}<li>{{ paso }}</li>{% endfor %}</ol>
 
   {% if informe.verificacion %}
   <h2>Verificación de este informe</h2>
@@ -219,7 +210,6 @@
       <strong>No emite veredictos</strong> sobre la autenticidad de las imágenes y no reemplaza un
       dictamen pericial. Ante cualquier duda, consultá con un perito especializado en informática forense.</p>
     <p><strong>Descargo.</strong> {{ informe.descargo }}</p>
-    <p class="nota">Versiones: {% for componente, version in informe.versiones.items() %}{{ componente }} {{ version }}{% if not loop.last %} · {% endif %}{% endfor %}.</p>
   </div>
 </body>
 </html>

@@ -84,3 +84,13 @@ class NoEncontrado(ErrorDominio):
     """
 
     codigo = "no_encontrado"
+
+
+class InicioGoogleRechazado(ErrorDominio):
+    """Google no autenticó a la persona o informó un correo sin verificar (400, RF52).
+
+    Attributes:
+        codigo: ``google_error``, ``google_cancelado`` o ``google_no_verificado``.
+    """
+
+    codigo = "google_error"

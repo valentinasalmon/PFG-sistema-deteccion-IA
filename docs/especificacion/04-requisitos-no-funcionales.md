@@ -29,14 +29,16 @@ Los requisitos no funcionales se agrupan según las características de calidad 
 - **CA4:** La sesión expira tras 30 minutos de inactividad y, en todos los casos, a las 8 horas de iniciada.
 - **CA5:** Los tokens de verificación, recuperación e invitación se firman con itsdangerous, tienen vencimiento y son de un solo uso.
 - **CA6:** El identificador de sesión se regenera al iniciar sesión.
+- **CA7:** El servidor web limita los pedidos por dirección IP: los intentos de acceso (inicio de sesión, registro, verificación y recuperación) y las páginas públicas responden 429 con un mensaje claro al superar el límite (funcionalidad 030).
 
 ### RNF02 — Protección de las comunicaciones
 **Prioridad:** Debe
 
 - **CA1:** Todo el tráfico se sirve por HTTPS con TLS 1.2 o superior; las solicitudes HTTP se redirigen a HTTPS y se envía la cabecera HSTS.
-- **CA2:** Las cookies de sesión tienen los atributos `Secure`, `HttpOnly` y `SameSite=Strict`.
+- **CA2:** Las cookies de sesión tienen los atributos `Secure`, `HttpOnly` y `SameSite=Lax` (era `Strict` hasta la funcionalidad 027; ver ADR-0019), con token CSRF en toda solicitud que modifica datos.
 - **CA3:** Toda solicitud que modifica datos exige un token CSRF válido.
-- **CA4:** Las respuestas incluyen las cabeceras `Content-Security-Policy`, `X-Content-Type-Options`, `Referrer-Policy` y `X-Frame-Options`.
+- **CA4:** Las respuestas incluyen las cabeceras `Content-Security-Policy`, `X-Content-Type-Options`, `Referrer-Policy` y `X-Frame-Options`, y desde la funcionalidad 030 también `Permissions-Policy` y `Cross-Origin-Opener-Policy`.
+- **CA5:** Las dependencias que llegan a producción no tienen vulnerabilidades conocidas de severidad alta o crítica. Se revisan en cada Pull Request y una vez por semana (funcionalidad 030).
 
 ### RNF03 — Protección de los datos almacenados
 **Prioridad:** Debe

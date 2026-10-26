@@ -73,62 +73,78 @@ def test_el_informe_tiene_los_datos_del_caso_y_la_custodia():
         "Evidencia y cadena de custodia", "a" * 64, "Coincide", "Hedera, 19/10/2026 17:01 UTC",
         "Cronología:", "primera carga 19/10/2026 14:00", "análisis pedido 19/10/2026 15:00",
         "data:image/jpeg;base64,", "Escala de lectura", "45 % a 69 %",
-        "Plataforma 0.2.0", "Capa 1 · Metadatos 1.0 (ExifTool 12.76)", "WeasyPrint",
         "Este informe no constituye un dictamen pericial. Consulte a un profesional especializado.",
     ):
         assert texto in html, texto
-    for texto in ("Resumen", "Glosario", "Limitaciones", "Uso previsto", "class=\"numero\""):
+    for texto in ("Resumen", "Glosario", "Limitaciones", "Uso previsto", "class=\"numero\"",
+                  "Versiones:", "WeasyPrint", "Qué hacer ahora",
+                  "Resultados deterministas y probabilísticos"):
         assert texto not in html, texto
 
 
 def test_orden_de_las_secciones():
-    """025: caso, custodia, escala, tipos de resultado, resultados, qué hacer y aviso final."""
+    """025: caso, custodia, escala, resultados y aviso final; los bloques no se cortan."""
     html = _html(_con_original(_analisis()))
     titulos = ("Caso y solicitud", "Evidencia y cadena de custodia", "Escala de lectura",
-               "Resultados deterministas y probabilísticos", "Resultados por imagen",
-               "Qué hacer ahora", "Este informe presenta")
+               "Resultados por imagen", "Este informe presenta")
     posiciones = [html.index(titulo) for titulo in titulos]
     assert posiciones == sorted(posiciones)
-    assert "page-break-before" not in html and "page-break-inside" not in html
+    assert "page-break-before" not in html  # sin saltos forzados
+    assert "break-inside: avoid" in html  # si un bloque no entra, pasa entero a la otra hoja
 
 
-def test_resultado_breve_con_su_tipo():
-    """025: cada técnica dice si es determinista o probabilística y lo que encontró en breve."""
+def test_resultado_detallado_con_su_tipo():
+    """025: por técnica, qué revisó, qué encontró (sin la recomendación repetida), datos y tipo."""
     analisis = _analisis()
     ela = _resultado()
     ela.capa, ela.nivel = "ela", 45
-    ela.conclusion = "El análisis presenta indicios moderados. Detalle largo que no va."
-    ela.anomalias = [SimpleNamespace(severidad="moderado", descripcion="Zona que se aparta. Más.")]
+    ela.conclusion = (
+        "El análisis presenta indicios moderados. Detalle de la región. "
+        "Este resultado es un indicio y no constituye una conclusión definitiva. "
+        "Se recomienda consultar a un perito especializado en informática forense."
+    )
+    ela.anomalias = [SimpleNamespace(severidad="moderado", descripcion="Zona que se aparta.")]
+    ela.detalle = {"tabla": [{"campo": "Dimensiones", "valor": "1 × 1"},
+                             {"campo": "Calidad JPEG estimada", "valor": "90 %"}]}
     analisis.imagenes[0].resultados.append(ela)
 
     html = _html(analisis)
 
-    assert "Los metadatos presentan indicios fuertes." in html
-    assert "Se recomienda consultar a un perito" not in html  # solo la primera oración
-    assert "Zona que se aparta." in html and "Más." not in html
+    assert "Qué revisó:" in html and "Qué encontró:" in html
+    assert "Detalle de la región." in html and "Zona que se aparta." in html
+    assert "no constituye una conclusión definitiva" not in html
+    assert "Calidad JPEG estimada" in html and "<td>Dimensiones</td>" not in html
+    assert "Adobe Photoshop 25.0" in html  # datos relevantes de la capa de metadatos
     assert html.count("tipo tipo-determinista") >= 2 and "tipo tipo-probabilistico" in html
-    assert "Integridad del archivo" in html and "señalar una imagen sin ediciones" in html
 
 
-@pytest.mark.parametrize("perfil, titulo, referencia, paso", [
-    ("abogado", "Informe técnico de imágenes", "Expediente", "antes de ofrecerla como prueba"),
+def test_los_hallazgos_mencionados_en_la_conclusion_no_se_repiten():
+    """025: si la conclusión ya cuenta el hallazgo, no se lista otra vez."""
+    analisis = _analisis()
+    resultado = analisis.imagenes[0].resultados[0]
+    resultado.conclusion = "Presenta indicios. El archivo declara procesamiento con Photoshop."
+    html = _html(analisis)
+    assert html.count("El archivo declara procesamiento con Photoshop.") == 1
+
+
+@pytest.mark.parametrize("perfil, titulo, referencia, intro", [
+    ("abogado", "Informe técnico de imágenes", "Expediente", "ofrecerlas como prueba"),
     ("aseguradora", "Informe de verificación de fotos del siniestro", "N.° de siniestro",
-     "antes de liquidar"),
+     "se liquida o se deriva a verificación"),
 ])
-def test_lenguaje_segun_el_rubro(perfil, titulo, referencia, paso):
-    """RF54: título, etiqueta de la referencia y pasos según el perfil del solicitante."""
+def test_lenguaje_segun_el_rubro(perfil, titulo, referencia, intro):
+    """RF54: título, etiqueta de la referencia e introducción según el perfil del solicitante."""
     analisis = _analisis()
     analisis.solicitante.perfil = perfil
     html = _html(analisis)
-    assert titulo in html and f"<td>{referencia}</td>" in html and paso in html
+    assert titulo in html and f"<td>{referencia}</td>" in html and intro in html
 
 
 def test_sin_veredictos():
     """RN27: ningún texto fijo del informe usa términos de veredicto."""
     textos = " ".join([
-        informe_analisis.DESCARGO, *informe_analisis.EXPLICACION_TIPOS.values(),
-        *informe_analisis.QUE_MIRA.values(),
-        *(p for r in informe_analisis.TEXTOS_RUBRO.values() for p in (r["intro"], *r["que_hacer"])),
+        informe_analisis.DESCARGO, *informe_analisis.QUE_MIRA.values(),
+        *(r["intro"] for r in informe_analisis.TEXTOS_RUBRO.values()),
     ]).lower()
     palabras = set(textos.replace(".", " ").replace(",", " ").replace(":", " ").split())
     assert not palabras & set(TERMINOS_DE_VEREDICTO)
