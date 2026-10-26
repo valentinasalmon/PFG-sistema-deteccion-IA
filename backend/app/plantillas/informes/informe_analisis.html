@@ -2,165 +2,127 @@
 <html lang="es-AR">
 <head>
   <meta charset="utf-8">
-  <title>Informe de análisis · {{ informe.caso.numero }}</title>
+  <title>{{ informe.rubro.titulo }} · {{ informe.caso.numero }}</title>
   <style>
     @page {
       size: A4;
-      margin: 2.2cm 1.8cm 2.2cm;
-      @top-left { content: "evidentIA · Informe de análisis de imágenes"; font-family: "DejaVu Sans", sans-serif; font-size: 7.5pt; color: #4e5b54; }
+      margin: 2.2cm 1.9cm 2.3cm;
+      @top-left { content: "evidentIA · {{ informe.rubro.titulo }}"; font-family: "DejaVu Sans", sans-serif; font-size: 7.5pt; color: #4e5b54; }
       @top-right { content: "Caso {{ informe.caso.numero }} · Análisis N.° {{ informe.analisis.id }}"; font-family: "DejaVu Sans", sans-serif; font-size: 7.5pt; color: #4e5b54; }
       @bottom-left { content: "{{ informe.leyenda }}"; font-family: "DejaVu Sans", sans-serif; font-size: 7.5pt; color: #7a1a12; width: 75%; }
       @bottom-right { content: "Página " counter(page) " de " counter(pages); font-family: "DejaVu Sans", sans-serif; font-size: 7.5pt; color: #4e5b54; }
     }
     @page :first { @top-left { content: none; } @top-right { content: none; } }
-    body { font-family: "DejaVu Sans", sans-serif; font-size: 9.3pt; color: #14201a; line-height: 1.5; }
-    h1 { font-size: 19pt; line-height: 1.15; margin: 14pt 0 3pt; letter-spacing: -0.3pt; }
-    h2 { font-size: 12.5pt; margin: 20pt 0 8pt; padding-bottom: 4pt; border-bottom: 1.5pt solid #14201a; page-break-after: avoid; }
-    h2 .numero { color: #2f5da8; margin-right: 4pt; }
-    h3 { font-size: 11pt; margin: 0 0 4pt; page-break-after: avoid; }
-    h4 { font-size: 10pt; margin: 0; page-break-after: avoid; }
-    p { margin: 0 0 6pt; }
+    body { font-family: "DejaVu Sans", sans-serif; font-size: 9.4pt; color: #14201a; line-height: 1.6; }
+    h1 { font-size: 19pt; line-height: 1.2; margin: 14pt 0 4pt; letter-spacing: -0.3pt; }
+    h2 { font-size: 12.5pt; margin: 26pt 0 10pt; padding-bottom: 5pt; border-bottom: 1.5pt solid #14201a; page-break-after: avoid; }
+    h2 .numero { color: #2f5da8; margin-right: 5pt; }
+    h3 { font-size: 11pt; margin: 0 0 6pt; page-break-after: avoid; }
+    p { margin: 0 0 9pt; }
     .portada-logo { height: 1.1cm; }
     .acento { width: 1.6cm; height: 3pt; background: #a4cb3e; margin: 12pt 0 0; }
-    .subtitulo { color: #4e5b54; font-size: 10pt; margin: 0 0 14pt; }
-    .aviso { border: 1pt solid #2f5da8; background: #eef3fb; padding: 8pt 10pt; border-radius: 4pt; margin: 8pt 0 12pt; }
-    .aviso strong { color: #1e3f7a; }
+    .subtitulo { color: #4e5b54; font-size: 10pt; margin: 0 0 8pt; }
+    .intro { margin: 0 0 4pt; }
     table { width: 100%; border-collapse: collapse; }
-    td, th { text-align: left; padding: 4pt 6pt; border-bottom: 0.6pt solid #d9e0dc; vertical-align: top; }
+    td, th { text-align: left; padding: 6pt 7pt; border-bottom: 0.6pt solid #d9e0dc; vertical-align: top; }
     th { background: #f3f5f4; font-size: 8.3pt; color: #4e5b54; font-weight: bold; }
     .datos td:first-child { width: 34%; color: #4e5b54; }
     .dos-columnas { width: 100%; }
-    .dos-columnas > tbody > tr > td { width: 50%; border: 0; padding: 0 8pt 0 0; }
-    .dos-columnas > tbody > tr > td + td { padding: 0 0 0 8pt; }
-    .resumen td, .resumen th { text-align: center; vertical-align: middle; }
-    .resumen td:first-child, .resumen th:first-child { text-align: left; }
-    .nivel { display: inline-block; padding: 2pt 6pt; border-radius: 3pt; font-weight: bold; font-size: 8.5pt; white-space: nowrap; }
+    .dos-columnas > tbody > tr > td { width: 50%; border: 0; padding: 0 10pt 0 0; }
+    .dos-columnas > tbody > tr > td + td { padding: 0 0 0 10pt; }
+    .nivel { display: inline-block; padding: 2pt 7pt; border-radius: 3pt; font-weight: bold; font-size: 8.5pt; white-space: nowrap; }
     .nivel-fuerte { background: #fde4d8; color: #8a2c0d; border: 0.6pt solid #e9a98c; }
     .nivel-moderado { background: #fdf0d5; color: #7a4a00; border: 0.6pt solid #e7c77d; }
     .nivel-debil { background: #fbf8e6; color: #5c5212; border: 0.6pt solid #e4dca6; }
     .nivel-ninguno { background: #f3f5f4; color: #3a4640; border: 0.6pt solid #c5cec9; }
     .nivel-nd { background: #ffffff; color: #4e5b54; border: 0.6pt dashed #8e9a93; }
-    .escala td { vertical-align: middle; }
-    .huella { font-family: "DejaVu Sans Mono", monospace; font-size: 7.4pt; word-break: break-all; }
+    .tipo { display: inline-block; font-size: 7.6pt; font-weight: bold; padding: 1pt 5pt; border-radius: 3pt; white-space: nowrap; }
+    .tipo-determinista { background: #e8effa; color: #1e3f7a; }
+    .tipo-probabilistico { background: #f0ecf8; color: #4b2f7a; }
+    .huella { font-family: "DejaVu Sans Mono", monospace; font-size: 7.2pt; word-break: break-all; }
     .ok { color: #33500c; font-weight: bold; }
-    .alerta { border: 1pt solid #b42318; background: #fef3f2; color: #7a1a12; padding: 7pt 9pt; border-radius: 4pt; }
-    .imagen { margin-bottom: 14pt; }
+    .mal { color: #b42318; font-weight: bold; }
+    .custodia td { font-size: 8.6pt; }
+    .custodia td.huella { font-size: 7.2pt; }
+    .cronologia { margin-top: 10pt; font-size: 8.6pt; color: #3a4640; }
+    .cronologia span { white-space: nowrap; }
+    .imagen { margin: 0 0 18pt; }
+    .resultados tr { page-break-inside: avoid; }
+    .ficha { page-break-after: avoid; }
     .ficha { width: 100%; margin-bottom: 8pt; }
     .ficha > tbody > tr > td { border: 0; padding: 0; vertical-align: top; }
-    .ficha img { width: 5.2cm; max-height: 4.2cm; object-fit: contain; border: 0.6pt solid #d9e0dc; border-radius: 3pt; }
-    .ficha .texto { padding-left: 10pt; }
-    .capa { border: 0.6pt solid #d9e0dc; border-radius: 4pt; padding: 8pt 10pt; margin: 0 0 8pt; page-break-inside: avoid; }
-    .capa-cabecera { width: 100%; margin-bottom: 6pt; }
-    .capa-cabecera td { border: 0; padding: 0; vertical-align: middle; }
-    .capa-cabecera td + td { text-align: right; }
-    .barra { height: 5pt; background: #e6ece8; border-radius: 3pt; margin: 0 0 7pt; }
-    .barra span { display: block; height: 5pt; border-radius: 3pt; background: #2f5da8; }
-    .hallazgos { margin: 4pt 0 6pt; padding-left: 13pt; }
-    .hallazgos li { margin-bottom: 3pt; }
-    .severidad { font-weight: bold; }
-    .que-significa { background: #f3f5f4; padding: 6pt 8pt; border-radius: 3pt; margin: 6pt 0 4pt; font-size: 8.6pt; }
-    .que-significa strong { color: #1e3f7a; }
-    .tecnico { font-size: 8.3pt; margin-top: 4pt; }
-    .tecnico th, .tecnico td { padding: 2.5pt 5pt; }
+    .ficha img { width: 3.8cm; max-height: 3cm; object-fit: contain; border: 0.6pt solid #d9e0dc; border-radius: 3pt; }
+    .ficha .texto { padding-left: 12pt; }
+    .resultados td { vertical-align: top; }
+    .resultados td.capa { width: 24%; }
+    .resultados td.nivel-celda { width: 19%; }
+    .resultados .que-mira { display: block; color: #4e5b54; font-size: 7.8pt; line-height: 1.4; margin-top: 3pt; }
+    .resultados ul { margin: 4pt 0 0; padding-left: 12pt; }
+    .resultados li { margin-bottom: 2pt; }
+    .mapa { margin: 8pt 0 0; }
+    .mapa img { max-width: 7.5cm; max-height: 5.5cm; border-radius: 3pt; }
     .nota { color: #4e5b54; font-size: 8pt; }
-    .mapa { margin: 6pt 0; }
-    .mapa img { max-width: 11cm; max-height: 8.2cm; border-radius: 3pt; }
-    ol.pasos, ul.lista { margin: 4pt 0; padding-left: 14pt; }
-    ol.pasos li, ul.lista li { margin-bottom: 4pt; }
-    .glosario td:first-child { width: 28%; font-weight: bold; }
-    .salto { page-break-before: always; }
-    .criterios { margin: 6pt 0; }
-    .criterios td:first-child { width: 42%; }
+    .alerta { border: 1pt solid #b42318; background: #fef3f2; color: #7a1a12; padding: 8pt 10pt; border-radius: 4pt; }
+    .tipos td:first-child { width: 17%; }
+    .tipos td:last-child { width: 36%; }
+    .tipos .que-mira { display: block; color: #4e5b54; font-size: 7.8pt; line-height: 1.4; margin: 1pt 0 5pt; }
+    ol.pasos { margin: 4pt 0; padding-left: 15pt; }
+    ol.pasos li { margin-bottom: 6pt; }
+    .aviso { border: 1pt solid #2f5da8; background: #eef3fb; padding: 10pt 12pt; border-radius: 4pt; margin: 26pt 0 0; page-break-inside: avoid; }
+    .aviso p:last-child { margin-bottom: 0; }
+    .aviso strong { color: #1e3f7a; }
   </style>
 </head>
 <body>
   <img class="portada-logo" src="{{ informe.logo }}" alt="evidentIA">
   <div class="acento"></div>
-  <h1>Informe de análisis de imágenes</h1>
+  <h1>{{ informe.rubro.titulo }}</h1>
   <p class="subtitulo">Caso {{ informe.caso.numero }} · Análisis N.° {{ informe.analisis.id }} · Generado el {{ generado_en | hora_argentina }} (hora de Argentina)</p>
+  <p class="intro">{{ informe.rubro.intro }}</p>
 
-  <div class="aviso">
-    Este informe presenta <strong>indicios técnicos</strong> obtenidos de forma automatizada.
-    <strong>No emite veredictos</strong> sobre la autenticidad de las imágenes y no reemplaza un
-    dictamen pericial. Ante cualquier duda, consultá con un perito especializado en informática forense.
-    <br><br><strong>Descargo.</strong> {{ informe.descargo }}
-  </div>
-
-  <h2><span class="numero">1</span> Resumen</h2>
-  <p>Resultado de cada capa en cada imagen. Cada capa mira un aspecto distinto: sus niveles
-    <strong>no se suman ni se promedian</strong>. La escala se explica en la sección 4.</p>
-  <table class="resumen">
-    <tr>
-      <th>Imagen</th>
-      {% for columna in informe.columnas_resumen %}<th>{{ columna }}</th>{% endfor %}
-    </tr>
-    {% for imagen in informe.imagenes %}
-    <tr>
-      <td>{{ loop.index }}. {{ imagen.nombre }}</td>
-      {% if imagen.integridad == "alterada" %}
-      <td colspan="{{ informe.columnas_resumen | length or 1 }}"><span class="nivel nivel-nd">No analizada: el archivo no coincide con el original</span></td>
-      {% else %}
-        {% for capa in imagen.resumen %}
-        <td>{% if not capa %}—{% elif capa.disponible %}<span class="nivel nivel-{{ capa.banda.clase }}">{{ capa.banda.nombre }} · {{ capa.nivel }} %</span>{% else %}<span class="nivel nivel-nd">No disponible</span>{% endif %}</td>
-        {% endfor %}
-      {% endif %}
-    </tr>
-    {% endfor %}
-  </table>
-  <p class="nota" style="margin-top: 6pt">«Sin indicios» significa que la capa no encontró señales; no garantiza que la imagen no haya sido modificada.</p>
-
-  <h3 style="margin-top: 12pt">Qué hacer con este informe</h3>
-  <ol class="pasos">
-    <li>Revisá en la sección 5 las imágenes con indicios moderados o fuertes: cada hallazgo indica dónde y por qué se señaló.</li>
-    <li>Leé cada resultado junto con el recuadro «¿Qué significa?»: explica qué mira la capa y qué situaciones legítimas producen señales parecidas.</li>
-    <li>Antes de usar estos resultados en un proceso judicial o administrativo, pedí la evaluación de un perito especializado. La huella SHA-256 de cada archivo (sección 3) le permite comprobar que analiza la misma evidencia.</li>
-  </ol>
-
-  <h2><span class="numero">2</span> Caso y solicitud</h2>
+  <h2><span class="numero">1</span> Caso y solicitud</h2>
   <table class="dos-columnas"><tr>
     <td>
       <table class="datos">
         <tr><td>Número de caso</td><td>{{ informe.caso.numero }}</td></tr>
-        <tr><td>Expediente</td><td>{{ informe.caso.expediente or "—" }}</td></tr>
+        <tr><td>{{ informe.rubro.etiqueta_referencia }}</td><td>{{ informe.caso.expediente or "—" }}</td></tr>
         <tr><td>Tipo</td><td>{{ informe.caso.tipo }}</td></tr>
-        <tr><td>Fecha del hecho</td><td>{{ informe.caso.fecha_hecho | dia }}</td></tr>
-        <tr><td>Lugar del hecho</td><td>{{ informe.caso.lugar }}</td></tr>
-        <tr><td>Espacio de trabajo</td><td>{{ informe.caso.espacio }}</td></tr>
+        <tr><td>Fecha y lugar del hecho</td><td>{{ informe.caso.fecha_hecho | dia }} · {{ informe.caso.lugar }}</td></tr>
       </table>
     </td>
     <td>
       <table class="datos">
-        <tr><td>Solicitado por</td><td>{{ informe.solicitante.nombre }}</td></tr>
-        <tr><td>Perfil</td><td>{{ informe.solicitante.perfil }}</td></tr>
+        <tr><td>Solicitado por</td><td>{{ informe.solicitante.nombre }} ({{ informe.solicitante.perfil }})</td></tr>
         {% if informe.solicitante.institucion %}
         <tr><td>{{ informe.solicitante.etiqueta_institucion }}</td><td>{{ informe.solicitante.institucion }}</td></tr>
         {% endif %}
-        <tr><td>Pedido</td><td>{{ informe.analisis.pedido_en | hora_argentina }}</td></tr>
+        <tr><td>Espacio de trabajo</td><td>{{ informe.caso.espacio }}</td></tr>
         <tr><td>Imágenes analizadas</td><td>{{ informe.imagenes | length }}</td></tr>
       </table>
     </td>
   </tr></table>
-  <p class="nota">Las fechas y horas están expresadas en hora de Argentina.</p>
 
-  <h2><span class="numero">3</span> Evidencia analizada y cadena de custodia</h2>
-  <p>Identificación de cada archivo tal como se cargó. La huella SHA-256 se calculó al cargarlo y se volvió a comprobar antes del análisis.</p>
-  {% for imagen in informe.imagenes %}
-  <table class="datos" style="margin-bottom: 8pt; page-break-inside: avoid">
-    <tr><th colspan="2">{{ loop.index }}. {{ imagen.nombre }}</th></tr>
-    <tr><td>Formato y tamaño</td><td>{{ imagen.formato }} · {{ imagen.dimensiones }} · {{ imagen.tamanio }}</td></tr>
-    <tr><td>Cargada</td><td>{{ imagen.cargada_en | hora_argentina }} por {{ imagen.cargada_por }}</td></tr>
-    <tr><td>Huella digital SHA-256 del archivo original</td><td class="huella">{{ imagen.huella }}</td></tr>
-    <tr><td>Verificación antes del análisis</td><td>
-      {% if imagen.integridad == "alterada" %}<strong style="color: #b42318">No coincide: se excluyó del análisis</strong>
-      {% else %}<span class="ok">Coincide con la huella registrada al cargarla</span>{% endif %}
-    </td></tr>
-    <tr><td>Sello de tiempo en Hedera</td><td>{{ imagen.sello }}</td></tr>
+  <h2><span class="numero">2</span> Evidencia y cadena de custodia</h2>
+  <p>Cada archivo se guardó tal cual se cargó. Su huella SHA-256 se calculó al cargarlo y se volvió a comprobar antes del análisis; el sello en Hedera acredita que existía en esa fecha.</p>
+  <table class="custodia">
+    <tr><th>Imagen</th><th>Huella SHA-256 del original</th><th>Integridad</th><th>Sello de tiempo</th></tr>
+    {% for imagen in informe.imagenes %}
+    <tr>
+      <td>{{ loop.index }}. {{ imagen.nombre }}<br><span class="nota">{{ imagen.formato }} · {{ imagen.tamanio }}</span></td>
+      <td class="huella">{{ imagen.huella }}</td>
+      <td>{% if imagen.integridad == "alterada" %}<span class="mal">No coincide</span>{% else %}<span class="ok">Coincide</span>{% endif %}</td>
+      <td>{{ imagen.sello }}</td>
+    </tr>
+    {% endfor %}
   </table>
-  {% endfor %}
+  <p class="cronologia">
+    <strong>Cronología:</strong>
+    {% if informe.primera_carga %}<span>primera carga {{ informe.primera_carga | hora_argentina }}</span> ·{% endif %}
+    <span>análisis pedido {{ informe.analisis.pedido_en | hora_argentina }}</span> ·
+    <span>informe generado {{ generado_en | hora_argentina }}</span> (hora de Argentina).
+  </p>
 
-  <h2><span class="numero">4</span> Metodología y escala de lectura</h2>
-  <ul class="lista">{% for parrafo in informe.metodologia %}<li>{{ parrafo }}</li>{% endfor %}</ul>
-  <p>{{ informe.escala }}</p>
+  <h2><span class="numero">3</span> Escala de lectura</h2>
   <table class="escala" style="page-break-inside: avoid">
     <tr><th>Nivel</th><th>Se lee como</th><th>Qué significa</th></tr>
     {% for banda in informe.bandas %}
@@ -168,111 +130,82 @@
       <td style="white-space: nowrap">{{ banda.rango }}</td>
       <td><span class="nivel nivel-{{ banda.clase }}">{{ banda.nombre }}</span></td>
       <td>
-        {% if banda.clase == "fuerte" %}La capa encontró señales claras de edición o de generación. Requiere revisión profesional.
-        {% elif banda.clase == "moderado" %}La capa encontró señales que conviene revisar; pueden tener explicaciones legítimas.
+        {% if banda.clase == "fuerte" %}Señales claras de edición o de generación. Requiere revisión profesional.
+        {% elif banda.clase == "moderado" %}Señales que conviene revisar; pueden tener explicaciones legítimas.
         {% elif banda.clase == "debil" %}Señales menores, frecuentes también en imágenes sin editar.
-        {% else %}La capa no encontró señales. No garantiza que la imagen no haya sido modificada.{% endif %}
+        {% else %}No se encontraron señales. No garantiza que la imagen no haya sido modificada.{% endif %}
       </td>
     </tr>
     {% endfor %}
   </table>
+  <p class="nota" style="margin-top: 7pt">Cada técnica mira un aspecto distinto: sus niveles no se suman ni se promedian.</p>
 
-  <h2 class="salto"><span class="numero">5</span> Resultados por imagen</h2>
+  <h2><span class="numero">4</span> Resultados deterministas y probabilísticos</h2>
+  <table class="tipos" style="page-break-inside: avoid">
+    <tr><th>Tipo</th><th>Qué significa</th><th>Técnicas</th></tr>
+    {% for tipo in informe.tipos %}
+    <tr>
+      <td><span class="tipo tipo-{{ tipo.clave }}">{{ tipo.nombre }}</span></td>
+      <td>{{ tipo.explicacion }}</td>
+      <td>{% for tecnica in tipo.tecnicas %}<strong>{{ tecnica.nombre }}</strong><span class="que-mira">{{ tecnica.que_mira }}</span>{% endfor %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <p class="nota" style="margin-top: 7pt">Un indicio en un resultado determinista pesa más que en uno probabilístico.</p>
+
+  <h2><span class="numero">5</span> Resultados por imagen</h2>
   {% for imagen in informe.imagenes %}
   <section class="imagen">
     <table class="ficha"><tr>
-      {% if imagen.miniatura %}<td style="width: 5.4cm"><img src="{{ imagen.miniatura }}" alt="Vista reducida de {{ imagen.nombre }}"></td>{% endif %}
+      {% if imagen.miniatura %}<td style="width: 4cm"><img src="{{ imagen.miniatura }}" alt="Vista reducida de {{ imagen.nombre }}"></td>{% endif %}
       <td class="texto">
         <h3>{{ loop.index }}. {{ imagen.nombre }}</h3>
-        <p class="nota">{{ imagen.formato }} · {{ imagen.dimensiones }} · {{ imagen.tamanio }}</p>
-        <p class="nota">SHA-256: <span class="huella">{{ imagen.huella }}</span></p>
+        <p class="nota">{{ imagen.formato }} · {{ imagen.dimensiones }} · cargada por {{ imagen.cargada_por }}</p>
       </td>
     </tr></table>
     {% if imagen.integridad == "alterada" %}
-      <p class="alerta">
-        La huella SHA-256 de esta imagen no coincidió con la registrada al cargarla. Por eso se
-        excluyó del análisis: el archivo guardado ya no es idéntico al original.
-      </p>
+      <p class="alerta">El archivo guardado ya no coincide con el original, por eso no se analizó.</p>
     {% else %}
-      {% for capa in imagen.resultados %}
-      <div class="capa">
-        <table class="capa-cabecera"><tr>
-          <td><h4>{{ capa.titulo }}</h4></td>
-          <td>{% if capa.disponible %}<span class="nivel nivel-{{ capa.banda.clase }}">{{ capa.banda.nombre }}</span>{% else %}<span class="nivel nivel-nd">No disponible</span>{% endif %}</td>
-        </tr></table>
-        {% if capa.disponible %}
-          <p style="margin-bottom: 3pt"><strong>Nivel de indicio: {{ capa.nivel }} %</strong></p>
-          <div class="barra"><span style="width: {{ capa.nivel }}%"></span></div>
-          <p>{{ capa.conclusion }}</p>
-          {% if capa.anomalias %}
-          <p style="margin: 6pt 0 0"><strong>Hallazgos</strong></p>
-          <ul class="hallazgos">
-            {% for anomalia in capa.anomalias %}
-            <li><span class="severidad">{{ anomalia.severidad }}:</span> {{ anomalia.descripcion }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-          {% if capa.imagen %}
-          <figure class="mapa">
-            <img src="{{ capa.imagen }}" alt="Mapa de la capa {{ capa.titulo }}">
-            <figcaption class="nota">Mapa ELA: las zonas claras cambiaron más al recomprimir. Las regiones señaladas están recuadradas en rojo. Es una señal complementaria: los bordes y los detalles marcados también se ven claros sin que haya edición.</figcaption>
-          </figure>
-          {% endif %}
-        {% else %}
-          <p><strong>No disponible.</strong> {{ capa.motivo }}</p>
-        {% endif %}
-        {% if capa.criterios %}
-        <table class="tecnico criterios">
-          <tr><th>Criterio</th><th>Referencia sin edición</th><th>Valor obtenido</th></tr>
-          {% for fila in capa.criterios %}<tr><td>{{ fila.criterio }}</td><td>{{ fila.referencia }}</td><td><strong>{{ fila.obtenido }}</strong></td></tr>{% endfor %}
-        </table>
-        {% endif %}
-        <div class="que-significa"><strong>¿Qué significa?</strong> {{ capa.que_significa }}</div>
-        {% if capa.disponible and capa.tabla %}
-        <table class="tecnico">
-          <tr><th>Dato técnico</th><th>Valor</th></tr>
-          {% for fila in capa.tabla %}<tr><td>{{ fila.campo }}</td><td>{{ fila.valor }}</td></tr>{% endfor %}
-        </table>
-        {% endif %}
-        <p class="nota" style="margin: 4pt 0 0">Versión de la capa: {{ capa.version }}</p>
-      </div>
-      {% endfor %}
+      <table class="resultados">
+        <tr><th>Técnica</th><th>Resultado</th><th>Lo que encontró</th></tr>
+        {% for capa in imagen.resultados %}
+        <tr>
+          <td class="capa">
+            <strong>{{ capa.titulo_corto }}</strong><br>
+            <span class="tipo tipo-{{ capa.tipo }}">{{ "Determinista" if capa.tipo == "determinista" else "Probabilístico" }}</span>
+          </td>
+          <td class="nivel-celda">
+            {% if capa.disponible %}<span class="nivel nivel-{{ capa.banda.clase }}">{{ capa.banda.nombre }}</span><br><span class="nota">{{ capa.nivel }} %</span>
+            {% else %}<span class="nivel nivel-nd">No disponible</span>{% endif %}
+          </td>
+          <td>
+            {% if capa.disponible %}
+              {{ capa.lectura }}
+              {% if capa.principales %}<ul>{% for hallazgo in capa.principales %}<li>{{ hallazgo }}</li>{% endfor %}</ul>{% endif %}
+              {% if capa.imagen and capa.nivel %}
+              <figure class="mapa">
+                <img src="{{ capa.imagen }}" alt="Mapa de {{ capa.titulo_corto }}">
+                <figcaption class="nota">Zonas recuadradas: se comprimieron distinto que el resto.</figcaption>
+              </figure>
+              {% endif %}
+            {% else %}{{ capa.motivo }}{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
     {% endif %}
   </section>
   {% endfor %}
 
-  <h2><span class="numero">6</span> Uso previsto y supervisión humana</h2>
-  <ul class="lista">{% for parrafo in informe.uso_previsto %}<li>{{ parrafo }}</li>{% endfor %}</ul>
+  <h2><span class="numero">6</span> Qué hacer ahora</h2>
+  <ol class="pasos">{% for paso in informe.rubro.que_hacer %}<li>{{ paso }}</li>{% endfor %}</ol>
 
-  <h2><span class="numero">7</span> Cronología</h2>
-  <table class="datos">
-    {% for imagen in informe.imagenes %}
-    <tr><td>Carga de «{{ imagen.nombre }}»</td><td>{{ imagen.cargada_en | hora_argentina }}</td></tr>
-    {% endfor %}
-    <tr><td>Pedido del análisis</td><td>{{ informe.analisis.pedido_en | hora_argentina }}</td></tr>
-    <tr><td>Inicio del análisis</td><td>{{ informe.analisis.iniciado_en | hora_argentina }}</td></tr>
-    <tr><td>Generación de este informe</td><td>{{ generado_en | hora_argentina }}</td></tr>
-  </table>
-  <p class="nota">La plataforma registra cada acción sobre el caso en su auditoría. La huella SHA-256 de este PDF queda guardada al generarlo y permite comprobar que no se modificó.</p>
-
-  <h2><span class="numero">8</span> Versiones de los componentes</h2>
-  <p class="nota">Se registran para que el análisis pueda reproducirse.</p>
-  <table class="datos">
-    {% for componente, version in informe.versiones.items() %}
-    <tr><td>{{ componente }}</td><td>{{ version }}</td></tr>
-    {% endfor %}
-  </table>
-
-  <h2><span class="numero">9</span> Limitaciones y advertencia legal</h2>
-  <ul class="lista">
-    {% for limitacion in informe.limitaciones %}<li>{{ limitacion }}</li>{% endfor %}
-  </ul>
-
-  <h2><span class="numero">10</span> Glosario</h2>
-  <table class="glosario">
-    {% for termino, definicion in informe.glosario %}
-    <tr><td>{{ termino }}</td><td>{{ definicion }}</td></tr>
-    {% endfor %}
-  </table>
+  <div class="aviso">
+    <p>Este informe presenta <strong>indicios técnicos</strong> obtenidos de forma automatizada.
+      <strong>No emite veredictos</strong> sobre la autenticidad de las imágenes y no reemplaza un
+      dictamen pericial. Ante cualquier duda, consultá con un perito especializado en informática forense.</p>
+    <p><strong>Descargo.</strong> {{ informe.descargo }}</p>
+    <p class="nota">Versiones: {% for componente, version in informe.versiones.items() %}{{ componente }} {{ version }}{% if not loop.last %} · {% endif %}{% endfor %}.</p>
+  </div>
 </body>
 </html>
