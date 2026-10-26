@@ -71,6 +71,12 @@ class SolicitudEdicionCaso(EsquemaBase):
     _vacios = field_validator("expediente", "descripcion", mode="before")(_vacio_a_nulo)
 
 
+class SolicitudProrroga(EsquemaBase):
+    """Prórroga de la retención con su motivo (RF51); el servicio rechaza el motivo vacío."""
+
+    motivo: str = ""
+
+
 class SolicitudEstado(EsquemaBase):
     """Operación sobre el estado del caso (RF27 a RF29)."""
 
@@ -145,6 +151,7 @@ def acciones_permitidas(caso, permiso):
         "compartir": es_responsable and not caso.es_personal,
         "transferir": es_responsable and caso.estado != ESTADO_EN_ANALISIS,
         "eliminar": es_responsable and caso.estado != ESTADO_EN_ANALISIS,
+        "prorrogar": es_responsable and caso.estado in (ESTADO_CERRADO, ESTADO_ARCHIVADO),
     }
 
 

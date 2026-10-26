@@ -84,7 +84,7 @@ Toda acción relevante queda registrada con fines de trazabilidad legal. No se i
 
 - **CA1:** La huella SHA-256 de cada imagen se calcula al recibirla y se verifica nuevamente antes de cada análisis.
 - **CA2:** Los archivos originales nunca se modifican; las vistas previas y los mapas ELA se almacenan como archivos derivados independientes.
-- **CA3:** El informe incluye la huella de cada imagen analizada y, cuando existe, la referencia del sello de tiempo en Blockchain Federal Argentina.
+- **CA3:** El informe incluye la huella de cada imagen analizada y, cuando existe, la referencia del sello de tiempo en Hedera (ADR-0018).
 
 ---
 
@@ -165,7 +165,7 @@ Toda acción relevante queda registrada con fines de trazabilidad legal. No se i
 ### RNF16 — Tolerancia a fallos del procesamiento
 **Prioridad:** Debe
 
-- **CA1:** La falla de una capa de análisis, del sellado en Blockchain Federal Argentina o del envío de correo no interrumpe el resto del procesamiento.
+- **CA1:** La falla de una capa de análisis, del sellado en Hedera o del envío de correo no interrumpe el resto del procesamiento.
 - **CA2:** Las tareas en segundo plano se reintentan hasta 3 veces con espera creciente antes de marcarse como fallidas.
 
 ---
@@ -200,7 +200,7 @@ Toda acción relevante queda registrada con fines de trazabilidad legal. No se i
 - **CA1:** Cada envío al repositorio ejecuta en GitHub Actions el análisis estático, las pruebas, la medición de cobertura y la verificación de los mensajes de commit.
 - **CA2:** Una integración no puede fusionarse si alguna verificación falla o la cobertura baja del umbral.
 - **CA3:** Los mensajes de commit siguen la especificación Conventional Commits con tipos y descripciones en español (por ejemplo, `funcionalidad(casos): agregar filtro por estado`), validados automáticamente.
-- **CA4:** El despliegue continuo está **[A DEFINIR]** (ver CP-06).
+- **CA4:** Cada integración en `main` que pasa las verificaciones se despliega automáticamente en la EC2; si la versión nueva no responde, se restablece la anterior (CP-06, ADR-0016).
 
 ### RNF21 — Idioma del código y de la documentación
 **Prioridad:** Debe
@@ -231,6 +231,8 @@ Toda acción relevante queda registrada con fines de trazabilidad legal. No se i
 - **CA1:** Todo resultado presentado en la interfaz o en el informe incluye una explicación en lenguaje no técnico y sus limitaciones.
 - **CA2:** El informe incluye en todas sus páginas la leyenda: "Este informe no constituye un dictamen pericial. Consulte a un profesional especializado."
 - **CA3:** Los textos de las conclusiones provienen de un catálogo revisado y versionado, no de redacción libre.
+- **CA4:** El informe, la pantalla de resultados y el correo de fin de análisis incluyen un descargo: el resultado es parcial, lo produce un sistema automatizado con técnicas de inteligencia artificial y no reemplaza el criterio de un perito (ADR-0017).
+- **CA5:** Cada capa presenta en el informe una tabla con los criterios, el valor de referencia de una imagen sin edición y el valor obtenido, con sus umbrales numéricos, sin describir el algoritmo interno (ADR-0017).
 
 ### RNF24 — Desempeño y trazabilidad del modelo de red neuronal
 **Prioridad:** Debe

@@ -313,6 +313,7 @@ describe('pantalla de la organización como Referente', () => {
     })
     const { usuario } = renderizarEn('/organizaciones/3')
     const seccion = (await screen.findByRole('heading', { name: 'Datos de la organización' })).closest('section')
+    await usuario.click(within(seccion).getByRole('button', { name: 'Editar los datos de la organización' }))
     await usuario.clear(within(seccion).getByLabelText('Nombre'))
     await usuario.type(within(seccion).getByLabelText('Nombre'), 'Estudio Pérez y Asociados')
     await usuario.click(within(seccion).getByRole('button', { name: 'Guardar los datos' }))
@@ -507,5 +508,38 @@ describe('enlace de invitación', () => {
     })
     renderizarEn('/invitaciones/responder?token=x')
     expect(await screen.findByRole('alert')).toHaveTextContent('El enlace no es válido')
+  })
+})
+
+describe('plan y pago simulado (funcionalidad 014)', () => {
+  const PLAN_ORG = {
+    codigo: 'basico', nombre: 'Organización Básico', puede_cambiar: true, renovacion: '2026-11-01',
+    limites: { miembros: 5, analisis_mes: 100, imagenes_por_caso: 50 },
+    consumo: { miembros: 2, analisis_mes: 7 },
+    disponibles: [
+      { codigo: 'basico', nombre: 'Organización Básico', miembros: 5, analisis_mes: 100, imagenes_por_caso: 50, precio: '[PRECIO A DEFINIR]' },
+      { codigo: 'profesional', nombre: 'Organización Profesional', miembros: 25, analisis_mes: 500, imagenes_por_caso: 100, precio: '[PRECIO A DEFINIR]' },
+    ],
+  }
+
+  it('muestra el consumo y cambia de plan con el pago simulado (RF20)', async () => {
+    const { solicitudes } = apiDeOrganizacion({
+      extra: {
+        'GET /api/organizaciones/3/plan': { cuerpo: { plan: PLAN_ORG } },
+        'POST /api/organizaciones/3/plan': {
+          cuerpo: { plan: { ...PLAN_ORG, codigo: 'profesional', nombre: 'Organización Profesional' }, mensaje: 'Listo: el plan nuevo ya está activo. El pago fue simulado; no se cobró nada.' },
+        },
+      },
+    })
+    const { usuario } = renderizarEn('/organizaciones/3')
+
+    expect(await screen.findByRole('meter', { name: 'Análisis de este mes' })).toHaveAttribute('aria-valuenow', '7')
+    await usuario.click(screen.getByRole('button', { name: 'Cambiar de plan' }))
+    await usuario.click(screen.getByRole('radio', { name: /Organización Profesional/ }))
+    expect(screen.getByText(/no se piden datos de tarjeta y no se cobra nada/)).toBeInTheDocument()
+    await usuario.click(screen.getByRole('button', { name: 'Confirmar el cambio de plan' }))
+
+    expect(await screen.findByText(/El pago fue simulado/)).toBeInTheDocument()
+    expect(solicitudes.find((s) => s.metodo === 'POST').cuerpo).toEqual({ plan: 'profesional' })
   })
 })

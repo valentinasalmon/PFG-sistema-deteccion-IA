@@ -34,7 +34,7 @@ La difusión de herramientas de edición y de generación de imágenes por IA fa
 - Interfaz de consulta del registro de auditoría.
 - Validación de matrículas profesionales o de la pertenencia a una empresa.
 - Aplicaciones móviles nativas.
-- Cobro en línea mediante pasarela de pagos **[A DEFINIR]** (ver CP-01).
+- Cobro en línea mediante pasarela de pagos: forma parte del modelo de negocios y queda como trabajo futuro. La plataforma incluye un **flujo de pago simulado** que aplica el plan elegido sin cobrar (ver CP-01).
 
 ## 1.4 Actores
 
@@ -49,7 +49,7 @@ La difusión de herramientas de edición y de generación de imágenes por IA fa
 | **Lector** | Usuario con permiso de lectura sobre un caso: consulta datos y descarga informes. |
 | **Administrador** | Responsable de la plataforma. Consulta estadísticas agregadas y listados de usuarios y organizaciones. **No accede a los casos ni a su contenido.** |
 | **Sistema** | Procesos automáticos: cola de análisis, tareas programadas de retención y envío de notificaciones. |
-| **Servicios externos** | Amazon S3 (almacenamiento), Amazon SES (correo) y Blockchain Federal Argentina (sello de tiempo). |
+| **Servicios externos** | Amazon S3 (almacenamiento), Amazon SES (correo), Hedera Consensus Service (sello de tiempo de imágenes e informes, ADR-0018) y Google (inicio de sesión, propuesto). |
 
 Un mismo usuario puede desempeñar varios roles a la vez: por ejemplo, ser Referente de su organización, Miembro de otra y Lector de un caso compartido.
 
@@ -62,7 +62,7 @@ El modelo diferencia dos tipos de espacio de trabajo:
 | **Personal** | Todo usuario registrado | Gratuito | Gestión de casos propios y análisis, con límites de uso. **No permite compartir casos.** |
 | **Organización** | Estudios jurídicos y aseguradoras | Plan pago | Todo lo del espacio personal, más invitación de miembros, casos compartidos y colaboración, con límites según el plan. |
 
-La colaboración es el principal diferencial de los planes pagos. Los planes concretos, sus límites y su forma de cobro están **[A DEFINIR]** (ver CP-01 y CP-02).
+La colaboración es el principal diferencial de los planes pagos. Los planes y sus límites están en CP-02; la contratación se hace con un pago simulado (CP-01).
 
 ## 1.6 Glosario
 
@@ -82,4 +82,4 @@ La colaboración es el principal diferencial de los planes pagos. Los planes con
 | **Número de caso** | Identificador interno, único y no editable, que el sistema asigna a cada caso. |
 | **ONNX** | Formato abierto para modelos de aprendizaje automático, ejecutado en producción con ONNX Runtime. |
 | **Plan** | Conjunto de capacidades y límites de uso asociados a un espacio de trabajo. |
-| **Sello de tiempo** | Registro en Blockchain Federal Argentina que acredita que una huella digital existía en una fecha determinada. |
+| **Sello de tiempo** | Registro en la red pública Hedera que acredita que una huella digital existía en una fecha determinada. Lo puede verificar cualquiera, sin depender de la plataforma. |

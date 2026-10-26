@@ -79,28 +79,6 @@ function apiDeCaso({ caso = CASO, accesos = [ACCESO], extra = {} } = {}) {
   })
 }
 
-describe('inicio', () => {
-  it('muestra la cantidad de casos por estado con enlaces al listado filtrado', async () => {
-    simularApi({
-      ...CON_SESION,
-      'GET /api/casos/resumen': { cuerpo: { por_estado: { borrador: 2, cerrado: 1 } } },
-    })
-    renderizarEn('/')
-
-    const borradores = await screen.findByRole('link', { name: /2\s*Borrador/ })
-    expect(borradores).toHaveAttribute('href', '/casos?estado=borrador')
-    expect(screen.getByRole('link', { name: /0\s*En análisis/ })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Nuevo caso' })).toHaveAttribute('href', '/casos/nuevo')
-  })
-
-  it('avisa cuando todavía no hay casos', async () => {
-    simularApi({ ...CON_SESION, 'GET /api/casos/resumen': { cuerpo: { por_estado: {} } } })
-    renderizarEn('/')
-
-    expect(await screen.findByText('Todavía no tenés casos.')).toBeInTheDocument()
-  })
-})
-
 describe('listado de casos', () => {
   it('lista los casos accesibles con su estado y permiso (CA5)', async () => {
     apiDeListado()
@@ -321,6 +299,7 @@ describe('pantalla del caso', () => {
     })
     const { usuario } = renderizarEn('/casos/7')
 
+    await usuario.click(await screen.findByRole('button', { name: 'Editar los datos' }))
     const lugar = await screen.findByLabelText('Lugar del hecho')
     await usuario.clear(lugar)
     await usuario.type(lugar, 'Av. Santa Fe 100')
@@ -365,7 +344,7 @@ describe('pantalla del caso', () => {
             ...CASO,
             estado: 'cerrado',
             estado_nombre: 'Cerrado',
-            retencion_vence: '2028-10-16T12:00:00',
+            retencion_vence: '2031-10-16T12:00:00',
             acciones: { ...TODAS, editar: false, cerrar: false, archivar: true, reabrir: true },
           }
           return { cuerpo: { caso, accesos: [], mensaje: 'El caso quedó cerrado.' } }
@@ -378,7 +357,7 @@ describe('pantalla del caso', () => {
     await usuario.click(screen.getByRole('button', { name: 'Cerrar' }))
 
     expect(await screen.findByText('El caso quedó cerrado.')).toBeInTheDocument()
-    expect(await screen.findByText(/Los datos se conservan hasta el 16\/10\/2028/)).toBeInTheDocument()
+    expect(await screen.findByText(/Los datos se conservan hasta el 16\/10\/2031/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Archivar' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Reabrir' })).toBeInTheDocument()
     expect(screen.getByText(/es de solo lectura/)).toBeInTheDocument()
@@ -524,5 +503,35 @@ describe('pantalla del caso', () => {
 
     expect(await screen.findByText('No se puede cerrar en este estado.')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'CASO-2026-000007' })).toBeInTheDocument()
+  })
+})
+
+describe('retención (funcionalidad 015)', () => {
+  const CERRADO = {
+    ...CASO, estado: 'cerrado', estado_nombre: 'Cerrado',
+    retencion_desde: '2021-11-01T12:00:00', retencion_vence: '2026-11-01T12:00:00',
+    acciones: { ...TODAS, editar: false, cerrar: false, archivar: true, reabrir: true, prorrogar: true },
+  }
+
+  it('muestra cuándo se elimina y prorroga con motivo obligatorio (RF51)', async () => {
+    const { solicitudes } = apiDeCaso({
+      caso: CERRADO,
+      extra: {
+        'POST /api/casos/7/prorroga': {
+          cuerpo: { caso: { ...CERRADO, retencion_vence: '2027-11-01T12:00:00' }, accesos: [ACCESO], mensaje: 'Listo: el caso se conserva hasta el 01/11/2027.' },
+        },
+      },
+    })
+    const { usuario } = renderizarEn('/casos/7')
+
+    await usuario.click(await screen.findByRole('button', { name: 'Prorrogar 1 año' }))
+    await usuario.click(screen.getByRole('button', { name: 'Prorrogar' }))
+    expect(screen.getByText(/Indicá el motivo de la prórroga/)).toBeInTheDocument()
+
+    await usuario.type(screen.getByLabelText('Motivo de la prórroga'), 'Juicio en trámite')
+    await usuario.click(screen.getByRole('button', { name: 'Prorrogar' }))
+
+    expect(await screen.findByText('Listo: el caso se conserva hasta el 01/11/2027.')).toBeInTheDocument()
+    expect(solicitudes.find((s) => s.ruta === '/api/casos/7/prorroga').cuerpo).toEqual({ motivo: 'Juicio en trámite' })
   })
 })

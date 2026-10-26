@@ -52,5 +52,7 @@ def listar(id_caso):
 @login_required
 def detalle(id_caso, id_analisis):
     """Estado, progreso y resultados de cada capa por imagen."""
-    analisis = _servicio().detalle(id_caso, id_analisis, usuario_actual())
-    return jsonify({"analisis": analisis_a_dict(analisis)})
+    servicio = _servicio()
+    analisis = servicio.detalle(id_caso, id_analisis, usuario_actual())
+    enlaces = servicio.enlaces_de_imagenes(analisis)
+    return jsonify({"analisis": analisis_a_dict(analisis, enlaces)})

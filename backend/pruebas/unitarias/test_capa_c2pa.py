@@ -446,7 +446,7 @@ def test_la_capa_2_esta_registrada_despues_de_metadatos():
     """ADR-0006: la capa nueva se agrega al registro sin cambiar la de metadatos."""
     capas = crear_capas({"RUTA_EXIFTOOL": "exiftool", "CARPETA_CONFIANZA_C2PA": "/tmp/x"})
 
-    assert [c.nombre for c in capas] == ["metadatos", "c2pa"]
+    assert [c.nombre for c in capas][:2] == ["metadatos", "c2pa"]
     assert capas[1].carpeta_confianza == "/tmp/x"
 
 

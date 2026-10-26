@@ -16,12 +16,6 @@ export function listarCasos(filtros = {}) {
   return solicitar('GET', consulta ? `/api/casos?${consulta}` : '/api/casos')
 }
 
-/** Cantidad de casos por estado. */
-export async function resumenDeCasos() {
-  const { por_estado: porEstado } = await solicitar('GET', '/api/casos/resumen')
-  return porEstado
-}
-
 /** Transferencias de casos personales que esperan mi respuesta (RF33 CA2). */
 export async function transferenciasPendientes() {
   const { transferencias } = await solicitar('GET', '/api/casos/transferencias')
@@ -47,6 +41,11 @@ export function editarCaso(id, cambios) {
 /** Cierra, archiva, desarchiva o reabre el caso (RF27 a RF29). */
 export function cambiarEstadoCaso(id, operacion) {
   return solicitar('POST', `${base(id)}/estado`, { operacion })
+}
+
+/** Extiende 1 año la retención indicando el motivo (RF51, funcionalidad 015). */
+export function prorrogarRetencion(id, motivo) {
+  return solicitar('POST', `${base(id)}/prorroga`, { motivo })
 }
 
 /** Comparte con un miembro o, sin idUsuario, con toda la organización (RF30). */

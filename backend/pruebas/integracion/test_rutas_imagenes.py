@@ -394,3 +394,19 @@ def test_si_falla_el_borrado_del_archivo_la_imagen_igual_se_elimina(
 
     assert respuesta.status_code == 200
     assert "No se pudo borrar el archivo imagenes/" in caplog.text
+
+
+def test_cargar_heic_del_iphone(aplicacion, ana, caso):
+    """024 (RF53 CA3): el HEIC se guarda sin convertir y su vista previa es JPEG."""
+    contenido = imagen_de_prueba("HEIF")
+    respuesta = _cargar(ana, caso["id"], contenido, "IMG_0001.HEIC")
+
+    assert respuesta.status_code == 201, respuesta.get_json()
+    imagen = respuesta.get_json()["imagen"]
+    assert imagen["formato"] == "HEIC"
+    with aplicacion.app_context():
+        guardada = db.session.get(Imagen, imagen["id"])
+        clave, miniatura, tipo = guardada.clave, guardada.clave_miniatura, guardada.tipo_mime
+    assert (_directorio(aplicacion) / clave).read_bytes() == contenido
+    assert (_directorio(aplicacion) / miniatura).read_bytes().startswith(b"\xff\xd8\xff")
+    assert tipo == "image/heic"

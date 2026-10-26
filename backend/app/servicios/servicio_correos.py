@@ -34,6 +34,8 @@ class ServicioCorreos:  # pylint: disable=too-many-public-methods
     def _enviar(self, destinatario, asunto, plantilla, **datos):
         """Renderiza la plantilla en texto y HTML y envía el correo."""
         datos["asunto"] = asunto
+        # El logo de la cabecera se sirve desde el frontend (guía de identidad visual).
+        datos.setdefault("url_frontend", self.url_frontend)
         texto = _entorno.get_template(f"{plantilla}.txt").render(**datos)
         html = _entorno.get_template(f"{plantilla}.html").render(**datos)
         return self.enviador.enviar(Correo(destinatario, asunto, texto, html))
@@ -245,6 +247,14 @@ class ServicioCorreos:  # pylint: disable=too-many-public-methods
             usuario.correo, f"Se eliminó el caso {numero}", "caso_eliminado",
             nombre=usuario.nombre, numero=numero,
             responsable=f"{responsable.nombre} {responsable.apellido}",
+        )
+
+    def enviar_aviso_retencion(self, usuario, caso, vence):
+        """Aviso al Responsable 30 días antes de destruir el caso (RF50, RN31)."""
+        return self._enviar(
+            usuario.correo, f"El caso {caso.numero} se elimina en 30 días", "retencion_aviso",
+            nombre=usuario.nombre, numero=caso.numero, vence=vence.strftime("%d/%m/%Y"),
+            enlace=f"{self.url_frontend}/casos/{caso.id}",
         )
 
     def enviar_aviso_copia_de_datos(self, usuario):

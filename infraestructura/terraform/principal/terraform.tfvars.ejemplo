@@ -1,0 +1,18 @@
+# Copiar como terraform.tfvars (no se sube al repositorio) y completar.
+
+correo_remitente    = "tu-correo@ejemplo.com"
+correos_verificados = ["tu-correo@ejemplo.com", "tutor@ejemplo.com"]
+administradores     = ["tu-correo@ejemplo.com"]
+correo_alertas      = "tu-correo@ejemplo.com"
+
+# Opcionales
+# presupuesto_mensual_usd = 30
+# tipo_instancia          = "t3.small"
+# dominio                 = "plataforma.com.ar"   # al comprar el dominio
+
+# Sello de tiempo en Hedera (funcionalidad 023, ADR-0018). Con "hedera" hacen falta
+# la cuenta y el tema; la clave privada se carga aparte en SSM (ver docs/guias/despliegue-aws.md).
+sello_tiempo  = "desactivado"
+# hedera_red    = "testnet"
+# hedera_cuenta = "0.0.XXXXXXX"
+# hedera_tema   = "0.0.XXXXXXX"

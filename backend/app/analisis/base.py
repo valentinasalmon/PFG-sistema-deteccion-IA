@@ -103,6 +103,9 @@ class ResultadoCapa:
     anomalias: list
     conclusion: str
     detalle: dict = field(default_factory=dict)
+    # Imagen PNG que acompaña al resultado (el mapa ELA de la 011); el servicio
+    # de análisis la guarda en el almacenamiento.
+    imagen: bytes | None = None
 
     def como_dict(self):
         """Representación serializable (para pruebas y registros)."""

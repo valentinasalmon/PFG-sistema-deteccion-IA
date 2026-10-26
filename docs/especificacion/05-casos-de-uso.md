@@ -329,7 +329,7 @@ Precondición común a todos los casos de uso cuyo actor es Usuario, Referente, 
 
 **Flujo principal (cerrar)**
 1. El Responsable selecciona "Cerrar caso" en un caso en Borrador o Analizado.
-2. El sistema informa que el caso quedará en solo lectura y que comenzará el plazo de retención de 2 años, con su fecha de vencimiento.
+2. El sistema informa que el caso quedará en solo lectura y que comenzará el plazo de retención de 5 años, con su fecha de vencimiento.
 3. El Responsable confirma.
 4. El sistema cambia el estado a Cerrado y registra la fecha de inicio de la retención.
 
@@ -400,7 +400,7 @@ Precondición común a todos los casos de uso cuyo actor es Usuario, Referente, 
 2. El sistema verifica la firma binaria, el tamaño y el límite del plan de cada archivo.
 3. El sistema calcula la huella SHA-256, almacena el archivo en S3 y registra sus datos.
 4. El sistema muestra el resultado de cada archivo y la galería actualizada.
-5. El sistema solicita en segundo plano el sello de tiempo de cada huella en Blockchain Federal Argentina.
+5. El sistema solicita en segundo plano el sello de tiempo de cada huella en Hedera.
 
 **Flujos alternativos**
 - **2a. Formato real inválido:** el archivo se rechaza con el motivo; los demás continúan.

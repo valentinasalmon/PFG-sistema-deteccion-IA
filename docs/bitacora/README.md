@@ -34,3 +34,7 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-19 | [Funcionalidad 009: capa de credenciales de contenido (C2PA)](2026-10-19-funcionalidad-009-capa-c2pa.md) |
 | 2026-10-19 | [Funcionalidad 010: especificación y plan de la red neuronal](2026-10-19-especificacion-red-neuronal.md) |
 | 2026-10-19 | [Funcionalidad 010: pipeline del clasificador implementado](2026-10-19-funcionalidad-010-pipeline.md) |
+| 2026-10-19 | [Decisiones de alcance y entrega](2026-10-19-decisiones-de-alcance-y-entrega.md) |
+| 2026-10-19 | [Funcionalidad 017: infraestructura y despliegue en AWS (código)](2026-10-19-funcionalidad-017-infraestructura.md) |
+| 2026-10-20 | [Funcionalidad 011: capa 3, niveles de error (ELA)](2026-10-20-funcionalidad-011-capa-ela.md) |
+| 2026-10-21 | [Funcionalidad 013: panel principal y notificaciones](2026-10-21-funcionalidad-013-panel-y-notificaciones.md) |

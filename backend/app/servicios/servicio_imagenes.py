@@ -37,25 +37,29 @@ class ArchivosDeCasos:
     después de confirmar la base.
     """
 
-    def __init__(self, repositorio, almacenamiento, informes=None):
+    def __init__(self, repositorio, almacenamiento, informes=None, analisis=None):
         """
         Args:
             repositorio: ``RepositorioImagenes``.
             informes: ``RepositorioInformes``, para borrar también los PDF (008).
+            analisis: ``RepositorioAnalisis``, para borrar los mapas ELA (011).
         """
         self.repositorio = repositorio
         self.almacenamiento = almacenamiento
         self.informes = informes
+        self.analisis = analisis
         self.pendientes = []
 
     def preparar(self, casos):
-        """Anota los archivos de los casos (imágenes y PDF) y devuelve sus huellas."""
+        """Anota los archivos de los casos (imágenes, PDF y mapas) y devuelve sus huellas."""
         ids = [caso.id for caso in casos]
         imagenes = self.repositorio.de_casos(ids)
         informes = self.informes.de_casos(ids) if self.informes else []
         for imagen in imagenes:
             self.pendientes.extend((imagen.clave, imagen.clave_miniatura))
         self.pendientes.extend(informe.clave for informe in informes)
+        if self.analisis:
+            self.pendientes.extend(self.analisis.claves_de_imagenes_de_casos(ids))
         return [imagen.huella for imagen in imagenes] + [informe.huella for informe in informes]
 
     def borrar_pendientes(self):
@@ -77,7 +81,7 @@ class ServicioImagenes:
     """Operaciones sobre las imágenes de un caso."""
 
     def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        self, repositorio, casos, almacenamiento, configuracion, registro
+        self, repositorio, casos, almacenamiento, configuracion, registro, sellos=None,
     ):
         """
         Args:
@@ -85,7 +89,9 @@ class ServicioImagenes:
             casos: ``ServicioCasos``, que resuelve los permisos sobre el caso.
             almacenamiento: implementación de ``app.integraciones.almacenamiento``.
             registro: ``ServicioAuditoria``.
+            sellos: ``ServicioSellos`` (funcionalidad 016); opcional.
         """
+        self.sellos = sellos
         self.repositorio = repositorio
         self.casos = casos
         self.almacenamiento = almacenamiento
@@ -118,6 +124,10 @@ class ServicioImagenes:
                 accion, usuario, caso, {"motivo": "estado", "estado": caso.estado},
             )
         return caso
+
+    def caso_para_cargar(self, id_caso, usuario, accion):
+        """El caso, si el usuario puede cargarle imágenes ahora (RN19, RN20)."""
+        return self._para_modificar(id_caso, usuario, accion)
 
     @staticmethod
     def puede_modificar(caso, permiso):
@@ -166,7 +176,8 @@ class ServicioImagenes:
         formato = lector.detectar_formato(contenido)
         if formato is None:
             raise rechazar(_error_archivo(
-                "El formato real del archivo no es válido: solo se aceptan imágenes JPEG o PNG."
+                "El formato real del archivo no es válido: solo se aceptan imágenes "
+                "JPEG, PNG o HEIC."
             ), "formato")
         try:
             dimensiones = lector.leer_dimensiones(contenido, formato)
@@ -188,8 +199,13 @@ class ServicioImagenes:
             ), "limite_plan")
         return huella, formato, *dimensiones
 
-    def cargar(self, id_caso, usuario, nombre, contenido):
+    def cargar(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        self, id_caso, usuario, nombre, contenido, origen=None
+    ):
         """Valida y guarda una imagen en el caso (RF34 CA1 a CA4).
+
+        ``origen`` indica por dónde llegó, si no fue la pantalla del caso (por
+        ejemplo, ``"celular"`` con un enlace de carga, RF53); queda en la auditoría.
 
         Cada archivo se carga con su propia solicitud: así se valida en forma
         independiente y la pantalla informa el resultado de cada uno (CA5).
@@ -214,6 +230,7 @@ class ServicioImagenes:
             clave_miniatura=f"miniaturas/{uuid4().hex}.jpg", nombre_original=nombre,
             formato=formato, tamanio=len(contenido), ancho=dimensiones[0],
             alto=dimensiones[1], huella=huella, id_usuario=usuario.id,
+            sello_estado="pendiente" if self.sellos and self.sellos.activo else None,
         )
         self.almacenamiento.guardar(imagen.clave, contenido, imagen.tipo_mime)
         try:
@@ -223,13 +240,17 @@ class ServicioImagenes:
             self._auditar(
                 auditoria.IMAGEN_CARGA, auditoria.EXITOSO, usuario, caso,
                 {"id_imagen": imagen.id, "nombre": nombre, "sha256": huella,
-                 "tamanio": imagen.tamanio, "formato": formato},
+                 "tamanio": imagen.tamanio, "formato": formato,
+                 **({"origen": origen} if origen else {})},
             )
             self.repositorio.confirmar()
         except Exception:
             borrar_sin_fallar(self.almacenamiento, imagen.clave)
             borrar_sin_fallar(self.almacenamiento, imagen.clave_miniatura)
             raise
+        if self.sellos is not None:
+            # Primer intento en el momento; si Hedera no responde, lo retoma la tarea (RF37 CA3).
+            self.sellos.intentar(imagen)
         return imagen
 
     # --- Consultar (RF35) ---

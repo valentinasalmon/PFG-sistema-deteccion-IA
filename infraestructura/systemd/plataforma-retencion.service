@@ -1,0 +1,14 @@
+# Retención de los casos: aviso a 30 días y destrucción al vencer (funcionalidad 015, RF49, RF50).
+[Unit]
+Description=evidentIA - retención de los casos
+After=network.target postgresql.service redis-server.service
+
+[Service]
+Type=oneshot
+User=plataforma
+Group=plataforma
+WorkingDirectory=/opt/plataforma/actual/backend
+EnvironmentFile=/opt/plataforma/.env
+ExecStart=/opt/plataforma/actual/venv/bin/flask --app wsgi retencion procesar
+NoNewPrivileges=true
+PrivateTmp=true

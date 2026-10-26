@@ -1,6 +1,6 @@
 Hola:
 
-{{ invitante }} te invitó a sumarte a {{ organizacion }} en la Plataforma de análisis de imágenes.
+{{ invitante }} te invitó a sumarte a {{ organizacion }} en evidentIA.
 
 Para ver la invitación y responderla, abrí este enlace (vence el {{ vence }}):
 {{ enlace }}

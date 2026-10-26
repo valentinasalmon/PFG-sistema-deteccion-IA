@@ -1,0 +1,19 @@
+# API de la plataforma con Gunicorn, detrás de Nginx (RNF22 CA3).
+[Unit]
+Description=evidentIA - API (Gunicorn)
+After=network.target postgresql.service redis-server.service
+Requires=postgresql.service redis-server.service
+
+[Service]
+User=plataforma
+Group=plataforma
+WorkingDirectory=/opt/plataforma/actual/backend
+EnvironmentFile=/opt/plataforma/.env
+ExecStart=/opt/plataforma/actual/venv/bin/gunicorn --workers 2 --bind 127.0.0.1:8000 --timeout 120 --access-logfile - wsgi:aplicacion
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

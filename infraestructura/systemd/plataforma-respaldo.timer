@@ -1,0 +1,10 @@
+# Respaldo diario a las 06:30 UTC (03:30 en Argentina).
+[Unit]
+Description=Respaldo diario de la base de la plataforma
+
+[Timer]
+OnCalendar=*-*-* 06:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

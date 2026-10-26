@@ -28,6 +28,7 @@ from app.esquemas.casos import (
     SolicitudCompartir,
     SolicitudEdicionCaso,
     SolicitudEstado,
+    SolicitudProrroga,
     SolicitudNivel,
     SolicitudTransferencia,
     acceso_a_dict,
@@ -37,13 +38,13 @@ from app.esquemas.casos import (
 from app.esquemas.organizaciones import SolicitudEliminacion
 from app.seguridad.autenticacion import usuario_actual
 from app.seguridad.origen import origen_de_la_solicitud
-from app.servicios.fabrica import crear_servicio_casos
+from app.servicios.fabrica import crear_servicio_casos, crear_tareas_de_retencion
 
 casos_bp = Blueprint("casos", __name__, url_prefix="/api/casos")
 
 POR_PAGINA = 20
 MENSAJES_ESTADO = {
-    "cerrar": "El caso fue cerrado. Comenzó el plazo de retención de 2 años.",
+    "cerrar": "El caso fue cerrado. Comenzó el plazo de retención de 5 años.",
     "archivar": "El caso fue archivado.",
     "desarchivar": "El caso volvió a Cerrado.",
     "reabrir": "El caso fue reabierto.",
@@ -152,6 +153,22 @@ def cambiar_estado(id_caso):
     servicio = _servicio()
     caso = servicio.cambiar_estado(id_caso, usuario_actual(), solicitud.operacion)
     return _detalle(servicio, caso, "responsable", MENSAJES_ESTADO[solicitud.operacion])
+
+
+@casos_bp.post("/<int:id_caso>/prorroga")
+@login_required
+def prorrogar(id_caso):
+    """Extiende 1 año la retención indicando el motivo (RF51, funcionalidad 015)."""
+    solicitud = validar(SolicitudProrroga, _cuerpo())
+    servicio = _servicio()
+    caso, vence = crear_tareas_de_retencion(
+        current_app.config, current_app.extensions["enviador_correo"],
+        current_app.extensions["almacenamiento"], origen_de_la_solicitud(),
+    ).prorrogar(id_caso, usuario_actual(), solicitud.motivo)
+    return _detalle(
+        servicio, caso, "responsable",
+        f"Listo: el caso se conserva hasta el {vence.strftime('%d/%m/%Y')}.",
+    )
 
 
 @casos_bp.post("/<int:id_caso>/accesos")

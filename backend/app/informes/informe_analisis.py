@@ -1,92 +1,149 @@
 """Informe PDF de un análisis: datos, textos explicativos y conversión a PDF.
 
-Arma un documento sencillo y explicativo para personas sin formación
-técnica: cada capa tiene un recuadro "¿Qué significa?" y el informe termina
-con las limitaciones y la advertencia legal. Nunca emite un veredicto ni
-combina las capas en un puntaje (RN27). No accede a la base de datos ni al
-almacenamiento: recibe los objetos y las miniaturas ya leídas.
+Versión breve y autosuficiente (funcionalidades 025 y 026), pensada para
+quien analiza imágenes todos los días:
 
-Realiza: RF44 (CA1, CA2), RNF07 (CA3); RN27, RN29.
+1. Caso y solicitud.
+2. Evidencia y cadena de custodia: cada archivo con su huella, la
+   verificación de integridad y el sello en Hedera, y una cronología breve.
+3. Escala de lectura: la tabla de niveles de indicio.
+4. Resultados por imagen: por cada técnica, qué revisó, si su resultado es
+   determinista o probabilístico, el nivel, lo que encontró, los datos más
+   relevantes y los hallazgos principales.
+5. Verificación del informe (QR y código, 026) y el aviso de alcance con el
+   descargo (ADR-0017).
+
+Las secciones no se cortan entre páginas: si no entran, pasan enteras a la
+siguiente. El lenguaje cambia según el perfil de quien pidió el análisis
+(Abogado o Aseguradora, RF54). Nunca emite veredictos (RN27). Las versiones
+de los componentes (RN29) se guardan con el análisis, pero no se imprimen.
+
+No accede a la base de datos ni al almacenamiento: recibe los objetos y las
+miniaturas ya leídas.
+
+Realiza: RF44 (CA1, CA2), RF54, RNF07 (CA3), RNF23 (CA2); RN27, RN29.
 """
 import base64
+from pathlib import Path
+
+from app.analisis.base import RECOMENDACION
 
 from app.esquemas.casos import NOMBRES_TIPO as NOMBRES_TIPO_CASO
 from app.informes.plantillas import html_a_pdf, version_weasyprint
 
-VERSION_PLANTILLA = "1.0"
+VERSION_PLANTILLA = "2.1"
 
 TITULOS_CAPA = {
     "metadatos": "Capa 1 · Metadatos",
     "c2pa": "Capa 2 · Credenciales de contenido (C2PA)",
+    "ela": "Capa 3 · Niveles de error (ELA)",
 }
 
-QUE_SIGNIFICA = {
-    "metadatos": (
-        "Las fotos y las imágenes guardan datos ocultos además de la imagen: el "
-        "teléfono o la cámara que las tomó, la fecha, el programa con el que se "
-        "editaron y, a veces, la ubicación. Esta capa revisa esos datos y busca "
-        "señales de edición o de generación por inteligencia artificial, y también "
-        "incoherencias, como una fecha de captura posterior a la carga. "
-        "Las aplicaciones de mensajería y las redes sociales suelen borrar estos "
-        "datos, por lo que su ausencia no indica por sí sola una manipulación, y "
-        "quien quiera alterar una imagen también puede modificarlos."
-    ),
-    "c2pa": (
-        "Algunas herramientas, como ChatGPT, Gemini o Adobe Firefly, y algunas cámaras "
-        "agregan a la imagen unas credenciales de contenido: una declaración firmada "
-        "digitalmente que dice quién la hizo, con qué herramienta, si la generó una "
-        "inteligencia artificial y qué ediciones tuvo. Esta capa comprueba esa firma con "
-        "la lista de confianza del consorcio C2PA, que reúne a los emisores reconocidos. "
-        "Si la firma es confiable y declara inteligencia artificial, es el indicio más "
-        "fuerte de la plataforma. Que una imagen no tenga credenciales es lo más habitual: "
-        "muchas cámaras no las agregan y WhatsApp o una captura de pantalla las eliminan, "
-        "por lo que su ausencia no indica que la imagen sea original."
-    ),
-}
 QUE_SIGNIFICA_GENERICO = (
     "Esta capa busca señales técnicas de edición o de generación artificial. Su "
     "resultado debe leerse junto con las demás capas."
 )
 
-ESCALA_DE_INDICIO = (
-    "Cada capa expresa su resultado como un nivel de indicio de 0 % a 100 %. Un nivel "
-    "alto significa que la capa encontró señales que suelen aparecer en imágenes "
-    "editadas o generadas; un nivel bajo, que no las encontró. No expresa una "
-    "probabilidad sobre el origen de la imagen, y los niveles de distintas capas no se "
-    "suman ni se promedian: cada capa mira un aspecto distinto."
+# Leyenda exigida en todas las páginas del informe (RNF23 CA2).
+LEYENDA_PERICIAL = (
+    "Este informe no constituye un dictamen pericial. Consulte a un profesional especializado."
 )
 
-LIMITACIONES = (
-    "Este informe presenta indicios técnicos obtenidos de forma automatizada. No "
-    "constituye un dictamen pericial ni emite una conclusión sobre la autenticidad "
-    "de las imágenes.",
-    "La ausencia de indicios no garantiza que una imagen no haya sido modificada, y "
-    "la presencia de indicios no prueba por sí sola una manipulación: hay "
-    "procesamientos legítimos, como la compresión o el recorte, que dejan señales "
-    "similares.",
-    "Los metadatos pueden ser eliminados o alterados por aplicaciones de mensajería, "
-    "redes sociales o por cualquier persona con las herramientas adecuadas.",
-    "Las técnicas de generación de imágenes evolucionan constantemente; los métodos de "
-    "detección pueden no reconocer generadores nuevos.",
-    "Se recomienda que un perito especializado en informática forense evalúe estos "
-    "resultados antes de utilizarlos en un proceso judicial o administrativo.",
+# Descargo pedido en la entrevista del 02/10/2026: resultado parcial, automatizado
+# y que no reemplaza el criterio de un perito (ADR-0017).
+DESCARGO = (
+    "Este resultado es parcial: lo produjo un sistema automatizado de análisis que "
+    "incluye técnicas de inteligencia artificial. Es una herramienta auxiliar y no "
+    "reemplaza el criterio de un perito o criminalista, que es quien debe evaluar la "
+    "evidencia y tomar la decisión final."
 )
 
-NOMBRES_SEVERIDAD = {
-    "directo": "Directo",
-    "fuerte": "Fuerte",
-    "moderado": "Moderado",
-    "debil": "Débil",
-    "neutro": "Informativo",
+# Bandas de la escala de lectura; coinciden con describir_intensidad() de las capas
+# y con las que muestra la pantalla de resultados.
+BANDAS_DE_INDICIO = (
+    {"desde": 70, "nombre": "Indicios fuertes", "clase": "fuerte", "rango": "70 % a 100 %"},
+    {"desde": 45, "nombre": "Indicios moderados", "clase": "moderado", "rango": "45 % a 69 %"},
+    {"desde": 1, "nombre": "Indicios débiles", "clase": "debil", "rango": "1 % a 44 %"},
+    {"desde": 0, "nombre": "Sin indicios", "clase": "ninguno", "rango": "0 %"},
+)
+
+TITULOS_CORTOS = {
+    "metadatos": "Metadatos",
+    "c2pa": "Credenciales de contenido",
+    "ela": "Niveles de error",
 }
+
+SEVERIDADES_RELEVANTES = ("directo", "fuerte", "moderado")
+
 NOMBRES_PERFIL = {"abogado": "Abogado", "aseguradora": "Aseguradora"}
 
+# Tipo de resultado de cada capa (funcionalidad 025).
+# - Determinista: comprueba un hecho verificable (un dato existe o no, una firma
+#   es válida o no). Con el mismo archivo da siempre lo mismo y un tercero
+#   puede comprobarlo con otras herramientas.
+# - Probabilístico: estima, con umbrales estadísticos o un modelo entrenado,
+#   qué tan parecida es la imagen a una editada o generada. Es reproducible,
+#   pero puede dar falsas alarmas o pasar por alto una edición.
+TIPO_DE_RESULTADO = {
+    "integridad": "determinista",
+    "metadatos": "determinista",
+    "c2pa": "determinista",
+    "ela": "probabilistico",
+    "red_neuronal": "probabilistico",
+}
 
-def _miniatura_como_dato(contenido):
-    """Miniatura JPEG embebida en el HTML, así el PDF no depende de enlaces."""
+QUE_MIRA = {
+    "metadatos": "Revisa los datos internos del archivo: dispositivo, fechas y programas de "
+                 "edición.",
+    "c2pa": "Busca credenciales de contenido firmadas que declaren inteligencia artificial o "
+            "ediciones.",
+    "ela": "Compara cómo se comprime cada zona para detectar partes pegadas o retocadas.",
+    "red_neuronal": "Un modelo entrenado estima si la imagen se parece a una generada por IA.",
+}
+
+# Lenguaje según el perfil de quien pidió el análisis (RF54).
+TEXTOS_RUBRO = {
+    "abogado": {
+        "titulo": "Informe técnico de imágenes",
+        "etiqueta_referencia": "Expediente",
+        "intro": (
+            "Resultado del análisis automatizado de las imágenes del caso, para evaluar si "
+            "conviene ofrecerlas como prueba o pedir una pericia."
+        ),
+    },
+    "aseguradora": {
+        "titulo": "Informe de verificación de fotos del siniestro",
+        "etiqueta_referencia": "N.° de siniestro",
+        "intro": (
+            "Resultado del análisis automatizado de las fotos presentadas en el siniestro, "
+            "como apoyo para decidir si se liquida o se deriva a verificación."
+        ),
+    },
+}
+
+
+LOGO = Path(__file__).resolve().parents[1] / "plantillas" / "informes" / "logo.png"
+
+
+def banda_de_indicio(nivel):
+    """Banda de la escala de lectura que corresponde a un nivel de 0 a 100."""
+    return next(b for b in BANDAS_DE_INDICIO if nivel >= b["desde"])
+
+
+def _tamanio_legible(octetos):
+    """Tamaño de archivo en KB o MB, con coma decimal."""
+    if octetos is None:
+        return "—"
+    if octetos >= 1024 * 1024:
+        return f"{octetos / 1024 / 1024:.1f} MB".replace(".", ",")
+    return f"{octetos / 1024:.0f} KB"
+
+
+def _miniatura_como_dato(contenido, tipo="image/jpeg"):
+    """Imagen embebida en el HTML (miniatura o mapa ELA), así el PDF no depende de enlaces."""
     if not contenido:
         return None
-    return "data:image/jpeg;base64," + base64.b64encode(contenido).decode("ascii")
+    return f"data:{tipo};base64," + base64.b64encode(contenido).decode("ascii")
 
 
 def _solicitante(analisis):
@@ -101,35 +158,104 @@ def _solicitante(analisis):
     }
 
 
-def _resultado(resultado):
+MAXIMO_HALLAZGOS = 3
+MAXIMO_DATOS = 4
+
+
+def _sin_recomendacion(texto):
+    """La conclusión sin la recomendación genérica, que el informe dice una sola vez al final."""
+    return (texto or "").replace(RECOMENDACION, "").strip()
+
+
+def _hallazgos_principales(anomalias, maximo=MAXIMO_HALLAZGOS):
+    """Hasta ``maximo`` hallazgos relevantes (directos, fuertes o moderados)."""
+    relevantes = [a for a in anomalias if a.severidad in SEVERIDADES_RELEVANTES]
+    return [a.descripcion for a in relevantes[:maximo]]
+
+
+def _datos_relevantes(resultado, maximo=MAXIMO_DATOS):
+    """Los primeros datos técnicos de la capa, sin repetir las dimensiones de la imagen."""
+    filas = (resultado.detalle or {}).get("tabla", [])
+    return [f for f in filas if f.get("campo") != "Dimensiones"][:maximo]
+
+
+def _resultado(resultado, imagenes_de_capas):
+    disponible = resultado.estado == "completado"
+    texto = _sin_recomendacion(resultado.conclusion)
     return {
         "titulo": TITULOS_CAPA.get(resultado.capa, resultado.capa),
-        "disponible": resultado.estado == "completado",
+        "titulo_corto": TITULOS_CORTOS.get(resultado.capa, resultado.capa),
+        "tipo": TIPO_DE_RESULTADO.get(resultado.capa, "probabilistico"),
+        "que_mira": QUE_MIRA.get(resultado.capa, QUE_SIGNIFICA_GENERICO),
+        "texto": texto,
+        "datos": _datos_relevantes(resultado) if disponible else [],
+        # Los hallazgos que la conclusión ya menciona no se repiten.
+        "principales": [
+            h for h in _hallazgos_principales(resultado.anomalias) if h not in texto
+        ] if disponible else [],
+        "disponible": disponible,
         "nivel": resultado.nivel,
-        "conclusion": resultado.conclusion,
+        "banda": banda_de_indicio(resultado.nivel or 0) if disponible else None,
         "motivo": resultado.motivo,
-        "version": resultado.version,
-        "que_significa": QUE_SIGNIFICA.get(resultado.capa, QUE_SIGNIFICA_GENERICO),
-        "anomalias": [
-            {
-                "severidad": NOMBRES_SEVERIDAD.get(a.severidad, a.severidad),
-                "descripcion": a.descripcion,
-            }
-            for a in resultado.anomalias
-        ],
-        "tabla": (resultado.detalle or {}).get("tabla", []),
+        "imagen": _miniatura_como_dato(
+            imagenes_de_capas.get(getattr(resultado, "id", None)), "image/png"
+        ),
     }
 
 
-def armar_datos(analisis, miniaturas, version_plataforma):
+def _sello(original):
+    """Texto del sello de tiempo de la imagen en Hedera (funcionalidad 023, RF37 CA2)."""
+    estado = getattr(original, "sello_estado", None)
+    if estado == "sellado":
+        fecha = original.sello_fecha.strftime("%d/%m/%Y %H:%M UTC") if original.sello_fecha else ""
+        if original.sello_simulado:
+            return f"Sello simulado del entorno de pruebas ({fecha}): no tiene validez."
+        return f"Hedera, {fecha} · {original.sello_referencia}"
+    if estado in ("pendiente", "enviado"):
+        return "Pendiente de confirmación en Hedera"
+    if estado == "fallido":
+        return "Sin sello (Hedera no respondió)"
+    return "No solicitado"
+
+
+def _imagen(incluida, miniaturas, imagenes_de_capas):
+    """Identificación de una imagen analizada, su cadena de custodia y sus resultados."""
+    original = getattr(incluida, "imagen", None)
+    cargo = getattr(original, "usuario", None)
+    return {
+        "nombre": incluida.nombre,
+        "huella": incluida.huella,
+        "miniatura": _miniatura_como_dato(miniaturas.get(incluida.id)),
+        "integridad": incluida.integridad,
+        "formato": (getattr(original, "formato", None) or "—").upper(),
+        "dimensiones": (
+            f"{original.ancho} × {original.alto} píxeles" if original is not None else "—"
+        ),
+        "tamanio": _tamanio_legible(getattr(original, "tamanio", None)),
+        "cargada_en": getattr(original, "cargada_en", None),
+        "cargada_por": f"{cargo.nombre} {cargo.apellido}" if cargo is not None else "—",
+        "sello": _sello(original),
+        "resultados": [_resultado(r, imagenes_de_capas) for r in incluida.resultados],
+    }
+
+
+def armar_datos(analisis, miniaturas, version_plataforma, imagenes_de_capas=None):
     """Datos del informe a partir del análisis.
 
     Args:
         miniaturas: diccionario ``id de AnalisisImagen -> bytes`` de cada vista reducida.
+        imagenes_de_capas: diccionario ``id de ResultadoCapa -> bytes`` (mapas ELA, 011).
         version_plataforma: versión de la aplicación (RN29).
     """
     caso = analisis.caso
+    imagenes_de_capas = imagenes_de_capas or {}
+    imagenes = [_imagen(incluida, miniaturas, imagenes_de_capas) for incluida in analisis.imagenes]
+    perfil = getattr(analisis.solicitante, "perfil", None)
+    rubro = TEXTOS_RUBRO.get(perfil, TEXTOS_RUBRO["abogado"])
     return {
+        "rubro": rubro,
+        # Código, URL y QR de verificación: los agrega ServicioInformes (026).
+        "verificacion": None,
         "caso": {
             "numero": caso.numero,
             "expediente": caso.expediente,
@@ -143,25 +269,22 @@ def armar_datos(analisis, miniaturas, version_plataforma):
             "id": analisis.id,
             "pedido_en": analisis.creado_en,
             "iniciado_en": analisis.iniciado_en,
+            "finalizado_en": getattr(analisis, "finalizado_en", None),
         },
-        "imagenes": [
-            {
-                "nombre": incluida.nombre,
-                "huella": incluida.huella,
-                "miniatura": _miniatura_como_dato(miniaturas.get(incluida.id)),
-                "integridad": incluida.integridad,
-                "resultados": [_resultado(r) for r in incluida.resultados],
-            }
-            for incluida in analisis.imagenes
-        ],
+        "logo": _miniatura_como_dato(LOGO.read_bytes(), "image/png"),
+        "bandas": BANDAS_DE_INDICIO,
+        "imagenes": imagenes,
+        "primera_carga": min(
+            (i["cargada_en"] for i in imagenes if i["cargada_en"] is not None), default=None
+        ),
         "versiones": {
             "Plataforma": version_plataforma,
             **{TITULOS_CAPA.get(c, c): v for c, v in (analisis.versiones or {}).items()},
             "Plantilla del informe": VERSION_PLANTILLA,
             "WeasyPrint (generación del PDF)": version_weasyprint(),
         },
-        "escala": ESCALA_DE_INDICIO,
-        "limitaciones": LIMITACIONES,
+        "leyenda": LEYENDA_PERICIAL,
+        "descargo": DESCARGO,
     }
 
 

@@ -123,7 +123,7 @@ describe('confirmación del correo nuevo', () => {
     })
     const { usuario } = renderizarEn('/confirmar-correo?token=t')
     await usuario.click(await screen.findByRole('link', { name: 'Ir a mi perfil' }))
-    expect(await screen.findByText('nuevo@ejemplo.com')).toBeInTheDocument()
+    expect((await screen.findAllByText('nuevo@ejemplo.com')).length).toBeGreaterThan(0)
   })
 
   it('informa si el enlace ya no es válido', async () => {

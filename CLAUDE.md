@@ -24,6 +24,8 @@ Este archivo forma parte del **arnés** del proyecto: define cómo debe trabajar
 - **Arquitectura en capas** (backend): `rutas → servicios → repositorios → modelos`. Una capa solo depende de la inmediatamente inferior. Ver la constitución para el detalle.
 - **Documentar siempre**: todo módulo, clase y función pública lleva docstring que explique qué hace, por qué y qué requisito realiza (por ejemplo, `Realiza: RF34, RN22`).
 - **Nunca** emitir veredictos en textos de análisis: solo indicios y recomendación de consultar a un profesional (RN27).
+- **Interfaz**: toda pantalla, correo o documento nuevo sigue la [guía de identidad visual](docs/guias/identidad-visual.md).
+- **Resultados**: toda salida de análisis respeta [ADR-0017](docs/arquitectura/decisiones/0017-marco-normativo-y-supervision-humana.md): descargo de IA, persona en el circuito y umbrales publicados.
 - **Nunca** subir secretos, archivos `.env`, imágenes de casos reales ni modelos entrenados al repositorio.
 
 ## Calidad mínima antes de dar algo por terminado
@@ -45,6 +47,7 @@ flake8 clasificador/ && pylint clasificador/ && pytest --cov=clasificador --cov-
 
 - Agregar una entrada en [docs/bitacora/](docs/bitacora/) con lo realizado, las decisiones y lo pendiente.
 - Si se tomó una decisión de arquitectura, registrarla como ADR en [docs/arquitectura/decisiones/](docs/arquitectura/decisiones/).
+- Agregar a [docs/informe-final/insumos.md](docs/informe-final/insumos.md) todo hallazgo, investigación, problema o decisión que deba quedar en el informe final del proyecto (pedido de la autora, 2026-10-25). Las investigaciones van completas en [docs/investigacion/](docs/investigacion/).
 
 ## Comandos del flujo guiado por especificaciones
 

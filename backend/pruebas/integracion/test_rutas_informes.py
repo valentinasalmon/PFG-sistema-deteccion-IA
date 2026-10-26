@@ -206,3 +206,37 @@ def test_eliminar_el_caso_borra_los_pdf(aplicacion, ana, caso):
     entrada = entradas_auditoria(aplicacion, "caso.eliminacion")[-1]
     assert informe["huella"] in entrada["detalle"]["sha256_eliminados"]
     assert len(entrada["detalle"]["sha256_eliminados"]) == 3
+
+
+# --- Informe verificable (funcionalidad 026) ---
+
+def test_el_informe_tiene_codigo_y_su_huella_queda_sellada(aplicacion, ana, caso):
+    """RF55 CA1 y CA2: código de verificación, QR en el PDF y sello de la huella del PDF."""
+    _analizar(ana, caso["id"], caso["imagenes"])
+    informe = _informes(ana, caso["id"])[0]
+
+    assert len(informe["codigo_verificacion"]) == 12
+    assert informe["sello"]["estado"] == "sellado" and informe["sello"]["simulado"] is True
+    entrada = entradas_auditoria(aplicacion, "imagen.sello")[-1]
+    assert entrada["detalle"]["tipo"] == "informe"
+    assert entrada["detalle"]["sha256"] == informe["huella"]
+
+
+def test_verificacion_publica_por_codigo_y_por_huella(aplicacion, ana, caso):
+    """RF55 CA3: sin sesión, por código (con o sin guiones) o por huella; nunca datos del caso."""
+    _analizar(ana, caso["id"], caso["imagenes"])
+    informe = _informes(ana, caso["id"])[0]
+    codigo = informe["codigo_verificacion"]
+    visitante = aplicacion.test_client()
+
+    legible = "-".join(codigo[i:i + 4] for i in range(0, 12, 4)).lower()
+    for consulta in (f"codigo={legible}", f"huella={informe['huella']}"):
+        respuesta = visitante.get(f"/api/verificacion?{consulta}")
+        assert respuesta.status_code == 200, consulta
+        datos = respuesta.get_json()["informe"]
+        assert datos["huella"] == informe["huella"] and datos["sello"]["estado"] == "sellado"
+        assert "caso" not in datos and "EXP-12/2026" not in respuesta.get_data(as_text=True)
+
+    assert visitante.get("/api/verificacion?codigo=NOEXISTE1234").status_code == 404
+    assert visitante.get("/api/verificacion?huella=" + "0" * 64).status_code == 404
+    assert visitante.get("/api/verificacion").status_code == 404

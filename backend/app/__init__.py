@@ -11,6 +11,7 @@ import os
 
 import redis
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Se importan los modelos para que Alembic los detecte al generar migraciones.
 from app import modelos  # noqa: F401  pylint: disable=unused-import
@@ -19,7 +20,7 @@ from app.configuracion import obtener_configuracion
 from app.extensiones import db, migrar, proteccion_csrf, sesiones_servidor
 from app.integraciones.almacenamiento import crear_almacenamiento
 from app.integraciones.cola import crear_cola
-from app.integraciones.correo import crear_enviador
+from app.integraciones.correo import EnviadorEnSegundoPlano, crear_enviador
 from app.rutas import registrar_rutas
 from app.seguridad.autenticacion import configurar_autenticacion
 
@@ -47,6 +48,11 @@ def crear_app(nombre_entorno=None):
 
     aplicacion = Flask(__name__)
     aplicacion.config.from_object(configuracion)
+    proxies = aplicacion.config["PROXIES_DE_CONFIANZA"]
+    if proxies:
+        # Detrás de Nginx: IP real y esquema HTTPS, sin aceptar cabeceras de más
+        # proxies que los configurados (RNF06 CA2, RNF02).
+        aplicacion.wsgi_app = ProxyFix(aplicacion.wsgi_app, x_for=proxies, x_proto=proxies)
     if aplicacion.config["SESSION_TYPE"] == "redis":
         aplicacion.config["SESSION_REDIS"] = redis.Redis.from_url(aplicacion.config["URL_REDIS"])
 
@@ -55,9 +61,16 @@ def crear_app(nombre_entorno=None):
     sesiones_servidor.init_app(aplicacion)
     proteccion_csrf.init_app(aplicacion)
     configurar_autenticacion(aplicacion)
-    aplicacion.extensions["enviador_correo"] = crear_enviador(aplicacion.config)
     aplicacion.extensions["almacenamiento"] = crear_almacenamiento(aplicacion.config)
     aplicacion.extensions["cola_analisis"] = crear_cola(aplicacion)
+    enviador = crear_enviador(aplicacion.config)
+    aplicacion.extensions["enviador_directo"] = enviador
+    if aplicacion.config["PROVEEDOR_CORREO"] != "memoria":
+        # Los correos se envían en segundo plano, en su propia cola (RF47 CA1).
+        enviador = EnviadorEnSegundoPlano(
+            crear_cola(aplicacion, "correos"), aplicacion.config["REINTENTOS_CORREO"]
+        )
+    aplicacion.extensions["enviador_correo"] = enviador
 
     registrar_rutas(aplicacion)
     registrar_comandos(aplicacion)

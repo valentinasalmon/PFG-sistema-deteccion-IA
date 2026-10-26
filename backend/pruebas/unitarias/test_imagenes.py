@@ -62,3 +62,16 @@ def test_la_miniatura_de_un_contenido_ilegible_falla():
     """Un contenido que no es imagen no genera miniatura."""
     with pytest.raises(ImagenInvalida):
         generar_miniatura(b"nada", 480)
+
+
+def test_heic_del_iphone_se_detecta_aunque_tenga_extension_jpg():
+    """024 (RF53 CA3): HEIC se reconoce por su caja ftyp; AVIF no se confunde con HEIC."""
+    heic = _imagen("HEIF")
+    assert detectar_formato(heic) == "heic"
+    assert leer_dimensiones(heic, "heic") == (40, 30)
+    miniatura = generar_miniatura(heic, 20)
+    assert miniatura.startswith(b"\xff\xd8\xff")  # la vista previa es JPEG
+    avif = b"\x00\x00\x00\x1cftypavif\x00\x00\x00\x00mif1miaf"
+    assert detectar_formato(avif) is None
+    generico = b"\x00\x00\x00\x18ftypmif1\x00\x00\x00\x00heicmiaf"
+    assert detectar_formato(generico) == "heic"

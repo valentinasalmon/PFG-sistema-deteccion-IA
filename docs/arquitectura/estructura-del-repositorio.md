@@ -27,7 +27,7 @@ Las carpetas vacías contienen un archivo `.gitkeep`, que solo existe para que G
 | `app/esquemas/` | Transversal | Validación de entradas y serialización de salidas de la API. |
 | `app/seguridad/` | Transversal | Decoradores `@requiere_rol`, `@requiere_permiso_caso`, CSRF, limitación de intentos. |
 | `app/analisis/` | Dominio | Interfaz común de capas y sus cuatro implementaciones (metadatos, C2PA, ELA, red neuronal). |
-| `app/integraciones/` | Adaptadores | Almacenamiento (S3 y local), correo (SES y consola), sellado de tiempo (BFA y simulado). |
+| `app/integraciones/` | Adaptadores | Almacenamiento (S3 y local), correo (SES y consola), sellado de tiempo (Hedera y simulado). |
 | `app/tareas/` | Segundo plano | Trabajos de RQ: procesar análisis, enviar correos, aplicar retención. |
 | `app/informes/` | Dominio | Construcción del informe PDF (WeasyPrint). |
 | `app/plantillas/correos/` | Presentación | Plantillas Jinja2 de los correos electrónicos. |

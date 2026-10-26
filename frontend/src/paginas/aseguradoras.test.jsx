@@ -44,8 +44,24 @@ const INVITACION = {
 const CON_SESION_ASEGURADORA = {
   'GET /api/sesion': { cuerpo: { usuario: { ...USUARIO, perfil: 'aseguradora', empresa: 'SEGUROS GALICIA S.A.' } } },
 }
+const TABLERO = {
+  usuarios_por_perfil: { abogado: 3, aseguradora: 1 },
+  organizaciones_por_tipo: { estudio_juridico: 2, aseguradora: 1 },
+  organizaciones_por_plan: { basico: 2, profesional: 1 },
+  casos_por_estado: { borrador: 4, analizado: 2 },
+  casos_por_tipo: { automovilistico: 5, laboral: 1 },
+  analisis_por_mes: { '2026-09': 3, '2026-10': 7 },
+  altas_por_mes: { '2026-10': 4 },
+}
 const CON_SESION_ADMINISTRADOR = {
   'GET /api/sesion': { cuerpo: { usuario: { ...USUARIO, rol: 'administrador' } } },
+  'GET /api/administracion/tablero?': { cuerpo: { tablero: TABLERO } },
+  'GET /api/administracion/usuarios?pagina=1': {
+    cuerpo: {
+      usuarios: [{ id: 1, nombre: 'Ana López', correo: 'ana@ejemplo.com', perfil: 'abogado', rol: 'usuario', estado: 'Activa', creado_en: '2026-10-01T12:00:00' }],
+      total: 1, pagina: 1, paginas: 1,
+    },
+  },
 }
 const PENDIENTE = {
   id: 7,
@@ -124,13 +140,14 @@ describe('aseguradora pendiente de aprobación', () => {
     renderizarEn('/organizaciones/7')
     expect(await screen.findByText(/pendiente de aprobación/)).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Invitar miembros' })).not.toBeInTheDocument()
-    expect(screen.getByText('30500000127')).toBeInTheDocument()
+    expect(screen.getByText('CUIT 30500000127')).toBeInTheDocument()
   })
 
   it('el nombre de una aseguradora no se edita (CA18)', async () => {
     apiDeAseguradora({ ...ASEGURADORA, estado: 'activa' })
-    renderizarEn('/organizaciones/7')
+    const { usuario } = renderizarEn('/organizaciones/7')
     const seccion = (await screen.findByRole('heading', { name: 'Datos de la organización' })).closest('section')
+    await usuario.click(within(seccion).getByRole('button', { name: 'Editar los datos de la organización' }))
     expect(within(seccion).getByLabelText('Nombre')).toHaveAttribute('readonly')
     expect(screen.getByRole('heading', { name: 'Invitar miembros' })).toBeInTheDocument()
   })
@@ -287,5 +304,18 @@ describe('administración', () => {
     await usuario.type(screen.getByLabelText(/Motivo del rechazo/), 'x')
     await usuario.click(screen.getByRole('button', { name: 'Rechazar la aseguradora' }))
     expect(await screen.findByText('La aseguradora no existe o ya fue revisada.')).toBeInTheDocument()
+  })
+})
+
+describe('tablero del Administrador (funcionalidad 014)', () => {
+  it('muestra los indicadores, los gráficos y el listado de cuentas (RF21, RF22)', async () => {
+    simularApi({ ...CON_SESION_ADMINISTRADOR, 'GET /api/administracion/aseguradoras-pendientes': { cuerpo: { aseguradoras: [] } } })
+    renderizarEn('/administracion')
+
+    expect(await screen.findByRole('heading', { name: 'Tablero de la plataforma' })).toBeInTheDocument()
+    expect(await screen.findByText('3 abogados · 1 de aseguradoras')).toBeInTheDocument()
+    expect(screen.getByLabelText('oct 26: 7')).toBeInTheDocument()
+    expect(screen.getByText('Análisis por mes')).toBeInTheDocument()
+    expect(await screen.findByRole('cell', { name: 'ana@ejemplo.com' })).toBeInTheDocument()
   })
 })

@@ -92,6 +92,9 @@ class Caso(db.Model):  # pylint: disable=too-few-public-methods
         "Informe", back_populates="caso", cascade="all, delete-orphan",
         order_by="Informe.id.desc()",
     )
+    enlaces_carga = db.relationship(
+        "EnlaceCarga", back_populates="caso", cascade="all, delete-orphan"
+    )
 
     @property
     def es_personal(self):

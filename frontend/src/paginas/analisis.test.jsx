@@ -251,6 +251,25 @@ describe('progreso y resultados', () => {
     expect(within(analisis).getByText('Sin credenciales de contenido.')).toBeInTheDocument()
   })
 
+  it('muestra el mapa de la capa ELA con su aclaración (011 CA4)', async () => {
+    const ela = {
+      ...RESULTADO,
+      capa: 'ela',
+      nivel: 45,
+      imagen: '/api/archivos/mapa-ela',
+      detalle: { tabla: [{ campo: 'Calidad JPEG estimada', valor: '85 %' }], regiones: 1 },
+    }
+    api({ historial: [RESUMEN], detalle: { ...DETALLE, imagenes: [{ ...DETALLE.imagenes[0], resultados: [RESULTADO, ela] }] } })
+    renderizarEn('/casos/7')
+
+    const analisis = await screen.findByRole('region', { name: 'Análisis' })
+    expect(await within(analisis).findByRole('heading', { name: 'Niveles de error (ELA)' })).toBeInTheDocument()
+    expect(within(analisis).getByRole('img', { name: 'Mapa de la capa Niveles de error (ELA)' })).toHaveAttribute('src', '/api/archivos/mapa-ela')
+    expect(within(analisis).getByText(/Es una señal complementaria/)).toBeInTheDocument()
+    expect(within(analisis).getByText('Datos del análisis')).toBeInTheDocument()
+    expect(within(analisis).getAllByRole('img', { name: /Mapa de la capa/ })).toHaveLength(1)
+  })
+
   it('marca como alerta una firma que no se pudo confirmar', async () => {
     api({
       historial: [RESUMEN],

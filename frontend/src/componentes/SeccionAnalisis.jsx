@@ -9,24 +9,49 @@
  *
  * Cada análisis finalizado ofrece descargar su informe PDF o, si no se pudo
  * generar, volver a generarlo (funcionalidad 008). La capa de credenciales de
- * contenido muestra además el estado de su firma (funcionalidad 009).
+ * contenido muestra además el estado de su firma (funcionalidad 009) y la de
+ * niveles de error, su mapa ELA (funcionalidad 011).
+ *
+ * Cada imagen empieza con un resumen de sus capas en la misma escala de lectura
+ * que el informe PDF (Sin indicios, débiles, moderados, fuertes) y cada capa
+ * explica qué mide en "¿Qué significa?" (funcionalidad 022).
  *
  * Realiza: RF40, RF43, RF44, RF46; CA5 a CA7 y CA12 a CA14 de la funcionalidad
- * 007; CA6 de la 008; CA7 de la 009.
+ * 007; CA6 de la 008; CA7 de la 009; CA4 de la 011; RNF10.
  */
 import { useCallback, useEffect, useState } from 'react'
 import { listarAnalisis, obtenerAnalisis } from '../api/analisis.js'
 import { descargarInforme, regenerarInforme } from '../api/informes.js'
 import { useDatos } from '../hooks/useDatos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
+import { BANDAS_DE_INDICIO, bandaDeIndicio } from '../utilidades/indicios.js'
 import Aviso from './Aviso.jsx'
 import Cargando from './Cargando.jsx'
 import Etiqueta from './Etiqueta.jsx'
+import Icono from './Icono.jsx'
 
 export const INTERVALO_DE_CONSULTA = 2000
 
-const TITULOS_CAPA = { metadatos: 'Metadatos', c2pa: 'Credenciales de contenido (C2PA)' }
-const TITULOS_TABLA = { metadatos: 'Metadatos extraídos', c2pa: 'Datos de las credenciales' }
+const TITULOS_CAPA = {
+  metadatos: 'Metadatos',
+  c2pa: 'Credenciales de contenido (C2PA)',
+  ela: 'Niveles de error (ELA)',
+}
+const TITULOS_TABLA = {
+  metadatos: 'Metadatos extraídos',
+  c2pa: 'Datos de las credenciales',
+  ela: 'Datos del análisis',
+}
+// Versión breve del recuadro "¿Qué significa?" del informe PDF.
+const QUE_SIGNIFICA = {
+  metadatos:
+    'Revisa los datos guardados dentro del archivo (dispositivo, fecha, programa de edición) en busca de señales de edición o de inteligencia artificial. WhatsApp y las redes sociales suelen borrarlos: su ausencia no indica por sí sola una manipulación.',
+  c2pa:
+    'Comprueba si la imagen trae credenciales de contenido firmadas (C2PA) que declaren quién la hizo y con qué herramienta. Si la firma es confiable y declara inteligencia artificial, es el indicio más fuerte de la plataforma. No tener credenciales es lo más habitual.',
+  ela:
+    'Vuelve a comprimir la imagen y compara cuánto cambia cada zona: una parte pegada o retocada suele comportarse distinto. Es orientativa: bordes, textos e imágenes reenviadas también producen diferencias, por eso nunca supera el nivel moderado.',
+}
+
 const ESTADOS_FIRMA = {
   confiable: 'Firma confiable',
   firmante_no_reconocido: 'Firmante no reconocido',
@@ -84,11 +109,15 @@ function ResultadoDeCapa({ resultado }) {
       </div>
     )
   }
+  const banda = bandaDeIndicio(resultado.nivel)
   return (
-    <div className="resultado-capa">
-      <h4>
-        {titulo} {resultado.capa === 'c2pa' && <EstadoDeLaFirma detalle={resultado.detalle} />}
-      </h4>
+    <div className={`resultado-capa resultado-capa--${banda.clase}`}>
+      <div className="resultado-capa__cabecera">
+        <h4>
+          {titulo} {resultado.capa === 'c2pa' && <EstadoDeLaFirma detalle={resultado.detalle} />}
+        </h4>
+        <span className={`nivel nivel--${banda.clase}`}>{banda.nombre}</span>
+      </div>
       <div className="nivel-indicio">
         <label htmlFor={`nivel-${resultado.capa}-${resultado.version}`}>Nivel de indicio</label>
         <meter
@@ -109,12 +138,26 @@ function ResultadoDeCapa({ resultado }) {
             <li key={indice}>
               <Etiqueta tipo={anomalia.severidad === 'neutro' ? 'neutra' : 'alerta'}>
                 {NOMBRES_SEVERIDAD[anomalia.severidad]}
-              </Etiqueta>{' '}
-              {anomalia.descripcion}
+              </Etiqueta>
+              <span>{anomalia.descripcion}</span>
             </li>
           ))}
         </ul>
       )}
+      {resultado.imagen && (
+        <figure className="mapa-capa">
+          <img src={resultado.imagen} alt={`Mapa de la capa ${titulo}`} loading="lazy" />
+          <figcaption className="nota">
+            Las zonas claras cambiaron más al recomprimir la imagen; las regiones señaladas están
+            recuadradas en rojo. Es una señal complementaria: los bordes y los detalles marcados
+            también se ven claros sin que haya edición.
+          </figcaption>
+        </figure>
+      )}
+      <details className="que-significa">
+        <summary>¿Qué significa?</summary>
+        <p>{QUE_SIGNIFICA[resultado.capa] ?? 'Esta capa busca señales técnicas de edición o de generación artificial.'}</p>
+      </details>
       {resultado.detalle?.tabla?.length > 0 && (
         <details>
           <summary>{TITULOS_TABLA[resultado.capa] ?? 'Datos extraídos'}</summary>
@@ -133,22 +176,76 @@ function ResultadoDeCapa({ resultado }) {
   )
 }
 
+function ResumenDeImagen({ imagen }) {
+  return (
+    <ul className="resumen-capas" aria-label={`Resumen de ${imagen.nombre}`}>
+      {imagen.resultados.map((resultado) => {
+        const titulo = TITULOS_CAPA[resultado.capa] ?? resultado.capa
+        if (resultado.estado === 'no_disponible') {
+          return (
+            <li key={resultado.capa} className="resumen-capas__item">
+              <span className="resumen-capas__capa">{titulo}</span>
+              <span className="nivel nivel--nd">No disponible</span>
+            </li>
+          )
+        }
+        const banda = bandaDeIndicio(resultado.nivel)
+        return (
+          <li key={resultado.capa} className="resumen-capas__item">
+            <span className="resumen-capas__capa">{titulo}</span>
+            <span className={`nivel nivel--${banda.clase}`}>{`${banda.nombre} · ${resultado.nivel} %`}</span>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
 function Resultados({ analisis }) {
   return analisis.imagenes.map((imagen) => (
     <article key={`${imagen.id_imagen}-${imagen.huella}`} className="resultado-imagen">
-      <h3>{imagen.nombre}</h3>
+      <div className="resultado-imagen__cabecera">
+        <h3>{imagen.nombre}</h3>
+        {imagen.integridad !== 'alterada' && (
+          <span className="integridad">
+            <Icono nombre="verificado" tamanio={18} />
+            Integridad verificada
+          </span>
+        )}
+      </div>
+      <p className="huella">SHA-256 {imagen.huella}</p>
       {imagen.integridad === 'alterada' ? (
         <Aviso tipo="error">
           La huella SHA-256 de esta imagen ya no coincide con la registrada al cargarla: se
           excluyó del análisis por una anomalía de integridad.
         </Aviso>
       ) : (
-        imagen.resultados.map((resultado) => (
-          <ResultadoDeCapa key={resultado.capa} resultado={resultado} />
-        ))
+        <>
+          <ResumenDeImagen imagen={imagen} />
+          {imagen.resultados.map((resultado) => (
+            <ResultadoDeCapa key={resultado.capa} resultado={resultado} />
+          ))}
+        </>
       )}
     </article>
   ))
+}
+
+function Escala() {
+  return (
+    <details className="escala">
+      <summary>Cómo leer los niveles</summary>
+      <ul>
+        {BANDAS_DE_INDICIO.map((banda) => (
+          <li key={banda.clase}>
+            <span className={`nivel nivel--${banda.clase}`}>{banda.nombre}</span>
+            <span className="escala__rango">{banda.rango}</span>
+            <span>{banda.texto}</span>
+          </li>
+        ))}
+      </ul>
+    </details>
+  )
 }
 
 function AccionesDelInforme({ idCaso, analisis, puedeGenerar, alGenerar }) {
@@ -177,6 +274,7 @@ function AccionesDelInforme({ idCaso, analisis, puedeGenerar, alGenerar }) {
           disabled={enviando}
           onClick={() => ejecutar(() => descargarInforme(idCaso, analisis.informe.id))}
         >
+          <Icono nombre="descargar" tamanio={18} />
           Descargar el informe PDF
         </button>
       ) : (
@@ -271,6 +369,12 @@ export default function SeccionAnalisis({ idCaso, puedeGenerar = false, alTermin
         Cada capa informa indicios por separado; no se combinan en un puntaje único. Ante
         cualquier duda, consultá con un perito especializado.
       </p>
+      <p className="descargo">
+        <strong>Herramienta auxiliar.</strong> Estos resultados son parciales: los produce un
+        sistema automatizado que incluye técnicas de inteligencia artificial y no reemplazan el
+        criterio de un perito o criminalista, que toma la decisión final.
+      </p>
+      <Escala />
       {historial.length > 1 && (
         <ul className="historial-analisis" aria-label="Historial de análisis">
           {historial.map((analisis) => (

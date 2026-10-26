@@ -1,0 +1,10 @@
+# Pide y confirma los sellos de tiempo pendientes cada 15 minutos (funcionalidad 016).
+[Unit]
+Description=Sellos de tiempo de la plataforma en Blockchain Federal Argentina
+
+[Timer]
+OnCalendar=*:0/15
+Persistent=true
+
+[Install]
+WantedBy=timers.target

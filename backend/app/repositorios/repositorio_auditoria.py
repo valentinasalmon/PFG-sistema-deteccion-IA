@@ -8,6 +8,7 @@ Realiza: RNF06 (CA3, CA8).
 """
 from app.extensiones import db
 from app.modelos.entrada_auditoria import EntradaAuditoria
+from app.modelos.usuario import Usuario
 
 
 class RepositorioAuditoria:
@@ -29,6 +30,28 @@ class RepositorioAuditoria:
         rechazado, y la entrada debe guardarse antes de informar el error.
         """
         db.session.commit()
+
+    def recientes_de_recursos(self, tipo_recurso, ids_recursos, acciones, resultado, cantidad):
+        """Últimas entradas de esos recursos, con el usuario que actuó (panel, RF48 CA2).
+
+        Returns:
+            Lista de ``(entrada, usuario o None)``, de la más reciente a la más antigua.
+        """
+        if not ids_recursos:
+            return []
+        return (
+            db.session.query(EntradaAuditoria, Usuario)
+            .outerjoin(Usuario, Usuario.id == EntradaAuditoria.id_usuario)
+            .filter(
+                EntradaAuditoria.tipo_recurso == tipo_recurso,
+                EntradaAuditoria.id_recurso.in_([str(i) for i in ids_recursos]),
+                EntradaAuditoria.accion.in_(acciones),
+                EntradaAuditoria.resultado == resultado,
+            )
+            .order_by(EntradaAuditoria.fecha.desc(), EntradaAuditoria.id.desc())
+            .limit(cantidad)
+            .all()
+        )
 
     def de_usuario(self, id_usuario):
         """Entradas de las acciones del usuario, de la más antigua a la más reciente.

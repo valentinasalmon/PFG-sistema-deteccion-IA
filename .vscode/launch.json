@@ -1,0 +1,16 @@
+{
+  // Depurar el backend con puntos de interrupción: pestaña "Ejecutar y depurar" (Ctrl+Shift+D).
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "evidentIA: depurar backend (Flask)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "flask",
+      "args": ["--app", "wsgi", "run", "--port", "5000", "--no-reload"],
+      "cwd": "${workspaceFolder}/backend",
+      "envFile": "${workspaceFolder}/backend/.env",
+      "jinja": true
+    }
+  ]
+}

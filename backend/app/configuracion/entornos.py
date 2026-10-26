@@ -22,13 +22,16 @@ Variables de entorno:
     ALMACENAMIENTO       "local" (desarrollo) o "s3"; en producción siempre S3.
     DIRECTORIO_ALMACENAMIENTO  Carpeta de las imágenes con el almacenamiento local.
     S3_BUCKET            Bucket privado de las imágenes (producción).
-    S3_REGION            Región de AWS del bucket (por defecto, sa-east-1).
+    S3_REGION            Región de AWS del bucket (por defecto, eu-west-1, Irlanda;
+                         RNF08 CA6).
     S3_ENDPOINT          Dirección de un servicio compatible con S3 (opcional).
     S3_CIFRADO           Cifrado del lado del servidor (por defecto, AES256).
     RUTA_EXIFTOOL        Ejecutable de ExifTool (por defecto, "exiftool" del sistema).
     CARPETA_CONFIANZA_C2PA  Carpeta con la lista de confianza de C2PA (por defecto,
                          ``recursos/confianza_c2pa`` del backend).
     COLA_ANALISIS        "hilo" (desarrollo), "rq" (producción) o "sincronica".
+    PROXIES_DE_CONFIANZA Cantidad de proxies delante de la aplicación (Nginx en
+                         producción: 1), para leer la IP real del cliente.
 
 Realiza: RNF01, RNF02, RNF03 (CA1, CA3), RNF22.
 """
@@ -44,6 +47,15 @@ from cachelib import SimpleCache
 # al repositorio (constitución: nada de imágenes de casos reales).
 DIRECTORIO_ALMACENAMIENTO_LOCAL = Path(__file__).resolve().parents[2] / "almacenamiento_local"
 CARPETA_CONFIANZA = Path(__file__).resolve().parents[2] / "recursos" / "confianza_c2pa"
+# desplegar.sh escribe el commit desplegado en la raíz de la versión (funcionalidad 029).
+ARCHIVO_COMMIT = Path(__file__).resolve().parents[3] / "COMMIT"
+
+
+def _commit_desplegado():
+    """Commit de la versión en ejecución: variable COMMIT o el archivo COMMIT; vacío si no hay."""
+    if os.getenv("COMMIT"):
+        return os.getenv("COMMIT").strip()
+    return ARCHIVO_COMMIT.read_text().strip() if ARCHIVO_COMMIT.is_file() else ""
 
 
 class ErrorConfiguracion(Exception):
@@ -59,7 +71,9 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
     """
 
     NOMBRE = "base"
-    VERSION_APLICACION = "0.2.0"
+    VERSION_APLICACION = "0.3.0"
+    # Commit desplegado, guardado con cada análisis (RF56 CA2).
+    COMMIT = _commit_desplegado()
     DEBUG = False
     TESTING = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -104,12 +118,16 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
     # para poder ajustarlos sin cambiar el código (RF19 CA3); la 014 los pasará
     # a la base de datos cuando el Administrador pueda cambiar el plan.
     PLANES = {
-        "basico": {"nombre": "Organización Básico", "miembros": 5, "imagenes_por_caso": 50},
+        "basico": {
+            "nombre": "Organización Básico", "miembros": 5, "imagenes_por_caso": 50,
+            "analisis_mes": 100, "precio": "[PRECIO A DEFINIR]",
+        },
         "profesional": {
             "nombre": "Organización Profesional", "miembros": 25, "imagenes_por_caso": 100,
+            "analisis_mes": 500, "precio": "[PRECIO A DEFINIR]",
         },
     }
-    PLAN_PERSONAL = {"nombre": "Personal", "imagenes_por_caso": 20}
+    PLAN_PERSONAL = {"nombre": "Personal", "imagenes_por_caso": 20, "analisis_mes": 10}
     PLAN_INICIAL_ORGANIZACION = "basico"
     VIGENCIA_INVITACION = timedelta(days=7)  # RN10
 
@@ -118,6 +136,7 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
     # Flask corta antes las solicitudes más grandes; se deja margen para el formulario.
     MAX_CONTENT_LENGTH = TAMANIO_MAXIMO_IMAGEN + 1024 * 1024
     VIGENCIA_ENLACE_ARCHIVO = timedelta(minutes=5)  # RF35 CA2
+    REINTENTOS_CORREO = (30, 120)  # segundos de espera antes de cada reintento (RF47 CA3)
     LADO_MINIATURA = 480  # píxeles del lado mayor de la vista previa
 
     # --- Análisis (funcionalidad 007) ---
@@ -153,7 +172,7 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
             if correo.strip()
         )
         self.REMITENTE_CORREO = os.getenv(
-            "REMITENTE_CORREO", "Plataforma de análisis de imágenes <no-responder@localhost>"
+            "REMITENTE_CORREO", "evidentIA <no-responder@localhost>"
         )
         # Almacenamiento de imágenes: "local" (carpeta del servidor) o "s3".
         self.ALMACENAMIENTO = os.getenv("ALMACENAMIENTO", "local")
@@ -161,7 +180,7 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
             "DIRECTORIO_ALMACENAMIENTO", str(DIRECTORIO_ALMACENAMIENTO_LOCAL)
         )
         self.S3_BUCKET = os.getenv("S3_BUCKET", "")
-        self.S3_REGION = os.getenv("S3_REGION", "sa-east-1")
+        self.S3_REGION = os.getenv("S3_REGION", "eu-west-1")
         self.S3_ENDPOINT = os.getenv("S3_ENDPOINT", "")
         self.S3_CIFRADO = os.getenv("S3_CIFRADO", "AES256") or None
         # Análisis: ExifTool del sistema y cola "hilo" (desarrollo), "rq" o "sincronica".
@@ -170,6 +189,20 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
             CARPETA_CONFIANZA
         )
         self.COLA_ANALISIS = os.getenv("COLA_ANALISIS", "hilo")
+        # Sello de tiempo en Hedera (funcionalidad 023, ADR-0018): hedera | simulado | desactivado.
+        # En producción no se simula nunca: sin configurar, queda desactivado.
+        self.SELLO_TIEMPO = os.getenv(
+            "SELLO_TIEMPO", "desactivado" if self.NOMBRE == "produccion" else "simulado"
+        )
+        # Cuenta, clave y tema de Hedera: solo por variables de entorno (SSM en producción),
+        # nunca en el repositorio.
+        self.HEDERA_RED = os.getenv("HEDERA_RED", "testnet")
+        self.HEDERA_CUENTA = os.getenv("HEDERA_CUENTA", "")
+        self.HEDERA_CLAVE = os.getenv("HEDERA_CLAVE", "")
+        self.HEDERA_TEMA = os.getenv("HEDERA_TEMA", "")
+        self.HEDERA_URL_MIRROR = os.getenv("HEDERA_URL_MIRROR", "")
+        # Proxies delante de la aplicación: 0 en desarrollo, 1 (Nginx) en producción.
+        self.PROXIES_DE_CONFIANZA = int(os.getenv("PROXIES_DE_CONFIANZA", "0"))
 
     def validar(self):
         """Verifica que existan todas las variables obligatorias del entorno.
@@ -250,3 +283,6 @@ class ConfiguracionProduccion(ConfiguracionBase):
         super().__init__()
         self.ALMACENAMIENTO = "s3"  # pylint: disable=invalid-name
         self.COLA_ANALISIS = "rq"  # pylint: disable=invalid-name
+        self.PROXIES_DE_CONFIANZA = int(  # pylint: disable=invalid-name
+            os.getenv("PROXIES_DE_CONFIANZA", "1")
+        )

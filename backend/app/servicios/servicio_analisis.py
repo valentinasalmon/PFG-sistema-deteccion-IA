@@ -14,6 +14,7 @@ RN27, RN29; RNF07 (CA2).
 """
 import hashlib
 import logging
+from uuid import uuid4
 
 from app.analisis.base import CapaNoDisponible, ContextoImagen
 from app.modelos.analisis import (
@@ -65,8 +66,9 @@ class ServicioAnalisis:
             ejecucion: diccionario con ``capas`` (lista de ``CapaAnalisis``),
                 ``almacenamiento`` (de donde se leen los originales), ``cola``
                 (implementación de ``app.integraciones.cola``), ``trabajo``
-                (ruta de importación de la función que procesa un análisis) e
-                ``informes`` (``ServicioInformes``, que genera el PDF).
+                (ruta de importación de la función que procesa un análisis),
+                ``informes`` (``ServicioInformes``, que genera el PDF) y, opcional,
+                ``planes`` (``ServicioPlanes``, que controla el límite mensual).
             registro: ``ServicioAuditoria``.
         """
         self.repositorio = repositorio
@@ -114,11 +116,22 @@ class ServicioAnalisis:
                 codigo="caso_sin_analisis",
             ), usuario, caso, "estado")
         elegidas = self._imagenes_elegidas(caso, usuario, ids_imagenes)
+        planes = self.ejecucion.get("planes")
+        if planes is not None:  # límite mensual del plan (RF19 CA2, funcionalidad 014)
+            try:
+                planes.verificar_analisis_disponible(caso)
+            except ConflictoDatos as error:
+                self._rechazar(error, usuario, caso, "limite_plan")
 
         analisis = Analisis(
             id_caso=caso.id, id_solicitante=usuario.id, estado=ESTADO_EN_COLA,
             estado_anterior_caso=caso.estado,
-            versiones={capa.nombre: capa.version() for capa in self.ejecucion["capas"]},
+            versiones={
+                **{capa.nombre: capa.version() for capa in self.ejecucion["capas"]},
+                # Commit de la plataforma: enlaza el análisis con su versión en Hedera (029).
+                **({"commit": self.configuracion["COMMIT"]}
+                   if self.configuracion.get("COMMIT") else {}),
+            },
         )
         for orden, imagen in enumerate(elegidas, start=1):
             analisis.imagenes.append(AnalisisImagen(
@@ -208,8 +221,7 @@ class ServicioAnalisis:
             incluida.resultados.append(self._ejecutar_capa(capa, contenido, contexto))
             self._avanzar(analisis)
 
-    @staticmethod
-    def _ejecutar_capa(capa, contenido, contexto):
+    def _ejecutar_capa(self, capa, contenido, contexto):
         """Resultado de una capa; si falla, "No disponible" con el motivo (RN26, RF43 CA3)."""
         version = capa.version()
         try:
@@ -229,6 +241,7 @@ class ServicioAnalisis:
         return ResultadoCapa(
             capa=capa.nombre, estado=RESULTADO_COMPLETADO, nivel=resultado.nivel,
             conclusion=resultado.conclusion, detalle=resultado.detalle, version=version,
+            clave_imagen=self._guardar_imagen(resultado.imagen),
             anomalias=[
                 Anomalia(
                     campo=a.campo[:100], valor=a.valor, descripcion=a.descripcion,
@@ -237,6 +250,18 @@ class ServicioAnalisis:
                 for a in resultado.anomalias
             ],
         )
+
+    def _guardar_imagen(self, imagen):
+        """Guarda la imagen de un resultado (mapa ELA); si falla, el resultado sigue sin ella."""
+        if not imagen:
+            return None
+        clave = f"analisis/{uuid4().hex}.png"
+        try:
+            self.ejecucion["almacenamiento"].guardar(clave, imagen, "image/png")
+        except Exception:  # pylint: disable=broad-exception-caught
+            registro_log.exception("No se pudo guardar la imagen del resultado %s", clave)
+            return None
+        return clave
 
     def _generar_informe(self, analisis):
         """Genera el informe PDF (008); si falla, el análisis igual finaliza (CA6 de la 008).
@@ -271,9 +296,12 @@ class ServicioAnalisis:
              "integridad_alterada": alteradas, "informe": con_informe},
         )
         self._avanzar(analisis)
-        if analisis.solicitante:
+        if con_informe:
+            # Después de confirmar: el sello en Hedera nunca demora ni impide el informe (026).
+            self.ejecucion["informes"].sellar(analisis.informe)
+        for usuario in _destinatarios_del_aviso(analisis, caso):
             self.correos.enviar_aviso_analisis_finalizado(
-                analisis.solicitante, caso, len(analisis.imagenes), con_informe
+                usuario, caso, len(analisis.imagenes), con_informe
             )
 
     def _fallar(self, id_analisis, motivo):
@@ -292,8 +320,8 @@ class ServicioAnalisis:
             {"id_analisis": analisis.id, "motivo": motivo},
         )
         self._avanzar(analisis)
-        if analisis.solicitante:
-            self.correos.enviar_aviso_analisis_fallido(analisis.solicitante, caso, motivo)
+        for usuario in _destinatarios_del_aviso(analisis, caso):
+            self.correos.enviar_aviso_analisis_fallido(usuario, caso, motivo)
 
     def verificar_interrumpidos(self, caso):
         """Marca como Fallido el análisis en curso que dejó de avanzar (RF46 CA2)."""
@@ -311,6 +339,16 @@ class ServicioAnalisis:
         self.verificar_interrumpidos(caso)
         return self.repositorio.de_caso(caso.id)
 
+    def enlaces_de_imagenes(self, analisis):
+        """Enlaces firmados de las imágenes de los resultados, por id de resultado (RNF03 CA2)."""
+        segundos = int(self.configuracion["VIGENCIA_ENLACE_ARCHIVO"].total_seconds())
+        return {
+            resultado.id: self.ejecucion["almacenamiento"].enlace(resultado.clave_imagen, segundos)
+            for incluida in analisis.imagenes
+            for resultado in incluida.resultados
+            if resultado.clave_imagen
+        }
+
     def detalle(self, id_caso, id_analisis, usuario):
         """Estado, progreso y resultados de un análisis del caso."""
         caso, _ = self.casos.caso_con_permiso(id_caso, usuario, NIVEL_LECTURA)
@@ -319,3 +357,12 @@ class ServicioAnalisis:
         if analisis is None or analisis.id_caso != caso.id:
             raise NoEncontrado("El análisis no existe o no tenés acceso a él.")
         return analisis
+
+
+def _destinatarios_del_aviso(analisis, caso):
+    """Quien pidió el análisis y el Responsable del caso, sin repetir (RF47)."""
+    destinatarios = []
+    for usuario in (analisis.solicitante, caso.responsable):
+        if usuario is not None and usuario not in destinatarios:
+            destinatarios.append(usuario)
+    return destinatarios
