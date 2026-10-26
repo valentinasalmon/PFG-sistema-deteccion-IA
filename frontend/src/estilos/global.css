@@ -2752,3 +2752,43 @@ select.campo__control {
   min-height: 3.25rem;
   font-size: 1.0625rem;
 }
+
+/* --- Verificación pública de informes (funcionalidad 026) --- */
+.formulario-en-linea {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.5rem 0.75rem;
+  margin: 1rem 0;
+}
+
+.formulario-en-linea label {
+  flex-basis: 100%;
+  font-weight: 600;
+}
+
+.formulario-en-linea input {
+  flex: 1 1 12rem;
+  min-height: 44px;
+  font-family: ui-monospace, monospace;
+  letter-spacing: 0.05em;
+}
+
+.datos-verificacion {
+  display: grid;
+  grid-template-columns: minmax(8rem, max-content) 1fr;
+  gap: 0.5rem 1rem;
+  margin: 1.25rem 0;
+}
+
+.datos-verificacion dt {
+  color: var(--color-texto-secundario);
+}
+
+.datos-verificacion dd {
+  margin: 0;
+}
+
+.verificar-informe__archivo {
+  margin: 1.25rem 0 1rem;
+}

@@ -82,6 +82,13 @@ def informe_a_dict(informe):
         "imagenes": [incluida.nombre for incluida in analisis.imagenes],
         "huella": informe.huella,
         "tamanio": informe.tamanio,
+        # Verificación pública y sello del PDF en Hedera (funcionalidad 026).
+        "codigo_verificacion": informe.codigo_verificacion,
+        "sello": {
+            "estado": informe.sello_estado,
+            "referencia": informe.sello_referencia,
+            "simulado": informe.sello_simulado,
+        },
     }
 
 

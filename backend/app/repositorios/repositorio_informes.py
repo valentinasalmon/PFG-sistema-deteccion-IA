@@ -28,6 +28,18 @@ class RepositorioInformes(RepositorioBase):
             return []
         return Informe.query.filter(Informe.id_caso.in_(ids_casos)).all()
 
+    def por_codigo(self, codigo):
+        """El informe con ese código de verificación, o None (RF55 CA3)."""
+        return Informe.query.filter_by(codigo_verificacion=codigo).first()
+
+    def por_huella(self, huella):
+        """El informe cuyo PDF tiene esa huella, o None (RF55 CA3)."""
+        return Informe.query.filter_by(huella=huella).first()
+
+    def con_sello_en_curso(self, estados):
+        """Informes cuyo sello de tiempo todavía no terminó (funcionalidad 026)."""
+        return Informe.query.filter(Informe.sello_estado.in_(estados)).order_by(Informe.id).all()
+
     def agregar(self, informe):
         """Suma el informe a la transacción, sin confirmarla."""
         db.session.add(informe)
