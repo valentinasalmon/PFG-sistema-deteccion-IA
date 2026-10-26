@@ -124,6 +124,19 @@ def test_png_tiene_validez_limitada_y_solo_indicios_debiles(empalme):
     assert tabla["Calidad JPEG estimada"] == "no corresponde"
 
 
+def test_heic_tiene_validez_limitada_y_solo_indicios_debiles(empalme):
+    """024: en HEIC (iPhone) también se aclara la limitación de ELA."""
+    salida = io.BytesIO()
+    Image.open(io.BytesIO(empalme)).save(salida, "HEIF")
+
+    resultado = CapaELA().analizar(salida.getvalue(), _contexto("heic"))
+
+    assert "HEIC" in resultado.conclusion and "validez limitada" in resultado.conclusion
+    assert all(a.severidad == "debil" for a in resultado.anomalias)
+    tabla = {fila["campo"]: fila["valor"] for fila in resultado.detalle["tabla"]}
+    assert tabla["Formato"] == "HEIC (iPhone)"
+
+
 def test_imagen_muy_chica_no_se_analiza():
     """Menos de 8 bloques por lado: se informa el motivo sin nivel de indicio."""
     resultado = CapaELA().analizar(_jpeg(_foto(100, 300), 90), _contexto(tamanio=(100, 300)))

@@ -37,6 +37,27 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
 
 - Hallazgos sobre la web móvil, HEIC, pérdida de ubicación en iOS, fotos sin EXIF y compresión de WhatsApp.
 - Diez ideas con pros y contras, y la propuesta elegida.
+- **Evolución de la propuesta:**
+  - primero, web en el celular más QR;
+  - la autora descartó la plataforma móvil;
+  - propuesta final: código de carga (QR y 6 dígitos) más "compartir desde la galería", con Web Share Target (PWA) en Android y Atajo de Apple en iPhone.
+  
+  Las alternativas evaluadas y descartadas (cable, AirDrop, Quick Share, iCloud, LocalSend, correo, WhatsApp, app nativa) están en la investigación.
+- **Etapa 1 implementada** (funcionalidad 024): soporte de HEIC sin convertir el original, detectado por la caja `ftyp`, y ELA con validez limitada en HEIC.
+- **El tutor aprobó el QR hacia la galería (2026-10-26). Etapa 2 implementada:**
+  - enlace de un solo uso (15 minutos, 30 fotos, solo carga en ese caso);
+  - token de 192 bits, del que solo se guarda la huella;
+  - QR en SVG generado en el servidor;
+  - página del celular sin sesión, con galería y cámara;
+  - auditoría con origen `celular`;
+  - actualización automática en la computadora.
+  
+  Queda como trabajo futuro el "compartir desde la galería" (Web Share Target y Atajo de Apple).
+- **Importar desde Drive o Dropbox: descartado** por doble trabajo, por sumar un custodio intermedio sin trazabilidad (que puede comprimir o convertir la foto) y por la privacidad. Como ampliación futura, importar desde un enlace enviado por un tercero requeriría:
+  - descargar sin acceder a cuentas;
+  - no guardar el enlace;
+  - marcar el origen como "sin garantía";
+  - una declaración de autorización (Ley 25.326).
 - Ver `docs/investigacion/2026-10-25-carga-desde-el-celular.md`.
 
 ## Otros temas ya registrados

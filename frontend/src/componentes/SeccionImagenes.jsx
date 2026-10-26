@@ -21,9 +21,12 @@ import { abrirDescarga, formatearTamanio } from '../utilidades/archivos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 import Aviso from './Aviso.jsx'
 import BotonConfirmar from './BotonConfirmar.jsx'
+import CargaDesdeCelular from './CargaDesdeCelular.jsx'
 import Cargando from './Cargando.jsx'
 
-const TIPOS_ACEPTADOS = 'image/jpeg,image/png,.jpg,.jpeg,.png'
+// HEIC/HEIF: formato por defecto del iPhone. Se lista explícitamente para que el
+// navegador entregue el original sin convertirlo (funcionalidad 024).
+const TIPOS_ACEPTADOS = 'image/jpeg,image/png,image/heic,image/heif,.jpg,.jpeg,.png,.heic,.heif'
 
 function Carga({ idCaso, tamanioMaximo, alTerminar }) {
   const idCampo = useId()
@@ -78,11 +81,14 @@ function Carga({ idCaso, tamanioMaximo, alTerminar }) {
         onChange={alElegir}
         disabled={Boolean(cargando)}
       />
-      <label htmlFor={idCampo} className="boton">
-        Elegir imágenes
-      </label>
+      <div className="acciones-en-linea">
+        <label htmlFor={idCampo} className="boton">
+          Elegir imágenes
+        </label>
+        <CargaDesdeCelular idCaso={idCaso} alActualizar={alTerminar} />
+      </div>
       <p className="nota">
-        JPEG o PNG, hasta {maximoMb} MB cada una. El archivo original no se modifica.
+        JPEG, PNG o HEIC (iPhone), hasta {maximoMb} MB cada una. El archivo original no se modifica.
       </p>
       <div aria-live="polite">
         {cargando && <Cargando texto={`Cargando ${cargando.actual} de ${cargando.total}…`} />}
@@ -188,12 +194,7 @@ function BarraAnalisis({ cantidad, total, alElegirTodas, alAnalizar }) {
 
   return (
     <div className="barra-analisis">
-      <button
-        type="button"
-        className="boton"
-        onClick={analizar}
-        disabled={cantidad === 0 || enviando}
-      >
+      <button type="button" className="boton" onClick={analizar} disabled={cantidad === 0 || enviando}>
         {enviando ? 'Pidiendo el análisis…' : `Analizar (${cantidad})`}
       </button>
       <button
@@ -251,8 +252,8 @@ export default function SeccionImagenes({ idCaso, alSolicitarAnalisis }) {
   const [eleccion, setEleccion] = useState(null)
   const imagenes = datos?.imagenes ?? []
   const elegidas = new Set(
-    (eleccion ?? imagenes.filter((imagen) => !imagen.analizada).map((imagen) => imagen.id)).filter(
-      (id) => imagenes.some((imagen) => imagen.id === id),
+    (eleccion ?? imagenes.filter((imagen) => !imagen.analizada).map((imagen) => imagen.id)).filter((id) =>
+      imagenes.some((imagen) => imagen.id === id),
     ),
   )
 
@@ -285,9 +286,7 @@ export default function SeccionImagenes({ idCaso, alSolicitarAnalisis }) {
 
   return (
     <section className="seccion" aria-labelledby="titulo-imagenes" aria-busy={cargando}>
-      <h2 id="titulo-imagenes">
-        Imágenes{datos ? ` (${datos.imagenes.length} de ${datos.limite})` : ''}
-      </h2>
+      <h2 id="titulo-imagenes">Imágenes{datos ? ` (${datos.imagenes.length} de ${datos.limite})` : ''}</h2>
       {cargando && <Cargando texto="Cargando las imágenes…" />}
       {error && <Aviso tipo="error">{error.message}</Aviso>}
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}

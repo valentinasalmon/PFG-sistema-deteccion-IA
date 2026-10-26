@@ -4,7 +4,8 @@
  * - Pantallas de acceso (solo sin sesión): inicio de sesión, registro y
  *   recuperación de la contraseña.
  * - Pantallas de enlaces recibidos por correo (incluida la invitación a una
- *   organización) y textos legales: accesibles con o sin sesión.
+ *   organización), la carga desde el celular con un QR (024) y textos
+ *   legales: accesibles con o sin sesión.
  * - Pantallas internas: requieren sesión (CA22).
  *
  * Realiza: CA22 de la funcionalidad 002; pantallas de las funcionalidades 004
@@ -14,6 +15,7 @@ import { Route, Routes } from 'react-router'
 import { DisposicionAcceso, DisposicionInterna } from './componentes/Disposiciones.jsx'
 import { RutaProtegida, RutaSoloVisitantes } from './rutas/Rutas.jsx'
 import PaginaAdministracion from './paginas/PaginaAdministracion.jsx'
+import PaginaCargaCelular from './paginas/PaginaCargaCelular.jsx'
 import PaginaCaso from './paginas/PaginaCaso.jsx'
 import PaginaCasos from './paginas/PaginaCasos.jsx'
 import PaginaConfirmarCorreo from './paginas/PaginaConfirmarCorreo.jsx'
@@ -47,6 +49,7 @@ export default function App() {
         <Route path="/restablecer-contrasenia" element={<PaginaRestablecerContrasenia />} />
         <Route path="/confirmar-correo" element={<PaginaConfirmarCorreo />} />
         <Route path="/invitaciones/responder" element={<PaginaInvitacion />} />
+        <Route path="/cargar/:token" element={<PaginaCargaCelular />} />
         <Route path="/terminos" element={<PaginaTerminos />} />
         <Route path="/privacidad" element={<PaginaPrivacidad />} />
         <Route path="/estado" element={<PaginaEstado />} />
