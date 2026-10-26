@@ -1,10 +1,11 @@
-"""Sello de tiempo de las imágenes en Blockchain Federal Argentina (funcionalidad 016).
+"""Sello de tiempo de las imágenes en Hedera (funcionalidades 016 y 023).
 
 Cada imagen cargada queda ``pendiente``. El servicio pide el sello (solo la
-huella SHA-256), la imagen pasa a ``enviado`` con el recibo de BFA y, cuando
-BFA la incluye en un bloque, a ``sellado`` con la referencia y la fecha. Si BFA
-no responde se reintenta en cada pasada de la tarea programada; después de
-``MAXIMO_INTENTOS`` queda ``fallido``. Nada de esto impide cargar ni analizar.
+huella SHA-256), la imagen pasa a ``enviado`` con el recibo de Hedera y,
+cuando el mensaje aparece en el *mirror node*, a ``sellado`` con la
+referencia y la fecha de consenso. Si Hedera no responde se reintenta en
+cada pasada de la tarea programada; después de ``MAXIMO_INTENTOS`` queda
+``fallido``. Nada de esto impide cargar ni analizar.
 
 Realiza: RF37 (CA1 a CA3); RNF20 (CA1).
 """

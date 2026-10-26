@@ -4,30 +4,57 @@ El formato se determina por la firma binaria del contenido, no por la
 extensión ni por el tipo que declara el navegador (RN22). Ninguna función
 modifica el contenido recibido: la miniatura es una copia nueva (RN23).
 
-Realiza: RF34 (CA1, CA2), RF35 (vista previa); RN22, RN23.
+Las fotos HEIC/HEIF del iPhone se leen con ``pillow-heif``: el original se
+guarda tal cual y solo la miniatura se convierte a JPEG (funcionalidad 024).
+
+Realiza: RF34 (CA1, CA2), RF35 (vista previa), RF53 (CA3); RN22, RN23.
 """
 import io
 import warnings
 
 from PIL import Image, ImageOps, UnidentifiedImageError
+from pillow_heif import register_heif_opener
+
+register_heif_opener()  # Pillow puede abrir HEIC/HEIF desde acá en adelante
 
 FIRMAS = {
     b"\xff\xd8\xff": "jpeg",
     b"\x89PNG\r\n\x1a\n": "png",
 }
-FORMATOS_PILLOW = {"jpeg": "JPEG", "png": "PNG"}
+FORMATOS_PILLOW = {"jpeg": "JPEG", "png": "PNG", "heic": "HEIF"}
+# Marcas de la caja "ftyp" de un HEIC/HEIF (ISO/IEC 23008-12). AVIF usa otras.
+MARCAS_HEIC = {b"heic", b"heix", b"hevc", b"hevx", b"heim", b"heis"}
+MARCAS_HEIF_GENERICAS = {b"mif1", b"msf1"}
 
 
 class ImagenInvalida(Exception):
-    """El contenido no es una imagen JPEG o PNG legible."""
+    """El contenido no es una imagen JPEG, PNG o HEIC legible."""
+
+
+def _es_heic(contenido):
+    """True si la caja ``ftyp`` declara HEIC (o HEIF genérico con HEIC entre las compatibles)."""
+    if len(contenido) < 16 or contenido[4:8] != b"ftyp":
+        return False
+    tamanio = int.from_bytes(contenido[0:4], "big")
+    marca = contenido[8:12]
+    compatibles = {
+        contenido[i:i + 4] for i in range(16, min(tamanio, len(contenido), 64) - 3, 4)
+    }
+    return marca in MARCAS_HEIC or (
+        marca in MARCAS_HEIF_GENERICAS and bool(compatibles & MARCAS_HEIC)
+    )
 
 
 def detectar_formato(contenido):
-    """Devuelve ``"jpeg"`` o ``"png"`` según la firma binaria, o None."""
+    """Devuelve ``"jpeg"``, ``"png"`` o ``"heic"`` según la firma binaria, o None.
+
+    No se confía en la extensión: algunos celulares entregan un HEIC con
+    nombre ``.jpg`` (RN22).
+    """
     for firma, formato in FIRMAS.items():
         if contenido.startswith(firma):
             return formato
-    return None
+    return "heic" if _es_heic(contenido) else None
 
 
 def _abrir(contenido):

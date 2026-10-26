@@ -27,3 +27,4 @@ Un ADR (*Architecture Decision Record*) documenta una decisión de arquitectura 
 | [0013](0013-cola-de-analisis-intercambiable.md) | Cola de análisis intercambiable (RQ, hilo y sincrónica) | Aceptada |
 | [0016](0016-despliegue-con-terraform-y-systems-manager.md) | Despliegue con Terraform, Systems Manager y OIDC | Aceptada |
 | [0017](0017-marco-normativo-y-supervision-humana.md) | Marco normativo de referencia y supervisión humana | Aceptada |
+| [0018](0018-sello-de-tiempo-en-hedera.md) | Sello de tiempo en Hedera en lugar de Blockchain Federal Argentina | Aceptada |

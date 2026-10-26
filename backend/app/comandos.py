@@ -12,6 +12,7 @@ from app.servicios.errores import NoEncontrado
 from app.servicios.fabrica import (
     crear_servicio_cuentas,
     crear_servicio_sellos,
+    crear_tema_de_sellos,
     crear_tareas_de_retencion,
 )
 
@@ -67,7 +68,7 @@ def procesar_retencion():
     )
 
 
-sellos_cli = AppGroup("sellos", help="Sello de tiempo en Blockchain Federal Argentina (016).")
+sellos_cli = AppGroup("sellos", help="Sello de tiempo en Hedera (funcionalidad 023).")
 
 
 @sellos_cli.command("procesar")
@@ -75,6 +76,25 @@ def procesar_sellos():
     """Pide y confirma los sellos pendientes. La ejecuta un timer cada 15 minutos (RF37 CA3)."""
     resultado = crear_servicio_sellos(current_app.config).procesar()
     click.echo(f"Sellos: {resultado['sellados']} sellado(s), {resultado['en_curso']} en curso.")
+
+
+@sellos_cli.command("crear-tema")
+@click.option(
+    "--red", type=click.Choice(["testnet", "mainnet"]), default="testnet", show_default=True
+)
+@click.option("--cuenta", prompt="Account ID de Hedera (0.0.…)", help="Cuenta que paga y publica.")
+def crear_tema(red, cuenta):
+    """Crea el tema de Hedera de la plataforma; se ejecuta una sola vez por red.
+
+    La clave privada se pide sin mostrarla en pantalla, para que no quede en el
+    historial de la terminal ni en ningún archivo.
+    """
+    clave = click.prompt("Clave privada (no se muestra)", hide_input=True)
+    try:
+        tema = crear_tema_de_sellos(red, cuenta, clave)
+    except Exception as falla:  # pylint: disable=broad-exception-caught
+        raise click.ClickException(f"No se pudo crear el tema: {falla}") from falla
+    click.echo(f"Tema creado en {red}: {tema}")
 
 
 def registrar_comandos(aplicacion):

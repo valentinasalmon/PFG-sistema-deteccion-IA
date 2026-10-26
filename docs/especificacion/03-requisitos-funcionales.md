@@ -14,6 +14,7 @@ Cada requisito indica su prioridad, las reglas de negocio que aplica y sus crite
 | M6. Análisis e informes | RF38 – RF46 |
 | M7. Notificaciones y panel | RF47 – RF48 |
 | M8. Retención de datos | RF49 – RF51 |
+| M9. Ampliaciones del 2026-10-25 | RF52 – RF56 |
 
 ---
 
@@ -338,7 +339,7 @@ El sistema debe permitir al Responsable transferir la responsabilidad de un caso
 ### RF34 — Cargar imágenes
 **Prioridad:** Debe · **Reglas:** RN15, RN19, RN22, RN23
 
-El sistema debe permitir al Responsable y a los Colaboradores cargar una o más imágenes JPEG o PNG en un caso en estado Borrador o Analizado.
+El sistema debe permitir al Responsable y a los Colaboradores cargar una o más imágenes JPEG, PNG o HEIC (funcionalidad 024) en un caso en estado Borrador o Analizado.
 
 - **CA1:** Dado un archivo cuyo contenido corresponde a JPEG o PNG y no supera el tamaño máximo, cuando se carga, entonces se almacena en S3 cifrado, se calcula su huella SHA-256 y se registran nombre original, tamaño, formato, dimensiones, huella y usuario que lo cargó.
 - **CA2:** Dado un archivo con extensión `.jpg` cuyo contenido no es JPEG, entonces se rechaza indicando que el formato real no es válido.
@@ -362,15 +363,16 @@ El sistema debe permitir al Responsable y a los Colaboradores eliminar una image
 - **CA1:** Dada una imagen no incluida en ningún informe, cuando se elimina, entonces se borra de S3 con todas sus versiones y se registra en la auditoría con su huella.
 - **CA2:** Dada una imagen incluida en un informe, entonces la opción de eliminar no está disponible y se informa el motivo.
 
-### RF37 — Registrar sello de tiempo en Blockchain Federal Argentina
+### RF37 — Registrar sello de tiempo en Hedera
 **Prioridad:** Debería · **Reglas:** RN23
 
-El sistema debe registrar la huella SHA-256 de cada imagen cargada en Blockchain Federal Argentina, sin enviar el archivo.
+El sistema debe registrar la huella SHA-256 de cada imagen cargada en Hedera Consensus Service, sin enviar el archivo (ADR-0018, reemplaza a Blockchain Federal Argentina).
 
 - **CA1:** Dada una imagen cargada, entonces el sistema solicita el sello de tiempo en segundo plano y registra su estado (pendiente, sellado o fallido).
 - **CA2:** Dado un sello confirmado, entonces se almacenan la referencia de la transacción y la fecha del sello, y se incluyen en el informe.
 - **CA3:** Dada una falla del servicio externo, entonces se reintenta en forma automática y la falla no impide cargar ni analizar la imagen.
 - **CA4:** El componente de sellado es intercambiable (patrón Strategy), de modo que puede reemplazarse por una implementación simulada en desarrollo y pruebas.
+- **CA5:** El mensaje publicado en Hedera contiene solo la huella y el tipo de registro, sin datos personales ni del caso. La referencia guardada (tema, número de secuencia y fecha de consenso) permite verificar el sello en un explorador público.
 
 ---
 
@@ -523,3 +525,55 @@ El sistema debe permitir al Responsable prorrogar el plazo de retención por 1 a
 
 - **CA1:** Dado un caso Cerrado o Archivado, cuando el Responsable registra una prórroga con motivo, entonces la fecha de destrucción se extiende 1 año y el motivo queda en la auditoría.
 - **CA2:** Dada una prórroga sin motivo, entonces se rechaza.
+
+---
+
+## M9. Ampliaciones del 2026-10-25
+
+Requisitos agregados a pedido de la autora. Los marcados **[PROPUESTA]** dependen de las cuestiones abiertas CP-26 a CP-31. El detalle de la carga desde el celular está en `docs/investigacion/2026-10-25-carga-desde-el-celular.md`.
+
+### RF52 — Iniciar sesión y registrarse con Google
+**Prioridad:** Debería · **Reglas:** RN01, RN02 **[PROPUESTA]**
+
+El sistema debe permitir iniciar sesión y registrarse con una cuenta de Google (OpenID Connect), además del correo y la contraseña.
+
+- **CA1:** Dado un visitante que elige "Continuar con Google" y autoriza el acceso, cuando su correo no está registrado, entonces completa los datos que Google no provee (perfil Abogado o Aseguradora, colegio o empresa, aceptación de los Términos y de la Política) y la cuenta queda activa sin verificación por correo, porque Google ya verificó el correo.
+- **CA2:** Dado un correo ya registrado con contraseña, cuando la persona entra con Google por primera vez, entonces se vincula a la misma cuenta solo si Google informa el correo como verificado.
+- **CA3:** El inicio de sesión con Google queda registrado en la auditoría igual que el inicio con contraseña.
+
+### RF53 — Cargar imágenes desde el celular
+**Prioridad:** Debe · **Reglas:** RN19, RN22, RN23 **[PROPUESTA]**
+
+El sistema debe permitir cargar imágenes desde un celular Android o iOS, ya sea sacando la foto en el momento o eligiéndola de la galería, sin instalar una aplicación.
+
+- **CA1:** Dado un usuario en el celular, cuando abre un caso, entonces puede usar la cámara o la galería desde el navegador y la carga sigue las mismas validaciones de RF34.
+- **CA2:** Dado un usuario en la computadora, cuando elige "Cargar desde el celular", entonces se muestra un código QR de un solo uso, que vence en 15 minutos, para cargar imágenes en ese caso sin iniciar sesión en el celular.
+- **CA3:** Las imágenes HEIC/HEIF (formato por defecto del iPhone) se aceptan, se conservan tal cual como original y se genera una vista previa compatible.
+- **CA4:** Se advierte que algunos celulares quitan la ubicación de la foto al elegirla de la galería, y que sacarla en el momento conserva más metadatos.
+
+### RF54 — Informe adaptado al rubro
+**Prioridad:** Debe · **Reglas:** RN27, RN29 **[PROPUESTA]**
+
+El informe PDF debe usar el lenguaje del rubro de quien lo solicita (Legal o Seguros), ser más breve y entenderse sin usar la plataforma.
+
+- **CA1:** Dado un solicitante con perfil Abogado, entonces el informe usa términos de expediente, prueba y perito; con perfil Aseguradora, términos de siniestro, liquidación y verificación.
+- **CA2:** El informe se entiende por sí mismo: explica qué se analizó, cómo leer los niveles, qué limitaciones tiene y cómo verificar su autenticidad, sin depender de la plataforma.
+- **CA3:** El detalle de las secciones lo define la autora (CP-28).
+
+### RF55 — Informe inalterable y verificable
+**Prioridad:** Debe · **Reglas:** RN23, RN29 **[PROPUESTA]**
+
+El sistema debe registrar la huella SHA-256 de cada informe PDF en Hedera y permitir que cualquier persona compruebe que un PDF no fue modificado.
+
+- **CA1:** Dado un informe generado, entonces su huella se registra en Hedera y la referencia queda guardada junto al informe.
+- **CA2:** El PDF incluye un código QR y un código de verificación que llevan a una página pública de la plataforma.
+- **CA3:** Dada una persona sin cuenta que sube un PDF en la página de verificación, cuando su huella coincide con la registrada, entonces ve la fecha de registro en Hedera y el enlace al explorador público. Si no coincide, se le informa que el documento fue modificado o no pertenece a la plataforma.
+- **CA4:** (Opcional, CP-27) El PDF se firma digitalmente con el certificado de la plataforma, de modo que los lectores de PDF muestren una advertencia si se lo altera.
+
+### RF56 — Registrar en Hedera cada versión desplegada
+**Prioridad:** Debería · **Reglas:** RN29
+
+El sistema debe registrar en Hedera la huella de cada versión que se despliega en producción, y cada análisis debe guardar con qué versión se hizo ("host tokenizado", CP-29).
+
+- **CA1:** Dado un despliegue en producción, entonces se registra en Hedera un mensaje con el commit y la huella SHA-256 de los artefactos desplegados, y la referencia queda guardada.
+- **CA2:** Dado un análisis, entonces el informe indica la versión del sistema con la que se hizo y su referencia en Hedera.

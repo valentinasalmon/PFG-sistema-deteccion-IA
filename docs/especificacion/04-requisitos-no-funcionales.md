@@ -84,7 +84,7 @@ Toda acción relevante queda registrada con fines de trazabilidad legal. No se i
 
 - **CA1:** La huella SHA-256 de cada imagen se calcula al recibirla y se verifica nuevamente antes de cada análisis.
 - **CA2:** Los archivos originales nunca se modifican; las vistas previas y los mapas ELA se almacenan como archivos derivados independientes.
-- **CA3:** El informe incluye la huella de cada imagen analizada y, cuando existe, la referencia del sello de tiempo en Blockchain Federal Argentina.
+- **CA3:** El informe incluye la huella de cada imagen analizada y, cuando existe, la referencia del sello de tiempo en Hedera (ADR-0018).
 
 ---
 
@@ -165,7 +165,7 @@ Toda acción relevante queda registrada con fines de trazabilidad legal. No se i
 ### RNF16 — Tolerancia a fallos del procesamiento
 **Prioridad:** Debe
 
-- **CA1:** La falla de una capa de análisis, del sellado en Blockchain Federal Argentina o del envío de correo no interrumpe el resto del procesamiento.
+- **CA1:** La falla de una capa de análisis, del sellado en Hedera o del envío de correo no interrumpe el resto del procesamiento.
 - **CA2:** Las tareas en segundo plano se reintentan hasta 3 veces con espera creciente antes de marcarse como fallidas.
 
 ---

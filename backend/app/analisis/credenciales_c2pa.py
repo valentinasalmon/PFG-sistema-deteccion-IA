@@ -62,7 +62,7 @@ USOS_DE_CLAVE_ACEPTADOS = "\n".join((
     "1.3.6.1.4.1.311.76.59.1.9",  # Microsoft C2PA Signing
 )) + "\n"
 
-TIPOS_MIME = {"jpeg": "image/jpeg", "png": "image/png"}
+TIPOS_MIME = {"jpeg": "image/jpeg", "png": "image/png", "heic": "image/heic"}
 
 # --- Estado de la firma ---
 

@@ -10,6 +10,9 @@ correo_alertas      = "tu-correo@ejemplo.com"
 # tipo_instancia          = "t3.small"
 # dominio                 = "plataforma.com.ar"   # al comprar el dominio
 
-# Sello de tiempo en Blockchain Federal Argentina (funcionalidad 016):
-# "bfa" cuando se compruebe que el servidor llega a https://tsaapi.bfa.ar (Sello de Tiempo de BFA).
-sello_tiempo = "desactivado"
+# Sello de tiempo en Hedera (funcionalidad 023, ADR-0018). Con "hedera" hacen falta
+# la cuenta y el tema; la clave privada se carga aparte en SSM (ver docs/guias/despliegue-aws.md).
+sello_tiempo  = "desactivado"
+# hedera_red    = "testnet"
+# hedera_cuenta = "0.0.XXXXXXX"
+# hedera_tema   = "0.0.XXXXXXX"

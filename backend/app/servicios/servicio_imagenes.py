@@ -125,6 +125,10 @@ class ServicioImagenes:
             )
         return caso
 
+    def caso_para_cargar(self, id_caso, usuario, accion):
+        """El caso, si el usuario puede cargarle imágenes ahora (RN19, RN20)."""
+        return self._para_modificar(id_caso, usuario, accion)
+
     @staticmethod
     def puede_modificar(caso, permiso):
         """True si el permiso y el estado del caso permiten cargar y eliminar (RN19, RN20)."""
@@ -172,7 +176,8 @@ class ServicioImagenes:
         formato = lector.detectar_formato(contenido)
         if formato is None:
             raise rechazar(_error_archivo(
-                "El formato real del archivo no es válido: solo se aceptan imágenes JPEG o PNG."
+                "El formato real del archivo no es válido: solo se aceptan imágenes "
+                "JPEG, PNG o HEIC."
             ), "formato")
         try:
             dimensiones = lector.leer_dimensiones(contenido, formato)
@@ -194,8 +199,13 @@ class ServicioImagenes:
             ), "limite_plan")
         return huella, formato, *dimensiones
 
-    def cargar(self, id_caso, usuario, nombre, contenido):
+    def cargar(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        self, id_caso, usuario, nombre, contenido, origen=None
+    ):
         """Valida y guarda una imagen en el caso (RF34 CA1 a CA4).
+
+        ``origen`` indica por dónde llegó, si no fue la pantalla del caso (por
+        ejemplo, ``"celular"`` con un enlace de carga, RF53); queda en la auditoría.
 
         Cada archivo se carga con su propia solicitud: así se valida en forma
         independiente y la pantalla informa el resultado de cada uno (CA5).
@@ -230,7 +240,8 @@ class ServicioImagenes:
             self._auditar(
                 auditoria.IMAGEN_CARGA, auditoria.EXITOSO, usuario, caso,
                 {"id_imagen": imagen.id, "nombre": nombre, "sha256": huella,
-                 "tamanio": imagen.tamanio, "formato": formato},
+                 "tamanio": imagen.tamanio, "formato": formato,
+                 **({"origen": origen} if origen else {})},
             )
             self.repositorio.confirmar()
         except Exception:
@@ -238,7 +249,7 @@ class ServicioImagenes:
             borrar_sin_fallar(self.almacenamiento, imagen.clave_miniatura)
             raise
         if self.sellos is not None:
-            # Primer intento en el momento; si BFA no responde, lo retoma la tarea (RF37 CA3).
+            # Primer intento en el momento; si Hedera no responde, lo retoma la tarea (RF37 CA3).
             self.sellos.intentar(imagen)
         return imagen
 

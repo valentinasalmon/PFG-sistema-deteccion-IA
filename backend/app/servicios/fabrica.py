@@ -8,10 +8,11 @@ IP) para que la auditoría lo registre sin que los servicios conozcan Flask.
 """
 from app.repositorios.catalogo_aseguradoras import CatalogoAseguradoras
 from app.analisis.registro import crear_capas
-from app.integraciones.sello_tiempo import crear_sellador
+from app.integraciones.sello_tiempo import crear_sellador, crear_tema_hedera
 from app.repositorios.repositorio_analisis import RepositorioAnalisis
 from app.repositorios.repositorio_auditoria import RepositorioAuditoria
 from app.repositorios.repositorio_casos import RepositorioCasos
+from app.repositorios.repositorio_enlaces_carga import RepositorioEnlacesCarga
 from app.repositorios.repositorio_estadisticas import RepositorioEstadisticas
 from app.repositorios.repositorio_imagenes import RepositorioImagenes
 from app.repositorios.repositorio_informes import RepositorioInformes
@@ -31,6 +32,7 @@ from app.servicios.servicio_panel import ServicioPanel
 from app.servicios.servicio_perfil import ServicioPerfil
 from app.servicios.servicio_planes import ServicioPlanes
 from app.servicios.servicio_sellos import ServicioSellos
+from app.servicios.servicio_enlaces_carga import ServicioEnlacesCarga
 from app.servicios.servicio_sesion import ServicioSesion
 from app.servicios.tokens import GestorTokens
 
@@ -117,6 +119,15 @@ def crear_servicio_imagenes(configuracion, enviador, almacenamiento, origen=None
     )
 
 
+def crear_servicio_enlaces_carga(configuracion, enviador, almacenamiento, origen=None):
+    """Enlaces de carga desde el celular (funcionalidad 024)."""
+    return ServicioEnlacesCarga(
+        RepositorioEnlacesCarga(),
+        crear_servicio_imagenes(configuracion, enviador, almacenamiento, origen),
+        crear_servicio_auditoria(origen),
+    )
+
+
 def crear_servicio_datos_personales(configuracion, enviador, origen=None, almacenamiento=None):
     """Servicio de copia de datos y eliminación de la cuenta (funcionalidad 019)."""
     return ServicioDatosPersonales(
@@ -181,8 +192,13 @@ def crear_tareas_de_retencion(configuracion, enviador, almacenamiento=None, orig
     return TareasDeRetencion(crear_servicio_casos(configuracion, enviador, origen, almacenamiento))
 
 
+def crear_tema_de_sellos(red, cuenta, clave):
+    """Crea en Hedera el tema donde la plataforma publica las huellas (funcionalidad 023)."""
+    return crear_tema_hedera(red, cuenta, clave)
+
+
 def crear_servicio_sellos(configuracion, origen=None):
-    """Sello de tiempo de las imágenes en BFA (funcionalidad 016)."""
+    """Sello de tiempo de las imágenes en Hedera (funcionalidades 016 y 023)."""
     return ServicioSellos(
         RepositorioImagenes(), crear_sellador(configuracion), crear_servicio_auditoria(origen)
     )

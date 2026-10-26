@@ -19,6 +19,7 @@ from dataclasses import dataclass
 import numpy as np
 import PIL
 from PIL import Image, ImageChops, ImageDraw, UnidentifiedImageError
+from pillow_heif import register_heif_opener
 
 from app.analisis.base import (
     RECOMENDACION,
@@ -62,6 +63,14 @@ ACLARACION_PNG = (
     "La imagen está en PNG, un formato sin pérdida: ELA tiene validez limitada en este caso "
     "y sus resultados se informan como indicios débiles."
 )
+ACLARACION_HEIC = (
+    "La imagen está en HEIC (formato de los iPhone), que comprime distinto que JPEG: ELA "
+    "tiene validez limitada en este caso y sus resultados se informan como indicios débiles."
+)
+ACLARACIONES = {"png": ACLARACION_PNG, "heic": ACLARACION_HEIC}
+NOMBRES_FORMATO = {"jpeg": "JPEG", "png": "PNG (sin pérdida)", "heic": "HEIC (iPhone)"}
+
+register_heif_opener()
 ACLARACION_MAPA = (
     "El mapa ELA es una señal complementaria: las zonas claras cambiaron más al recomprimir. "
     "Los bordes, los textos y las zonas muy detalladas también se ven claros sin que haya "
@@ -252,11 +261,11 @@ class CapaELA(CapaAnalisis):
         return {"diferencia": diferencia, "luminancia": luminancia, "calidad": calidad}
 
     @staticmethod
-    def hallazgos(regiones, filas, columnas, es_png):
+    def hallazgos(regiones, filas, columnas, limitado):
         """Una anomalía por región informada; moderada solo si el desvío es grande."""
         anomalias = []
         for region in regiones[:MAXIMO_REGIONES_INFORMADAS]:
-            moderada = region.desvio >= UMBRAL_DESVIO_MODERADO and not es_png
+            moderada = region.desvio >= UMBRAL_DESVIO_MODERADO and not limitado
             anomalias.append(Anomalia(
                 "Región", f"{region.bloques} bloques, desvío {region.desvio:.1f}",
                 f"El nivel de error de {describir_ubicacion(region, filas, columnas)} se aparta "
@@ -268,7 +277,7 @@ class CapaELA(CapaAnalisis):
         return anomalias
 
     @staticmethod
-    def redactar_conclusion(nivel, anomalias, es_png):
+    def redactar_conclusion(nivel, anomalias, formato):
         """Conclusión como indicio, con las aclaraciones de ELA y la recomendación (RN27)."""
         if nivel == 0:
             texto = (
@@ -281,19 +290,20 @@ class CapaELA(CapaAnalisis):
                 f"El análisis de niveles de error presenta {describir_intensidad(nivel)}. "
                 + " ".join(a.descripcion for a in anomalias_principales(anomalias, 1))
             )
-        if es_png:
-            texto = f"{texto} {ACLARACION_PNG}"
+        if formato in ACLARACIONES:
+            texto = f"{texto} {ACLARACIONES[formato]}"
         return f"{texto} {RECOMENDACION}"
 
     def analizar(self, contenido, contexto):
         """Calcula ELA, señala regiones y arma el resultado con el mapa (RF41, RF43)."""
         datos = self.calcular(contenido)
         diferencia = datos["diferencia"]
-        es_png = contexto.formato == "png"
+        # ELA solo es plenamente válido en JPEG; en PNG y HEIC se limita a indicios débiles.
+        limitado = contexto.formato != "jpeg"
         filas = diferencia.shape[0] // TAMANIO_BLOQUE
         columnas = diferencia.shape[1] // TAMANIO_BLOQUE
         tabla = [
-            {"campo": "Formato", "valor": "PNG (sin pérdida)" if es_png else "JPEG"},
+            {"campo": "Formato", "valor": NOMBRES_FORMATO.get(contexto.formato, contexto.formato)},
             {"campo": "Calidad JPEG estimada",
              "valor": f"{datos['calidad']} %" if datos["calidad"] else "no corresponde"},
             {"campo": "Recompresión de referencia", "valor": f"JPEG al {CALIDAD_RECOMPRESION} %"},
@@ -314,7 +324,7 @@ class CapaELA(CapaAnalisis):
             _por_bloques(diferencia, np.mean), _por_bloques(datos["luminancia"], np.std)
         )
         regiones = buscar_regiones(desvios)
-        anomalias = self.hallazgos(regiones, filas, columnas, es_png)
+        anomalias = self.hallazgos(regiones, filas, columnas, limitado)
         nivel = calcular_nivel(anomalias)
         tabla += [
             {"campo": "Bloques analizados",
@@ -324,7 +334,7 @@ class CapaELA(CapaAnalisis):
         return ResultadoCapa(
             nivel=nivel,
             anomalias=anomalias,
-            conclusion=self.redactar_conclusion(nivel, anomalias, es_png),
+            conclusion=self.redactar_conclusion(nivel, anomalias, contexto.formato),
             detalle={
                 "tabla": tabla, "regiones": len(regiones),
                 # Valor obtenido que el informe compara con el umbral (entrevista del 02/10).

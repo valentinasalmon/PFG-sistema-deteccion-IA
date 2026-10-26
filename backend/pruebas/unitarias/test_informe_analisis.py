@@ -60,7 +60,7 @@ def test_el_informe_tiene_todos_los_datos_pedidos():
         "CASO-2026-000007", "EXP-12/2026", "Automovilístico", "01/09/2026", "Av. Corrientes 1234",
         "Ana López", "Abogado", "Colegio de abogados", "CPACF",
         "19/10/2026 15:00",  # pedido a las 18:00 UTC, en la hora de Argentina
-        "data:image/jpeg;base64,", "a" * 64, "Sello de tiempo en Blockchain Federal Argentina",
+        "data:image/jpeg;base64,", "a" * 64, "Sello de tiempo en Hedera",
         "Nivel de indicio: 90 %", "Photoshop", "Adobe Photoshop 25.0",
         "Plataforma", "0.2.0", "Capa 1 · Metadatos", "1.0 (ExifTool 12.76)", "WeasyPrint",
         "Limitaciones y advertencia legal", "perito especializado",
