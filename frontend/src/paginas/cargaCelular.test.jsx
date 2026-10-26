@@ -41,7 +41,6 @@ const ENLACE = {
   url: 'http://localhost/cargar/token-de-prueba',
   qr: 'data:image/svg+xml,qr',
   vence_en: '2099-01-01T12:15:00',
-  maximo: 30,
 }
 
 function archivo(nombre) {
@@ -68,7 +67,7 @@ describe('cargar desde el celular en la computadora (RF53 CA2)', () => {
     const panel = await screen.findByRole('region', { name: 'Cargar desde el celular' })
     expect(within(panel).getByRole('img', { name: /Código QR/ })).toHaveAttribute('src', ENLACE.qr)
     expect(within(panel).getByText(/Abrí la cámara del celular/)).toBeInTheDocument()
-    expect(within(panel).getByText(/hasta 30 fotos/)).toBeInTheDocument()
+    expect(within(panel).getByText(/todas las fotos que quieras/)).toBeInTheDocument()
 
     await usuario.click(within(panel).getByRole('button', { name: 'Cancelar' }))
     expect(screen.queryByRole('region', { name: 'Cargar desde el celular' })).not.toBeInTheDocument()
@@ -108,7 +107,6 @@ describe('página del celular (RF53 CA2 a CA4)', () => {
 
     const lista = await screen.findByRole('list', { name: 'Fotos subidas' })
     expect(within(lista).getAllByText(/Subida/)).toHaveLength(2)
-    expect(await screen.findByText(/permite 28 fotos más/)).toBeInTheDocument()
     expect(solicitudes.filter((s) => s.metodo === 'POST' && s.ruta.startsWith('/api/carga/'))).toHaveLength(2)
   })
 

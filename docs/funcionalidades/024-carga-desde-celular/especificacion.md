@@ -27,7 +27,7 @@ El 2026-10-26 la autora decidió que la plataforma **no** se adapte para usarse 
   - vence a los 15 minutos y se cancela al cerrar el panel o al generar otro;
   - solo permite subir fotos a ese caso (no ver, bajar ni borrar);
   - carga a nombre de quien lo generó, con sus permisos vigentes;
-  - admite hasta 30 fotos;
+  - no tiene tope de fotos: rige solo el límite de imágenes por caso del plan (RN15);
   - en la base guarda solo la huella SHA-256 del token.
 - [x] **CA2b**: la página del celular abre sin iniciar sesión y ofrece "Elegir de la galería" (varias fotos) y "Sacar una foto". Cada foto pasa por las mismas validaciones, huella, sello en Hedera y auditoría de la carga normal; la auditoría marca el origen `celular`.
 - [x] **CA2c**: mientras el panel está abierto, la lista de imágenes de la computadora se actualiza sola cada 4 segundos.

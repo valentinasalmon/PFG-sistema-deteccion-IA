@@ -27,7 +27,7 @@
   - el token es `secrets.token_urlsafe(24)` (192 bits) y solo se guarda su huella.
 - **`ServicioEnlacesCarga`**:
   - `crear` usa `ServicioImagenes.caso_para_cargar` (mismos permisos y estados que la carga), cancela los enlaces anteriores del mismo usuario en el caso y audita `imagen.enlace_carga`;
-  - `cargar` delega en `ServicioImagenes.cargar(..., origen="celular")` y suma la carga al enlace.
+  - `cargar` delega en `ServicioImagenes.cargar(..., origen="celular")` y suma la carga al enlace. No hay tope por enlace: la página del celular muestra el lugar libre del plan (`ServicioImagenes.lugar_disponible`).
 - **Rutas**: las públicas (`carga_celular_bp`) quedan exentas de CSRF, porque no usan cookies de sesión y el token es la credencial. Solo devuelven el nombre y la huella de la foto subida.
 - **QR**: `segno` genera un SVG como `data:` URI, que la CSP ya admite (`img-src data:`). No hace falta ninguna biblioteca en el frontend.
 - **Frontend**:

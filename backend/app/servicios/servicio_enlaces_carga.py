@@ -7,8 +7,10 @@ galería o de la cámara, sin iniciar sesión. El enlace:
 - vence a los ``VIGENCIA`` minutos y se puede cancelar;
 - solo permite cargar imágenes en ese caso, nunca verlas, bajarlas ni borrarlas;
 - carga a nombre de quien lo generó, con sus permisos vigentes y con las
-  mismas validaciones, huella y sello de tiempo que la carga normal;
-- admite como máximo ``MAXIMO_CARGAS`` fotos.
+  mismas validaciones, huella y sello de tiempo que la carga normal.
+
+No limita la cantidad de fotos por enlace: el único límite es el de imágenes
+por caso del plan (RN15), igual que en la carga desde la computadora.
 
 El token es aleatorio (192 bits) y en la base solo se guarda su huella SHA-256.
 
@@ -20,11 +22,10 @@ from datetime import timedelta
 
 from app.modelos.enlace_carga import EnlaceCarga
 from app.servicios import auditoria
-from app.servicios.errores import ConflictoDatos, NoEncontrado
+from app.servicios.errores import NoEncontrado
 from app.utilidades.tiempo import ahora_utc
 
 VIGENCIA = timedelta(minutes=15)
-MAXIMO_CARGAS = 30
 ORIGEN_CELULAR = "celular"
 MENSAJE_INVALIDO = (
     "El enlace venció o ya no es válido. Pedí uno nuevo desde la computadora."
@@ -92,12 +93,12 @@ class ServicioEnlacesCarga:
         return enlace
 
     def consultar(self, token):
-        """Datos que muestra la página del celular: caso, vencimiento y fotos restantes."""
+        """Datos que muestra la página del celular: caso, vencimiento y lugar libre del plan."""
         enlace = self._vigente(token)
         return {
             "numero": enlace.caso.numero,
             "vence_en": enlace.vence_en.isoformat(timespec="seconds"),
-            "restantes": MAXIMO_CARGAS - enlace.cargas,
+            "restantes": self.imagenes.lugar_disponible(enlace.caso),
         }
 
     def cargar(self, token, nombre, contenido):
@@ -105,15 +106,9 @@ class ServicioEnlacesCarga:
 
         Raises:
             NoEncontrado: si el enlace no existe, venció o se canceló.
-            ConflictoDatos: si ya se cargó el máximo de fotos con este enlace.
+            ConflictoDatos: si el caso llegó al límite de imágenes del plan (RN15).
         """
         enlace = self._vigente(token)
-        if enlace.cargas >= MAXIMO_CARGAS:
-            raise ConflictoDatos(
-                f"Ya se cargaron {MAXIMO_CARGAS} fotos con este enlace. "
-                "Generá uno nuevo desde la computadora.",
-                codigo="enlace_agotado",
-            )
         imagen = self.imagenes.cargar(
             enlace.id_caso, enlace.usuario, nombre, contenido, origen=ORIGEN_CELULAR
         )
