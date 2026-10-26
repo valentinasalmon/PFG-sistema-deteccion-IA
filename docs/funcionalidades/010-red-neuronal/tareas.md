@@ -2,7 +2,7 @@
 
 Referencias: [especificacion.md](especificacion.md) · [plan.md](plan.md) · [guía del ciclo de vida](../../guias/ciclo-de-vida-red-neuronal.md)
 
-Orden: base del paquete → configuración → datos → modelo y entrenamiento → exportación e inferencia (T14 se adelantó a T10, porque el `Dataset` reutiliza el preprocesamiento de inferencia) → evaluación → seguimiento y registro → línea de comandos → **prueba de concepto en Kaggle** → datos reales → entrenamiento completo → evaluación en condiciones reales → publicación → documentación.
+Orden: base del paquete → configuración → datos → modelo y entrenamiento → exportación e inferencia (T14 se adelantó a T10, porque el `Dataset` reutiliza el preprocesamiento de inferencia) → evaluación → seguimiento y registro → línea de comandos → **prueba de concepto en Google Colab** → datos reales → entrenamiento completo → evaluación en condiciones reales → publicación → documentación.
 
 Cada tarea de código incluye **sus propias pruebas**: no se pasa a la siguiente con pruebas en rojo. Las tareas marcadas **(externa)** las hace la autora fuera del repositorio y pueden avanzar en paralelo desde el principio.
 
@@ -10,12 +10,12 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
 
 ## Fase A — Tareas externas (en paralelo desde el inicio)
 
-- [x] **E01 (externa)** — Crear la cuenta de Kaggle y verificar el teléfono (requisito para usar la GPU).
+- [x] **E01 (externa)** — Crear la cuenta de Kaggle y verificar el teléfono (requisito para usar la GPU). *Reemplazada el 2026-10-26*: la autora entrena en **Google Colab** (plan gratuito, GPU T4) con su cuenta de Google; no hace falta otra cuenta.
   - Verificación: en un cuaderno nuevo, *Settings → Accelerator* ofrece "GPU T4 x2".
-- [x] **E02 (externa)** — Crear la cuenta de Hugging Face, generar un *token* de escritura y cargarlo como secreto `HF_TOKEN` en Kaggle (*Add-ons → Secrets*). Aceptar los términos de uso de los conjuntos que lo pidan (se listan en T27).
-- [ ] **E05 (externa)** — Como el repositorio es privado, crear en GitHub un *token* de grano fino **de solo lectura** (*Settings → Developer settings → Fine-grained tokens*, permiso *Contents: Read-only*, solo para este repositorio) y cargarlo en Kaggle como secreto `GITHUB_TOKEN`.
+- [x] **E02 (externa)** — Crear la cuenta de Hugging Face, generar un *token* de escritura y cargarlo como secreto `HF_TOKEN` en Colab (ícono de llave 🔑 *Secrets* del panel izquierdo, con *Notebook access* activado). Aceptar los términos de uso de los conjuntos que lo pidan (se listan en T27).
+- [ ] **E05 (externa)** — Como el repositorio es privado, crear en GitHub un *token* de grano fino **de solo lectura** (*Settings → Developer settings → Fine-grained tokens*, permiso *Contents: Read-only*, solo para este repositorio) y cargarlo en Colab como secreto `GITHUB_TOKEN` (mismo panel *Secrets*).
   - Verificación: la sección 3 del cuaderno de prueba de concepto clona el repositorio sin error.
-  - Verificación: en Kaggle, `from kaggle_secrets import UserSecretsClient; UserSecretsClient().get_secret("HF_TOKEN")` devuelve el *token* sin error. **Nunca imprimirlo.**
+  - Verificación: en Colab, `from google.colab import userdata; userdata.get("HF_TOKEN")` devuelve el *token* sin error. **Nunca imprimirlo.**
 - [ ] **E03 (externa)** — Crear en Hugging Face el repositorio de modelos **privado** `pfg-clasificador-sintetico`.
   - Verificación: el repositorio aparece como *Private* en el perfil.
 - [ ] **E04 (externa)** — Armar el conjunto propio siguiendo el protocolo de T26: imágenes de ChatGPT, Gemini y Copilot, fotos reales propias, fotos editadas con IA, y sus versiones por WhatsApp y captura. Guardarlo **fuera del repositorio**.
@@ -35,7 +35,7 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
   - Archivos: `red_neuronal/pruebas/conftest.py`
   - Verificación: `pytest` ejecuta una prueba trivial que usa las *fixtures*.
   - Commit: `pruebas(clasificador): agregar fixtures de imagenes sinteticas`
-- [x] **T04** — Integración continua: el *workflow* ejecuta flake8, pylint y pytest con cobertura ≥ 80 % sobre Python 3.12 (backend) y 3.13 (Kaggle), solo cuando cambian `red_neuronal/` o el propio *workflow*. PyTorch se instala en su versión para CPU.
+- [x] **T04** — Integración continua: el *workflow* ejecuta flake8, pylint y pytest con cobertura ≥ 80 % sobre Python 3.12 (backend) y 3.13 (Kaggle; Colab usa 3.12), solo cuando cambian `red_neuronal/` o el propio *workflow*. PyTorch se instala en su versión para CPU.
   - Archivos: `.github/workflows/red_neuronal.yml`
   - Verificación: subir la rama; la pestaña *Actions* de GitHub muestra el *workflow* en verde.
   - Commit: `integracion(clasificador): agregar workflow de calidad`
@@ -133,13 +133,13 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
   - Verificación: `flake8 clasificador/ && pylint clasificador/ && pytest --cov=clasificador --cov-fail-under=80` en verde, local y en GitHub Actions.
   - Commit: `pruebas(clasificador): agregar pruebas de integracion del pipeline`
 
-## Fase J — Prueba de concepto en Kaggle (CA1)
+## Fase J — Prueba de concepto en Google Colab (CA1)
 
-- [ ] **T23** — Cuaderno de prueba de concepto: clona el repositorio en un commit fijo, instala el paquete, lee `HF_TOKEN` de los secretos y ejecuta todas las etapas con `configuracion/prueba_de_concepto.yaml` (no más de 10 000 imágenes de Community Forensics *Small*). Publica en `RegistroLocal`, no en Hugging Face.
-  - Archivos: `red_neuronal/cuadernos/00_prueba_de_concepto.ipynb`
-  - Verificación: se ejecuta en Kaggle con GPU de punta a punta y produce un `.onnx` que `PredictorOnnx` usa en CPU.
+- [x] **T23** — Cuaderno de prueba de concepto (versión para Kaggle `00_…` y versión para Colab `01_…`, que respalda cada etapa en Google Drive para retomar si se corta la sesión): clona el repositorio en un commit fijo, instala el paquete, lee `HF_TOKEN` de los secretos y ejecuta todas las etapas con `configuracion/prueba_de_concepto.yaml` (no más de 10 000 imágenes de Community Forensics *Small*). Publica en `RegistroLocal`, no en Hugging Face.
+  - Archivos: `red_neuronal/cuadernos/00_prueba_de_concepto.ipynb`, `red_neuronal/cuadernos/01_prueba_de_concepto_colab.ipynb`
+  - Verificación: se ejecuta en Colab con GPU de punta a punta y produce un `.onnx` que `PredictorOnnx` usa en CPU.
   - Commit: `funcionalidad(clasificador): agregar cuaderno de prueba de concepto`
-- [ ] **T24 (manual)** — Ejecutar la prueba de concepto en Kaggle y registrar los tiempos por etapa, el uso de memoria y de disco, y las métricas obtenidas (sin umbral). Estimar el tiempo del entrenamiento completo.
+- [ ] **T24 (manual)** — Ejecutar la prueba de concepto en Colab (`01_prueba_de_concepto_colab.ipynb`) y registrar los tiempos por etapa, el uso de memoria y de disco, y las métricas obtenidas (sin umbral). Estimar el tiempo del entrenamiento completo.
   - Verificación: entrada de bitácora con los valores medidos.
   - Commit: `documentacion(bitacora): registrar prueba de concepto de la red neuronal`
 
@@ -157,20 +157,20 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
   - Archivos: `red_neuronal/configuracion/datos_v1.yaml`, `red_neuronal/configuracion/entrenamiento_v1.yaml`
   - Verificación: `python -m clasificador validar` sobre una muestra pequeña de la receta pasa.
   - Commit: `funcionalidad(clasificador): agregar receta de datos v1`
-- [ ] **T28 (manual)** — Ejecutar `obtener → validar → preparar` en Kaggle con la receta v1 y guardar el resultado como Kaggle Dataset **privado** `pfg-datos-entrenamiento` (versión 1). Cargar el conjunto propio de E04 como Kaggle Dataset **privado** `pfg-conjunto-propio`.
-  - Verificación: ambos conjuntos aparecen como privados; la huella del manifiesto coincide con la calculada en la ejecución.
+- [ ] **T28 (manual)** — Ejecutar `obtener → validar → preparar` en Colab con la receta v1 y guardar el resultado comprimido en Google Drive (carpeta privada `evidentia/datos/v1/`). Cargar el conjunto propio de E04 en `evidentia/conjunto-propio/` de Drive, sin compartir.
+  - Verificación: ninguna de las dos carpetas está compartida; la huella del manifiesto coincide con la calculada en la ejecución.
 
 ## Fase L — Entrenamiento, evaluación y publicación
 
 - [ ] **T29** — Cuadernos de entrenamiento y de evaluación del conjunto propio, que solo orquestan las etapas.
   - Archivos: `red_neuronal/cuadernos/02_entrenamiento.ipynb`, `red_neuronal/cuadernos/03_evaluacion_conjunto_propio.ipynb`
   - Commit: `funcionalidad(clasificador): agregar cuadernos de entrenamiento y evaluacion`
-- [ ] **T30 (manual)** — Entrenamiento completo en Kaggle con la configuración v1. Si no alcanza AUC ≥ 0,90, analizar los errores por generador, ajustar la configuración (por ejemplo, comparar con ConvNeXt-Tiny) y repetir; cada intento queda en MLflow.
+- [ ] **T30 (manual)** — Entrenamiento completo en Colab con la configuración v1. Si no alcanza AUC ≥ 0,90, analizar los errores por generador, ajustar la configuración (por ejemplo, comparar con ConvNeXt-Tiny) y repetir; cada intento queda en MLflow.
   - Verificación: AUC ≥ 0,90 sobre la prueba de generadores conocidos (CA10).
 - [ ] **T31 (manual)** — Verificación de reproducibilidad: repetir el entrenamiento con la misma configuración, manifiesto y semilla.
   - Verificación: diferencia de AUC < 0,01 (CA7).
 - [ ] **T32 (manual)** — Evaluación en condiciones reales: conjunto propio por herramienta y por variante (original, WhatsApp, captura) y fotos editadas (CA12, CA13), y generadores no vistos.
-  - Verificación: `metricas.json` con todos los grupos; gráficos en la salida de Kaggle.
+  - Verificación: `metricas.json` con todos los grupos; gráficos respaldados en Drive.
 - [ ] **T33 (manual)** — Exportar, generar la ficha y publicar la versión `1.0.0` en Hugging Face a través de la compuerta. Copiar la ficha al repositorio.
   - Archivos: `red_neuronal/informes/1.0.0/ficha.md` (y gráficos `.png` livianos)
   - Verificación: la etiqueta `v1.0.0` existe en el repositorio de Hugging Face; `RegistroHuggingFace.obtener("1.0.0")` descarga y verifica la huella; la ficha cumple CA17.

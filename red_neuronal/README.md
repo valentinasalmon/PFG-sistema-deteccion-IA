@@ -14,7 +14,7 @@ Los conjuntos de datos (`datos/`) y los modelos (`modelos/`) **no se suben al re
 cd red_neuronal
 python3 -m venv .venv
 source .venv/bin/activate
-# PyTorch para CPU (más liviano; la GPU solo se usa en Kaggle)
+# PyTorch para CPU (más liviano; la GPU solo se usa en Google Colab)
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 pip install -e ".[entrenamiento,desarrollo]"
 ```

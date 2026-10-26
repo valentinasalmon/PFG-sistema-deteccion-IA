@@ -38,3 +38,4 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-19 | [Funcionalidad 017: infraestructura y despliegue en AWS (código)](2026-10-19-funcionalidad-017-infraestructura.md) |
 | 2026-10-20 | [Funcionalidad 011: capa 3, niveles de error (ELA)](2026-10-20-funcionalidad-011-capa-ela.md) |
 | 2026-10-21 | [Funcionalidad 013: panel principal y notificaciones](2026-10-21-funcionalidad-013-panel-y-notificaciones.md) |
+| 2026-10-28 | [Funcionalidad 010: la red neuronal pasa a Google Colab](2026-10-28-red-neuronal-en-colab.md) |

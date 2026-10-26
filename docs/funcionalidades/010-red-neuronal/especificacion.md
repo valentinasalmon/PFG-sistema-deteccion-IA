@@ -73,7 +73,7 @@ Un modelo no es un archivo aislado sino el producto de un **ciclo de vida**: dat
 
 - [ ] **CA19 — Calidad**: el código de `red_neuronal/` está en módulos con docstrings y en español (RNF21), separado de los cuadernos. Los cuadernos solo orquestan y muestran resultados; la lógica vive en módulos reutilizables y probados.
 - [ ] **CA20 — Integración continua**: cada envío al repositorio que modifique `red_neuronal/` ejecuta automáticamente el análisis estático y pruebas que no requieren GPU ni descargar datos: preparación y validación de datos con imágenes de prueba mínimas, un paso de entrenamiento sobre un lote diminuto, exportación a ONNX y coincidencia de salidas, y cálculo de métricas.
-- [ ] **CA21 — Repositorio limpio**: no se suben al repositorio conjuntos de datos, imágenes propias, modelos entrenados ni credenciales de Kaggle o Hugging Face; las credenciales se configuran como secretos de la plataforma.
+- [ ] **CA21 — Repositorio limpio**: no se suben al repositorio conjuntos de datos, imágenes propias, modelos entrenados ni credenciales de Google, GitHub o Hugging Face; las credenciales se configuran como secretos de la plataforma.
 
 ## Preguntas abiertas
 

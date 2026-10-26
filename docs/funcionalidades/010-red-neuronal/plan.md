@@ -4,11 +4,11 @@ Referencia: [especificacion.md](especificacion.md) · Guía conceptual: [ciclo d
 
 ## Resumen de la solución
 
-El clasificador se construye como un **paquete de Python** (`red_neuronal/clasificador/`) con un módulo por etapa del ciclo de vida: obtención, validación y preparación de datos, entrenamiento, evaluación, exportación, compuerta y publicación. Cada etapa es una función pura con entradas y salidas en disco, invocable por línea de comandos (`python -m clasificador <etapa> --configuracion <archivo.yaml>`). Los cuadernos de Kaggle **no contienen lógica**: clonan el repositorio en un commit concreto, instalan el paquete y llaman a las etapas. Así todo el código se revisa, se prueba en la integración continua sin GPU y se reutiliza.
+El clasificador se construye como un **paquete de Python** (`red_neuronal/clasificador/`) con un módulo por etapa del ciclo de vida: obtención, validación y preparación de datos, entrenamiento, evaluación, exportación, compuerta y publicación. Cada etapa es una función pura con entradas y salidas en disco, invocable por línea de comandos (`python -m clasificador <etapa> --configuracion <archivo.yaml>`). Los cuadernos (Google Colab; al principio, Kaggle) **no contienen lógica**: clonan el repositorio en un commit concreto, instalan el paquete y llaman a las etapas. Así todo el código se revisa, se prueba en la integración continua sin GPU y se reutiliza.
 
 El modelo es una red convolucional **EfficientNet-B0** preentrenada en ImageNet, ajustada por transferencia de aprendizaje como clasificador binario (real / sintética). Se entrena con aumentaciones que simulan la recompresión por mensajería y se **calibra** con *temperature scaling* para que la salida pueda leerse como una probabilidad. Se exporta a ONNX con la calibración y la sigmoide incluidas en el grafo, de modo que el backend recibe directamente la probabilidad.
 
-El preprocesamiento de inferencia (recortes, normalización y promedio) vive en un subpaquete **sin dependencias de PyTorch** (`clasificador.inferencia`), que usan tanto la evaluación como el backend de la funcionalidad 012. Hay **una sola implementación** del contrato de entrada del modelo, y esa coincidencia se prueba automáticamente. Las herramientas de MLOps son: Kaggle Datasets privados para las versiones de datos, MLflow para el seguimiento de experimentos y un repositorio privado de Hugging Face Hub como registro de modelos (ver ADR-0014).
+El preprocesamiento de inferencia (recortes, normalización y promedio) vive en un subpaquete **sin dependencias de PyTorch** (`clasificador.inferencia`), que usan tanto la evaluación como el backend de la funcionalidad 012. Hay **una sola implementación** del contrato de entrada del modelo, y esa coincidencia se prueba automáticamente. Las herramientas de MLOps son: carpetas privadas de Google Drive para las versiones de datos (antes, Kaggle Datasets), MLflow para el seguimiento de experimentos y un repositorio privado de Hugging Face Hub como registro de modelos (ver ADR-0014).
 
 ## Capas afectadas
 
@@ -36,7 +36,7 @@ La arquitectura en capas de la constitución rige el backend. `red_neuronal/` es
 | Registro | `clasificador/registro/compuerta.py` | Compuerta de promoción: umbral de AUC, coincidencia ONNX, ficha completa, huella del manifiesto y árbol de Git limpio. |
 | Registro | `clasificador/registro/ficha.py`, `plantillas/ficha_modelo.md.j2` | Generación de la ficha del modelo a partir de las métricas y la configuración. |
 | CLI | `clasificador/__main__.py` | Subcomandos `obtener`, `validar`, `preparar`, `entrenar`, `evaluar`, `exportar`, `publicar`. |
-| Cuadernos | `red_neuronal/cuadernos/00_prueba_de_concepto.ipynb`, `01_exploracion_datos.ipynb`, `02_entrenamiento.ipynb`, `03_evaluacion_conjunto_propio.ipynb` | Orquestación en Kaggle y visualización. Sin lógica propia. |
+| Cuadernos | `red_neuronal/cuadernos/00_prueba_de_concepto.ipynb`, `01_exploracion_datos.ipynb`, `02_entrenamiento.ipynb`, `03_evaluacion_conjunto_propio.ipynb` | Orquestación en Colab (antes Kaggle) y visualización. Sin lógica propia. |
 | Pruebas | `red_neuronal/pruebas/` | Pruebas unitarias y de integración del pipeline con imágenes generadas en memoria. |
 | Integración continua | `.github/workflows/red_neuronal.yml` | flake8, pylint, pytest y cobertura en cada cambio de `red_neuronal/`. |
 | Documentación | `red_neuronal/informes/<version>/ficha.md`, `docs/arquitectura/estructura-del-repositorio.md`, `CLAUDE.md` | Fichas por versión; estructura y comandos de calidad actualizados. |
@@ -47,7 +47,7 @@ La carpeta `red_neuronal/scripts/` prevista en la estructura se reemplaza por el
 
 | Patrón | Dónde | Por qué |
 |---|---|---|
-| **Pipeline** (etapas con entradas y salidas en disco) | `__main__.py` y un módulo por etapa | Cada etapa se ejecuta, se prueba y se repite por separado; si se corta la sesión de Kaggle, se retoma desde la última etapa completa. |
+| **Pipeline** (etapas con entradas y salidas en disco) | `__main__.py` y un módulo por etapa | Cada etapa se ejecuta, se prueba y se repite por separado; si se corta la sesión de Colab, se retoma desde la última etapa completa. |
 | **Strategy** | `FuenteDatos`, `RegistradorExperimentos`, `RegistroModelos` | Igual que las integraciones del backend: los servicios externos (Hugging Face, MLflow) se reemplazan por simulaciones en las pruebas y pueden cambiarse sin tocar las etapas. |
 | **Factory** | `crear_modelo`, `crear_fuente`, `crear_registro` | La configuración elige la implementación por nombre; agregar una arquitectura o una fuente no modifica el código existente. |
 | **Configuración externa validada** | `configuracion.py` + YAML | Los hiperparámetros no están en el código (CA8) y un error de configuración falla al inicio, no después de una hora de entrenamiento. |
@@ -128,15 +128,15 @@ Archivos y almacenes:
 | Qué | Dónde | Versionado |
 |---|---|---|
 | Receta de cada conjunto (fuentes, revisión de cada conjunto de Hugging Face, cantidades, semilla) | `red_neuronal/configuracion/datos_vN.yaml` en Git | Git |
-| Imágenes preparadas + `manifiesto.csv` | Kaggle Dataset **privado** `pfg-datos-entrenamiento` | Versiones del Kaggle Dataset; su huella queda en la ficha |
-| Conjunto propio (CA12, CA13) | Kaggle Dataset **privado** `pfg-conjunto-propio` | Versiones del Kaggle Dataset |
-| Ejecuciones de entrenamiento | MLflow (base SQLite `mlruns/mlflow.db` y artefactos en la salida de Kaggle, empaquetados junto con cada versión publicada) | Identificador de ejecución en la ficha |
+| Imágenes preparadas + `manifiesto.csv` | Carpeta privada de Google Drive `evidentia/datos/v1/` | Una carpeta por versión; su huella queda en la ficha |
+| Conjunto propio (CA12, CA13) | Carpeta privada de Google Drive `evidentia/conjunto-propio/` | Fecha de carga en la planilla de control |
+| Ejecuciones de entrenamiento | MLflow (base SQLite `mlruns/mlflow.db` y artefactos respaldados en Drive, empaquetados junto con cada versión publicada) | Identificador de ejecución en la ficha |
 | Modelos publicados | Repositorio privado de Hugging Face Hub, una etiqueta `vMAJOR.MINOR.PATCH` por versión | Etiquetas de Git del Hub, inmutables |
 | Fichas del modelo | `red_neuronal/informes/<version>/ficha.md` en Git | Git |
 
 ## Bibliotecas nuevas
 
-Las versiones exactas se fijan en `pyproject.toml` y en un archivo de restricciones al implementar la primera tarea, tomando las disponibles en la imagen de Kaggle para evitar reinstalar PyTorch.
+Las versiones exactas se fijan en `pyproject.toml` y en un archivo de restricciones al implementar la primera tarea, tomando las disponibles en la imagen de Colab para evitar reinstalar PyTorch.
 
 | Biblioteca | Grupo | Para qué se usa |
 |---|---|---|
@@ -168,7 +168,7 @@ Las versiones exactas se fijan en `pyproject.toml` y en un archivo de restriccio
 | Unitarias: configuración | Rechaza archivos con campos faltantes o valores fuera de rango. |
 | Integración: pipeline mínimo | `preparar → entrenar (2 pasos) → exportar → evaluar → publicar` sobre 40 imágenes en memoria, con `RegistradorNulo` y `RegistroLocal`: la pérdida baja, el ONNX coincide con PyTorch y la versión queda publicada. |
 | Integración: contrato | La misma imagen da la misma probabilidad con `PredictorOnnx` y con el modelo de PyTorch más el preprocesamiento de evaluación (una sola implementación). |
-| Manual (Kaggle) | Prueba de concepto (CA1), entrenamiento completo, evaluación del conjunto propio y publicación real en Hugging Face. |
+| Manual (Colab) | Prueba de concepto (CA1), entrenamiento completo, evaluación del conjunto propio y publicación real en Hugging Face. |
 
 Cobertura mínima: 80 % sobre `clasificador/`. Los cuadernos quedan fuera de la medición porque no tienen lógica.
 
@@ -182,9 +182,9 @@ Ninguna. La organización por etapas de `red_neuronal/` no contradice la arquite
 |---|---|
 | El modelo aprende atajos (formato, tamaño, temática) en lugar de huellas de generación | Normalización JPEG y de tamaños para ambas clases (CA5); evaluación por generador; revisión de errores en el cuaderno de exploración |
 | Algún conjunto requiere aceptar términos o deja de estar disponible | Verificación en `01_exploracion_datos` antes del entrenamiento; las fuentes son intercambiables (Strategy) |
-| Cuota de GPU de Kaggle (unas 30 h por semana) | Prueba de concepto para estimar tiempos; puntos de control por época para retomar; recortes de 224 px |
-| Diferencias entre la versión de Python o de bibliotecas de Kaggle y la del backend | El paquete de inferencia solo depende de numpy, Pillow y onnxruntime; versión de *opset* fija; integración continua con Python 3.12 (backend) y 3.13 (imagen de Kaggle) |
+| Cuota de GPU de Colab gratuito (sin garantía; sesiones de hasta unas 12 h que se cortan por inactividad) | Respaldo en Drive después de cada etapa; prueba de concepto para estimar tiempos; Colab Pro solo si las sesiones no alcanzan; puntos de control por época para retomar; recortes de 224 px |
+| Diferencias entre la versión de Python o de bibliotecas de Kaggle y la del backend (Colab o Kaggle) | El paquete de inferencia solo depende de numpy, Pillow y onnxruntime; versión de *opset* fija; integración continua con Python 3.12 (backend) y 3.13 |
 | Desempeño bajo frente a generadores comerciales no vistos | Se mide y se declara en la ficha (CA11 a CA13); disparador de reentrenamiento (CA18) |
-| Fuga de datos personales del conjunto propio | Kaggle Dataset privado; `.gitignore`; nunca se usa en entrenamiento |
+| Fuga de datos personales del conjunto propio | Carpeta privada de Drive; `.gitignore`; nunca se usa en entrenamiento |
 | Licencias no comerciales | Registradas en la ficha; reentrenamiento si se comercializa (pregunta abierta de la especificación) |
-| Credenciales expuestas | `HF_TOKEN` como secreto de Kaggle y de GitHub; nunca en archivos |
+| Credenciales expuestas | `HF_TOKEN` como secreto de Colab y de GitHub; nunca en archivos |

@@ -86,6 +86,12 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   Criterio: la plataforma muestra la versión breve y el PDF, el detalle legible.
 - **"Host tokenizado" (029):** cada despliegue sella en Hedera la huella de su artefacto, y cada análisis guarda su commit. La verificación pública muestra con qué versión se analizó: refuerza la cadena de custodia sobre el propio software.
 
+- **Entorno de entrenamiento de la red neuronal (2026-10-28):**
+  - se pasó de Kaggle a Google Colab gratuito (GPU T4), a elección de la autora;
+  - como Colab no conserva el disco entre sesiones, el cuaderno respalda en Google Drive el resultado de cada etapa y retoma desde la última completa;
+  - gracias a que el *pipeline* separa las etapas con entradas y salidas en disco, el cambio solo tocó el cuaderno, no el código;
+  - Colab Pro (unos US$ 10 por mes) queda como opción si la versión gratuita no alcanza.
+
 ## Otros temas ya registrados
 
 - Metodología: desarrollo guiado por especificaciones, arnés para agentes de IA (CLAUDE.md, constitución) y trazabilidad con `Co-Authored-By`.

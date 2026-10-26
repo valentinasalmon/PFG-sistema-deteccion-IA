@@ -67,7 +67,7 @@ flowchart TB
         HF[Hugging Face<br/>conjuntos públicos]
         PROPIO[Conjunto propio<br/>fuera del repositorio]
     end
-    subgraph Kaggle["Kaggle (GPU)"]
+    subgraph Colab["Google Colab (GPU)"]
         ENT[Cuaderno que orquesta<br/>el pipeline]
     end
     REG[(Registro de modelos<br/>fuera del repositorio)]
@@ -82,9 +82,9 @@ flowchart TB
     COD --> CI
 ```
 
-- **La lógica vive en módulos de Python dentro del repositorio**, probados y documentados. El cuaderno de Kaggle solo clona el repositorio, ejecuta las etapas y muestra resultados. Así el código se revisa, se prueba y se versiona como cualquier otro; un cuaderno con toda la lógica adentro no se puede probar ni reutilizar.
+- **La lógica vive en módulos de Python dentro del repositorio**, probados y documentados. El cuaderno de Colab solo clona el repositorio, ejecuta las etapas y muestra resultados. Así el código se revisa, se prueba y se versiona como cualquier otro; un cuaderno con toda la lógica adentro no se puede probar ni reutilizar.
 - **Los datos y los modelos nunca entran al repositorio.** Lo que se versiona en Git es lo que permite reconstruirlos: los manifiestos, la configuración y las fichas.
-- **Las credenciales** (Hugging Face, Kaggle) se cargan como secretos de cada plataforma.
+- **Las credenciales** (Hugging Face, GitHub) se cargan como secretos de Colab; nunca se escriben en el cuaderno.
 
 ## 5. CI, CT y CD: integración, entrenamiento y entrega continuos
 
@@ -93,7 +93,7 @@ En aprendizaje automático, la "integración y entrega continuas" se divide en t
 | Práctica | Qué automatiza | Cuándo se ejecuta | En este proyecto |
 |---|---|---|---|
 | **CI** — Integración continua | Análisis estático y pruebas del código del pipeline con datos mínimos, sin GPU | En cada envío a GitHub que toque `red_neuronal/` | GitHub Actions, junto con el resto de la integración continua (RNF20) |
-| **CT** — Entrenamiento continuo | Volver a entrenar cuando cambian los datos o el código | Manual, a pedido, cuando la vigilancia lo indica | Ejecución del cuaderno en Kaggle |
+| **CT** — Entrenamiento continuo | Volver a entrenar cuando cambian los datos o el código | Manual, a pedido, cuando la vigilancia lo indica | Ejecución del cuaderno en Colab |
 | **CD** — Entrega continua del modelo | Exportar, verificar la compuerta y publicar la versión | Al terminar un entrenamiento | Etapas 6 a 8 del pipeline |
 
 ### Qué prueba la integración continua sin GPU
