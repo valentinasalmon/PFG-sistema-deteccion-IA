@@ -127,11 +127,11 @@ def test_identificador_de_sesion_cambia_al_iniciar(cliente, registrar_y_verifica
 
 
 def test_cookie_de_sesion_tiene_atributos_seguros(cliente, registrar_y_verificar):
-    """CA21: HttpOnly y SameSite=Strict."""
+    """CA21: HttpOnly y SameSite=Lax (cambiado por la 027, ADR-0019)."""
     registrar_y_verificar()
     cabecera = _iniciar(cliente).headers["Set-Cookie"]
     assert "HttpOnly" in cabecera
-    assert "SameSite=Strict" in cabecera
+    assert "SameSite=Lax" in cabecera
 
 
 def test_sin_sesion_la_api_responde_401(cliente):
