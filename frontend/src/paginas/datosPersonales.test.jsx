@@ -23,7 +23,7 @@ describe('copia de datos personales', () => {
         },
       },
     })
-    const { usuario } = renderizarEn('/perfil')
+    const { usuario } = renderizarEn('/perfil?seccion=privacidad')
 
     await usuario.click(await screen.findByRole('button', { name: 'Generar mi copia' }))
 
@@ -44,7 +44,7 @@ describe('copia de datos personales', () => {
       ...CON_SESION,
       'POST /api/perfil/copia': { estado: 500, cuerpo: { mensaje: 'Ocurrió un error inesperado.' } },
     })
-    const { usuario } = renderizarEn('/perfil')
+    const { usuario } = renderizarEn('/perfil?seccion=privacidad')
 
     await usuario.click(await screen.findByRole('button', { name: 'Generar mi copia' }))
 
@@ -61,7 +61,7 @@ describe('eliminación de la cuenta', () => {
       puede_eliminar: false,
     }
     simularApi({ ...CON_SESION, 'GET /api/perfil/baja': () => ({ cuerpo: situacion }) })
-    const { usuario } = renderizarEn('/perfil')
+    const { usuario } = renderizarEn('/perfil?seccion=privacidad')
 
     await usuario.click(await screen.findByRole('button', { name: 'Quiero eliminar mi cuenta' }))
 
@@ -84,7 +84,7 @@ describe('eliminación de la cuenta', () => {
       'GET /api/perfil/baja': { cuerpo: SIN_PENDIENTES },
       'DELETE /api/perfil': { cuerpo: { mensaje: 'Tu cuenta fue eliminada.' } },
     })
-    const { usuario } = renderizarEn('/perfil')
+    const { usuario } = renderizarEn('/perfil?seccion=privacidad')
 
     await usuario.click(await screen.findByRole('button', { name: 'Quiero eliminar mi cuenta' }))
     const zona = seccion('Eliminar mi cuenta')
@@ -107,7 +107,7 @@ describe('eliminación de la cuenta', () => {
         cuerpo: { mensaje: 'La contraseña no es correcta.', errores: { contrasenia: 'La contraseña no es correcta.' } },
       },
     })
-    const { usuario } = renderizarEn('/perfil')
+    const { usuario } = renderizarEn('/perfil?seccion=privacidad')
 
     await usuario.click(await screen.findByRole('button', { name: 'Quiero eliminar mi cuenta' }))
     const zona = seccion('Eliminar mi cuenta')
@@ -123,7 +123,7 @@ describe('eliminación de la cuenta', () => {
       ...CON_SESION,
       'GET /api/perfil/baja': { estado: 500, cuerpo: { mensaje: 'Ocurrió un error inesperado.' } },
     })
-    const { usuario } = renderizarEn('/perfil')
+    const { usuario } = renderizarEn('/perfil?seccion=privacidad')
 
     await usuario.click(await screen.findByRole('button', { name: 'Quiero eliminar mi cuenta' }))
 

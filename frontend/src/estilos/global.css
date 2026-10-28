@@ -1180,44 +1180,109 @@ select.campo__control {
   padding: 0.375rem 0.625rem;
 }
 
-/* --- Panel principal (funcionalidad 013) --- */
-.resumen-estados {
+/* --- Panel principal (funcionalidad 013, ordenado en la 028) --- */
+.contadores {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0.75rem;
   list-style: none;
-  margin: 0 0 2rem;
+  margin: 0 0 1.5rem;
   padding: 0;
 }
 
-.resumen-estados li {
+.contador {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.875rem 1rem;
   border: 1px solid var(--linea);
   border-radius: var(--radio);
   background: var(--superficie);
-  transition: border-color 0.15s, transform 0.15s;
-}
-
-.resumen-estados li:hover {
-  border-color: var(--linea-control);
-  transform: translateY(-1px);
-}
-
-.resumen-estados a,
-.resumen-estados li > span:only-child {
-  display: block;
-  padding: 1rem 1.125rem;
   color: var(--tinta-2);
+  font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
+  transition: border-color 0.15s;
 }
 
-.resumen-estados__cantidad {
-  display: block;
+.contador:hover {
+  border-color: var(--azul);
+}
+
+.contador__cifra {
   font-family: var(--fuente-titulos);
-  font-size: 2rem;
+  font-size: 1.625rem;
   font-weight: 800;
   line-height: 1.1;
   color: var(--tinta);
+}
+
+.panel-columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.panel-columnas__principal,
+.panel-columnas__lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.panel-columnas .seccion {
+  margin: 0;
+}
+
+.panel-seccion__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.panel-seccion__cabecera h2 {
+  margin: 0;
+}
+
+.actividad {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.actividad__evento {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.625rem 0;
+  border-top: 1px solid var(--linea-suave);
+  font-size: 0.9375rem;
+}
+
+.actividad__evento:first-child {
+  border-top: 0;
+}
+
+.actividad__icono {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radio-chico);
+  background: var(--azul-suave);
+  color: var(--azul-oscuro);
+}
+
+.actividad__fecha {
+  display: block;
+  color: var(--tinta-2);
+  font-size: 0.8125rem;
 }
 
 .lista-panel {
@@ -1495,10 +1560,13 @@ select.campo__control {
 }
 
 /* El mapa de niveles de error se muestra dentro del visor. */
+/* Se reserva el lugar mientras carga (carga diferida), con la proporción real al llegar (028). */
 .mapa-capa img {
   display: block;
-  max-width: 100%;
+  width: 100%;
+  max-width: 36rem;
   height: auto;
+  aspect-ratio: auto 3 / 2;
   padding: 8px;
   border-radius: var(--radio);
   background-color: #26302b;
@@ -1610,7 +1678,7 @@ select.campo__control {
 
 .filtros__principal {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)) auto;
   align-items: end;
   gap: 0.75rem;
 }
@@ -1663,10 +1731,11 @@ select.campo__control {
 .fila-caso {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(14rem, 1.3fr) minmax(12rem, 1.4fr) auto 18px;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 0.8fr) 8rem 18px;
   align-items: center;
   gap: 1rem;
-  padding: 0.875rem 1.25rem;
+  min-height: 64px;
+  padding: 0.75rem 1.25rem;
   border-top: 1px solid var(--linea-suave);
   transition: background 0.15s;
 }
@@ -1683,6 +1752,27 @@ select.campo__control {
   color: var(--tinta-2);
 }
 
+.fila-caso--compacta {
+  grid-template-columns: minmax(0, 1fr) auto 18px;
+  padding: 0.625rem 1rem;
+}
+
+/* Encabezado de las columnas de la lista de casos (solo en pantallas anchas). */
+.fila-caso--encabezado {
+  min-height: 0;
+  padding-block: 0.625rem;
+  background: var(--fondo-2);
+  color: var(--tinta-2);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.fila-caso--encabezado:hover {
+  background: var(--fondo-2);
+}
+
 .fila-caso__principal {
   display: flex;
   flex-direction: column;
@@ -1694,6 +1784,7 @@ select.campo__control {
   color: var(--tinta);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
   text-decoration: none;
 }
 
@@ -1708,16 +1799,74 @@ select.campo__control {
 }
 
 .fila-caso__lugar,
-.fila-caso__detalle {
+.fila-caso__dato,
+.fila-caso__permiso {
   color: var(--tinta-2);
   font-size: 0.875rem;
   overflow-wrap: anywhere;
 }
 
-.fila-caso__etiquetas {
-  display: flex;
+.fila-caso__permiso {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--azul-oscuro);
+}
+
+.lista-casos--recuadro {
+  border: 1px solid var(--linea-suave);
+  border-radius: var(--radio);
+  overflow: hidden;
+}
+
+/* --- Estado del caso (028): de gris a azul y a verde a medida que avanza --- */
+.estado-caso {
+  display: inline-flex;
+  align-items: center;
   gap: 0.375rem;
-  justify-content: flex-end;
+  justify-self: start;
+  height: 1.625rem;
+  padding: 0 0.625rem;
+  border-radius: var(--radio-chico);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.estado-caso__punto {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.estado-caso--borrador {
+  background: #eef1ef;
+  color: #3b4740;
+}
+
+.estado-caso--en_analisis {
+  background: var(--info-fondo);
+  color: var(--info);
+}
+
+.estado-caso--analizado {
+  background: #e3f1e8;
+  color: #1d5a3a;
+}
+
+.estado-caso--cerrado {
+  background: var(--verde);
+  color: #fff;
+}
+
+.estado-caso--archivado {
+  background: var(--superficie);
+  color: var(--tinta-2);
+  border: 1px dashed var(--linea-control);
+}
+
+.estado-caso--archivado .estado-caso__punto {
+  display: none;
 }
 
 .estado-vacio {
@@ -2032,13 +2181,42 @@ select.campo__control {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .fila-caso {
-    grid-template-columns: 1fr auto;
+  .filtros__principal > .campo:first-child,
+  .filtros__buscar {
+    grid-column: 1 / -1;
   }
 
-  .fila-caso__detalle,
-  .fila-caso > .icono {
+  .fila-caso {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.25rem 0.75rem;
+  }
+
+  .fila-caso__dato,
+  .fila-caso > .icono,
+  .fila-caso--encabezado {
     display: none;
+  }
+
+  .fila-caso__dato[data-titulo='Tipo'] {
+    display: block;
+    grid-column: 1;
+  }
+
+  .contadores {
+    display: flex;
+    overflow-x: auto;
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    scroll-snap-type: x mandatory;
+  }
+
+  .contadores li {
+    flex: 0 0 7rem;
+    scroll-snap-align: start;
+  }
+
+  .panel-columnas {
+    grid-template-columns: 1fr;
   }
 
   .escala li {
@@ -2152,29 +2330,35 @@ select.campo__control {
 
 .tarjeta-cuenta {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
-  text-align: center;
+  gap: 1.25rem;
 }
 
 .tarjeta-cuenta__visor {
-  --esquina: 16px;
+  --esquina: 14px;
 
-  padding: 0.75rem;
-  margin-bottom: 0.75rem;
+  padding: 0.5rem;
 }
 
 .tarjeta-cuenta__avatar {
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 4rem;
+  height: 4rem;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   background: var(--lima);
   font-family: var(--fuente-titulos);
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   font-weight: 800;
+}
+
+.tarjeta-cuenta__datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
 }
 
 .tarjeta-cuenta__nombre {
@@ -2185,39 +2369,52 @@ select.campo__control {
 }
 
 .tarjeta-cuenta__correo {
-  margin: 0.125rem 0 0.75rem;
+  margin: 0;
   color: var(--tinta-2);
   font-size: 0.875rem;
   overflow-wrap: anywhere;
 }
 
-.tarjeta-cuenta__etiquetas {
-  justify-content: center;
-  margin-bottom: 1rem;
+/* --- Pestañas (028): perfil y administración --- */
+.pestanias {
+  display: flex;
+  gap: 0.25rem;
+  margin: 0 0 1.5rem;
+  border-bottom: 1px solid var(--linea);
+  overflow-x: auto;
 }
 
-.indice-secciones {
+.pestanias__pestania {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  color: var(--tinta-2);
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.pestanias__pestania:hover {
+  color: var(--tinta);
+}
+
+.pestanias__pestania[aria-selected='true'] {
+  border-bottom-color: var(--azul);
+  color: var(--azul-oscuro);
+}
+
+.pestanias__panel {
   display: flex;
   flex-direction: column;
-  align-self: stretch;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--linea-suave);
-  text-align: left;
+  gap: 1.5rem;
 }
 
-.indice-secciones a {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 0.75rem;
-  border-radius: var(--radio);
-  color: var(--tinta-2);
-  text-decoration: none;
-}
-
-.indice-secciones a:hover {
-  background: var(--azul-suave);
-  color: var(--azul-oscuro);
+.pestanias__panel > .seccion {
+  margin: 0;
 }
 
 .dos-columnas__principal > .seccion {
@@ -2830,4 +3027,138 @@ select.campo__control {
   content: '';
   flex: 1;
   border-top: 1px solid var(--linea-control);
+}
+
+/* --- Organización (028): invitar en una fila y zona de riesgo en filas --- */
+.cabecera-caso__accion {
+  margin-left: auto;
+}
+
+.invitar {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--linea-suave);
+  border-radius: var(--radio);
+  background: var(--fondo-2);
+}
+
+.invitar h3 {
+  margin: 0;
+}
+
+.invitar__fila {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.invitar__fila .campo {
+  margin-bottom: 0;
+}
+
+.invitar__boton {
+  min-height: 48px;
+}
+
+.zona-riesgo-filas {
+  border: 1px solid var(--error-borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  overflow: hidden;
+}
+
+.zona-riesgo-filas > h2 {
+  margin: 0;
+  padding: 1rem 1.25rem 0.5rem;
+  color: var(--error-texto);
+  font-size: 1rem;
+}
+
+.zona-riesgo-filas > .aviso {
+  margin: 0 1.25rem 0.75rem;
+}
+
+.zona-riesgo-filas__fila {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--error-borde);
+}
+
+.zona-riesgo-filas__fila h3 {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.zona-riesgo-filas__fila .nota {
+  margin: 0.125rem 0 0;
+}
+
+.zona-riesgo-filas__fila > div:first-child {
+  flex: 1 1 12rem;
+}
+
+.zona-riesgo-filas__confirmar {
+  flex-basis: 100%;
+}
+
+@media (width <= 60rem) {
+  .invitar__fila {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Administración (028): período con botones e indicadores parejos --- */
+.periodos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.periodos .segmentos__opcion {
+  border: 1px solid var(--linea-control);
+  background: var(--superficie);
+}
+
+.periodos .segmentos__opcion--activa {
+  border-color: var(--azul);
+  background: var(--azul);
+  color: #fff;
+}
+
+.rango-fechas {
+  margin-bottom: 1rem;
+}
+
+.indicador {
+  min-height: 7.5rem;
+}
+
+.indicadores {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (width <= 60rem) {
+  .indicadores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.actividad__evento a {
+  white-space: nowrap;
+}
+
+.seccion h3 + .lista-tarjetas,
+.seccion .lista-tarjetas + h3 {
+  margin-top: 0.75rem;
+}
+
+.seccion > .lista-tarjetas + h3,
+.seccion > ul + h3 {
+  margin-top: 1.5rem;
 }

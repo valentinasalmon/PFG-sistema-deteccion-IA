@@ -7,6 +7,10 @@
  * caso, una imagen o un informe. Las aseguradoras pendientes se aprueban o se
  * rechazan con un motivo que se informa por correo (021).
  *
+ * Desde la funcionalidad 028, el período se elige con botones (este mes,
+ * 3 meses, el año o desde el inicio) o con fechas a pedido; los indicadores
+ * tienen todos su detalle y los listados usan las pestañas comunes.
+ *
  * Realiza: RF21, RF22; RN38; CA7 a CA9 de la funcionalidad 021.
  */
 import { useCallback, useState } from 'react'
@@ -24,6 +28,7 @@ import Cargando from '../componentes/Cargando.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { formatearFecha } from '../utilidades/fechas.js'
+import { rangoDelPeriodo } from '../utilidades/periodos.js'
 
 function FormularioRechazo({ aseguradora, alTerminar }) {
   const [motivo, setMotivo] = useState('')
@@ -229,14 +234,41 @@ function SeriePorMes({ titulo, valores }) {
   )
 }
 
+const PERIODOS = [
+  ['mes', 'Este mes'],
+  ['trimestre', '3 meses'],
+  ['anio', 'Este año'],
+  ['inicio', 'Desde el inicio'],
+]
+
+/** Detalle de los casos por estado: los dos estados con más casos. */
+function detalleDeCasos(porEstado) {
+  return Object.entries(porEstado ?? {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([estado, cantidad]) => `${cantidad} ${NOMBRES[estado].toLowerCase()}`)
+    .join(' · ')
+}
+
 function Tablero() {
+  const [periodo, setPeriodo] = useState('inicio')
   const [rango, setRango] = useState({ desde: '', hasta: '' })
   const [borrador, setBorrador] = useState(rango)
+  const [fechasAbiertas, setFechasAbiertas] = useState(false)
   const cargar = useCallback(() => obtenerTablero(rango), [rango])
   const { datos, error, cargando } = useDatos(cargar)
 
+  function elegirPeriodo(clave) {
+    setPeriodo(clave)
+    setFechasAbiertas(false)
+    const nuevo = rangoDelPeriodo(clave)
+    setBorrador(nuevo)
+    setRango(nuevo)
+  }
+
   function aplicar(evento) {
     evento.preventDefault()
+    setPeriodo('fechas')
     setRango(borrador)
   }
 
@@ -244,6 +276,29 @@ function Tablero() {
     <section className="seccion" aria-labelledby="titulo-tablero">
       <div className="seccion__cabecera">
         <h2 id="titulo-tablero">Tablero de la plataforma</h2>
+        <div className="periodos" role="group" aria-label="Período">
+          {PERIODOS.map(([clave, texto]) => (
+            <button
+              key={clave}
+              type="button"
+              aria-pressed={periodo === clave}
+              className={`segmentos__opcion ${periodo === clave ? 'segmentos__opcion--activa' : ''}`}
+              onClick={() => elegirPeriodo(clave)}
+            >
+              {texto}
+            </button>
+          ))}
+          <button
+            type="button"
+            className="boton boton--fantasma boton--chico"
+            aria-expanded={fechasAbiertas}
+            onClick={() => setFechasAbiertas(!fechasAbiertas)}
+          >
+            Elegir fechas…
+          </button>
+        </div>
+      </div>
+      {fechasAbiertas && (
         <form className="rango-fechas" onSubmit={aplicar} aria-label="Rango de fechas">
           <CampoTexto
             etiqueta="Desde"
@@ -263,7 +318,7 @@ function Tablero() {
             Aplicar
           </button>
         </form>
-      </div>
+      )}
       {cargando && <Cargando texto="Calculando los indicadores…" />}
       {error && <Aviso tipo="error">{error.message}</Aviso>}
       {datos && (
@@ -279,11 +334,15 @@ function Tablero() {
               valor={suma(datos.organizaciones_por_tipo)}
               detalle={`${datos.organizaciones_por_tipo.estudio_juridico ?? 0} estudios · ${datos.organizaciones_por_tipo.aseguradora ?? 0} aseguradoras`}
             />
-            <Indicador titulo="Casos" valor={suma(datos.casos_por_estado)} />
+            <Indicador
+              titulo="Casos"
+              valor={suma(datos.casos_por_estado)}
+              detalle={detalleDeCasos(datos.casos_por_estado) || 'Sin casos'}
+            />
             <Indicador
               titulo="Análisis en el período"
               valor={suma(datos.analisis_por_mes)}
-              detalle={rango.desde || rango.hasta ? 'Según el rango elegido' : 'Desde el inicio'}
+              detalle={periodo === 'inicio' ? 'Desde el inicio' : 'En el período elegido'}
             />
           </ul>
           <div className="graficos">
@@ -325,22 +384,23 @@ function Listados() {
     <section className="seccion" aria-labelledby="titulo-listados">
       <div className="seccion__cabecera">
         <h2 id="titulo-listados">Cuentas y organizaciones</h2>
-        <div className="segmentos" role="group" aria-label="Qué listar">
-          {[
-            ['usuarios', 'Cuentas'],
-            ['organizaciones', 'Organizaciones'],
-          ].map(([clave, texto]) => (
-            <button
-              key={clave}
-              type="button"
-              aria-pressed={recurso === clave}
-              className={`segmentos__opcion ${recurso === clave ? 'segmentos__opcion--activa' : ''}`}
-              onClick={() => elegir(clave)}
-            >
-              {texto}
-            </button>
-          ))}
-        </div>
+      </div>
+      <div className="pestanias" role="tablist" aria-label="Qué listar">
+        {[
+          ['usuarios', 'Cuentas'],
+          ['organizaciones', 'Organizaciones'],
+        ].map(([clave, texto]) => (
+          <button
+            key={clave}
+            type="button"
+            role="tab"
+            aria-selected={recurso === clave}
+            className="pestanias__pestania"
+            onClick={() => elegir(clave)}
+          >
+            {texto}
+          </button>
+        ))}
       </div>
       <form
         className="busqueda-en-linea"
@@ -396,8 +456,8 @@ function Listados() {
                 ? filas.map((u) => (
                     <tr key={u.id}>
                       <td>
-                        {u.nombre}
-                        {u.rol === 'administrador' && ' · Administrador'}
+                        <strong>{u.nombre}</strong>
+                        {u.rol === 'administrador' && <span className="nota"> · Administrador</span>}
                       </td>
                       <td>{u.correo}</td>
                       <td>{NOMBRES[u.perfil] ?? u.perfil}</td>

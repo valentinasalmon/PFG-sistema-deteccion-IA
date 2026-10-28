@@ -39,3 +39,4 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-26 | [Reorganización del tablero de Trello](2026-10-26-reorganizacion-del-tablero.md) |
 | 2026-10-28 | [Integración continua en verde e inicio con Google (027)](2026-10-28-funcionalidad-027-inicio-con-google.md) |
 | 2026-10-28 | [Revisión y refuerzo de la seguridad (030)](2026-10-28-funcionalidad-030-seguridad.md) |
+| 2026-10-28 | [Mejoras de interfaz (028): auditoría, frames y primera tanda](2026-10-28-funcionalidad-028-interfaz.md) |

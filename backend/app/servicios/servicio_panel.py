@@ -65,8 +65,25 @@ def _plantilla(entrada):
     return TEXTOS_DE_ACTIVIDAD[entrada.accion]
 
 
-def redactar_actividad(entrada, usuario):
-    """Texto de un evento de la actividad reciente, en lenguaje común (RF48 CA2)."""
+# Primera palabra de cada texto, en segunda persona: la actividad propia se
+# redacta como «Cargaste…» en lugar de repetir el nombre de quien mira (028).
+VERBOS_EN_SEGUNDA_PERSONA = {
+    "creó": "Creaste", "editó": "Editaste", "cambió": "Cambiaste", "compartió": "Compartiste",
+    "modificó": "Modificaste", "quitó": "Quitaste", "transfirió": "Transferiste",
+    "cargó": "Cargaste", "eliminó": "Eliminaste", "pidió": "Pediste", "cerró": "Cerraste",
+    "archivó": "Archivaste", "desarchivó": "Desarchivaste", "reabrió": "Reabriste",
+    "canceló": "Cancelaste", "aceptó": "Aceptaste", "rechazó": "Rechazaste",
+}
+
+
+def redactar_actividad(entrada, usuario, id_lector=None):
+    """Texto de un evento de la actividad reciente, en lenguaje común (RF48 CA2).
+
+    Args:
+        usuario: quien hizo la acción, o None si su cuenta se eliminó.
+        id_lector: quien mira el panel. Si es quien hizo la acción, el texto
+            va en segunda persona («Cargaste la imagen…»).
+    """
     detalle = entrada.detalle or {}
     texto = _plantilla(entrada).format(
         numero=detalle.get("numero", ""), nombre=detalle.get("nombre", "sin nombre"),
@@ -74,6 +91,10 @@ def redactar_actividad(entrada, usuario):
     )
     if entrada.accion in ACCIONES_DEL_SISTEMA:
         return texto
+    if usuario is not None and id_lector is not None and usuario.id == id_lector:
+        verbo, _, resto = texto.partition(" ")
+        if verbo in VERBOS_EN_SEGUNDA_PERSONA:
+            return f"{VERBOS_EN_SEGUNDA_PERSONA[verbo]} {resto}"
     quien = f"{usuario.nombre} {usuario.apellido}" if usuario else "Una cuenta eliminada"
     return f"{quien} {texto}"
 
@@ -106,7 +127,7 @@ class ServicioPanel:
             ),
             "transferencias": casos.transferencias_para(usuario.id),
             "proximos_a_destruir": self._proximos_a_destruir(usuario, ahora),
-            "actividad": self._actividad(ids_accesibles),
+            "actividad": self._actividad(ids_accesibles, usuario.id),
         }
 
     def _proximos_a_destruir(self, usuario, ahora):
@@ -119,7 +140,7 @@ class ServicioPanel:
                 proximos.append((caso, vence))
         return sorted(proximos, key=lambda par: par[1])
 
-    def _actividad(self, ids_accesibles):
+    def _actividad(self, ids_accesibles, id_lector):
         """Últimos eventos de los casos accesibles, ya redactados (RF48 CA2)."""
         entradas = self.repositorios["auditoria"].recientes_de_recursos(
             auditoria.TIPO_CASO, ids_accesibles, list(TEXTOS_DE_ACTIVIDAD), auditoria.EXITOSO,
@@ -130,7 +151,8 @@ class ServicioPanel:
                 "fecha": entrada.fecha,
                 "id_caso": int(entrada.id_recurso),
                 "numero": (entrada.detalle or {}).get("numero"),
-                "texto": redactar_actividad(entrada, usuario),
+                "accion": entrada.accion,
+                "texto": redactar_actividad(entrada, usuario, id_lector),
             }
             for entrada, usuario in entradas
         ]

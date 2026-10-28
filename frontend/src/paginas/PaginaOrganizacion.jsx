@@ -71,7 +71,7 @@ function useAccion(recargar) {
  * Cabecera de la organización (022): nombre, rol y datos debajo; el Referente
  * los edita en el lugar con el lápiz.
  */
-function CabeceraOrganizacion({ organizacion, esReferente, cantidadMiembros, alGuardar }) {
+function CabeceraOrganizacion({ organizacion, esReferente, alGuardar }) {
   const [editando, setEditando] = useState(false)
   const { valores, errores, error, enviando, cambiar, enviar } = useFormulario({
     nombre: organizacion.nombre,
@@ -100,26 +100,21 @@ function CabeceraOrganizacion({ organizacion, esReferente, cantidadMiembros, alG
       </h2>
       <div className="cabecera-caso__titulo">
         <h1>{organizacion.nombre}</h1>
-        <Etiqueta tipo={esReferente ? 'destacada' : 'neutra'}>
-          {esReferente ? 'Sos Referente' : 'Sos miembro'}
-        </Etiqueta>
         {esReferente && !editando && (
           <button
             type="button"
-            className="boton boton--fantasma boton--icono"
-            aria-label="Editar los datos de la organización"
+            className="boton boton--secundario boton--chico cabecera-caso__accion"
             onClick={() => setEditando(true)}
           >
-            <Icono nombre="lapiz" tamanio={18} />
+            <Icono nombre="lapiz" tamanio={16} />
+            Editar los datos
           </button>
         )}
       </div>
       <ul className="datos-en-linea">
         <li>{organizacion.tipo_nombre}</li>
+        <li>{esReferente ? 'Sos Referente' : 'Sos miembro'}</li>
         {organizacion.cuit && <li>CUIT {organizacion.cuit}</li>}
-        <li>
-          Plan {organizacion.plan.nombre} · {cantidadMiembros} de {organizacion.plan.limite_miembros} miembros
-        </li>
         <li>{contacto || 'Sin datos de contacto'}</li>
       </ul>
       {mensaje && <Aviso tipo="exito">{mensaje}</Aviso>}
@@ -214,7 +209,7 @@ function FormularioCargo({ organizacion, miembro, alTerminar }) {
   )
 }
 
-function SeccionMiembros({ organizacion, miembros, esReferente, idUsuario, recargar }) {
+function SeccionMiembros({ organizacion, miembros, esReferente, idUsuario, recargar, children }) {
   const { resultado, ejecutar } = useAccion(recargar)
   const [editando, setEditando] = useState(null)
   const [mensajeCargo, setMensajeCargo] = useState(null)
@@ -228,9 +223,12 @@ function SeccionMiembros({ organizacion, miembros, esReferente, idUsuario, recar
 
   return (
     <section className="seccion" aria-labelledby="titulo-miembros">
-      <h2 id="titulo-miembros">
-        Miembros ({miembros.length} de {organizacion.plan.limite_miembros})
-      </h2>
+      <div className="seccion__cabecera">
+        <h2 id="titulo-miembros">Miembros</h2>
+        <span className="nota">
+          {miembros.length} de {organizacion.plan.limite_miembros} lugares usados
+        </span>
+      </div>
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
       <ul className="lista-tarjetas">
         {miembros.map((miembro) => {
@@ -298,6 +296,7 @@ function SeccionMiembros({ organizacion, miembros, esReferente, idUsuario, recar
           )
         })}
       </ul>
+      {children}
     </section>
   )
 }
@@ -322,45 +321,13 @@ function SeccionInvitaciones({ organizacion, invitaciones, recargar }) {
   }
 
   return (
-    <section className="seccion" aria-labelledby="titulo-invitar">
-      <h2 id="titulo-invitar">Invitar miembros</h2>
-      <p className="nota">
-        Podés invitar a cualquier correo, tenga o no una cuenta. La invitación vence a los 7 días
-        y ocupa un lugar del plan mientras esté pendiente.
-      </p>
-      <form onSubmit={manejarEnvio} className="formulario" noValidate>
-        {mensaje && <Aviso tipo="exito">{mensaje}</Aviso>}
-        {error && <Aviso tipo="error">{error.message}</Aviso>}
-        <div className="formulario__fila">
-          <CampoTexto
-            etiqueta="Correo electrónico"
-            nombre="correo"
-            tipo="email"
-            value={valores.correo}
-            onChange={cambiar}
-            error={errores.correo}
-            required
-          />
-          <CampoTexto
-            etiqueta="Cargo"
-            nombre="cargo"
-            opcional
-            value={valores.cargo}
-            onChange={cambiar}
-            error={errores.cargo}
-          />
-        </div>
-        <button type="submit" className="boton" disabled={enviando}>
-          {enviando ? 'Enviando…' : 'Enviar invitación'}
-        </button>
-      </form>
-
-      <h3>Invitaciones pendientes</h3>
+    <>
+      <h3 id="titulo-pendientes">Invitaciones pendientes</h3>
       {resultado && <Aviso tipo={resultado.tipo}>{resultado.texto}</Aviso>}
       {invitaciones.length === 0 ? (
         <p className="nota">No hay invitaciones pendientes.</p>
       ) : (
-        <ul className="lista-tarjetas">
+        <ul className="lista-tarjetas" aria-labelledby="titulo-pendientes">
           {invitaciones.map((invitacion) => (
             <li key={invitacion.id} className="tarjeta-item">
               <div className="tarjeta-item__principal">
@@ -396,7 +363,44 @@ function SeccionInvitaciones({ organizacion, invitaciones, recargar }) {
           ))}
         </ul>
       )}
-    </section>
+
+      <form
+        onSubmit={manejarEnvio}
+        className="formulario invitar"
+        aria-labelledby="titulo-invitar"
+        noValidate
+      >
+        <h3 id="titulo-invitar">Invitar miembros</h3>
+        {mensaje && <Aviso tipo="exito">{mensaje}</Aviso>}
+        {error && <Aviso tipo="error">{error.message}</Aviso>}
+        <div className="invitar__fila">
+          <CampoTexto
+            etiqueta="Correo electrónico"
+            nombre="correo"
+            tipo="email"
+            value={valores.correo}
+            onChange={cambiar}
+            error={errores.correo}
+            required
+          />
+          <CampoTexto
+            etiqueta="Cargo"
+            nombre="cargo"
+            opcional
+            value={valores.cargo}
+            onChange={cambiar}
+            error={errores.cargo}
+          />
+          <button type="submit" className="boton invitar__boton" disabled={enviando}>
+            {enviando ? 'Enviando…' : 'Enviar invitación'}
+          </button>
+        </div>
+        <p className="nota">
+          Podés invitar a cualquier correo, tenga o no una cuenta. La invitación vence a los 7 días
+          y ocupa un lugar del plan mientras esté pendiente.
+        </p>
+      </form>
+    </>
   )
 }
 
@@ -405,6 +409,7 @@ function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
   const { terminarSesion } = useSesion()
   const [error, setError] = useState(null)
   const [confirmacion, setConfirmacion] = useState('')
+  const [eliminando, setEliminando] = useState(false)
   const [enviando, setEnviando] = useState(false)
   const nombreCoincide = confirmacion.trim() === organizacion.nombre
 
@@ -432,51 +437,79 @@ function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
       : 'Vas a dejar de tener acceso a la organización.'
 
   return (
-    <section className="seccion zona-riesgo" aria-labelledby="titulo-salida">
+    <section className="zona-riesgo-filas" aria-labelledby="titulo-salida">
       <h2 id="titulo-salida">Salir o eliminar</h2>
       {error && <Aviso tipo="error">{error}</Aviso>}
-      <h3>Abandonar la organización</h3>
-      <p>{textoAbandono}</p>
-      <BotonConfirmar
-        texto="Abandonar la organización"
-        pregunta={unicoMiembro ? '¿Abandonar y eliminar la organización?' : '¿Abandonar la organización?'}
-        textoConfirmar="Abandonar"
-        peligro
-        deshabilitado={esReferente && !unicoMiembro}
-        onConfirmar={() => salir(() => abandonarOrganizacion(organizacion.id, unicoMiembro))}
-      />
+      <div className="zona-riesgo-filas__fila">
+        <div>
+          <h3>Abandonar la organización</h3>
+          <p className="nota">{textoAbandono}</p>
+        </div>
+        <BotonConfirmar
+          texto="Abandonar la organización"
+          pregunta={unicoMiembro ? '¿Abandonar y eliminar la organización?' : '¿Abandonar la organización?'}
+          textoConfirmar="Abandonar"
+          peligro
+          deshabilitado={esReferente && !unicoMiembro}
+          onConfirmar={() => salir(() => abandonarOrganizacion(organizacion.id, unicoMiembro))}
+        />
+      </div>
 
       {esReferente && (
-        <>
-          <h3>Eliminar la organización</h3>
-          <p>
-            Se eliminan la organización, sus miembros y sus invitaciones, y se avisa por correo a
-            todos los miembros. No se puede deshacer.
-          </p>
-          <form
-            className="formulario"
-            onSubmit={(evento) => {
-              evento.preventDefault()
-              salir(() => eliminarOrganizacion(organizacion.id, confirmacion))
-            }}
-            noValidate
-          >
-            <CampoTexto
-              etiqueta={`Para confirmar, escribí el nombre: ${organizacion.nombre}`}
-              nombre="confirmacion"
-              value={confirmacion}
-              onChange={(evento) => setConfirmacion(evento.target.value)}
-              autoComplete="off"
-            />
-            <button
-              type="submit"
-              className="boton boton--peligro"
-              disabled={!nombreCoincide || enviando}
+        <div className="zona-riesgo-filas__fila">
+          <div>
+            <h3>Eliminar la organización</h3>
+            <p className="nota">
+              Se eliminan la organización, sus miembros y sus invitaciones, y se avisa por correo a
+              todos los miembros. No se puede deshacer.
+            </p>
+          </div>
+          {eliminando ? (
+            <form
+              className="formulario zona-riesgo-filas__confirmar"
+              onSubmit={(evento) => {
+                evento.preventDefault()
+                salir(() => eliminarOrganizacion(organizacion.id, confirmacion))
+              }}
+              noValidate
             >
-              Eliminar la organización
+              <CampoTexto
+                etiqueta={`Para confirmar, escribí el nombre: ${organizacion.nombre}`}
+                nombre="confirmacion"
+                value={confirmacion}
+                onChange={(evento) => setConfirmacion(evento.target.value)}
+                autoComplete="off"
+              />
+              <div className="acciones-en-linea">
+                <button
+                  type="button"
+                  className="boton boton--fantasma"
+                  onClick={() => {
+                    setEliminando(false)
+                    setConfirmacion('')
+                  }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="boton boton--peligro"
+                  disabled={!nombreCoincide || enviando}
+                >
+                  Eliminar la organización
+                </button>
+              </div>
+            </form>
+          ) : (
+            <button
+              type="button"
+              className="boton boton--secundario-peligro"
+              onClick={() => setEliminando(true)}
+            >
+              Eliminar…
             </button>
-          </form>
-        </>
+          )}
+        </div>
       )}
     </section>
   )
@@ -512,7 +545,6 @@ export default function PaginaOrganizacion() {
         key={organizacion.nombre}
         organizacion={organizacion}
         esReferente={esReferente}
-        cantidadMiembros={miembros.length}
         alGuardar={recargar}
       />
       {state?.mensaje && <Aviso tipo="exito">{state.mensaje}</Aviso>}
@@ -524,26 +556,33 @@ export default function PaginaOrganizacion() {
         </Aviso>
       )}
 
-      <SeccionPlan idOrganizacion={organizacion.id} />
-      <SeccionMiembros
-        organizacion={organizacion}
-        miembros={miembros}
-        esReferente={esReferente}
-        idUsuario={usuario.id}
-        recargar={recargar}
-      />
-      {esReferente && organizacion.estado !== 'pendiente' && (
-        <SeccionInvitaciones
-          organizacion={organizacion}
-          invitaciones={invitaciones}
-          recargar={recargar}
-        />
-      )}
-      <SeccionSalida
-        organizacion={organizacion}
-        esReferente={esReferente}
-        unicoMiembro={miembros.length === 1}
-      />
+      <div className="dos-columnas">
+        <div className="dos-columnas__principal">
+          <SeccionMiembros
+            organizacion={organizacion}
+            miembros={miembros}
+            esReferente={esReferente}
+            idUsuario={usuario.id}
+            recargar={recargar}
+          >
+            {esReferente && organizacion.estado !== 'pendiente' && (
+              <SeccionInvitaciones
+                organizacion={organizacion}
+                invitaciones={invitaciones}
+                recargar={recargar}
+              />
+            )}
+          </SeccionMiembros>
+        </div>
+        <div className="dos-columnas__lateral">
+          <SeccionPlan idOrganizacion={organizacion.id} />
+          <SeccionSalida
+            organizacion={organizacion}
+            esReferente={esReferente}
+            unicoMiembro={miembros.length === 1}
+          />
+        </div>
+      </div>
     </>
   )
 }
