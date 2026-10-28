@@ -35,6 +35,7 @@ import CampoSeleccion from '../componentes/CampoSeleccion.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
+import EtiquetaEstado from '../componentes/EtiquetaEstado.jsx'
 import Icono from '../componentes/Icono.jsx'
 import SeccionAnalisis from '../componentes/SeccionAnalisis.jsx'
 import SeccionImagenes from '../componentes/SeccionImagenes.jsx'
@@ -42,7 +43,7 @@ import SeccionInformes from '../componentes/SeccionInformes.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useFormulario } from '../hooks/useFormulario.js'
 import { useSesion } from '../hooks/useSesion.js'
-import { OPCIONES_NIVEL, OPCIONES_TIPO, tipoDeEtiquetaDeEstado } from '../utilidades/casos.js'
+import { OPCIONES_NIVEL, OPCIONES_TIPO } from '../utilidades/casos.js'
 import { textosDelRubro } from '../utilidades/lenguaje.js'
 import { formatearDia, formatearFecha, hoyIso } from '../utilidades/fechas.js'
 
@@ -607,7 +608,7 @@ export default function PaginaCaso() {
         <div className="cabecera-caso__titulo">
           <h1>{caso.numero}</h1>
           <div className="acciones-en-linea">
-            <Etiqueta tipo={tipoDeEtiquetaDeEstado(caso.estado)}>{caso.estado_nombre}</Etiqueta>
+            <EtiquetaEstado estado={caso.estado}>{caso.estado_nombre}</EtiquetaEstado>
             <Etiqueta>{caso.mi_permiso_nombre}</Etiqueta>
           </div>
         </div>

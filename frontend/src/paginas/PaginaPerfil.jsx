@@ -10,11 +10,16 @@
  * cargo y organizaciones sin otro Referente) y solo entonces pide la
  * contraseña (RN05, RN08).
  *
+ * Desde la funcionalidad 028, una sola tarjeta con la identidad de la cuenta
+ * y las secciones en pestañas (Datos personales, Seguridad, Plan y
+ * Privacidad), en lugar de cinco tarjetas apiladas. La pestaña elegida queda
+ * en la dirección (``?seccion=``), así se puede enlazar.
+ *
  * Realiza: RF06 a RF09; RN01, RN02; CA16 a CA19 de la funcionalidad 002 y
  * CA1, CA5 a CA10 de la 019.
  */
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import {
   actualizarPerfil,
   cambiarContrasenia,
@@ -60,15 +65,10 @@ function SeccionDatos() {
       <h2 id="titulo-datos">Datos personales</h2>
       {mensaje && <Aviso tipo="exito">{mensaje}</Aviso>}
       {error && <Aviso tipo="error">{error.message}</Aviso>}
-      <dl className="datos-fijos">
-        <dt>Perfil</dt>
-        <dd>
-          {NOMBRES_PERFIL[usuario.perfil]}
-          <span className="campo__ayuda"> · El perfil no puede modificarse.</span>
-        </dd>
-        <dt>Correo electrónico</dt>
-        <dd>{usuario.correo}</dd>
-      </dl>
+      <p className="nota">
+        Perfil: <strong>{NOMBRES_PERFIL[usuario.perfil]}</strong> · El perfil no puede modificarse. El
+        correo se cambia en la pestaña Seguridad.
+      </p>
       <form onSubmit={manejarEnvio} className="formulario" noValidate>
         <div className="formulario__fila">
           <CampoTexto
@@ -158,7 +158,9 @@ function SeccionContrasenia() {
           idDescripcion="reglas-contrasenia"
           required
         />
-        <ReglasContrasenia contrasenia={valores.contrasenia_nueva} id="reglas-contrasenia" />
+        {valores.contrasenia_nueva && (
+          <ReglasContrasenia contrasenia={valores.contrasenia_nueva} id="reglas-contrasenia" />
+        )}
         <CampoTexto
           etiqueta="Repetí la contraseña nueva"
           nombre="confirmacion"
@@ -403,51 +405,61 @@ function SeccionEliminar() {
   )
 }
 
-const SECCIONES_PERFIL = [
-  ['titulo-datos', 'Datos personales'],
-  ['titulo-contrasenia', 'Contraseña'],
-  ['titulo-correo', 'Correo electrónico'],
-  ['titulo-copia', 'Copia de tus datos'],
-  ['titulo-eliminar-cuenta', 'Eliminar mi cuenta'],
-]
+/** Pestañas del perfil; el Plan solo existe para los abogados (espacio personal, RN12). */
+function pestaniasPara(usuario) {
+  return [
+    { id: 'datos', texto: 'Datos personales' },
+    { id: 'seguridad', texto: 'Seguridad' },
+    ...(usuario.perfil === 'abogado' ? [{ id: 'plan', texto: 'Plan' }] : []),
+    { id: 'privacidad', texto: 'Privacidad' },
+  ]
+}
 
-/** Tarjeta lateral con la identidad de la cuenta y el índice de secciones (022). */
+/** Tarjeta con la identidad de la cuenta (una sola vez en la pantalla, 028). */
 function TarjetaDeCuenta() {
   const { usuario } = useSesion()
   const iniciales = `${usuario.nombre?.[0] ?? ''}${usuario.apellido?.[0] ?? ''}`.toUpperCase()
   return (
-    <aside className="seccion tarjeta-cuenta" aria-label="Tu cuenta">
+    <section className="seccion tarjeta-cuenta" aria-label="Tu cuenta">
       <div className="visor tarjeta-cuenta__visor">
         <span className="tarjeta-cuenta__avatar" aria-hidden="true">
           {iniciales}
         </span>
       </div>
-      <p className="tarjeta-cuenta__nombre">
-        {usuario.nombre} {usuario.apellido}
-      </p>
-      <p className="tarjeta-cuenta__correo">{usuario.correo}</p>
-      <div className="acciones-en-linea tarjeta-cuenta__etiquetas">
-        <Etiqueta tipo="destacada">{usuario.perfil === 'abogado' ? 'Abogado' : 'Aseguradora'}</Etiqueta>
-        {usuario.rol === 'administrador' && <Etiqueta>Administrador</Etiqueta>}
+      <div className="tarjeta-cuenta__datos">
+        <p className="tarjeta-cuenta__nombre">
+          {usuario.nombre} {usuario.apellido}
+        </p>
+        <p className="tarjeta-cuenta__correo">{usuario.correo}</p>
+        <div className="acciones-en-linea tarjeta-cuenta__etiquetas">
+          <Etiqueta tipo="destacada">{NOMBRES_PERFIL[usuario.perfil]}</Etiqueta>
+          {usuario.rol === 'administrador' && <Etiqueta>Administrador</Etiqueta>}
+        </div>
       </div>
-      <nav aria-label="Secciones del perfil" className="indice-secciones">
-        {SECCIONES_PERFIL.map(([id, texto]) => (
-          <a key={id} href={`#${id}`}>
-            {texto}
-          </a>
-        ))}
-      </nav>
-    </aside>
+    </section>
   )
 }
 
-/** Plan del espacio personal; solo los abogados tienen espacio personal (RN12). */
-function PlanPersonal() {
-  const { usuario } = useSesion()
-  return usuario.perfil === 'abogado' ? <SeccionPlan /> : null
-}
-
 export default function PaginaPerfil() {
+  const { usuario } = useSesion()
+  const [parametros, setParametros] = useSearchParams()
+  const pestanias = pestaniasPara(usuario)
+  const pedida = parametros.get('seccion')
+  const actual = pestanias.some((p) => p.id === pedida) ? pedida : 'datos'
+
+  function elegir(id) {
+    setParametros(id === 'datos' ? {} : { seccion: id }, { replace: true })
+  }
+
+  /** Flechas izquierda y derecha entre pestañas (patrón de pestañas de WAI-ARIA). */
+  function alPresionar(evento, indice) {
+    const paso = { ArrowRight: 1, ArrowLeft: -1 }[evento.key]
+    if (!paso) return
+    const siguiente = pestanias[(indice + paso + pestanias.length) % pestanias.length]
+    elegir(siguiente.id)
+    document.getElementById(`pestania-${siguiente.id}`)?.focus()
+  }
+
   return (
     <>
       <div className="encabezado-pagina">
@@ -456,18 +468,45 @@ export default function PaginaPerfil() {
           <p className="encabezado-pagina__bajada">Tus datos aparecen en los informes que generás.</p>
         </div>
       </div>
-      <div className="dos-columnas dos-columnas--invertidas">
-        <div className="dos-columnas__lateral">
-          <TarjetaDeCuenta />
-          <PlanPersonal />
-        </div>
-        <div className="dos-columnas__principal">
-          <SeccionDatos />
-          <SeccionContrasenia />
-          <SeccionCorreo />
-          <SeccionCopia />
-          <SeccionEliminar />
-        </div>
+      <TarjetaDeCuenta />
+      <div className="pestanias" role="tablist" aria-label="Secciones del perfil">
+        {pestanias.map(({ id, texto }, indice) => (
+          <button
+            key={id}
+            id={`pestania-${id}`}
+            type="button"
+            role="tab"
+            className="pestanias__pestania"
+            aria-selected={actual === id}
+            aria-controls={`panel-${id}`}
+            tabIndex={actual === id ? 0 : -1}
+            onClick={() => elegir(id)}
+            onKeyDown={(evento) => alPresionar(evento, indice)}
+          >
+            {texto}
+          </button>
+        ))}
+      </div>
+      <div
+        id={`panel-${actual}`}
+        role="tabpanel"
+        aria-labelledby={`pestania-${actual}`}
+        className="pestanias__panel"
+      >
+        {actual === 'datos' && <SeccionDatos />}
+        {actual === 'seguridad' && (
+          <>
+            <SeccionContrasenia />
+            <SeccionCorreo />
+          </>
+        )}
+        {actual === 'plan' && <SeccionPlan />}
+        {actual === 'privacidad' && (
+          <>
+            <SeccionCopia />
+            <SeccionEliminar />
+          </>
+        )}
       </div>
     </>
   )

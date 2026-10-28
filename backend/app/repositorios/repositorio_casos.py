@@ -39,7 +39,9 @@ class RepositorioCasos(RepositorioBase):
         """Casos accesibles con los filtros de RF26, por última actualización.
 
         Args:
-            filtros: diccionario con ``numero``, ``expediente`` (ya normalizado),
+            filtros: diccionario con ``busqueda`` (número, expediente o lugar;
+                ``busqueda_normalizada`` es su versión sin tildes),
+                ``numero``, ``expediente`` (ya normalizado),
                 ``estado``, ``tipo``, ``espacio`` (``"personal"`` o el id de
                 una organización), ``desde`` y ``hasta`` (fechas del hecho).
 
@@ -51,6 +53,14 @@ class RepositorioCasos(RepositorioBase):
             consulta = consulta.filter(Caso.estado == filtros["estado"])
         else:
             consulta = consulta.filter(Caso.estado != ESTADO_ARCHIVADO)
+        if filtros.get("busqueda"):
+            texto = filtros["busqueda"]
+            normalizado = filtros.get("busqueda_normalizada") or texto
+            consulta = consulta.filter(or_(
+                Caso.numero.ilike(f"%{texto}%"),
+                Caso.expediente_normalizado.like(f"%{normalizado}%"),
+                Caso.lugar.ilike(f"%{texto}%"),
+            ))
         if filtros.get("numero"):
             consulta = consulta.filter(Caso.numero.ilike(f"%{filtros['numero']}%"))
         if filtros.get("expediente"):

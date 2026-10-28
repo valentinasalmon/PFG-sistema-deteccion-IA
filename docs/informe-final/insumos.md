@@ -108,6 +108,13 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
 - **Inconsistencia detectada**: el informe (OE4 y aceptación del MVP) exige F1 ≥ 0,85 y la especificación 010 (CP-07) usa AUC ≥ 0,90. Queda para validar con los tutores.
 - Revisión del informe contra las consignas de la AE1 y la AE2: deudas y capítulos vacíos cargados en el tablero y en `docs/guias/pendientes.md`.
 
+- **Usabilidad e interfaz (028, 2026-10-28):**
+  - auditoría heurística de las 19 pantallas en computadora y celular (duplicados, consistencia, formularios, listas);
+  - propuesta en frames de alta fidelidad validados por la autora en dos rondas antes de programar: diseño iterativo con la usuaria-dueña del producto;
+  - capturas de antes y después en `docs/funcionalidades/028-mejoras-interfaz/capturas/`;
+  - cambios medibles: la pantalla del caso pasa de unos 8.800 px a etapas cortas; el perfil, de 5 tarjetas apiladas a 4 pestañas; un solo buscador en lugar de dos campos;
+  - nueva funcionalidad surgida de la validación: un enlace para que la persona afectada suba las fotos sin cuenta (CP-32, tercero y Ley 25.326).
+
 ## Otros temas ya registrados
 
 - Metodología: desarrollo guiado por especificaciones, arnés para agentes de IA (CLAUDE.md, constitución) y trazabilidad con `Co-Authored-By`.

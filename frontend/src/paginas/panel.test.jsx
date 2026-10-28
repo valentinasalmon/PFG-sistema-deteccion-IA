@@ -76,8 +76,16 @@ describe('panel principal', () => {
     const compartidos = screen.getByRole('region', { name: 'Compartidos con vos recientemente' })
     expect(within(compartidos).getByText(/Beto Pérez te dio permiso de lectura el 19\/10\/2026/)).toBeInTheDocument()
 
-    const recientes = screen.getByRole('region', { name: 'Actualizados recientemente' })
-    expect(within(recientes).getAllByRole('link').map((e) => e.getAttribute('href'))).toEqual(['/casos/1', '/casos/2'])
+    const recientes = screen.getByRole('region', { name: 'Casos recientes' })
+    expect(within(recientes).getAllByRole('link').map((e) => e.getAttribute('href'))).toEqual([
+      '/casos',
+      '/casos/1',
+      '/casos/2',
+    ])
+
+    // Cada contador abre la lista de casos con ese estado (028).
+    const contadores = screen.getByRole('list', { name: 'Tus casos por estado' })
+    expect(within(contadores).getByRole('link', { name: /2\s*Borrador/ })).toHaveAttribute('href', '/casos?estado=borrador')
   })
 
   it('muestra la actividad reciente con enlaces a los casos (CA2)', async () => {
@@ -85,19 +93,37 @@ describe('panel principal', () => {
     renderizarEn('/')
 
     const actividad = await screen.findByRole('list', { name: 'Actividad reciente de tus casos' })
-    const enlace = within(actividad).getByRole('link', { name: 'Ana López cargó la imagen «frente.jpg» en CASO-2026-000001' })
-    expect(enlace).toHaveAttribute('href', '/casos/1')
-    expect(within(actividad).getByText('Terminó el análisis de CASO-2026-000001')).toBeInTheDocument()
+    // El enlace va solo en el número del caso (028).
+    const enlaces = within(actividad).getAllByRole('link', { name: 'CASO-2026-000001' })
+    expect(enlaces).toHaveLength(2)
+    expect(enlaces[0]).toHaveAttribute('href', '/casos/1')
+    expect(enlaces[0].closest('li')).toHaveTextContent('Ana López cargó la imagen «frente.jpg» en CASO-2026-000001')
   })
 
   it('con el panel vacío solo muestra el resumen de casos', async () => {
     api(VACIO)
     renderizarEn('/')
 
-    expect(await screen.findByText('Todavía no tenés casos.')).toBeInTheDocument()
+    expect(await screen.findByText(/Todavía no tenés casos/)).toBeInTheDocument()
     for (const titulo of ['Pendientes', 'Análisis en curso', 'Actividad reciente']) {
       expect(screen.queryByRole('region', { name: titulo })).not.toBeInTheDocument()
     }
+  })
+
+  it('muestra 5 eventos y despliega el resto a pedido', async () => {
+    const eventos = Array.from({ length: 7 }, (_, i) => ({
+      fecha: '2026-10-20T15:00:00',
+      id_caso: 1,
+      numero: 'CASO-2026-000001',
+      accion: 'caso.edicion',
+      texto: `Editaste los datos del caso CASO-2026-000001 (${i})`,
+    }))
+    api({ ...COMPLETO, actividad: eventos })
+    const { usuario } = renderizarEn('/')
+    const actividad = await screen.findByRole('list', { name: 'Actividad reciente de tus casos' })
+    expect(within(actividad).getAllByRole('listitem')).toHaveLength(5)
+    await usuario.click(screen.getByRole('button', { name: 'Ver toda la actividad' }))
+    expect(within(actividad).getAllByRole('listitem')).toHaveLength(7)
   })
 
   it('muestra el error si no se puede cargar el panel', async () => {
