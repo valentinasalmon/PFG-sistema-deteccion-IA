@@ -31,6 +31,7 @@ async function cargarPantalla() {
 
 function InvitacionesPendientes({ invitaciones, alResponder }) {
   const navegar = useNavigate()
+  const { recargarUsuario } = useSesion()
   const [error, setError] = useState(null)
   const [mensaje, setMensaje] = useState(null)
 
@@ -40,6 +41,7 @@ function InvitacionesPendientes({ invitaciones, alResponder }) {
     try {
       if (aceptar) {
         await aceptarInvitacion(invitacion.id)
+        await recargarUsuario().catch(() => {})
         navegar(`/organizaciones/${invitacion.organizacion.id}`, {
           state: { mensaje: `Ya sos miembro de ${invitacion.organizacion.nombre}.` },
         })

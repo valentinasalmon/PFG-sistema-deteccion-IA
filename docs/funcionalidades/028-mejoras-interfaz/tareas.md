@@ -10,9 +10,10 @@
 - [x] T07 — Administración: períodos rápidos y pestañas.
 - [x] T08 — Pruebas, capturas de antes y después, bitácora e insumos.
 
-## Segunda tanda (espera validación)
-- [ ] T09 — Menú según el rol (administración sola; «Organizaciones» solo si pertenece a alguna).
-- [ ] T10 — Pantalla del caso por etapas.
-- [ ] T11 — Enlace de carga para la persona afectada (backend, página pública, auditoría y cadena de custodia).
-- [ ] T12 — Celular.
-- [ ] T13 — Inicio de sesión y registro.
+## Segunda tanda (validada por la autora el 2026-10-28)
+- [x] T09 — Menú según el rol (administración sola; «Organizaciones» solo si pertenece a alguna; crear un estudio desde Mi perfil).
+- [x] T10 — Pantalla del caso por etapas (cargar imágenes, análisis con progreso por imagen y capa, informe).
+- [x] T11 — Enlace de carga para la persona afectada (backend, migración, página pública, declaración, auditoría y origen de cada imagen).
+- [x] T12 — Cuenta de demostración (abogada sin rol de Administrador) para mostrar la plataforma.
+- [ ] T13 — Celular: ajustes restantes del frame 8 (las etapas y la galería ya se adaptan).
+- [ ] T14 — Inicio de sesión y registro (frames 9a a 9c). La autora pidió dejarlos para la tanda siguiente.

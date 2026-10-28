@@ -100,7 +100,7 @@ function api({ caso = CASO, imagenes = IMAGENES, historial = [], detalle = DETAL
   })
 }
 
-const seccionImagenes = () => screen.getByRole('region', { name: /^Imágenes/ })
+const seccionImagenes = () => screen.getByRole('region', { name: 'Cargar imágenes' })
 
 describe('pedir el análisis', () => {
   it('elige por defecto las imágenes no analizadas y pide el análisis (CA1)', async () => {
@@ -116,15 +116,16 @@ describe('pedir el análisis', () => {
     })
     const { usuario } = renderizarEn('/casos/7')
 
-    const zona = await screen.findByRole('region', { name: /^Imágenes/ })
+    const zona = await screen.findByRole('region', { name: 'Cargar imágenes' })
     const casillas = await within(zona).findAllByRole('checkbox', { name: 'Incluir en el análisis' })
     expect(casillas.map((c) => c.checked)).toEqual([false, true])
     expect(within(zona).getByText('Ya analizada')).toBeInTheDocument()
 
-    await usuario.click(within(zona).getByRole('button', { name: 'Analizar (1)' }))
+    await usuario.click(within(zona).getByRole('button', { name: /Analizar la imagen/ }))
 
     expect(solicitudes.find((s) => s.metodo === 'POST').cuerpo).toEqual({ imagenes: [2] })
-    expect(await screen.findByText('En análisis')).toBeInTheDocument()
+    // Pasa sola a la etapa del análisis (028).
+    expect(await screen.findByRole('link', { name: /Análisis en curso/ })).toHaveAttribute('aria-current', 'page')
   })
 
   it('sin imágenes elegidas el botón queda deshabilitado (CA2)', async () => {
@@ -133,10 +134,10 @@ describe('pedir el análisis', () => {
 
     await screen.findAllByRole('checkbox', { name: 'Incluir en el análisis' })
     await usuario.click(within(seccionImagenes()).getByRole('button', { name: 'Ninguna' }))
-    expect(within(seccionImagenes()).getByRole('button', { name: 'Analizar (0)' })).toBeDisabled()
+    expect(within(seccionImagenes()).getByRole('button', { name: /Analizar las 0 imágenes/ })).toBeDisabled()
 
     await usuario.click(within(seccionImagenes()).getByRole('button', { name: 'Elegir todas' }))
-    expect(within(seccionImagenes()).getByRole('button', { name: 'Analizar (2)' })).toBeEnabled()
+    expect(within(seccionImagenes()).getByRole('button', { name: /Analizar las 2 imágenes/ })).toBeEnabled()
     await usuario.click(within(seccionImagenes()).getAllByRole('checkbox')[0])
     expect(within(seccionImagenes()).getByText('1 de 2 elegidas')).toBeInTheDocument()
   })
@@ -152,7 +153,7 @@ describe('pedir el análisis', () => {
     })
     const { usuario } = renderizarEn('/casos/7')
 
-    await usuario.click(await screen.findByRole('button', { name: 'Analizar (1)' }))
+    await usuario.click(await screen.findByRole('button', { name: /Analizar la imagen/ }))
 
     expect(await screen.findByText('El caso ya tiene un análisis en curso.')).toBeInTheDocument()
   })
@@ -186,16 +187,17 @@ describe('progreso y resultados', () => {
         return consultas === 1 ? enCurso : DETALLE
       },
     })
-    renderizarEn('/casos/7')
+    renderizarEn('/casos/7?etapa=analisis')
 
-    expect(await screen.findByText('Analizando la imagen 1 de 1 · capa Metadatos…')).toBeInTheDocument()
+    expect(await screen.findByText(/Imagen 1 de 1 · Metadatos\./)).toBeInTheDocument()
+    expect(screen.getByRole('progressbar', { name: 'Progreso del análisis' })).toBeInTheDocument()
     expect(await screen.findByText('90 %', {}, { timeout: 4000 })).toBeInTheDocument()
     expect(consultas).toBeGreaterThanOrEqual(2)
   })
 
   it('muestra cada capa con nivel, conclusión, hallazgos y metadatos (CA12, CA14)', async () => {
     api({ historial: [RESUMEN] })
-    renderizarEn('/casos/7')
+    renderizarEn('/casos/7?etapa=analisis')
 
     const analisis = await screen.findByRole('region', { name: 'Análisis' })
     expect(await within(analisis).findByRole('heading', { name: 'frente.png' })).toBeInTheDocument()
@@ -240,7 +242,7 @@ describe('progreso y resultados', () => {
         ],
       },
     })
-    renderizarEn('/casos/7')
+    renderizarEn('/casos/7?etapa=analisis')
 
     const analisis = await screen.findByRole('region', { name: 'Análisis' })
     expect(await within(analisis).findByRole('heading', { name: 'Credenciales de contenido (C2PA) Firma confiable' })).toBeInTheDocument()
@@ -260,7 +262,7 @@ describe('progreso y resultados', () => {
       detalle: { tabla: [{ campo: 'Calidad JPEG estimada', valor: '85 %' }], regiones: 1 },
     }
     api({ historial: [RESUMEN], detalle: { ...DETALLE, imagenes: [{ ...DETALLE.imagenes[0], resultados: [RESULTADO, ela] }] } })
-    renderizarEn('/casos/7')
+    renderizarEn('/casos/7?etapa=analisis')
 
     const analisis = await screen.findByRole('region', { name: 'Análisis' })
     expect(await within(analisis).findByRole('heading', { name: 'Niveles de error (ELA)' })).toBeInTheDocument()
@@ -281,7 +283,7 @@ describe('progreso y resultados', () => {
         }],
       },
     })
-    renderizarEn('/casos/7')
+    renderizarEn('/casos/7?etapa=analisis')
 
     expect(await screen.findByText('Modificada después de firmarse')).toBeInTheDocument()
   })
@@ -297,7 +299,7 @@ describe('progreso y resultados', () => {
         ],
       },
     })
-    renderizarEn('/casos/7')
+    renderizarEn('/casos/7?etapa=analisis')
 
     expect(await screen.findByRole('heading', { name: 'Metadatos: no disponible' })).toBeInTheDocument()
     expect(screen.getByText('ExifTool no está instalado.')).toBeInTheDocument()
@@ -309,7 +311,7 @@ describe('progreso y resultados', () => {
       historial: [{ ...RESUMEN, estado: 'fallido', estado_nombre: 'Fallido' }],
       detalle: { ...DETALLE, estado: 'fallido', motivo_falla: 'El procesamiento se interrumpió.', imagenes: [] },
     })
-    renderizarEn('/casos/7')
+    renderizarEn('/casos/7?etapa=analisis')
 
     expect(await screen.findByText('El análisis no pudo completarse: El procesamiento se interrumpió.')).toBeInTheDocument()
   })
@@ -323,7 +325,7 @@ describe('progreso y resultados', () => {
         },
       },
     })
-    const { usuario } = renderizarEn('/casos/7')
+    const { usuario } = renderizarEn('/casos/7?etapa=analisis')
 
     const historial = await screen.findByRole('list', { name: 'Historial de análisis' })
     await usuario.click(within(historial).getByRole('button', { name: /18\/10\/2026 · 2 imagen/ }))
@@ -331,17 +333,46 @@ describe('progreso y resultados', () => {
     expect(await screen.findByRole('heading', { name: 'anterior.png' })).toBeInTheDocument()
   })
 
-  it('no muestra la sección si el caso no tiene análisis', async () => {
+  it('sin análisis, la etapa lo explica y lleva a cargar imágenes (028)', async () => {
     api()
+    const { usuario } = renderizarEn('/casos/7?etapa=analisis')
+
+    expect(await screen.findByText(/Todavía no se analizó ninguna imagen/)).toBeInTheDocument()
+    expect(screen.queryByRole('img', { name: 'Vista previa de frente.png' })).not.toBeInTheDocument()
+    await usuario.click(screen.getByRole('button', { name: 'Ir a cargar imágenes' }))
+    expect(await screen.findByRole('img', { name: 'Vista previa de frente.png' })).toBeInTheDocument()
+  })
+
+  it('muestra cada imagen con su capa en curso mientras se analiza (028)', async () => {
+    api({
+      caso: { ...CASO, estado: 'en_analisis', estado_nombre: 'En análisis' },
+      historial: [{ ...RESUMEN, estado: 'en_proceso', en_curso: true, cantidad_imagenes: 2 }],
+      detalle: {
+        ...DETALLE,
+        estado: 'en_proceso',
+        en_curso: true,
+        cantidad_imagenes: 2,
+        progreso: { imagen_actual: 1, capa_actual: 'Credenciales de contenido' },
+        imagenes: [
+          { ...DETALLE.imagenes[0], resultados: [RESULTADO] },
+          { id_imagen: 2, nombre: 'lateral.png', huella: 'b', integridad: null, resultados: [] },
+        ],
+      },
+    })
     renderizarEn('/casos/7')
 
-    await screen.findByRole('img', { name: 'Vista previa de frente.png' })
-    expect(screen.queryByRole('region', { name: 'Análisis' })).not.toBeInTheDocument()
+    const lista = await screen.findByRole('list', { name: 'Imágenes del análisis' })
+    const filas = within(lista).getAllByRole('listitem')
+    expect(within(filas[0]).getByText('✓ Metadatos')).toBeInTheDocument()
+    expect(within(filas[0]).getByText('C2PA en curso')).toBeInTheDocument()
+    expect(within(filas[0]).getByText('Analizando…')).toBeInTheDocument()
+    expect(within(filas[1]).getByText('En espera')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar', { name: 'Progreso del análisis' })).toHaveAttribute('aria-valuenow', '17')
   })
 
   it('muestra el error del historial', async () => {
     api({ extra: { 'GET /api/casos/7/analisis': { estado: 500, cuerpo: { mensaje: 'Error del servidor.' } } } })
-    renderizarEn('/casos/7')
+    renderizarEn('/casos/7?etapa=analisis')
 
     expect(await screen.findByText('Error del servidor.')).toBeInTheDocument()
   })

@@ -406,7 +406,7 @@ function SeccionInvitaciones({ organizacion, invitaciones, recargar }) {
 
 function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
   const navegar = useNavigate()
-  const { terminarSesion } = useSesion()
+  const { terminarSesion, recargarUsuario } = useSesion()
   const [error, setError] = useState(null)
   const [confirmacion, setConfirmacion] = useState('')
   const [eliminando, setEliminando] = useState(false)
@@ -423,7 +423,11 @@ function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
         terminarSesion('desactivada')
         return
       }
-      navegar('/organizaciones', { state: { mensaje: respuesta.mensaje } })
+      // Sin organizaciones, el menú deja de mostrar «Organizaciones» (028).
+      const usuario = await recargarUsuario().catch(() => null)
+      navegar(usuario && !usuario.en_organizacion ? '/perfil' : '/organizaciones', {
+        state: { mensaje: respuesta.mensaje },
+      })
     } catch (errorApi) {
       setError(errorApi.message)
       setEnviando(false)

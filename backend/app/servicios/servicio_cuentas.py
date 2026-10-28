@@ -18,6 +18,7 @@ from app.modelos.usuario import (
     PERFIL_ABOGADO,
     PERFIL_ASEGURADORA,
     ROL_ADMINISTRADOR,
+    ROL_USUARIO,
     Usuario,
 )
 from app.servicios import auditoria, contrasenias
@@ -349,13 +350,21 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
         self.repositorio.guardar(usuario)
         self.correos.enviar_aviso_contrasenia_cambiada(usuario)
 
-    def preparar_cuenta_de_prueba(self, correo, contrasenia):
-        """Deja lista una cuenta para recorrer todas las pantallas en desarrollo (022).
+    def preparar_cuenta_de_prueba(  # pylint: disable=too-many-arguments
+        self, correo, contrasenia, *, administradora=True, nombre=("Valentina", "Prueba"),
+        estudio="Estudio de prueba evidentIA",
+    ):
+        """Deja lista una cuenta para recorrer las pantallas (022 y 028).
 
-        Crea, o restablece si ya existe, una cuenta Abogado verificada, activa,
-        sin bloqueos y con rol de Administrador, y le crea un estudio jurídico si
-        no tiene ninguna organización. Solo se usa desde la terminal (``flask
-        administracion cuenta-de-prueba``), que la rechaza en producción.
+        Crea, o restablece si ya existe, una cuenta Abogado verificada, activa y
+        sin bloqueos, y le crea un estudio jurídico si no tiene ninguna
+        organización. Solo se usa desde la terminal:
+
+        - ``flask administracion cuenta-de-prueba``: con rol de Administrador,
+          para desarrollo; se rechaza en producción.
+        - ``flask administracion cuenta-de-demostracion``: abogada sin rol de
+          Administrador, para mostrar la plataforma (028); la contraseña se
+          escribe en la terminal y debe cumplir la política.
 
         Returns:
             La cuenta preparada.
@@ -363,7 +372,7 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
         usuario = self.repositorio.obtener_por_correo(correo.lower())
         if usuario is None:
             usuario = Usuario(
-                nombre="Valentina", apellido="Prueba", correo=correo.lower(),
+                nombre=nombre[0], apellido=nombre[1], correo=correo.lower(),
                 hash_contrasenia="", perfil=PERFIL_ABOGADO, colegio="CPACF",
                 version_terminos=self.configuracion["VERSION_TERMINOS"],
                 aceptacion_terminos_en=ahora_utc(),
@@ -374,12 +383,11 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
         )
         usuario.correo_verificado_en = usuario.correo_verificado_en or ahora_utc()
         usuario.intentos_fallidos, usuario.bloqueado_hasta = 0, None
-        usuario.activo, usuario.rol = True, ROL_ADMINISTRADOR
+        usuario.activo = True
+        usuario.rol = ROL_ADMINISTRADOR if administradora else ROL_USUARIO
         self.repositorio.guardar(usuario)
         if not self.organizaciones.listar(usuario):
-            self.organizaciones.crear(
-                usuario, {"nombre": "Estudio de prueba evidentIA", "tipo": "estudio_juridico"}
-            )
+            self.organizaciones.crear(usuario, {"nombre": estudio, "tipo": "estudio_juridico"})
         return usuario
 
     def promover_administrador(self, correo):

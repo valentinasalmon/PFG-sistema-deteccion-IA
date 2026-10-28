@@ -208,11 +208,23 @@ describe('cuenta desactivada', () => {
 })
 
 describe('administración', () => {
-  it('quien no es Administrador no ve la pantalla ni el enlace (CA7)', async () => {
+  it('quien no es Administrador no ve la pantalla ni el enlace: vuelve al inicio (CA7, 028)', async () => {
     simularApi(CON_SESION)
     renderizarEn('/administracion')
-    expect(await screen.findByText(/Solo el Administrador/)).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /Hola, / })).toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Administración' })).not.toBeInTheDocument()
+  })
+
+  it('la administradora solo ve Administración y Mi perfil, sin casos (028)', async () => {
+    simularApi(CON_SESION_ADMINISTRADOR)
+    renderizarEn('/casos')
+    expect(await screen.findByRole('heading', { name: 'Administración', level: 1 })).toBeInTheDocument()
+    const menu = screen.getByRole('navigation', { name: 'Principal' })
+    expect(within(menu).getAllByRole('link').map((enlace) => enlace.textContent)).toEqual([
+      'Administración',
+      'Mi perfil',
+    ])
+    expect(screen.queryByRole('link', { name: /Nuevo caso/ })).not.toBeInTheDocument()
   })
 
   it('lista las pendientes con su CUIT y quién las registró (CA7)', async () => {

@@ -163,7 +163,11 @@ class SolicitudActualizacionPerfil(BaseModel):
 
 
 def usuario_a_dict(usuario):
-    """Representación pública del usuario. Nunca incluye el hash de la contraseña."""
+    """Representación pública del usuario. Nunca incluye el hash de la contraseña.
+
+    ``en_organizacion`` le permite a la interfaz mostrar el menú según
+    corresponda (funcionalidad 028).
+    """
     datos = {
         "id": usuario.id,
         "nombre": usuario.nombre,
@@ -172,6 +176,7 @@ def usuario_a_dict(usuario):
         "perfil": usuario.perfil,
         "rol": usuario.rol,
         "activo": usuario.activo,
+        "en_organizacion": bool(usuario.membresias),
     }
     if usuario.perfil == PERFIL_ABOGADO:
         datos["colegio"] = usuario.colegio
