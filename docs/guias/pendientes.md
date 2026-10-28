@@ -1,6 +1,6 @@
 # Lo que falta para llegar al 100 % (al 2026-10-27)
 
-Lista para ordenar con la autora y pasar a Trello. La entrega es antes del 2026-11-19 (CP-16). La prioridad es una propuesta:
+Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm), que es la referencia de seguimiento desde el 2026-10-26 (ver la [bitácora](../bitacora/2026-10-26-reorganizacion-del-tablero.md)). Las tareas nuevas se cargan primero allá. La entrega es antes del 2026-11-19 (CP-16). La prioridad es una propuesta:
 
 - **P1**: imprescindible para la entrega y la defensa.
 - **P2**: suma mucho y conviene hacerlo.
@@ -46,6 +46,29 @@ Lista para ordenar con la autora y pasar a Trello. La entrega es antes del 2026-
 | P1 | **Definir las secciones nuevas** que se agregan y las que se modifican (CP-31) | Autora y tutor | Autora |
 | P1 | **Redactar el informe final** con lo reunido en `docs/informe-final/insumos.md` (Hedera, celular, PDF verificable, metodología, calidad) | Secciones definidas | Agente redacta, autora revisa |
 | P1 | Preparar la **defensa**: presentación y demostración (QR, verificación, Hedera) | Informe final | Autora, con apoyo del agente |
+
+## Relevamiento y validación (agregado el 2026-10-26)
+
+| Prioridad | Tarea | Depende de | Quién |
+|---|---|---|---|
+| P1 | **Validar requisitos y dominio con el referente**, con acta (exigido por la AE2) | Referente | Autora |
+| P1 | **Validar la comprensión del informe** con al menos un abogado y un analista de siniestros (OE5, aceptación del MVP) | Participantes | Autora |
+| P1 | **Mapas de empatía**: al menos 3 interesados (versión 2) y 5 (versión 3) del Capítulo XIII | Participantes | Agente arma, autora conduce |
+| P2 | Segunda entrevista del lado asegurador; mostrar el sistema actual a Federico Miskinich | — | Autora |
+
+## Deudas de la AE1 y la AE2 y capítulos del protocolo (agregado el 2026-10-26)
+
+| Prioridad | Tarea | Quién |
+|---|---|---|
+| P1 | Catálogo de requisitos con trazabilidad al hallazgo y matriz hallazgo → requisito → componente | Agente |
+| P1 | Lienzo de modelo de negocio | Agente y autora |
+| P1 | Prototipo v1: etiqueta `v1`, README con instrucciones de ejecución y evidencia de la integración continua | Agente prepara, autora etiqueta |
+| P1 | Capítulos X (recursos), IX (diseño de solución, con diagrama de arquitectura actualizado y diagrama entidad-relación), VII (marketing), VIII (propiedad intelectual, búsqueda en el INPI), XII, XIII y conclusiones | Agente redacta, autora revisa |
+| P1 | Actualizar los Capítulos I a VI a lo construido (Hedera, React, organizaciones, HEIC, Google, cronograma real, columnas del tablero) | Agente |
+| P1 | Bitácora individual con la declaración de uso de IA y portafolio digital (instrumentos de la AE1 y la AE2, hoy sin hacer) | Autora, con apoyo del agente |
+| P1 | Unificar el criterio del clasificador: F1 ≥ 0,85 (informe) o AUC ≥ 0,90 (010 y CP-07) | Tutores |
+| P1 | Revisar la consigna de la AE3 cuando se publique | Autora |
+| P2 | Prototipo v0 navegable, Capítulo XI, aspectos formales y comentarios abiertos del documento | Agente y autora |
 
 ## Cuestiones para validar con los tutores
 

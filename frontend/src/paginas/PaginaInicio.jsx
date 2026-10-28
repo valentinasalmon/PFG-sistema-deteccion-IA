@@ -1,57 +1,74 @@
 /**
  * Pantalla de inicio con sesión iniciada: el panel principal.
  *
- * Muestra, en una sola consulta, los casos por estado, lo que espera una
- * respuesta (invitaciones y transferencias), los casos próximos a destruirse,
- * los análisis en curso, los casos compartidos recientemente, los últimos casos
- * actualizados y la actividad reciente. Cada elemento lleva a su caso o a la
- * pantalla donde se responde (RF48 CA3).
+ * Muestra, en una sola consulta, los casos por estado (cada contador abre la
+ * lista ya filtrada), lo que espera una respuesta (invitaciones y
+ * transferencias), los casos próximos a destruirse, los análisis en curso, los
+ * casos compartidos recientemente, los últimos casos actualizados y la
+ * actividad reciente. Cada elemento lleva a su caso o a la pantalla donde se
+ * responde (RF48 CA3).
+ *
+ * Desde la funcionalidad 028: contadores compactos, casos recientes con la
+ * misma fila que la lista de casos, y la actividad en dos columnas, con la
+ * propia en segunda persona y el enlace solo en el número del caso.
  *
  * Realiza: RF48 (CA1 a CA3), CU30; RN31; CA7 de la funcionalidad 002.
  */
+import { useState } from 'react'
 import { Link } from 'react-router'
 import { obtenerPanel } from '../api/panel.js'
 import Aviso from '../componentes/Aviso.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
+import FilaCaso from '../componentes/FilaCaso.jsx'
+import Icono from '../componentes/Icono.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { textosDelRubro } from '../utilidades/lenguaje.js'
 import { OPCIONES_ESTADO } from '../utilidades/casos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 
+const ACTIVIDAD_VISIBLE = 5
+
+/** Ícono de cada tipo de evento de la actividad. */
+const ICONOS_ACTIVIDAD = {
+  'imagen.carga': 'imagen',
+  'imagen.eliminacion': 'imagen',
+  'analisis.solicitud': 'analisis',
+  'analisis.finalizacion': 'verificado',
+  'informe.generacion': 'documento',
+  'caso.creacion': 'mas',
+  'caso.edicion': 'lapiz',
+}
+
 function EnlaceCaso({ caso }) {
   return <Link to={`/casos/${caso.id}`}>{caso.numero}</Link>
 }
 
-function Seccion({ id, titulo, children }) {
+function Seccion({ id, titulo, accion, children }) {
   return (
     <section className="seccion panel-seccion" aria-labelledby={id}>
-      <h2 id={id}>{titulo}</h2>
+      <div className="panel-seccion__cabecera">
+        <h2 id={id}>{titulo}</h2>
+        {accion}
+      </div>
       {children}
     </section>
   )
 }
 
 function CasosPorEstado({ porEstado }) {
-  const total = Object.values(porEstado).reduce((suma, cantidad) => suma + cantidad, 0)
   return (
-    <Seccion id="titulo-casos" titulo="Tus casos">
-      {total === 0 ? (
-        <p>Todavía no tenés casos.</p>
-      ) : (
-        <ul className="resumen-estados">
-          {OPCIONES_ESTADO.map(({ valor, texto }) => (
-            <li key={valor}>
-              <Link to={`/casos?estado=${valor}`}>
-                <span className="resumen-estados__cantidad">{porEstado[valor] ?? 0}</span>
-                {texto}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </Seccion>
+    <ul className="contadores" aria-label="Tus casos por estado">
+      {OPCIONES_ESTADO.map(({ valor, texto }) => (
+        <li key={valor}>
+          <Link to={`/casos?estado=${valor}`} className="contador">
+            <span className="contador__cifra">{porEstado[valor] ?? 0}</span>
+            <span className="contador__texto">{texto}</span>
+          </Link>
+        </li>
+      ))}
+    </ul>
   )
 }
 
@@ -118,33 +135,77 @@ function Compartidos({ compartidos }) {
 }
 
 function Recientes({ casos }) {
-  if (casos.length === 0) return null
   return (
-    <Seccion id="titulo-recientes" titulo="Actualizados recientemente">
-      <ul className="lista-panel">
-        {casos.map((caso) => (
-          <li key={caso.id}>
-            <EnlaceCaso caso={caso} /> · {caso.tipo_nombre} ·{' '}
-            <Etiqueta tipo="neutra">{caso.estado_nombre}</Etiqueta> · {formatearFecha(caso.actualizado_en)}
-          </li>
-        ))}
-      </ul>
+    <Seccion
+      id="titulo-recientes"
+      titulo="Casos recientes"
+      accion={
+        <Link to="/casos" className="boton boton--fantasma boton--chico">
+          Ver todos los casos
+        </Link>
+      }
+    >
+      {casos.length === 0 ? (
+        <div className="estado-vacio">
+          <div className="visor estado-vacio__visor">
+            <Icono nombre="casos" tamanio={28} />
+          </div>
+          <p>Todavía no tenés casos. Creá el primero desde «Nuevo caso».</p>
+        </div>
+      ) : (
+        <ul className="lista-casos lista-casos--recuadro">
+          {casos.map((caso) => (
+            <FilaCaso key={caso.id} caso={caso} compacta />
+          ))}
+        </ul>
+      )}
     </Seccion>
   )
 }
 
+/** Texto del evento con el enlace solo en el número del caso. */
+function TextoEvento({ evento }) {
+  const { texto, numero, id_caso: idCaso } = evento
+  const posicion = numero ? texto.lastIndexOf(numero) : -1
+  if (posicion < 0) return texto
+  return (
+    <>
+      {texto.slice(0, posicion)}
+      <Link to={`/casos/${idCaso}`}>{numero}</Link>
+      {texto.slice(posicion + numero.length)}
+    </>
+  )
+}
+
 function Actividad({ eventos }) {
+  const [todos, setTodos] = useState(false)
   if (eventos.length === 0) return null
+  const visibles = todos ? eventos : eventos.slice(0, ACTIVIDAD_VISIBLE)
   return (
     <Seccion id="titulo-actividad" titulo="Actividad reciente">
-      <ul className="lista-panel" aria-label="Actividad reciente de tus casos">
-        {eventos.map((evento, indice) => (
-          <li key={`${evento.fecha}-${indice}`}>
-            <Link to={`/casos/${evento.id_caso}`}>{evento.texto}</Link>
-            <span className="nota"> · {formatearFecha(evento.fecha)}</span>
+      <ul className="actividad" aria-label="Actividad reciente de tus casos">
+        {visibles.map((evento, indice) => (
+          <li key={`${evento.fecha}-${indice}`} className="actividad__evento">
+            <span className="actividad__icono" aria-hidden="true">
+              <Icono nombre={ICONOS_ACTIVIDAD[evento.accion] ?? 'reloj'} tamanio={16} />
+            </span>
+            <div>
+              <TextoEvento evento={evento} />
+              <span className="actividad__fecha">{formatearFecha(evento.fecha)}</span>
+            </div>
           </li>
         ))}
       </ul>
+      {eventos.length > ACTIVIDAD_VISIBLE && (
+        <button
+          type="button"
+          className="boton boton--secundario boton--chico"
+          onClick={() => setTodos(!todos)}
+          aria-expanded={todos}
+        >
+          {todos ? 'Ver menos' : 'Ver toda la actividad'}
+        </button>
+      )}
     </Seccion>
   )
 }
@@ -160,29 +221,24 @@ export default function PaginaInicio() {
           <h1>Hola, {usuario.nombre}</h1>
           <p className="encabezado-pagina__bajada">{textosDelRubro(usuario.perfil).bajadaPanel}</p>
         </div>
-        <div className="acciones-en-linea">
-          <Link to="/casos" className="boton boton--secundario">
-            Ver mis casos
-          </Link>
-        </div>
       </div>
       {cargando && <Cargando />}
       {error && <Aviso tipo="error">{error.message}</Aviso>}
       {panel && (
         <>
           <CasosPorEstado porEstado={panel.por_estado} />
-          <div className="dos-columnas">
-            <div className="dos-columnas__principal">
+          <Pendientes
+            invitaciones={panel.invitaciones}
+            transferencias={panel.transferencias}
+            proximos={panel.proximos_a_destruir}
+          />
+          <div className="panel-columnas">
+            <div className="panel-columnas__principal">
               <Recientes casos={panel.recientes} />
-              <Actividad eventos={panel.actividad} />
-            </div>
-            <div className="dos-columnas__lateral">
-              <Pendientes
-                invitaciones={panel.invitaciones}
-                transferencias={panel.transferencias}
-                proximos={panel.proximos_a_destruir}
-              />
               <AnalisisEnCurso analisis={panel.analisis_en_curso} />
+            </div>
+            <div className="panel-columnas__lateral">
+              <Actividad eventos={panel.actividad} />
               <Compartidos compartidos={panel.compartidos} />
             </div>
           </div>

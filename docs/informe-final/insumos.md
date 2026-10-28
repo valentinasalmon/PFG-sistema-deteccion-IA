@@ -101,6 +101,20 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - búsqueda de secretos en todo el historial de Git: sin hallazgos reales.
   - Hallazgo para contar: npm 10 fallaba al instalar ("edgesOut") por un error con las dependencias opcionales de Vite; con npm 11, el mismo que usa la integración continua, se resolvió.
 
+## Gestión con el tablero de Trello (2026-10-26)
+
+- El tablero se reorganizó para coincidir con lo que declara el Capítulo V: columnas Backlog, En análisis, En desarrollo, En pruebas y Completado. Cada funcionalidad integrada tiene su tarjeta con el Pull Request y la fecha de integración, de modo que el historial muestra la cronología real.
+- **Corrección necesaria en el informe**: el Capítulo V afirma un límite de una tarea en curso por columna, pero en la práctica la autora y el agente de IA trabajaron en paralelo (por ejemplo, el entrenamiento de la 010 en Colab mientras se integraban otras funcionalidades). Decisión de la autora: corregir la frase en el informe y no forzar el límite en el tablero.
+- **Inconsistencia detectada**: el informe (OE4 y aceptación del MVP) exige F1 ≥ 0,85 y la especificación 010 (CP-07) usa AUC ≥ 0,90. Queda para validar con los tutores.
+- Revisión del informe contra las consignas de la AE1 y la AE2: deudas y capítulos vacíos cargados en el tablero y en `docs/guias/pendientes.md`.
+
+- **Usabilidad e interfaz (028, 2026-10-28):**
+  - auditoría heurística de las 19 pantallas en computadora y celular (duplicados, consistencia, formularios, listas);
+  - propuesta en frames de alta fidelidad validados por la autora en dos rondas antes de programar: diseño iterativo con la usuaria-dueña del producto;
+  - capturas de antes y después en `docs/funcionalidades/028-mejoras-interfaz/capturas/`;
+  - cambios medibles: la pantalla del caso pasa de unos 8.800 px a etapas cortas; el perfil, de 5 tarjetas apiladas a 4 pestañas; un solo buscador en lugar de dos campos;
+  - nueva funcionalidad surgida de la validación: un enlace para que la persona afectada suba las fotos sin cuenta (CP-32, tercero y Ley 25.326).
+
 ## Otros temas ya registrados
 
 - Metodología: desarrollo guiado por especificaciones, arnés para agentes de IA (CLAUDE.md, constitución) y trazabilidad con `Co-Authored-By`.
@@ -114,3 +128,6 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
 ## Secciones nuevas pedidas por la autora
 
 - Pendiente: la autora indica qué secciones agregar y qué modificar (CP-31).
+  - segunda tanda: menú según el rol, pantalla del caso en tres etapas (carga, análisis con progreso por imagen y capa, informe) y un enlace para que la persona afectada suba sus propias fotos con una declaración expresa (CP-32). Es un aporte para la cadena de custodia: cada imagen registra si vino de la computadora, del celular de quien lleva el caso o de la persona afectada;
+  - decisión de diseño: separar el trabajo por etapas redujo una pantalla de unos 8.800 px a una etapa por vez, sin perder información;
+  - pendiente: validar con los tutores el texto de la declaración (Ley 25.326).

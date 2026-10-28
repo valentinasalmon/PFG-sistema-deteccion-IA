@@ -170,6 +170,21 @@ def test_filtros_del_listado(ana, estudio):
     assert ana.get("/api/casos?estado=otro").status_code == 400
 
 
+def test_buscador_unico_por_numero_expediente_o_lugar(ana):
+    """Funcionalidad 028: un solo campo busca en el número, el expediente y el lugar."""
+    uno = _crear(ana, expediente="Expediente Gómez 12/2026", lugar="Ruta 2, km 45")
+    dos = _crear(ana, lugar="Av. Corrientes 1234")
+
+    def numeros(texto):
+        return [c["numero"] for c in ana.get("/api/casos", query_string={"busqueda": texto})
+                .get_json()["casos"]]
+
+    assert numeros("GOMEZ") == [uno["numero"]]
+    assert numeros("corrientes") == [dos["numero"]]
+    assert numeros(dos["numero"][-6:]) == [dos["numero"]]
+    assert numeros("no existe") == []
+
+
 # --- Editar y estados (CA7 a CA12) ---
 
 def test_editar_registra_anterior_y_nuevo(aplicacion, ana):

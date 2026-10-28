@@ -64,6 +64,9 @@ def _cuerpo():
 
 def _detalle(servicio, caso, permiso, mensaje=None):
     datos = {"caso": caso_a_dict(caso, permiso)}
+    # Las etapas de la pantalla del caso muestran cuántas imágenes e informes hay (028).
+    datos["caso"]["cantidad_imagenes"] = len(caso.imagenes)
+    datos["caso"]["cantidad_informes"] = len(caso.informes)
     accesos = [] if caso.es_personal else servicio.accesos(caso)
     datos["accesos"] = [acceso_a_dict(a) for a in accesos]
     if mensaje:

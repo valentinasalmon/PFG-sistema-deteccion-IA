@@ -520,3 +520,28 @@ def test_cuenta_de_prueba_rechazada_en_produccion(aplicacion):
     resultado = aplicacion.test_cli_runner().invoke(args=["administracion", "cuenta-de-prueba"])
     assert resultado.exit_code != 0
     assert "producción" in resultado.output
+
+
+def test_cuenta_de_demostracion_abogada_sin_administracion(aplicacion):
+    """028: la cuenta de demostración es una abogada común, también en producción."""
+    aplicacion.config["NOMBRE"] = "produccion"
+    corredor = aplicacion.test_cli_runner()
+    debil = corredor.invoke(
+        args=["administracion", "cuenta-de-demostracion", "--contrasenia", "corta"]
+    )
+    assert debil.exit_code != 0
+    resultado = corredor.invoke(
+        args=["administracion", "cuenta-de-demostracion", "--contrasenia", "Demostracion2026"]
+    )
+    assert resultado.exit_code == 0, resultado.output
+    assert "Demostracion2026" not in resultado.output
+    cliente = aplicacion.test_client()
+    csrf = cliente.get("/api/sesion/csrf").get_json()["csrf"]
+    respuesta = cliente.post(
+        "/api/sesion",
+        json={"correo": "demo@evidentia.local", "contrasenia": "Demostracion2026"},
+        headers={"X-CSRFToken": csrf},
+    )
+    assert respuesta.status_code == 200, respuesta.get_json()
+    usuario = respuesta.get_json()["usuario"]
+    assert usuario["rol"] == "usuario" and usuario["en_organizacion"] is True

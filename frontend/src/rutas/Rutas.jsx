@@ -46,3 +46,20 @@ export function RutaSoloVisitantes() {
   if (usuario) return <Navigate to={state?.desde ?? '/'} replace />
   return <Outlet />
 }
+
+/**
+ * Pantallas de trabajo con casos y organizaciones: la administradora de la
+ * plataforma no las usa y va directo a su tablero (funcionalidad 028).
+ */
+export function RutaSoloUsuarios() {
+  const { usuario } = useSesion()
+  if (usuario?.rol === 'administrador') return <Navigate to="/administracion" replace />
+  return <Outlet />
+}
+
+/** El tablero de administración solo es para la administradora (funcionalidad 028). */
+export function RutaSoloAdministracion() {
+  const { usuario } = useSesion()
+  if (usuario?.rol !== 'administrador') return <Navigate to="/" replace />
+  return <Outlet />
+}

@@ -147,7 +147,7 @@ describe('aseguradora pendiente de aprobación', () => {
     apiDeAseguradora({ ...ASEGURADORA, estado: 'activa' })
     const { usuario } = renderizarEn('/organizaciones/7')
     const seccion = (await screen.findByRole('heading', { name: 'Datos de la organización' })).closest('section')
-    await usuario.click(within(seccion).getByRole('button', { name: 'Editar los datos de la organización' }))
+    await usuario.click(within(seccion).getByRole('button', { name: 'Editar los datos' }))
     expect(within(seccion).getByLabelText('Nombre')).toHaveAttribute('readonly')
     expect(screen.getByRole('heading', { name: 'Invitar miembros' })).toBeInTheDocument()
   })
@@ -208,11 +208,23 @@ describe('cuenta desactivada', () => {
 })
 
 describe('administración', () => {
-  it('quien no es Administrador no ve la pantalla ni el enlace (CA7)', async () => {
+  it('quien no es Administrador no ve la pantalla ni el enlace: vuelve al inicio (CA7, 028)', async () => {
     simularApi(CON_SESION)
     renderizarEn('/administracion')
-    expect(await screen.findByText(/Solo el Administrador/)).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /Hola, / })).toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Administración' })).not.toBeInTheDocument()
+  })
+
+  it('la administradora solo ve Administración y Mi perfil, sin casos (028)', async () => {
+    simularApi(CON_SESION_ADMINISTRADOR)
+    renderizarEn('/casos')
+    expect(await screen.findByRole('heading', { name: 'Administración', level: 1 })).toBeInTheDocument()
+    const menu = screen.getByRole('navigation', { name: 'Principal' })
+    expect(within(menu).getAllByRole('link').map((enlace) => enlace.textContent)).toEqual([
+      'Administración',
+      'Mi perfil',
+    ])
+    expect(screen.queryByRole('link', { name: /Nuevo caso/ })).not.toBeInTheDocument()
   })
 
   it('lista las pendientes con su CUIT y quién las registró (CA7)', async () => {
@@ -317,5 +329,21 @@ describe('tablero del Administrador (funcionalidad 014)', () => {
     expect(screen.getByLabelText('oct 26: 7')).toBeInTheDocument()
     expect(screen.getByText('Análisis por mes')).toBeInTheDocument()
     expect(await screen.findByRole('cell', { name: 'ana@ejemplo.com' })).toBeInTheDocument()
+  })
+
+  it('cambia el período con un botón y usa las pestañas comunes en los listados (028)', async () => {
+    const { solicitudes } = simularApi({
+      ...CON_SESION_ADMINISTRADOR,
+      'GET /api/administracion/aseguradoras-pendientes': { cuerpo: { aseguradoras: [] } },
+    })
+    const { usuario } = renderizarEn('/administracion')
+    await screen.findByText('3 abogados · 1 de aseguradoras')
+
+    await usuario.click(screen.getByRole('button', { name: 'Este año' }))
+    expect(screen.getByRole('button', { name: 'Este año' })).toHaveAttribute('aria-pressed', 'true')
+    const anio = new Date().getFullYear()
+    expect(solicitudes.some((s) => s.ruta.startsWith(`/api/administracion/tablero?desde=${anio}-01-01`))).toBe(true)
+
+    expect(screen.getByRole('tab', { name: 'Cuentas' })).toHaveAttribute('aria-selected', 'true')
   })
 })

@@ -15,6 +15,7 @@ def _caso_breve(caso):
     return {
         "id": caso.id,
         "numero": caso.numero,
+        "lugar": caso.lugar,
         "tipo_nombre": NOMBRES_TIPO[caso.tipo],
         "estado": caso.estado,
         "estado_nombre": NOMBRES_ESTADO[caso.estado],

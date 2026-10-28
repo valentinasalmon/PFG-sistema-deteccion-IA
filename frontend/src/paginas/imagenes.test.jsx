@@ -24,6 +24,8 @@ const ACCIONES = {
 }
 const CASO = {
   id: 7,
+  cantidad_imagenes: 1,
+  cantidad_informes: 0,
   numero: 'CASO-2026-000007',
   tipo: 'laboral',
   tipo_nombre: 'Laboral',
@@ -69,7 +71,7 @@ function api(listado = LISTADO, extra = {}) {
   })
 }
 
-const seccion = () => screen.getByRole('region', { name: /^Imágenes/ })
+const seccion = () => screen.getByRole('region', { name: 'Cargar imágenes' })
 
 function archivo(nombre, tamanio = 10, tipo = 'image/jpeg') {
   return new File([new Uint8Array(tamanio)], nombre, { type: tipo })
@@ -83,7 +85,7 @@ describe('imágenes del caso', () => {
     const vista = await screen.findByRole('img', { name: 'Vista previa de frente.jpg' })
     expect(vista).toHaveAttribute('src', '/api/archivos/token-miniatura')
     const zona = seccion()
-    expect(within(zona).getByRole('heading', { name: 'Imágenes (1 de 20)' })).toBeInTheDocument()
+    expect(within(zona).getByRole('heading', { name: 'Imágenes cargadas (1 de 20)' })).toBeInTheDocument()
     expect(within(zona).getByText(/JPEG · 4000 × 3000 px · 1,5 MB/)).toBeInTheDocument()
     expect(within(zona).getByText(`SHA-256: ${'a'.repeat(64)}`)).toBeInTheDocument()
     expect(within(zona).getByText(/Cargada el 19\/10\/2026 por Ana López/)).toBeInTheDocument()
@@ -196,6 +198,20 @@ describe('imágenes del caso', () => {
   })
 })
 
+describe('origen de cada imagen y caminos de carga (028)', () => {
+  it('cada imagen dice de dónde vino y hay tres caminos para sumar imágenes', async () => {
+    api({ ...LISTADO, imagenes: [{ ...IMAGEN, origen: 'persona_afectada' }] })
+    renderizarEn('/casos/7')
+
+    await screen.findByRole('img', { name: 'Vista previa de frente.jpg' })
+    const zona = seccion()
+    expect(within(zona).getByText('Persona afectada')).toBeInTheDocument()
+    for (const titulo of ['Desde esta computadora', 'Desde tu celular', 'Pedírselas a la persona afectada']) {
+      expect(within(zona).getByRole('heading', { name: titulo })).toBeInTheDocument()
+    }
+  })
+})
+
 describe('sello de tiempo en Hedera (funcionalidades 016 y 023)', () => {
   it('muestra el sello confirmado, en curso o simulado (RF37)', async () => {
     const sellada = {
@@ -232,7 +248,7 @@ describe('fotos HEIC del iPhone (funcionalidad 024)', () => {
     api({ ...LISTADO, imagenes: [] })
     renderizarEn('/casos/7')
 
-    const campo = await within(await screen.findByRole('region', { name: /^Imágenes/ })).findByLabelText(
+    const campo = await within(await screen.findByRole('region', { name: 'Cargar imágenes' })).findByLabelText(
       'Elegir imágenes',
     )
     expect(campo.getAttribute('accept')).toContain('image/heic')

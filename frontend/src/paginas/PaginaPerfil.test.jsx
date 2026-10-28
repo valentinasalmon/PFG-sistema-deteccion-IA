@@ -49,7 +49,7 @@ describe('PaginaPerfil', () => {
       ...CON_SESION,
       'POST /api/perfil/contrasenia': { cuerpo: { mensaje: 'Tu contraseña fue actualizada.' } },
     })
-    const { usuario } = renderizarEn('/perfil')
+    const { usuario } = renderizarEn('/perfil?seccion=seguridad')
     await usuario.type(await screen.findByLabelText('Contraseña actual'), 'Segura12345')
     await usuario.type(screen.getByLabelText('Contraseña nueva'), 'OtraClave2026')
     await usuario.type(screen.getByLabelText('Repetí la contraseña nueva'), 'OtraClave2026')
@@ -74,7 +74,7 @@ describe('PaginaPerfil', () => {
         },
       },
     })
-    const { usuario } = renderizarEn('/perfil')
+    const { usuario } = renderizarEn('/perfil?seccion=seguridad')
     await usuario.type(await screen.findByLabelText('Contraseña actual'), 'Incorrecta123')
     await usuario.type(screen.getByLabelText('Contraseña nueva'), 'OtraClave2026')
     await usuario.type(screen.getByLabelText('Repetí la contraseña nueva'), 'OtraClave2026')
@@ -84,7 +84,7 @@ describe('PaginaPerfil', () => {
 
   it('avisa si la contraseña nueva y su repetición no coinciden', async () => {
     simularApi(CON_SESION)
-    const { usuario } = renderizarEn('/perfil')
+    const { usuario } = renderizarEn('/perfil?seccion=seguridad')
     await usuario.type(await screen.findByLabelText('Contraseña actual'), 'Segura12345')
     await usuario.type(screen.getByLabelText('Contraseña nueva'), 'OtraClave2026')
     await usuario.type(screen.getByLabelText('Repetí la contraseña nueva'), 'Distinta2026')
@@ -99,7 +99,7 @@ describe('PaginaPerfil', () => {
         cuerpo: { mensaje: 'Te enviamos un enlace al correo nuevo para confirmar el cambio.' },
       },
     })
-    const { usuario } = renderizarEn('/perfil')
+    const { usuario } = renderizarEn('/perfil?seccion=seguridad')
     const correo = await screen.findByRole('region', { name: 'Correo electrónico' })
     await usuario.type(within(correo).getByLabelText('Correo nuevo'), 'nuevo@ejemplo.com')
     await usuario.type(within(correo).getByLabelText('Contraseña'), 'Segura12345')
@@ -117,11 +117,25 @@ describe('PaginaPerfil', () => {
         cuerpo: { mensaje: 'Ese correo ya está en uso.', errores: { correo_nuevo: 'Ese correo ya está en uso.' } },
       },
     })
-    const { usuario } = renderizarEn('/perfil')
+    const { usuario } = renderizarEn('/perfil?seccion=seguridad')
     const correo = await screen.findByRole('region', { name: 'Correo electrónico' })
     await usuario.type(within(correo).getByLabelText('Correo nuevo'), 'beto@ejemplo.com')
     await usuario.type(within(correo).getByLabelText('Contraseña'), 'Segura12345')
     await usuario.click(within(correo).getByRole('button', { name: 'Cambiar el correo' }))
     expect(await within(correo).findByRole('alert')).toHaveTextContent('Ese correo ya está en uso.')
   })
+
+  it('ordena las secciones en pestañas y las recorre con el teclado (028)', async () => {
+    simularApi(CON_SESION)
+    const { usuario } = renderizarEn('/perfil')
+    const datos = await screen.findByRole('tab', { name: 'Datos personales' })
+    expect(datos).toHaveAttribute('aria-selected', 'true')
+    expect(screen.queryByRole('heading', { name: 'Contraseña' })).not.toBeInTheDocument()
+    await usuario.click(screen.getByRole('tab', { name: 'Seguridad' }))
+    expect(screen.getByRole('heading', { name: 'Contraseña' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Correo electrónico' })).toBeInTheDocument()
+    await usuario.keyboard('{ArrowRight}')
+    expect(screen.getByRole('tab', { name: 'Plan' })).toHaveAttribute('aria-selected', 'true')
+  })
 })
+

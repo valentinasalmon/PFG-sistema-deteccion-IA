@@ -88,26 +88,29 @@ describe('listado de casos', () => {
     expect(enlace).toHaveAttribute('href', '/casos/7')
     const tarjeta = enlace.closest('li')
     expect(within(tarjeta).getByText('Borrador')).toBeInTheDocument()
-    expect(within(tarjeta).getByText('Responsable')).toBeInTheDocument()
-    expect(within(tarjeta).getByText(/Estudio Pérez · Hecho del 01\/10\/2026 · EXP-55\/2026/)).toBeInTheDocument()
+    // Ser Responsable es lo habitual: no lleva etiqueta (028).
+    expect(within(tarjeta).queryByText(/Responsable|Compartido/)).not.toBeInTheDocument()
+    expect(within(tarjeta).getByText('Estudio Pérez')).toBeInTheDocument()
+    expect(within(tarjeta).getByText('01/10/2026')).toBeInTheDocument()
+    expect(within(tarjeta).getByText(/EXP-55\/2026/)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: '1 caso' })).toBeInTheDocument()
   })
 
   it('busca con los filtros y los guarda en la dirección (CA6)', async () => {
     const { solicitudes } = apiDeListado({
       extra: {
-        'GET /api/casos?expediente=exp-55&estado=archivado': { cuerpo: { casos: [], total: 0, pagina: 1, paginas: 1 } },
+        'GET /api/casos?busqueda=exp-55&estado=archivado': { cuerpo: { casos: [], total: 0, pagina: 1, paginas: 1 } },
       },
     })
     const { usuario } = renderizarEn('/casos')
     await screen.findByRole('link', { name: 'CASO-2026-000007' })
 
-    await usuario.type(screen.getByLabelText('Expediente'), 'exp-55')
+    await usuario.type(screen.getByLabelText('Buscar un caso'), 'exp-55')
     await usuario.selectOptions(screen.getByLabelText('Estado'), 'archivado')
     await usuario.click(screen.getByRole('button', { name: 'Buscar' }))
 
     expect(await screen.findByText('No hay casos con esos filtros.')).toBeInTheDocument()
-    expect(solicitudes.map((s) => s.ruta)).toContain('/api/casos?expediente=exp-55&estado=archivado')
+    expect(solicitudes.map((s) => s.ruta)).toContain('/api/casos?busqueda=exp-55&estado=archivado')
 
     await usuario.click(screen.getByRole('button', { name: 'Limpiar los filtros' }))
     expect(await screen.findByRole('link', { name: 'CASO-2026-000007' })).toBeInTheDocument()
