@@ -15,11 +15,13 @@
  * Privacidad), en lugar de cinco tarjetas apiladas. La pestaña elegida queda
  * en la dirección (``?seccion=``), así se puede enlazar.
  *
+ * Al abogado sin organización le ofrece crear un estudio jurídico (028).
+ *
  * Realiza: RF06 a RF09; RN01, RN02; CA16 a CA19 de la funcionalidad 002 y
  * CA1, CA5 a CA10 de la 019.
  */
 import { useState } from 'react'
-import { Link, useSearchParams } from 'react-router'
+import { Link, useLocation, useSearchParams } from 'react-router'
 import {
   actualizarPerfil,
   cambiarContrasenia,
@@ -30,6 +32,7 @@ import {
 } from '../api/perfil.js'
 import Aviso from '../componentes/Aviso.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
+import Icono from '../componentes/Icono.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import ReglasContrasenia from '../componentes/ReglasContrasenia.jsx'
 import SeccionPlan from '../componentes/SeccionPlan.jsx'
@@ -405,12 +408,44 @@ function SeccionEliminar() {
   )
 }
 
-/** Pestañas del perfil; el Plan solo existe para los abogados (espacio personal, RN12). */
+/**
+ * Trabajo en equipo para el abogado que todavía no es miembro de ninguna
+ * organización: como el menú no muestra «Organizaciones», crear un estudio
+ * jurídico o ver las invitaciones queda acá (funcionalidad 028; RN40).
+ */
+function SeccionTrabajoEnEquipo() {
+  return (
+    <section className="seccion seccion-equipo" aria-labelledby="titulo-equipo">
+      <div>
+        <h2 id="titulo-equipo">Trabajo en equipo</h2>
+        <p className="nota">
+          Creá un estudio jurídico para compartir casos con tu equipo. Si alguien te invita a su
+          organización, la invitación te llega por correo y aparece en Inicio.
+        </p>
+      </div>
+      <div className="acciones-en-linea">
+        <Link to="/organizaciones" className="boton boton--secundario">
+          Ver invitaciones
+        </Link>
+        <Link to="/organizaciones/nueva" className="boton">
+          <Icono nombre="mas" tamanio={18} />
+          Crear un estudio jurídico
+        </Link>
+      </div>
+    </section>
+  )
+}
+
+/**
+ * Pestañas del perfil; el Plan solo existe para los abogados (espacio
+ * personal, RN12) y no para la administradora, que no trabaja con casos (028).
+ */
 function pestaniasPara(usuario) {
+  const conPlan = usuario.perfil === 'abogado' && usuario.rol !== 'administrador'
   return [
     { id: 'datos', texto: 'Datos personales' },
     { id: 'seguridad', texto: 'Seguridad' },
-    ...(usuario.perfil === 'abogado' ? [{ id: 'plan', texto: 'Plan' }] : []),
+    ...(conPlan ? [{ id: 'plan', texto: 'Plan' }] : []),
     { id: 'privacidad', texto: 'Privacidad' },
   ]
 }
@@ -442,7 +477,10 @@ function TarjetaDeCuenta() {
 
 export default function PaginaPerfil() {
   const { usuario } = useSesion()
+  const { state } = useLocation()
   const [parametros, setParametros] = useSearchParams()
+  const sinEquipo =
+    usuario.perfil === 'abogado' && usuario.rol !== 'administrador' && !usuario.en_organizacion
   const pestanias = pestaniasPara(usuario)
   const pedida = parametros.get('seccion')
   const actual = pestanias.some((p) => p.id === pedida) ? pedida : 'datos'
@@ -468,6 +506,7 @@ export default function PaginaPerfil() {
           <p className="encabezado-pagina__bajada">Tus datos aparecen en los informes que generás.</p>
         </div>
       </div>
+      {state?.mensaje && <Aviso tipo="exito">{state.mensaje}</Aviso>}
       <TarjetaDeCuenta />
       <div className="pestanias" role="tablist" aria-label="Secciones del perfil">
         {pestanias.map(({ id, texto }, indice) => (
@@ -493,7 +532,12 @@ export default function PaginaPerfil() {
         aria-labelledby={`pestania-${actual}`}
         className="pestanias__panel"
       >
-        {actual === 'datos' && <SeccionDatos />}
+        {actual === 'datos' && (
+          <>
+            <SeccionDatos />
+            {sinEquipo && <SeccionTrabajoEnEquipo />}
+          </>
+        )}
         {actual === 'seguridad' && (
           <>
             <SeccionContrasenia />

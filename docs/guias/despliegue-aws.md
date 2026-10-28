@@ -173,6 +173,18 @@ La infraestructura ya está creada: para publicar alcanza con integrar en `main`
 
 4. **Cuenta de prueba en el servidor**: no se crea en producción. Registrate normalmente; tu correo ya figura en `administradores`, así que al ingresar tenés el rol de Administrador.
 
+## Cuenta de demostración (funcionalidad 028)
+
+Desde la 028, la administradora ve solo el tablero de Administración. Para mostrar los casos se usa una abogada de demostración, `demo@evidentia.local`, sin rol de Administrador y con un estudio jurídico. La contraseña no está en el repositorio: la elegís vos al crearla.
+
+1. Publicá la versión (Pull Request hacia `main`) y esperá el despliegue.
+2. Abrí la terminal del servidor (Session Manager, como en el paso B de arriba) y ejecutá:
+   ```bash
+   sudo -u plataforma bash -c "set -a; source /opt/plataforma/.env; set +a; cd /opt/plataforma/actual/backend; /opt/plataforma/actual/venv/bin/flask --app wsgi administracion cuenta-de-demostracion"
+   ```
+3. Escribí la contraseña dos veces; no se ve mientras la escribís. Tiene que cumplir la política: al menos 10 caracteres, con letras y al menos un número, y que no sea una contraseña común. Responde `Cuenta lista: demo@evidentia.local …`.
+4. Ingresá a la plataforma con `demo@evidentia.local` y esa contraseña. Si la olvidás, repetí el paso 2: restablece la cuenta.
+
 ## Activar el sello de tiempo en Hedera (funcionalidad 023)
 
 La cuenta de Hedera se crea en https://portal.hedera.com con clave **ED25519**. El **Account ID** y el **Topic ID** no son secretos, pero no se suben al repositorio: van en `terraform.tfvars`. La **clave privada** no se escribe en ningún archivo: se pide sin mostrarla en pantalla y se guarda cifrada en SSM.

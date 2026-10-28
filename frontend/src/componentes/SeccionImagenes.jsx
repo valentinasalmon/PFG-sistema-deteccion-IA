@@ -10,28 +10,60 @@
  * También permite elegir imágenes y pedir su análisis: por defecto quedan
  * elegidas las que todavía no se analizaron (CU27).
  *
+ * Desde la funcionalidad 028 es la etapa "Cargar imágenes" del caso: tres
+ * caminos bien distinguidos (esta computadora, el propio celular con un QR y
+ * un enlace para la persona afectada), cada imagen dice de dónde vino y una
+ * barra fija abajo pide el análisis.
+ *
  * Realiza: RF34 (CA1 a CA5), RF35, RF36, RF38 (CA1, CA2); CA1 a CA9 de la
- * funcionalidad 006 y CA1, CA2 de la 007.
+ * funcionalidad 006 y CA1, CA2 de la 007; CP-32.
  */
 import { useCallback, useId, useState } from 'react'
 import { solicitarAnalisis } from '../api/analisis.js'
 import { cargarImagen, eliminarImagen, enlaceDeDescarga, listarImagenes } from '../api/imagenes.js'
 import { useDatos } from '../hooks/useDatos.js'
+import { useEnlaceCelular } from '../hooks/useEnlaceCelular.js'
 import { abrirDescarga, formatearTamanio } from '../utilidades/archivos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 import Aviso from './Aviso.jsx'
 import BotonConfirmar from './BotonConfirmar.jsx'
 import CargaDesdeCelular from './CargaDesdeCelular.jsx'
 import Cargando from './Cargando.jsx'
+import EnlacePersonaAfectada from './EnlacePersonaAfectada.jsx'
+import Icono from './Icono.jsx'
 
 // HEIC/HEIF: formato por defecto del iPhone. Se lista explícitamente para que el
 // navegador entregue el original sin convertirlo (funcionalidad 024).
 const TIPOS_ACEPTADOS = 'image/jpeg,image/png,image/heic,image/heif,.jpg,.jpeg,.png,.heic,.heif'
 
+// De dónde vino cada imagen (028); las anteriores a la 028 no lo indican.
+const ORIGENES = {
+  computadora: 'Computadora',
+  celular: 'Celular',
+  persona_afectada: 'Persona afectada',
+}
+
+/** Una de las tres maneras de sumar imágenes, con su ícono y su botón. */
+function OpcionDeCarga({ icono, titulo, texto, elegida, children }) {
+  return (
+    <div className={`opcion-carga${elegida ? ' opcion-carga--elegida' : ''}`}>
+      <span className="opcion-carga__icono" aria-hidden="true">
+        <Icono nombre={icono} tamanio={22} />
+      </span>
+      <h3>{titulo}</h3>
+      <p className="nota">{texto}</p>
+      <div className="opcion-carga__accion">{children}</div>
+    </div>
+  )
+}
+
 function Carga({ idCaso, tamanioMaximo, alTerminar }) {
   const idCampo = useId()
   const [cargando, setCargando] = useState(null)
   const [resultados, setResultados] = useState([])
+  const [panel, setPanel] = useState(null)
+  const [arrastrando, setArrastrando] = useState(false)
+  const celular = useEnlaceCelular(idCaso, alTerminar)
   const maximoMb = Math.round(tamanioMaximo / (1024 * 1024))
 
   async function cargar(archivos) {
@@ -68,8 +100,41 @@ function Carga({ idCaso, tamanioMaximo, alTerminar }) {
     if (archivos.length) cargar(archivos)
   }
 
+  // Arrastrar archivos sobre las opciones también los carga (028).
+  function alSoltar(evento) {
+    evento.preventDefault()
+    setArrastrando(false)
+    const archivos = Array.from(evento.dataTransfer?.files ?? [])
+    if (archivos.length && !cargando) cargar(archivos)
+  }
+
+  async function mostrarCelular() {
+    setPanel('celular')
+    await celular.abrir()
+  }
+
+  async function elegirPanel(nuevo) {
+    if (panel === 'celular' && nuevo !== 'celular') await celular.cerrar()
+    setPanel(panel === nuevo ? null : nuevo)
+  }
+
   return (
-    <div className="carga-imagenes">
+    <div
+      className={`carga-imagenes${arrastrando ? ' carga-imagenes--arrastrando' : ''}`}
+      onDragOver={(evento) => {
+        evento.preventDefault()
+        setArrastrando(true)
+      }}
+      onDragLeave={() => setArrastrando(false)}
+      onDrop={alSoltar}
+    >
+      <div>
+        <h3 className="carga-imagenes__titulo">¿Cómo querés sumar las imágenes?</h3>
+        <p className="nota">
+          JPEG, PNG o HEIC (iPhone), hasta {maximoMb} MB cada una. El original no se modifica y se guarda su
+          huella.
+        </p>
+      </div>
       {/* El campo queda oculto a la vista y la etiqueta funciona como botón;
           el foco del teclado se marca en la etiqueta con CSS. */}
       <input
@@ -81,15 +146,49 @@ function Carga({ idCaso, tamanioMaximo, alTerminar }) {
         onChange={alElegir}
         disabled={Boolean(cargando)}
       />
-      <div className="acciones-en-linea">
-        <label htmlFor={idCampo} className="boton">
-          Elegir imágenes
-        </label>
-        <CargaDesdeCelular idCaso={idCaso} alActualizar={alTerminar} />
+      <div className="opciones-carga">
+        <OpcionDeCarga
+          icono="computadora"
+          titulo="Desde esta computadora"
+          texto="Elegí los archivos o arrastralos hasta acá."
+        >
+          <label htmlFor={idCampo} className="boton">
+            Elegir imágenes
+          </label>
+        </OpcionDeCarga>
+        <OpcionDeCarga
+          icono="celular"
+          titulo="Desde tu celular"
+          texto="Escaneás un QR y sacás o elegís las fotos. Vence en 15 minutos."
+          elegida={panel === 'celular'}
+        >
+          <button
+            type="button"
+            className="boton boton--secundario"
+            aria-expanded={panel === 'celular'}
+            onClick={() => (panel === 'celular' ? elegirPanel(null) : mostrarCelular())}
+          >
+            {panel === 'celular' ? 'Ocultar el QR' : 'Mostrar el QR'}
+          </button>
+        </OpcionDeCarga>
+        <OpcionDeCarga
+          icono="enlace"
+          titulo="Pedírselas a la persona afectada"
+          texto="Le mandás un enlace y las sube desde su celular, sin crear una cuenta."
+          elegida={panel === 'persona'}
+        >
+          <button
+            type="button"
+            className="boton boton--secundario"
+            aria-expanded={panel === 'persona'}
+            onClick={() => elegirPanel('persona')}
+          >
+            {panel === 'persona' ? 'Ocultar' : 'Crear el enlace'}
+          </button>
+        </OpcionDeCarga>
       </div>
-      <p className="nota">
-        JPEG, PNG o HEIC (iPhone), hasta {maximoMb} MB cada una. El archivo original no se modifica.
-      </p>
+      {panel === 'celular' && <CargaDesdeCelular {...celular} />}
+      {panel === 'persona' && <EnlacePersonaAfectada idCaso={idCaso} />}
       <div aria-live="polite">
         {cargando && <Cargando texto={`Cargando ${cargando.actual} de ${cargando.total}…`} />}
         {!cargando && resultados.length > 0 && (
@@ -120,6 +219,9 @@ function TarjetaImagen({
   return (
     <li className={`tarjeta-imagen${elegida ? ' tarjeta-imagen--elegida' : ''}`}>
       <div className="tarjeta-imagen__vista">
+        {ORIGENES[imagen.origen] && (
+          <span className="tarjeta-imagen__origen">{ORIGENES[imagen.origen]}</span>
+        )}
         {sinVistaPrevia ? (
           <button
             type="button"
@@ -183,6 +285,7 @@ function TarjetaImagen({
   )
 }
 
+/** Barra fija al pie de la etapa: cuántas imágenes se van a analizar y el botón para hacerlo (028). */
 function BarraAnalisis({ cantidad, total, alElegirTodas, alAnalizar }) {
   const [enviando, setEnviando] = useState(false)
 
@@ -192,28 +295,33 @@ function BarraAnalisis({ cantidad, total, alElegirTodas, alAnalizar }) {
     setEnviando(false)
   }
 
+  const textoBoton =
+    cantidad === 1 ? 'Analizar la imagen' : `Analizar las ${cantidad} imágenes`
   return (
-    <div className="barra-analisis">
-      <button type="button" className="boton" onClick={analizar} disabled={cantidad === 0 || enviando}>
-        {enviando ? 'Pidiendo el análisis…' : `Analizar (${cantidad})`}
-      </button>
+    <div className="barra-analisis" role="region" aria-label="Pedir el análisis">
+      <div className="barra-analisis__texto">
+        <strong>
+          {cantidad} de {total} elegida{total === 1 ? '' : 's'}
+        </strong>
+        <span className="nota">El análisis tarda unos segundos por imagen.</span>
+        <span className="barra-analisis__eleccion">
+          <button type="button" className="boton-enlace" onClick={() => alElegirTodas(true)}>
+            Elegir todas
+          </button>
+          <button type="button" className="boton-enlace" onClick={() => alElegirTodas(false)}>
+            Ninguna
+          </button>
+        </span>
+      </div>
       <button
         type="button"
-        className="boton boton--secundario boton--chico"
-        onClick={() => alElegirTodas(true)}
+        className="boton boton--lima"
+        onClick={analizar}
+        disabled={cantidad === 0 || enviando}
       >
-        Elegir todas
+        {enviando ? 'Pidiendo el análisis…' : textoBoton}
+        <Icono nombre="derecha" tamanio={18} />
       </button>
-      <button
-        type="button"
-        className="boton boton--secundario boton--chico"
-        onClick={() => alElegirTodas(false)}
-      >
-        Ninguna
-      </button>
-      <span className="nota">
-        {cantidad} de {total} elegidas
-      </span>
     </div>
   )
 }
@@ -244,9 +352,14 @@ function SelloDeTiempo({ sello }) {
   return <span className="sello">Sello en Hedera en curso…</span>
 }
 
-export default function SeccionImagenes({ idCaso, alSolicitarAnalisis }) {
+export default function SeccionImagenes({ idCaso, alSolicitarAnalisis, alCambiar }) {
   const cargar = useCallback(() => listarImagenes(idCaso), [idCaso])
-  const { datos, error, cargando, recargar } = useDatos(cargar)
+  const { datos, error, cargando, recargar: recargarImagenes } = useDatos(cargar)
+  // Al cargar o eliminar, también cambia la cantidad que muestran las etapas del caso.
+  const recargar = useCallback(async () => {
+    await recargarImagenes()
+    await alCambiar?.()
+  }, [recargarImagenes, alCambiar])
   const [aviso, setAviso] = useState(null)
   // Sin elección propia, quedan elegidas las imágenes que todavía no se analizaron.
   const [eleccion, setEleccion] = useState(null)
@@ -285,8 +398,10 @@ export default function SeccionImagenes({ idCaso, alSolicitarAnalisis }) {
   }
 
   return (
-    <section className="seccion" aria-labelledby="titulo-imagenes" aria-busy={cargando}>
-      <h2 id="titulo-imagenes">Imágenes{datos ? ` (${datos.imagenes.length} de ${datos.limite})` : ''}</h2>
+    <section className="seccion etapa-imagenes" aria-labelledby="titulo-imagenes" aria-busy={cargando}>
+      <h2 id="titulo-imagenes" className="solo-lectores">
+        Cargar imágenes
+      </h2>
       {cargando && <Cargando texto="Cargando las imágenes…" />}
       {error && <Aviso tipo="error">{error.message}</Aviso>}
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
@@ -295,14 +410,9 @@ export default function SeccionImagenes({ idCaso, alSolicitarAnalisis }) {
           {datos.puede_modificar && (
             <Carga idCaso={idCaso} tamanioMaximo={datos.tamanio_maximo} alTerminar={recargar} />
           )}
-          {datos.puede_modificar && imagenes.length > 0 && (
-            <BarraAnalisis
-              cantidad={elegidas.size}
-              total={imagenes.length}
-              alElegirTodas={(todas) => setEleccion(todas ? imagenes.map((i) => i.id) : [])}
-              alAnalizar={analizar}
-            />
-          )}
+          <h3 className="etapa-imagenes__titulo-galeria">
+            Imágenes cargadas ({datos.imagenes.length} de {datos.limite})
+          </h3>
           {datos.imagenes.length === 0 ? (
             <p className="nota">Todavía no hay imágenes en este caso.</p>
           ) : (
@@ -327,6 +437,14 @@ export default function SeccionImagenes({ idCaso, alSolicitarAnalisis }) {
                 />
               ))}
             </ul>
+          )}
+          {datos.puede_modificar && imagenes.length > 0 && (
+            <BarraAnalisis
+              cantidad={elegidas.size}
+              total={imagenes.length}
+              alElegirTodas={(todas) => setEleccion(todas ? imagenes.map((i) => i.id) : [])}
+              alAnalizar={analizar}
+            />
           )}
         </>
       )}

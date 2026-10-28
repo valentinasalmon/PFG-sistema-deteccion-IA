@@ -26,7 +26,6 @@ import BotonConfirmar from '../componentes/BotonConfirmar.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import { useDatos } from '../hooks/useDatos.js'
-import { useSesion } from '../hooks/useSesion.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 import { rangoDelPeriodo } from '../utilidades/periodos.js'
 
@@ -505,8 +504,8 @@ function Listados() {
   )
 }
 
+/** Tablero de la administradora; la ruta ya impide que lo abra otra persona (028). */
 export default function PaginaAdministracion() {
-  const { usuario } = useSesion()
   return (
     <>
       <div className="encabezado-pagina">
@@ -517,15 +516,9 @@ export default function PaginaAdministracion() {
           </p>
         </div>
       </div>
-      {usuario.rol === 'administrador' ? (
-        <>
-          <Tablero />
-          <Pendientes />
-          <Listados />
-        </>
-      ) : (
-        <Aviso tipo="error">Solo el Administrador de la plataforma puede ver esta pantalla.</Aviso>
-      )}
+      <Tablero />
+      <Pendientes />
+      <Listados />
     </>
   )
 }

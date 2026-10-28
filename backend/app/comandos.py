@@ -8,6 +8,7 @@ import click
 from flask import current_app
 from flask.cli import AppGroup
 
+from app.servicios.contrasenias import validar_politica
 from app.servicios.errores import ErrorValidacion, NoEncontrado
 from app.servicios.fabrica import (
     crear_servicio_cuentas,
@@ -50,6 +51,30 @@ def cuenta_de_prueba(correo, contrasenia):
     servicio = crear_servicio_cuentas(current_app.config, current_app.extensions["enviador_correo"])
     usuario = servicio.preparar_cuenta_de_prueba(correo, contrasenia)
     click.echo(f"Cuenta lista: {usuario.correo} / {contrasenia} (Abogado, Administrador).")
+
+
+CORREO_DE_DEMOSTRACION = "demo@evidentia.local"
+
+
+@administracion_cli.command("cuenta-de-demostracion")
+@click.option("--correo", default=CORREO_DE_DEMOSTRACION, show_default=True)
+@click.password_option("--contrasenia", help="Se pide en la terminal si no se indica.")
+def cuenta_de_demostracion(correo, contrasenia):
+    """Crea o restablece una abogada de demostración, sin rol de Administrador (028).
+
+    Sirve para mostrar la plataforma, también en producción: no trae ninguna
+    contraseña fija, se escribe en la terminal y tiene que cumplir la política.
+    """
+    try:
+        validar_politica(contrasenia)
+    except ErrorValidacion as error:
+        raise click.ClickException(error.errores.get("contrasenia", error.mensaje)) from error
+    servicio = crear_servicio_cuentas(current_app.config, current_app.extensions["enviador_correo"])
+    usuario = servicio.preparar_cuenta_de_prueba(
+        correo, contrasenia, administradora=False, nombre=("Lucía", "Demo"),
+        estudio="Estudio de demostración evidentIA",
+    )
+    click.echo(f"Cuenta lista: {usuario.correo} (Abogada, sin rol de Administrador).")
 
 
 retencion_cli = AppGroup("retencion", help="Retención de los casos (funcionalidad 015).")

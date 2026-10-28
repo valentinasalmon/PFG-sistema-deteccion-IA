@@ -128,3 +128,6 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
 ## Secciones nuevas pedidas por la autora
 
 - Pendiente: la autora indica qué secciones agregar y qué modificar (CP-31).
+  - segunda tanda: menú según el rol, pantalla del caso en tres etapas (carga, análisis con progreso por imagen y capa, informe) y un enlace para que la persona afectada suba sus propias fotos con una declaración expresa (CP-32). Es un aporte para la cadena de custodia: cada imagen registra si vino de la computadora, del celular de quien lleva el caso o de la persona afectada;
+  - decisión de diseño: separar el trabajo por etapas redujo una pantalla de unos 8.800 px a una etapa por vez, sin perder información;
+  - pendiente: validar con los tutores el texto de la declaración (Ley 25.326).

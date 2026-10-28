@@ -13,9 +13,11 @@ import { crearOrganizacion } from '../api/organizaciones.js'
 import Aviso from '../componentes/Aviso.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import { useFormulario } from '../hooks/useFormulario.js'
+import { useSesion } from '../hooks/useSesion.js'
 
 export default function PaginaNuevaOrganizacion() {
   const navegar = useNavigate()
+  const { recargarUsuario } = useSesion()
   const { valores, errores, error, enviando, cambiar, enviar } = useFormulario({
     nombre: '',
     tipo: 'estudio_juridico',
@@ -27,6 +29,8 @@ export default function PaginaNuevaOrganizacion() {
     evento.preventDefault()
     const resultado = await enviar((datos) => crearOrganizacion(datos))
     if (resultado.ok) {
+      // El menú pasa a mostrar «Organizaciones» (028).
+      await recargarUsuario().catch(() => {})
       navegar(`/organizaciones/${resultado.datos.id}`, {
         state: { mensaje: 'La organización fue creada. Ya podés invitar a tu equipo.' },
       })

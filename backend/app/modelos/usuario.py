@@ -53,6 +53,9 @@ class Usuario(UserMixin, db.Model):  # pylint: disable=too-few-public-methods
     creado_en = db.Column(db.DateTime, nullable=False, default=ahora_utc)
     actualizado_en = db.Column(db.DateTime, nullable=False, default=ahora_utc, onupdate=ahora_utc)
 
+    # Solo lectura: el menú muestra «Organizaciones» únicamente a quien es miembro (028).
+    membresias = db.relationship("Membresia", viewonly=True)
+
     @property
     def verificado(self):
         """True si la persona ya confirmó su correo electrónico (RF02)."""

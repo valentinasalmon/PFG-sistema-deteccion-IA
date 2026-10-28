@@ -6,15 +6,18 @@
  * en ``SeccionImagenes`` (006), los análisis en ``SeccionAnalisis`` (007) y los
  * informes PDF en ``SeccionInformes`` (008).
  *
- * Disposición (022): a la izquierda el trabajo sobre la evidencia (imágenes,
- * análisis e informes) y a la derecha los datos del caso y su gestión. Arriba,
- * los pasos del flujo indican en qué punto está el caso. Los datos se ven
- * resumidos y se editan al tocar "Editar los datos".
+ * Disposición (022 y 028): a la izquierda el trabajo sobre la evidencia y a la
+ * derecha los datos del caso y su gestión, plegada. Desde la 028 el trabajo
+ * sobre la evidencia se divide en tres etapas, que son la navegación del caso
+ * y muestran solo lo suyo: cargar imágenes, análisis e informe. La etapa
+ * elegida queda en la dirección (``?etapa=``); sin elegir, se abre la que
+ * corresponde al estado del caso. Los datos se ven resumidos y se editan al
+ * tocar "Editar los datos".
  *
  * Realiza: RF24, RF25, RF27 a RF33; CA4, CA7 a CA19 de la funcionalidad 005; RNF10.
  */
 import { useCallback, useState } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router'
 import {
   cambiarEstadoCaso,
   cancelarTransferencia,
@@ -223,14 +226,29 @@ function FormularioProrroga({ caso, ejecutar }) {
   )
 }
 
+/**
+ * Gestión del caso plegada en la columna lateral (028): el título y un
+ * resumen a la vista, el detalle al tocarlo.
+ */
+function Plegable({ id, titulo, resumen, abierto = false, children }) {
+  return (
+    <details className="plegable" open={abierto}>
+      <summary>
+        <h2 id={id}>{titulo}</h2>
+        {resumen && <span className="plegable__resumen">{resumen}</span>}
+      </summary>
+      <div className="plegable__cuerpo">{children}</div>
+    </details>
+  )
+}
+
 function SeccionEstado({ caso, ejecutar }) {
   const { acciones } = caso
   if (!acciones.cerrar && !acciones.archivar && !acciones.desarchivar && !acciones.reabrir) return null
   const vence = caso.retencion_vence ? new Date(caso.retencion_vence) : null
   const diasRestantes = vence ? Math.ceil((vence - new Date()) / 86400000) : null
   return (
-    <section className="seccion" aria-labelledby="titulo-estado">
-      <h2 id="titulo-estado">Estado</h2>
+    <Plegable id="titulo-estado" titulo="Estado" resumen={caso.estado_nombre} abierto={diasRestantes !== null && diasRestantes <= 30}>
       <p className="nota">
         Cerrar deja el caso en solo lectura y comienza el plazo de retención de 5 años; al reabrirlo, el plazo
         se detiene.
@@ -278,7 +296,7 @@ function SeccionEstado({ caso, ejecutar }) {
           />
         )}
       </div>
-    </section>
+    </Plegable>
   )
 }
 
@@ -297,8 +315,11 @@ function SeccionAccesos({ caso, accesos, miembros, ejecutar }) {
   ]
 
   return (
-    <section className="seccion" aria-labelledby="titulo-accesos">
-      <h2 id="titulo-accesos">Accesos</h2>
+    <Plegable
+      id="titulo-accesos"
+      titulo="Accesos"
+      resumen={accesos.length === 0 ? 'Solo el Responsable' : `${accesos.length} con acceso`}
+    >
       {accesos.length === 0 ? (
         <p className="nota">Solo el Responsable tiene acceso a este caso.</p>
       ) : (
@@ -373,7 +394,7 @@ function SeccionAccesos({ caso, accesos, miembros, ejecutar }) {
           </button>
         </form>
       )}
-    </section>
+    </Plegable>
   )
 }
 
@@ -504,66 +525,66 @@ function SeccionEliminar({ caso }) {
   )
 }
 
-const PASOS = ['Cargar imágenes', 'Analizar', 'Descargar el informe']
+const ETAPAS = ['imagenes', 'analisis', 'informe']
 
-/** Paso del flujo en el que está el caso, según su estado. */
-function pasoActual(estado) {
-  if (estado === 'borrador') return 0
-  if (estado === 'en_analisis') return 1
-  return 2
+/** Etapa que se abre sin elegir otra, según el estado del caso (028). */
+function etapaPorDefecto(caso) {
+  if (caso.estado === 'borrador') return 'imagenes'
+  if (caso.estado === 'en_analisis') return 'analisis'
+  return caso.cantidad_informes > 0 ? 'informe' : 'analisis'
 }
 
-function PasosDelCaso({ estado }) {
-  const actual = pasoActual(estado)
+/** Texto y situación (hecha, actual o pendiente) de cada etapa. */
+function describirEtapas(caso) {
+  const conImagenes = caso.cantidad_imagenes > 0
+  const analizado = ['analizado', 'cerrado', 'archivado'].includes(caso.estado)
+  return {
+    imagenes: {
+      texto:
+        conImagenes && caso.estado !== 'borrador'
+          ? `Imágenes cargadas (${caso.cantidad_imagenes})`
+          : 'Cargar imágenes',
+      hecha: caso.estado !== 'borrador' && conImagenes,
+    },
+    analisis: {
+      texto: caso.estado === 'en_analisis' ? 'Análisis en curso' : analizado ? 'Análisis terminado' : 'Análisis',
+      hecha: analizado,
+    },
+    informe: {
+      texto: caso.cantidad_informes > 1 ? `Informes (${caso.cantidad_informes})` : 'Informe',
+      hecha: false,
+    },
+  }
+}
+
+/** Navegación del caso por etapas (028): cada una muestra solo lo suyo. */
+function EtapasDelCaso({ caso, actual, alElegir }) {
+  const etapas = describirEtapas(caso)
   return (
-    <ol className="pasos-caso" aria-label="Pasos del caso">
-      {PASOS.map((paso, indice) => {
-        const situacion = indice < actual ? 'hecho' : indice === actual ? 'actual' : 'pendiente'
+    <nav className="etapas" aria-label="Etapas del caso">
+      {ETAPAS.map((etapa, indice) => {
+        const { texto, hecha } = etapas[etapa]
+        const elegida = etapa === actual
         return (
-          <li
-            key={paso}
-            className={`pasos-caso__paso pasos-caso__paso--${situacion}`}
-            aria-current={situacion === 'actual' ? 'step' : undefined}
+          <a
+            key={etapa}
+            href={`?etapa=${etapa}`}
+            className={`etapas__etapa${elegida ? ' etapas__etapa--actual' : ''}${hecha ? ' etapas__etapa--hecha' : ''}`}
+            aria-current={elegida ? 'page' : undefined}
+            onClick={(evento) => {
+              evento.preventDefault()
+              alElegir(etapa)
+            }}
           >
-            <span className="pasos-caso__numero">{indice + 1}</span>
-            {paso}
-          </li>
+            <span className="etapas__numero" aria-hidden="true">
+              {hecha ? <Icono nombre="marca" tamanio={14} /> : indice + 1}
+            </span>
+            {texto}
+          </a>
         )
       })}
-    </ol>
+    </nav>
   )
-}
-
-/**
- * Acción que conviene hacer ahora según el estado del caso (022): lleva a la
- * sección correspondiente para que nunca haya que buscar qué sigue.
- */
-function SiguientePaso({ caso }) {
-  if (caso.estado === 'borrador' && caso.acciones.editar) {
-    return (
-      <a href="#titulo-imagenes" className="boton">
-        <Icono nombre="imagen" tamanio={18} />
-        Cargar y analizar imágenes
-      </a>
-    )
-  }
-  if (caso.estado === 'en_analisis') {
-    return (
-      <a href="#titulo-analisis" className="boton boton--secundario">
-        <Icono nombre="analisis" tamanio={18} />
-        Ver el progreso del análisis
-      </a>
-    )
-  }
-  if (caso.estado === 'analizado' || caso.estado === 'cerrado') {
-    return (
-      <a href="#titulo-analisis" className="boton">
-        <Icono nombre="analisis" tamanio={18} />
-        Ver los resultados
-      </a>
-    )
-  }
-  return null
 }
 
 export default function PaginaCaso() {
@@ -572,6 +593,12 @@ export default function PaginaCaso() {
   const cargar = useCallback(() => cargarCaso(id), [id])
   const { datos, error, cargando, recargar } = useDatos(cargar)
   const [aviso, setAviso] = useState(state?.mensaje ? { tipo: 'exito', texto: state.mensaje } : null)
+  const [parametros, setParametros] = useSearchParams()
+
+  const elegirEtapa = useCallback(
+    (etapa) => setParametros({ etapa }, { replace: true }),
+    [setParametros],
+  )
 
   const ejecutar = useCallback(
     async (accion) => {
@@ -598,6 +625,8 @@ export default function PaginaCaso() {
   }
 
   const { caso, accesos, miembros } = datos
+  const pedida = parametros.get('etapa')
+  const etapa = ETAPAS.includes(pedida) ? pedida : etapaPorDefecto(caso)
   return (
     <>
       <Link to="/casos" className="volver">
@@ -616,24 +645,41 @@ export default function PaginaCaso() {
         <p className="subtitulo">
           {caso.tipo_nombre} · {caso.espacio.nombre} · Hecho del {formatearDia(caso.fecha_hecho)}
         </p>
-        <div className="cabecera-caso__pie">
-          <PasosDelCaso estado={caso.estado} />
-          <SiguientePaso caso={caso} />
-        </div>
+        <EtapasDelCaso caso={caso} actual={etapa} alElegir={elegirEtapa} />
       </header>
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
 
       <div className="dos-columnas dos-columnas--caso">
         <div className="dos-columnas__principal">
-          {/* Se vuelve a montar al cambiar el estado: cerrar o reabrir cambia qué se puede hacer. */}
-          <SeccionImagenes key={caso.estado} idCaso={caso.id} alSolicitarAnalisis={recargar} />
-          <SeccionAnalisis
-            key={`analisis-${caso.estado}`}
-            idCaso={caso.id}
-            puedeGenerar={caso.acciones.editar}
-            alTerminar={recargar}
-          />
-          <SeccionInformes key={`informes-${caso.actualizado_en}`} idCaso={caso.id} />
+          {/* Se vuelven a montar al cambiar el estado: cerrar o reabrir cambia qué se puede hacer. */}
+          {etapa === 'imagenes' && (
+            <SeccionImagenes
+              key={caso.estado}
+              idCaso={caso.id}
+              alCambiar={recargar}
+              alSolicitarAnalisis={async () => {
+                await recargar()
+                elegirEtapa('analisis')
+              }}
+            />
+          )}
+          {etapa === 'analisis' && (
+            <SeccionAnalisis
+              key={`analisis-${caso.estado}`}
+              idCaso={caso.id}
+              puedeGenerar={caso.acciones.editar}
+              alTerminar={recargar}
+              alVerInforme={() => elegirEtapa('informe')}
+              alCargarImagenes={() => elegirEtapa('imagenes')}
+            />
+          )}
+          {etapa === 'informe' && (
+            <SeccionInformes
+              key={`informes-${caso.actualizado_en}`}
+              idCaso={caso.id}
+              alVerAnalisis={() => elegirEtapa('analisis')}
+            />
+          )}
         </div>
         <div className="dos-columnas__lateral">
           <SeccionDatos
@@ -649,12 +695,19 @@ export default function PaginaCaso() {
             <SeccionAccesos caso={caso} accesos={accesos} miembros={miembros} ejecutar={ejecutar} />
           )}
           {(caso.acciones.transferir || caso.acciones.eliminar) && (
-            <details className="mas-acciones" open={Boolean(caso.transferencia_pendiente)}>
-              <summary>Transferir o eliminar el caso</summary>
-              {caso.acciones.transferir && (
-                <SeccionTransferir caso={caso} miembros={miembros} ejecutar={ejecutar} />
-              )}
-              {caso.acciones.eliminar && <SeccionEliminar caso={caso} />}
+            <details
+              className="plegable plegable--peligro"
+              open={Boolean(caso.transferencia_pendiente)}
+            >
+              <summary>
+                <span className="plegable__titulo">Transferir o eliminar el caso</span>
+              </summary>
+              <div className="plegable__cuerpo">
+                {caso.acciones.transferir && (
+                  <SeccionTransferir caso={caso} miembros={miembros} ejecutar={ejecutar} />
+                )}
+                {caso.acciones.eliminar && <SeccionEliminar caso={caso} />}
+              </div>
             </details>
           )}
         </div>

@@ -6,6 +6,10 @@
  * acceso rápido a "Nuevo caso" y, abajo, la cuenta y el cierre de sesión. En
  * pantallas angostas pasa a ser una barra superior que se despliega.
  *
+ * El menú depende de quién entra (funcionalidad 028): la administradora de la
+ * plataforma ve solo Administración y Mi perfil; «Organizaciones» aparece
+ * solo para quien es miembro de alguna.
+ *
  * Realiza: RF04 y CA7, CA11 de la funcionalidad 002; RNF10.
  */
 import { useState } from 'react'
@@ -18,6 +22,7 @@ export default function Encabezado() {
   const { usuario, cerrarSesion } = useSesion()
   const [abierto, setAbierto] = useState(false)
   const rubro = textosDelRubro(usuario.perfil)
+  const esAdministradora = usuario.rol === 'administrador'
 
   // Al quedar sin usuario, la ruta protegida lleva al inicio de sesión con el aviso.
   function manejarCierre() {
@@ -30,7 +35,7 @@ export default function Encabezado() {
   return (
     <header className={`lateral ${abierto ? 'lateral--abierto' : ''}`}>
       <div className="lateral__marca">
-        <Link to="/" className="lateral__logo" onClick={cerrarMenu}>
+        <Link to={esAdministradora ? '/administracion' : '/'} className="lateral__logo" onClick={cerrarMenu}>
           <img src="/marca/logo-tipografia-negra.png" alt="evidentIA, ir al inicio" />
         </Link>
         <span className="lateral__servicio">{rubro.servicio}</span>
@@ -45,33 +50,40 @@ export default function Encabezado() {
         </button>
       </div>
       <div id="menu-principal" className="lateral__contenido">
-        <Link to="/casos/nuevo" className="boton lateral__nuevo" onClick={cerrarMenu}>
-          <Icono nombre="mas" tamanio={18} />
-          Nuevo caso
-        </Link>
+        {!esAdministradora && (
+          <Link to="/casos/nuevo" className="boton lateral__nuevo" onClick={cerrarMenu}>
+            <Icono nombre="mas" tamanio={18} />
+            Nuevo caso
+          </Link>
+        )}
         <nav aria-label="Principal" className="encabezado__navegacion">
-          <NavLink to="/" end onClick={cerrarMenu}>
-            <Icono nombre="inicio" />
-            <span>Inicio</span>
-          </NavLink>
-          <NavLink to="/casos" onClick={cerrarMenu}>
-            <Icono nombre="casos" />
-            <span>Casos</span>
-          </NavLink>
-          <NavLink to="/organizaciones" onClick={cerrarMenu}>
-            <Icono nombre="organizaciones" />
-            <span>Organizaciones</span>
-          </NavLink>
-          <NavLink to="/perfil" onClick={cerrarMenu}>
-            <Icono nombre="perfil" />
-            <span>Mi perfil</span>
-          </NavLink>
-          {usuario.rol === 'administrador' && (
+          {esAdministradora ? (
             <NavLink to="/administracion" onClick={cerrarMenu}>
               <Icono nombre="administracion" />
               <span>Administración</span>
             </NavLink>
+          ) : (
+            <>
+              <NavLink to="/" end onClick={cerrarMenu}>
+                <Icono nombre="inicio" />
+                <span>Inicio</span>
+              </NavLink>
+              <NavLink to="/casos" onClick={cerrarMenu}>
+                <Icono nombre="casos" />
+                <span>Casos</span>
+              </NavLink>
+              {usuario.en_organizacion && (
+                <NavLink to="/organizaciones" onClick={cerrarMenu}>
+                  <Icono nombre="organizaciones" />
+                  <span>Organizaciones</span>
+                </NavLink>
+              )}
+            </>
           )}
+          <NavLink to="/perfil" onClick={cerrarMenu}>
+            <Icono nombre="perfil" />
+            <span>Mi perfil</span>
+          </NavLink>
         </nav>
         <div className="encabezado__usuario">
           <span className="encabezado__avatar" aria-hidden="true">
