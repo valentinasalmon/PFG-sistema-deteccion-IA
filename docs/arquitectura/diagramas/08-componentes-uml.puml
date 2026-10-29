@@ -1,0 +1,76 @@
+@startuml componentes
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam componentStyle uml2
+skinparam componentBorderColor #2F5DA8
+skinparam componentBackgroundColor #F7F9FC
+skinparam packageBorderColor #4E5B54
+skinparam interfaceBorderColor #2F5DA8
+skinparam interfaceBackgroundColor #FFFFFF
+skinparam databaseBackgroundColor #EAF0F9
+skinparam databaseBorderColor #2F5DA8
+skinparam ArrowColor #4E5B54
+skinparam nodesep 40
+skinparam ranksep 55
+
+component "Interfaz React" as spa
+
+package "Backend (Flask)" {
+  interface "API REST\n/api (JSON)" as iapi
+  component "Rutas" as rutas
+  component "Servicios" as servicios
+  component "Repositorios" as repos
+  component "Modelos" as modelos
+  component "Generador de informes\n(WeasyPrint)" as pdf
+
+  component "Motor de análisis" as motor
+  interface "CapaAnalisis" as icapa
+  component "Metadatos" as c1
+  component "C2PA" as c2
+  component "ELA" as c3
+  component "Clasificador" as c4
+
+  interface "Almacenamiento" as ialm
+  interface "Cola" as icola
+  interface "Sellador" as isel
+  interface "Correo" as icorreo
+  component "AlmacenamientoS3" as cs3
+  component "ColaRQ" as colarq
+  component "SelladorHedera" as hed
+  component "CorreoSMTP" as smtp
+}
+
+database "PostgreSQL" as pg
+component "Amazon S3" <<external>> as s3
+component "Redis" <<external>> as redis
+component "Hedera" <<external>> as hedera
+component "Amazon SES" <<external>> as ses
+
+rutas -up- iapi
+spa ..> iapi : usa
+rutas ..> servicios
+servicios ..> repos
+repos ..> modelos
+modelos ..> pg : SQL
+servicios ..> pdf
+servicios ..> motor
+motor ..> icapa
+c1 -up- icapa
+c2 -up- icapa
+c3 -up- icapa
+c4 -up- icapa
+
+servicios ..> ialm
+servicios ..> icola
+servicios ..> isel
+servicios ..> icorreo
+cs3 -up- ialm
+colarq -up- icola
+hed -up- isel
+smtp -up- icorreo
+cs3 ..> s3
+colarq ..> redis
+hed ..> hedera
+smtp ..> ses
+@enduml

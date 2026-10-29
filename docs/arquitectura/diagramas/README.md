@@ -4,6 +4,7 @@ Cada diagrama tiene su fuente editable y su imagen (`.png`), que es la que va al
 
 - Los diagramas 01 a 03 se dibujan con la identidad visual de evidentIA: la fuente es un script de Python en `fuentes/` que genera el `.svg`.
 - Los diagramas 04 a 06 tienen su fuente en Mermaid (`.mmd`).
+- Los diagramas 07 y 08 siguen la notación UML 2.5 y tienen su fuente en PlantUML (`.puml`). Son los que van al informe como arquitectura; los 01 y 02 quedan como vistas de apoyo para la defensa.
 
 | Archivo | Qué muestra | Dónde va en el informe |
 |---|---|---|
@@ -13,5 +14,7 @@ Cada diagrama tiene su fuente editable y su imagen (`.png`), que es la que va al
 | `04-modelo-de-datos` | Diagrama entidad-relación (tablas reales de `backend/app/modelos`) | Capítulo IX, modelo de datos |
 | `05-flujo-de-un-caso` | Secuencia desde la carga hasta la verificación pública del informe | Capítulo IX, diseño de solución |
 | `06-cronograma` | Cronograma planificado frente al real | Capítulo V, cronograma |
+| `07-despliegue-uml` | Diagrama de despliegue UML: nodos, entornos de ejecución, artefactos y protocolos | Capítulo IX, arquitectura (Figura 9) |
+| `08-componentes-uml` | Diagrama de componentes UML: componentes del backend e interfaces provistas y requeridas | Capítulo IX, diseño de solución (Figura 10) |
 
 Si cambia el modelo de datos o la infraestructura, se actualiza el `.mmd` y se vuelve a exportar la imagen.
