@@ -4795,3 +4795,127 @@ body:has(.dialogo-velo) {
     flex: 1 1 auto;
   }
 }
+
+/* --- Acceso a pantalla completa (034) --- */
+.acceso--completo {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  flex-wrap: nowrap;
+  background:
+    radial-gradient(36rem 24rem at 10% 6%, rgb(164 203 62 / 18%), transparent 70%),
+    radial-gradient(34rem 22rem at 92% 96%, rgb(47 93 168 / 10%), transparent 70%),
+    var(--fondo);
+}
+
+.acceso--completo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgb(20 32 26 / 8%) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse at center, transparent 35%, #000 80%);
+  pointer-events: none;
+}
+
+.acceso__cabecera {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+}
+
+.acceso__volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  color: var(--tinta-2);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.acceso__volver:hover {
+  color: var(--tinta);
+}
+
+.acceso--completo .acceso__formulario {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.acceso--completo .tarjeta-acceso {
+  max-width: 26rem;
+  padding: 2rem;
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgb(20 32 26 / 10%);
+}
+
+.acceso--completo:has(.registro-ancho) .tarjeta-acceso {
+  max-width: 42rem;
+}
+
+.tarjeta-acceso__logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.tarjeta-acceso__logo img {
+  height: 34px;
+  width: auto;
+}
+
+.tarjeta-acceso h1 {
+  text-align: center;
+}
+
+.acceso--completo .pie {
+  position: relative;
+  padding: 1rem 1.5rem 1.5rem;
+  border: 0;
+  background: transparent;
+  text-align: center;
+}
+
+@media (width <= 48rem) {
+  .acceso--completo .acceso__formulario {
+    place-items: start stretch;
+    padding: 0 0.75rem 1rem;
+  }
+
+  .acceso--completo .tarjeta-acceso {
+    max-width: none;
+    padding: 1.4rem 1.1rem;
+    box-shadow: none;
+  }
+
+  .acceso__cabecera {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* Pie compacto (034): una línea de descargo y los enlaces, sin peso visual. */
+.pie {
+  padding: 1.25rem 1.5rem;
+  font-size: 0.8rem;
+  color: var(--tinta-3, var(--tinta-2));
+}
+
+.pie p {
+  margin-bottom: 0.4rem;
+}
+
+.acceso--completo .selector-camino {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (width <= 48rem) {
+  .acceso--completo .selector-camino {
+    grid-template-columns: 1fr;
+  }
+}
