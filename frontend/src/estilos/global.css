@@ -3823,3 +3823,245 @@ details.resultado-imagen > .integridad {
     transition: none;
   }
 }
+
+/* --- Acceso (028, frames 9a y 9c): ventajas, contraseña visible y celular --- */
+.acceso__ventajas {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 30rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.acceso__ventajas li {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: 0.875rem;
+  align-items: start;
+}
+
+.acceso__ventajas strong {
+  display: block;
+}
+
+.acceso__ventaja-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid rgb(164 203 62 / 45%);
+  border-radius: var(--radio);
+  color: var(--lima);
+}
+
+.acceso__ventaja-texto {
+  display: block;
+  font-size: 0.875rem;
+  color: #c9d6ce;
+}
+
+.acceso__rubros {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.acceso__rubros li {
+  padding: 0.25rem 0.875rem;
+  border: 1px solid rgb(255 255 255 / 25%);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  color: #e6efe0;
+}
+
+.tarjeta-acceso__bajada {
+  margin: 0 0 1.25rem;
+  color: var(--tinta-2);
+}
+
+.campo__cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.campo__enlace {
+  font-size: 0.875rem;
+}
+
+.campo-contrasenia {
+  position: relative;
+}
+
+.campo-contrasenia .campo__control {
+  width: 100%;
+  padding-right: 6.5rem;
+}
+
+.campo-contrasenia__mostrar {
+  position: absolute;
+  top: 50%;
+  right: 0.25rem;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: var(--radio-chico);
+  background: none;
+  color: var(--azul);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.campo-contrasenia__mostrar:hover {
+  background: var(--azul-suave);
+}
+
+@media (width <= 48rem) {
+  .acceso__marca {
+    flex-direction: row;
+    padding: 0.875rem 1rem;
+  }
+
+  .acceso__mensaje {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    text-align: left;
+  }
+
+  .acceso__visor {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .acceso__visor img {
+    width: 7.5rem;
+  }
+
+  .acceso__escaneo,
+  .acceso__ventajas,
+  .acceso__rubros {
+    display: none;
+  }
+
+  .acceso__eslogan {
+    font-family: var(--fuente-texto);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: #cfd9d3;
+  }
+
+  .acceso__formulario {
+    padding: 1.25rem 1rem 0;
+  }
+
+  .tarjeta-acceso {
+    padding: 1.5rem 1.25rem;
+    box-shadow: none;
+  }
+}
+
+/* --- Celular (028, tercera tanda) --- */
+.tarjeta-imagen__mas > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--azul);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tarjeta-imagen__mas[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+@media (width <= 48rem) {
+  .acceso__visor {
+    flex: 0 0 auto;
+  }
+
+  .acceso__visor img {
+    width: 7.5rem;
+    max-width: none;
+  }
+
+  .informe-pdf,
+  .informe-pdf__datos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .informe-pdf__icono {
+    display: none;
+  }
+
+  .informe-pdf__datos dt {
+    margin-top: 0.375rem;
+  }
+
+  .informe-pdf .huella {
+    font-size: 0.6875rem;
+  }
+
+  .resumen-capas {
+    gap: 0.375rem;
+  }
+
+  .resumen-capas__item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .datos-en-linea {
+    flex-direction: column;
+  }
+
+  .datos-en-linea li + li::before {
+    content: none;
+  }
+
+  .zona-riesgo-filas__fila {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .zona-riesgo-filas__fila > div:first-child {
+    flex-basis: auto;
+  }
+
+  .tarjeta-imagen__datos {
+    padding: 0.625rem;
+  }
+
+  .tarjeta-imagen__datos .boton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .barra-analisis {
+    padding: 0.75rem;
+  }
+
+  .barra-analisis__texto .nota {
+    display: none;
+  }
+}
