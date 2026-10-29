@@ -16,6 +16,12 @@ FORMATO_HEIC = "heic"  # formato por defecto de las fotos del iPhone (funcionali
 FORMATOS_IMAGEN = (FORMATO_JPEG, FORMATO_PNG, FORMATO_HEIC)
 TIPOS_MIME = {FORMATO_JPEG: "image/jpeg", FORMATO_PNG: "image/png", FORMATO_HEIC: "image/heic"}
 
+# Por dónde llegó la imagen (028): queda en la cadena de custodia.
+ORIGEN_COMPUTADORA = "computadora"
+ORIGEN_CELULAR = "celular"
+ORIGEN_PERSONA_AFECTADA = "persona_afectada"
+ORIGENES_IMAGEN = (ORIGEN_COMPUTADORA, ORIGEN_CELULAR, ORIGEN_PERSONA_AFECTADA)
+
 
 class Imagen(db.Model):  # pylint: disable=too-few-public-methods
     """Imagen de un caso, con su huella y sus datos técnicos.
@@ -48,6 +54,8 @@ class Imagen(db.Model):  # pylint: disable=too-few-public-methods
         db.Integer, db.ForeignKey("usuarios.id", ondelete="SET NULL"), nullable=True
     )
     cargada_en = db.Column(db.DateTime, nullable=False, default=ahora_utc)
+    # Vacío en las imágenes cargadas antes de la funcionalidad 028.
+    origen = db.Column(db.String(20), nullable=True)
     # Una imagen incluida en un informe generado ya no puede eliminarse (RN24).
     # Sello de tiempo en Hedera (016 y 023, RF37): pendiente, enviado, sellado o fallido.
     sello_estado = db.Column(db.String(20), nullable=True)

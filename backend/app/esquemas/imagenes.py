@@ -18,6 +18,8 @@ def imagen_a_dict(imagen, enlace_miniatura, analizada=False):
         "huella": imagen.huella,
         "cargada_en": imagen.cargada_en.isoformat(),
         "cargada_por": f"{usuario.nombre} {usuario.apellido}" if usuario else "Cuenta eliminada",
+        # Por dónde llegó: computadora, celular o persona afectada (028); vacío si es anterior.
+        "origen": imagen.origen,
         "en_informe": imagen.en_informe,
         "analizada": analizada,
         "miniatura": enlace_miniatura,

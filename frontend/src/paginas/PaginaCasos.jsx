@@ -3,28 +3,29 @@
  * filtros guardados en la dirección (se pueden compartir y sobreviven a
  * recargar), y las transferencias de casos personales que esperan respuesta.
  *
- * La búsqueda principal (número, expediente, estado y tipo) queda siempre a la
- * vista; el espacio y las fechas se despliegan en "Más filtros" (022).
+ * Un solo buscador (número de caso, expediente o lugar), el estado, el tipo y
+ * el espacio quedan siempre a la vista; las fechas del hecho se despliegan en
+ * "Más filtros". Las filas tienen columnas fijas y el número no se corta (028).
  *
  * Realiza: RF26, RF33 (CA2); CA5, CA6 y CA18 de la funcionalidad 005; RNF10.
  */
 import { useCallback, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
+import FilaCaso from '../componentes/FilaCaso.jsx'
 import { listarCasos, responderTransferencia, transferenciasPendientes } from '../api/casos.js'
 import { listarOrganizaciones } from '../api/organizaciones.js'
 import Aviso from '../componentes/Aviso.jsx'
 import CampoSeleccion from '../componentes/CampoSeleccion.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
-import Etiqueta from '../componentes/Etiqueta.jsx'
 import Icono from '../componentes/Icono.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
-import { OPCIONES_ESTADO, OPCIONES_TIPO, tipoDeEtiquetaDeEstado } from '../utilidades/casos.js'
+import { OPCIONES_ESTADO, OPCIONES_TIPO } from '../utilidades/casos.js'
 import { textosDelRubro } from '../utilidades/lenguaje.js'
-import { formatearDia, formatearFecha } from '../utilidades/fechas.js'
+import { formatearFecha } from '../utilidades/fechas.js'
 
-const CAMPOS_FILTRO = ['numero', 'expediente', 'estado', 'tipo', 'espacio', 'desde', 'hasta']
+const CAMPOS_FILTRO = ['busqueda', 'estado', 'tipo', 'espacio', 'desde', 'hasta']
 
 function Transferencias({ transferencias, alResponder }) {
   const navegar = useNavigate()
@@ -103,19 +104,25 @@ function Filtros({ filtros, espacios, alAplicar, etiquetaReferencia }) {
     alAplicar(vacios)
   }
 
-  const avanzados = Boolean(filtros.espacio || filtros.desde || filtros.hasta)
+  const avanzados = Boolean(filtros.desde || filtros.hasta)
 
   return (
     <form className="filtros" onSubmit={aplicar} role="search" aria-label="Buscar casos">
       <div className="filtros__principal">
-        <CampoTexto etiqueta="Número de caso" nombre="numero" value={valores.numero} onChange={cambiar} />
-        <CampoTexto etiqueta={etiquetaReferencia} nombre="expediente" value={valores.expediente} onChange={cambiar} />
+        <CampoTexto
+          etiqueta="Buscar un caso"
+          nombre="busqueda"
+          tipo="search"
+          placeholder={`Número de caso, ${etiquetaReferencia.toLowerCase()} o lugar`}
+          value={valores.busqueda}
+          onChange={cambiar}
+        />
         <CampoSeleccion
           etiqueta="Estado"
           nombre="estado"
           value={valores.estado}
           onChange={cambiar}
-          opciones={[{ valor: '', texto: 'Todos menos archivados' }, ...OPCIONES_ESTADO]}
+          opciones={[{ valor: '', texto: 'Activos' }, ...OPCIONES_ESTADO]}
         />
         <CampoSeleccion
           etiqueta="Tipo"
@@ -123,6 +130,13 @@ function Filtros({ filtros, espacios, alAplicar, etiquetaReferencia }) {
           value={valores.tipo}
           onChange={cambiar}
           opciones={[{ valor: '', texto: 'Todos' }, ...OPCIONES_TIPO]}
+        />
+        <CampoSeleccion
+          etiqueta="Espacio"
+          nombre="espacio"
+          value={valores.espacio}
+          onChange={cambiar}
+          opciones={[{ valor: '', texto: 'Todos' }, ...espacios]}
         />
         <button type="submit" className="boton filtros__buscar">
           <Icono nombre="buscar" tamanio={18} />
@@ -132,13 +146,6 @@ function Filtros({ filtros, espacios, alAplicar, etiquetaReferencia }) {
       <details className="filtros__mas" open={avanzados}>
         <summary>Más filtros</summary>
         <div className="formulario__fila">
-          <CampoSeleccion
-            etiqueta="Espacio"
-            nombre="espacio"
-            value={valores.espacio}
-            onChange={cambiar}
-            opciones={[{ valor: '', texto: 'Todos' }, ...espacios]}
-          />
           <CampoTexto etiqueta="Hecho desde" nombre="desde" tipo="date" value={valores.desde} onChange={cambiar} />
           <CampoTexto etiqueta="Hecho hasta" nombre="hasta" tipo="date" value={valores.hasta} onChange={cambiar} />
         </div>
@@ -195,10 +202,6 @@ export default function PaginaCasos() {
           <h1>Casos</h1>
           <p className="encabezado-pagina__bajada">{textosDelRubro(usuario.perfil).bajadaCasos}</p>
         </div>
-        <Link to="/casos/nuevo" className="boton">
-          <Icono nombre="mas" tamanio={18} />
-          Nuevo caso
-        </Link>
       </div>
       {state?.mensaje && <Aviso tipo="exito">{state.mensaje}</Aviso>}
       {datos?.transferencias.length > 0 && (
@@ -237,24 +240,16 @@ export default function PaginaCasos() {
         )}
         {datos && datos.casos.length > 0 && (
           <ul className="lista-casos">
+            <li className="fila-caso fila-caso--encabezado" aria-hidden="true">
+              <span>Caso</span>
+              <span>Tipo</span>
+              <span>Espacio</span>
+              <span>Hecho</span>
+              <span>Estado</span>
+              <span />
+            </li>
             {datos.casos.map((caso) => (
-              <li key={caso.id} className="fila-caso">
-                <div className="fila-caso__principal">
-                  <Link to={`/casos/${caso.id}`} className="fila-caso__numero">
-                    {caso.numero}
-                  </Link>
-                  <span className="fila-caso__lugar">{caso.lugar}</span>
-                </div>
-                <span className="fila-caso__detalle">
-                  {caso.tipo_nombre} · {caso.espacio.nombre} · Hecho del {formatearDia(caso.fecha_hecho)}
-                  {caso.expediente && ` · ${caso.expediente}`}
-                </span>
-                <div className="fila-caso__etiquetas">
-                  <Etiqueta tipo={tipoDeEtiquetaDeEstado(caso.estado)}>{caso.estado_nombre}</Etiqueta>
-                  <Etiqueta>{caso.mi_permiso_nombre}</Etiqueta>
-                </div>
-                <Icono nombre="derecha" tamanio={18} />
-              </li>
+              <FilaCaso key={caso.id} caso={caso} />
             ))}
           </ul>
         )}

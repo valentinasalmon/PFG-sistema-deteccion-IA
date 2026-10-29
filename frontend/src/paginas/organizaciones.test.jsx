@@ -180,7 +180,8 @@ describe('pantalla de la organización como Referente', () => {
     renderizarEn('/organizaciones/3')
     expect(await screen.findByRole('heading', { level: 1, name: 'Estudio Pérez' })).toBeInTheDocument()
     expect(screen.getByText('Sos Referente')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Miembros (2 de 5)' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Miembros' })).toBeInTheDocument()
+    expect(screen.getByText('2 de 5 lugares usados')).toBeInTheDocument()
     expect(screen.getByText(/Abogado o abogada · Asociado · Desde el 16\/10\/2026/)).toBeInTheDocument()
     expect(screen.getByText('carla@ejemplo.com')).toBeInTheDocument()
     expect(screen.getByText('Vence el 23/10/2026')).toBeInTheDocument()
@@ -313,7 +314,7 @@ describe('pantalla de la organización como Referente', () => {
     })
     const { usuario } = renderizarEn('/organizaciones/3')
     const seccion = (await screen.findByRole('heading', { name: 'Datos de la organización' })).closest('section')
-    await usuario.click(within(seccion).getByRole('button', { name: 'Editar los datos de la organización' }))
+    await usuario.click(within(seccion).getByRole('button', { name: 'Editar los datos' }))
     await usuario.clear(within(seccion).getByLabelText('Nombre'))
     await usuario.type(within(seccion).getByLabelText('Nombre'), 'Estudio Pérez y Asociados')
     await usuario.click(within(seccion).getByRole('button', { name: 'Guardar los datos' }))
@@ -361,7 +362,9 @@ describe('pantalla de la organización como Referente', () => {
       },
     })
     const { usuario } = renderizarEn('/organizaciones/3')
-    const boton = await screen.findByRole('button', { name: 'Eliminar la organización' })
+    // El formulario de confirmación aparece al elegir «Eliminar…» (028).
+    await usuario.click(await screen.findByRole('button', { name: 'Eliminar…' }))
+    const boton = screen.getByRole('button', { name: 'Eliminar la organización' })
     const campo = screen.getByLabelText(/escribí el nombre: Estudio Pérez/)
     await usuario.type(campo, 'estudio pérez')
     expect(boton).toBeDisabled()
@@ -394,7 +397,7 @@ describe('pantalla de la organización como Miembro', () => {
     expect(screen.getByText('11 5555-0000')).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Invitar miembros' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Editar el cargo/ })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Eliminar la organización' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Eliminar/ })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Abandonar la organización' })).toBeEnabled()
   })
 

@@ -17,21 +17,26 @@
  * El backend valida de forma definitiva al crear la cuenta: si rechaza un
  * dato de un paso anterior, se vuelve a ese paso con el error junto al campo.
  *
- * Realiza: RF01; RN01, RN02, RN36; CA1 a CA5 de la funcionalidad 002, CA1 a
+ * En el primer paso ofrece "Continuar con Google" (027), que también conserva
+ * la invitación.
+ *
+ * Realiza: RF01, RF52; RN01, RN02, RN36; CA1 a CA5 de la funcionalidad 002, CA1 a
  * CA8 de la 020, CA9 de la 004 y CA1, CA2, CA5, CA10 de la 021; RNF10.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
-import { listarAseguradoras, registrarCuenta } from '../api/cuentas.js'
+import { registrarCuenta } from '../api/cuentas.js'
 import { consultarInvitacion } from '../api/organizaciones.js'
+import AceptacionTerminos from '../componentes/AceptacionTerminos.jsx'
 import Aviso from '../componentes/Aviso.jsx'
+import BotonGoogle from '../componentes/BotonGoogle.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import FormularioReenvio from '../componentes/FormularioReenvio.jsx'
 import IndicadorPasos from '../componentes/IndicadorPasos.jsx'
-import OpcionTarjeta from '../componentes/OpcionTarjeta.jsx'
+import PasoInstitucion from '../componentes/PasoInstitucion.jsx'
 import ReglasContrasenia from '../componentes/ReglasContrasenia.jsx'
-import SelectorAseguradora from '../componentes/SelectorAseguradora.jsx'
+import SelectorPerfil from '../componentes/SelectorPerfil.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useFormulario } from '../hooks/useFormulario.js'
 
@@ -98,41 +103,6 @@ function tituloDelPaso(paso, perfil) {
     return perfil === 'abogado' ? 'Tu colegio de abogados' : 'Tu aseguradora'
   }
   return 'Tu cuenta'
-}
-
-function PasoInstitucion({ valores, errores, cambiar, setValores }) {
-  const { datos: aseguradoras, error, cargando } = useDatos(listarAseguradoras)
-
-  if (valores.perfil === 'abogado') {
-    return (
-      <CampoTexto
-        etiqueta="Colegio de abogados"
-        nombre="colegio"
-        opcional
-        ayuda="Podés dejarlo vacío y completarlo después desde tu perfil."
-        value={valores.colegio}
-        onChange={cambiar}
-        error={errores.colegio}
-      />
-    )
-  }
-  if (cargando) return <Cargando texto="Cargando el listado de aseguradoras…" />
-  if (error) return <Aviso tipo="error">{error.message}</Aviso>
-  return (
-    <>
-      <p className="nota">
-        El listado es el de la Superintendencia de Seguros de la Nación. Vas a quedar como
-        Referente de la aseguradora y el Administrador de la plataforma va a revisar el registro
-        antes de que puedas invitar a tu equipo.
-      </p>
-      <SelectorAseguradora
-        aseguradoras={aseguradoras}
-        elegida={valores.id_aseguradora}
-        onElegir={(id) => setValores((anteriores) => ({ ...anteriores, id_aseguradora: id }))}
-        error={errores.id_aseguradora}
-      />
-    </>
-  )
 }
 
 function FormularioRegistro({ invitacion, token }) {
@@ -221,6 +191,7 @@ function FormularioRegistro({ invitacion, token }) {
           Te sumás a {invitacion.organizacion.nombre} con la invitación de {invitacion.invitante}.
         </Aviso>
       )}
+      {indice === 0 && <BotonGoogle invitacion={token} />}
       <IndicadorPasos actual={indice + 1} total={pasos.length} />
       <h2 id="titulo-paso" ref={refTitulo} tabIndex={-1} className="pasos__titulo">
         {tituloDelPaso(paso, valores.perfil)}
@@ -229,36 +200,7 @@ function FormularioRegistro({ invitacion, token }) {
 
       <form onSubmit={esUltimoPaso ? crearCuenta : avanzar} className="formulario" noValidate>
         {paso === 'perfil' && (
-          <fieldset
-            className="opciones-tarjeta"
-            aria-labelledby="titulo-paso"
-            aria-describedby={errores.perfil ? 'ayuda-perfil error-perfil' : 'ayuda-perfil'}
-          >
-            <OpcionTarjeta
-              nombre="perfil"
-              valor="abogado"
-              seleccionada={valores.perfil === 'abogado'}
-              onChange={cambiar}
-              titulo="Abogado o abogada"
-              descripcion="Trabajás de forma individual. Si querés, después podés crear un estudio jurídico e invitar a tu equipo."
-            />
-            <OpcionTarjeta
-              nombre="perfil"
-              valor="aseguradora"
-              seleccionada={valores.perfil === 'aseguradora'}
-              onChange={cambiar}
-              titulo="Registrar mi aseguradora"
-              descripcion="Para quien va a administrar la cuenta de la empresa. Tus compañeros se suman por invitación."
-            />
-            <p id="ayuda-perfil" className="campo__ayuda">
-              El perfil no puede cambiarse después del registro.
-            </p>
-            {errores.perfil && (
-              <p id="error-perfil" className="campo__error">
-                {errores.perfil}
-              </p>
-            )}
-          </fieldset>
+          <SelectorPerfil valor={valores.perfil} onChange={cambiar} error={errores.perfil} />
         )}
 
         {paso === 'datos' && (
@@ -320,34 +262,11 @@ function FormularioRegistro({ invitacion, token }) {
             />
             <ReglasContrasenia contrasenia={valores.contrasenia} id="reglas-contrasenia" />
 
-            <div className="campo">
-              <label className="opcion">
-                <input
-                  type="checkbox"
-                  name="acepta_terminos"
-                  checked={valores.acepta_terminos}
-                  onChange={cambiar}
-                  aria-invalid={errores.acepta_terminos ? 'true' : undefined}
-                  aria-describedby={errores.acepta_terminos ? 'error-terminos' : undefined}
-                />
-                <span>
-                  Leí y acepto los{' '}
-                  <Link to="/terminos" target="_blank" rel="noopener">
-                    Términos de Uso
-                  </Link>{' '}
-                  y la{' '}
-                  <Link to="/privacidad" target="_blank" rel="noopener">
-                    Política de Privacidad
-                  </Link>
-                  .
-                </span>
-              </label>
-              {errores.acepta_terminos && (
-                <p id="error-terminos" className="campo__error">
-                  {errores.acepta_terminos}
-                </p>
-              )}
-            </div>
+            <AceptacionTerminos
+              aceptado={valores.acepta_terminos}
+              onChange={cambiar}
+              error={errores.acepta_terminos}
+            />
           </>
         )}
 

@@ -214,6 +214,7 @@ class ServicioCasos:  # pylint: disable=too-many-public-methods
         """Casos accesibles, con búsqueda y filtros (RF26)."""
         filtros = dict(filtros)
         filtros["expediente"] = normalizar_texto(filtros.get("expediente"))
+        filtros["busqueda_normalizada"] = normalizar_texto(filtros.get("busqueda"))
         return self.repositorio.buscar(usuario.id, filtros, pagina, por_pagina)
 
     def accesos(self, caso):

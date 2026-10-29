@@ -173,6 +173,18 @@ La infraestructura ya está creada: para publicar alcanza con integrar en `main`
 
 4. **Cuenta de prueba en el servidor**: no se crea en producción. Registrate normalmente; tu correo ya figura en `administradores`, así que al ingresar tenés el rol de Administrador.
 
+## Cuenta de demostración (funcionalidad 028)
+
+Desde la 028, la administradora ve solo el tablero de Administración. Para mostrar los casos se usa una abogada de demostración, `demo@evidentia.local`, sin rol de Administrador y con un estudio jurídico. La contraseña no está en el repositorio: la elegís vos al crearla.
+
+1. Publicá la versión (Pull Request hacia `main`) y esperá el despliegue.
+2. Abrí la terminal del servidor (Session Manager, como en el paso B de arriba) y ejecutá:
+   ```bash
+   sudo -u plataforma bash -c "set -a; source /opt/plataforma/.env; set +a; cd /opt/plataforma/actual/backend; /opt/plataforma/actual/venv/bin/flask --app wsgi administracion cuenta-de-demostracion"
+   ```
+3. Escribí la contraseña dos veces; no se ve mientras la escribís. Tiene que cumplir la política: al menos 10 caracteres, con letras y al menos un número, y que no sea una contraseña común. Responde `Cuenta lista: demo@evidentia.local …`.
+4. Ingresá a la plataforma con `demo@evidentia.local` y esa contraseña. Si la olvidás, repetí el paso 2: restablece la cuenta.
+
 ## Activar el sello de tiempo en Hedera (funcionalidad 023)
 
 La cuenta de Hedera se crea en https://portal.hedera.com con clave **ED25519**. El **Account ID** y el **Topic ID** no son secretos, pero no se suben al repositorio: van en `terraform.tfvars`. La **clave privada** no se escribe en ningún archivo: se pide sin mostrarla en pantalla y se guarda cifrada en SSM.
@@ -202,6 +214,41 @@ La cuenta de Hedera se crea en https://portal.hedera.com con clave **ED25519**. 
 5. **Probar**: cargar una imagen en un caso. En unos segundos (o en la próxima pasada del temporizador, cada 15 minutos) tiene que aparecer "Registrada en Hedera" con el enlace "Verificar en HashScan".
 
 **Pasar a la red real (*mainnet*)**: crear una cuenta de *mainnet* con HBAR, repetir los pasos 1 a 3 con `--red mainnet` y la cuenta nueva, y desplegar. Los sellos de *testnet* no se migran (CP-26).
+
+## Activar el inicio con Google (funcionalidad 027)
+
+El cliente se crea con tu cuenta de Google en https://console.cloud.google.com. El **ID de cliente** no es secreto. El **secreto del cliente** sí lo es: no se escribe en ningún archivo ni se pega en el chat.
+
+1. **Proyecto**: arriba a la izquierda, selector de proyectos, **Proyecto nuevo**, nombre `evidentIA`, **Crear**. Después, seleccionalo.
+2. **Pantalla de consentimiento**: menú, **APIs y servicios**, **Pantalla de consentimiento de OAuth** (o **Google Auth Platform**), **Comenzar**. Completá:
+   - **Nombre de la aplicación**: `evidentIA`.
+   - **Correo de asistencia**: tu correo.
+   - **Público**: **Externo**.
+   - **Correo de contacto**: tu correo.
+
+   Aceptá la política y tocá **Crear**. No subas logo por ahora: con logo, Google pide verificar la aplicación.
+3. **Usuarios de prueba**: en **Público**, la aplicación queda **En prueba**. En **Usuarios de prueba**, agregá los correos que van a probar, incluido el tuyo. Admite hasta 100.
+4. **Cliente**: en **Clientes**, **Crear cliente**, tipo **Aplicación web**, nombre `evidentIA web`. En **URIs de redireccionamiento autorizados** agregá:
+   - `http://localhost:5173/api/google/retorno` (local);
+   - `https://<ip-con-guiones>.sslip.io/api/google/retorno` (producción, con la misma dirección que abrís en el navegador).
+
+   **Crear**. Google muestra el **ID de cliente** y el **secreto**: dejá la ventana abierta.
+   Si Google rechaza la dirección `sslip.io`, probá solo en local hasta comprar el dominio (CP-30). Con el dominio, agregás `https://tu-dominio/api/google/retorno`.
+5. **En local**: en `backend/.env` agregá `GOOGLE_ID_CLIENTE=...` y `GOOGLE_SECRETO_CLIENTE=...` y reiniciá `flask run`. El archivo `.env` no se sube.
+6. **En producción**:
+   - Guardá el secreto cifrado en SSM (pegalo y apretá Enter; no se ve nada):
+     ```bash
+     read -rs SECRETO && aws ssm put-parameter --name /deteccion-imagenes/produccion/GOOGLE_SECRETO_CLIENTE \
+       --type SecureString --value "$SECRETO" --overwrite --region eu-west-1 && unset SECRETO
+     ```
+   - En `terraform.tfvars` agregá `google_id_cliente = "....apps.googleusercontent.com"`.
+   - Ejecutá `terraform plan`, que crea 1 parámetro, y después `terraform apply`.
+   - Desplegá (PR de `desarrollo` a `main`).
+7. **Probar**:
+   - En **Iniciar sesión** aparece **Continuar con Google**.
+   - Con un correo sin cuenta, pide completar el rubro y entra.
+   - La segunda vez entra directo.
+   - Con tu correo de administradora, se vincula a tu cuenta existente.
 
 ## Cuando compres el dominio
 

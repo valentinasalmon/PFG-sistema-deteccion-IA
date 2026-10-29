@@ -73,6 +73,13 @@ def test_crear_organizacion_con_plan_inicial_y_referente(aplicacion, ana):
     assert entrada["id_recurso"] == str(organizacion["id"])
 
 
+def test_la_sesion_indica_si_el_usuario_es_miembro(ana):
+    """028: el menú muestra «Organizaciones» solo a quien es miembro de alguna."""
+    assert ana.get("/api/sesion").get_json()["usuario"]["en_organizacion"] is False
+    _crear_organizacion(ana)
+    assert ana.get("/api/sesion").get_json()["usuario"]["en_organizacion"] is True
+
+
 def test_crear_organizacion_valida_los_datos(ana):
     """CU08 3a: datos inválidos señalados por campo."""
     respuesta = ana.post(

@@ -28,6 +28,7 @@ CUENTA_REGISTRO = "cuenta.registro"
 CUENTA_VERIFICACION = "cuenta.verificacion"
 CUENTA_REENVIO_VERIFICACION = "cuenta.reenvio_verificacion"
 CUENTA_BLOQUEO = "cuenta.bloqueo"
+CUENTA_VINCULACION_GOOGLE = "cuenta.vinculacion_google"  # funcionalidad 027 (RF52 CA2)
 SESION_INICIO = "sesion.inicio"
 SESION_CIERRE = "sesion.cierre"
 CONTRASENIA_RECUPERACION = "contrasenia.recuperacion"

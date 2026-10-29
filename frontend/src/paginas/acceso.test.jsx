@@ -396,3 +396,20 @@ describe('registro por pasos', () => {
     expect(screen.getByText(/Al menos un número/).closest('li')).not.toHaveClass('reglas__item--cumplida')
   })
 })
+
+describe('límite de pedidos (funcionalidad 030)', () => {
+  it('si el servidor frena los intentos, muestra el aviso de esperar', async () => {
+    simularApi({
+      'POST /api/sesion': {
+        estado: 429,
+        cuerpo: {
+          codigo: 'demasiados_pedidos',
+          mensaje: 'Hiciste demasiados intentos seguidos. Esperá un minuto y volvé a probar.',
+        },
+      },
+    })
+    const { usuario } = renderizarEn('/iniciar-sesion')
+    await completarInicioDeSesion(usuario)
+    expect(await screen.findByText(/Esperá un minuto y volvé a probar/)).toBeInTheDocument()
+  })
+})

@@ -106,6 +106,8 @@ class SolicitudTransferencia(EsquemaBase):
 class FiltrosCasos(EsquemaBase):
     """Búsqueda y filtros del listado (RF26)."""
 
+    # Buscador único (028): número de caso, expediente o lugar del hecho.
+    busqueda: Optional[str] = Field(default=None, max_length=100)
     numero: Optional[str] = Field(default=None, max_length=20)
     expediente: Optional[str] = Field(default=None, max_length=100)
     estado: Optional[EstadoCaso] = None
@@ -116,7 +118,8 @@ class FiltrosCasos(EsquemaBase):
     pagina: int = Field(default=1, ge=1)
 
     _vacios = field_validator(
-        "numero", "expediente", "estado", "tipo", "espacio", "desde", "hasta", mode="before"
+        "busqueda", "numero", "expediente", "estado", "tipo", "espacio", "desde", "hasta",
+        mode="before",
     )(_vacio_a_nulo)
 
     @field_validator("espacio")

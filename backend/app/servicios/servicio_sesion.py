@@ -5,7 +5,7 @@ quedan registrados en la auditoría. La persona sigue viendo el mensaje
 genérico; el motivo real del fallo solo queda en la auditoría.
 
 Realiza: RF03 (CA1, CA2, CA3, CA4); RF04; RNF01 (CA3); RNF06 (CA7) y CA3 a
-CA6 de la funcionalidad 003.
+CA6 de la funcionalidad 003; RF52 (CA3) de la 027.
 """
 from functools import lru_cache
 
@@ -15,6 +15,10 @@ from app.servicios.errores import CredencialesInvalidas, CuentaDesactivada, Cuen
 from app.utilidades.tiempo import ahora_utc
 
 MENSAJE_CREDENCIALES = "El correo o la contraseña no son correctos."
+MENSAJE_DESACTIVADA = (
+    "Tu cuenta está desactivada porque ya no pertenecés a ninguna aseguradora. "
+    "Si otra aseguradora te invita, vas a poder ingresar para aceptar la invitación."
+)
 
 MOTIVO_CIERRE_MANUAL = "manual"
 MOTIVO_CIERRE_DURACION_MAXIMA = "duracion_maxima"
@@ -103,10 +107,7 @@ class ServicioSesion:
                 detalle={"motivo": "cuenta_desactivada"},
             )
             self.repositorio.guardar(usuario)
-            raise CuentaDesactivada(
-                "Tu cuenta está desactivada porque ya no pertenecés a ninguna aseguradora. "
-                "Si otra aseguradora te invita, vas a poder ingresar para aceptar la invitación."
-            )
+            raise CuentaDesactivada(MENSAJE_DESACTIVADA)
         self.registro.registrar(
             auditoria.SESION_INICIO, auditoria.EXITOSO, usuario=usuario, recurso=usuario,
             detalle={} if usuario.activo else {"cuenta_desactivada": True},
@@ -114,6 +115,45 @@ class ServicioSesion:
         self._promover_si_corresponde(usuario)
         self.repositorio.guardar(usuario)
         return usuario
+
+    def autenticar_con_google(self, usuario):
+        """Completa el inicio de sesión de una cuenta vinculada a Google (RF52 CA3).
+
+        Google ya autenticó a la persona, así que no se cuenta como intento
+        de contraseña ni se aplica el bloqueo por intentos fallidos. Sí se
+        aplican la cuenta desactivada (RN39) y la promoción a Administrador,
+        y queda en la auditoría como cualquier inicio de sesión.
+
+        Raises:
+            CuentaDesactivada: igual que en el inicio con contraseña.
+        """
+        if not usuario.activo and not (
+            self.organizaciones and self.organizaciones.tiene_invitaciones_vigentes(usuario.correo)
+        ):
+            self.registro.registrar(
+                auditoria.SESION_INICIO, auditoria.FALLIDO, usuario=usuario, recurso=usuario,
+                detalle={"motivo": "cuenta_desactivada", "metodo": "google"}, confirmar=True,
+            )
+            raise CuentaDesactivada(MENSAJE_DESACTIVADA)
+        detalle = {"metodo": "google"}
+        if not usuario.activo:
+            detalle["cuenta_desactivada"] = True
+        self.registro.registrar(
+            auditoria.SESION_INICIO, auditoria.EXITOSO, usuario=usuario, recurso=usuario,
+            detalle=detalle,
+        )
+        self._promover_si_corresponde(usuario)
+        self.repositorio.guardar(usuario)
+        return usuario
+
+    def registrar_rechazo_google(self, motivo, correo=None):
+        """Registra un inicio con Google rechazado, con su motivo (RF52 CA3)."""
+        detalle = {"motivo": motivo, "metodo": "google"}
+        if correo:
+            detalle["correo_intentado"] = correo
+        self.registro.registrar(
+            auditoria.SESION_INICIO, auditoria.FALLIDO, detalle=detalle, confirmar=True,
+        )
 
     def _promover_si_corresponde(self, usuario):
         """Da el rol de Administrador si el correo figura en ``ADMINISTRADORES``.

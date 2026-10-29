@@ -9,12 +9,16 @@ registrando una aseguradora del catálogo de la SSN o con la invitación de
 una aseguradora (RN36).
 
 Realiza: RF01, RF02, RF05; RN01, RN02, RN03, RN36; RNF01 (CA5), RNF08 (CA1);
-RNF06 y CA7 a CA9 de la funcionalidad 003; CA3 a CA5 y CA10 a CA12 de la 021.
+RNF06 y CA7 a CA9 de la funcionalidad 003; CA3 a CA5 y CA10 a CA12 de la 021;
+RF52 (CA1, CA2) de la 027.
 """
+import secrets
+
 from app.modelos.usuario import (
     PERFIL_ABOGADO,
     PERFIL_ASEGURADORA,
     ROL_ADMINISTRADOR,
+    ROL_USUARIO,
     Usuario,
 )
 from app.servicios import auditoria, contrasenias
@@ -126,6 +130,97 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
             self.organizaciones.crear_aseguradora(usuario, aseguradora)
         self.repositorio.guardar(usuario)
         self._enviar_verificacion(usuario)
+
+    def _hash_inutilizable(self):
+        """Hash de una contraseña aleatoria que nadie conoce.
+
+        Las cuentas creadas o vinculadas con Google no tienen contraseña
+        propia; si la persona quiere una, la define con "¿Olvidaste tu
+        contraseña?", que demuestra el acceso al correo.
+        """
+        return contrasenias.generar_hash(
+            secrets.token_urlsafe(32), self.configuracion["BCRYPT_COSTO"]
+        )
+
+    def registrar_con_google(self, solicitud, identidad):
+        """Crea una cuenta ya verificada con los datos de Google y los que completa la persona.
+
+        Google ya verificó el correo, así que no se envía la verificación
+        (RF52 CA1). El perfil, la institución y la aceptación de los Términos
+        los completa la persona, igual que en el registro común (RN01, RN36).
+
+        Args:
+            solicitud: ``SolicitudRegistroGoogle`` ya validada.
+            identidad: diccionario con ``sub`` y ``correo`` de Google.
+
+        Raises:
+            ErrorValidacion: si el correo ya tiene una cuenta o falta la aseguradora.
+        """
+        solicitud = solicitud.model_copy(update={"correo": identidad["correo"]})
+        _, aseguradora = self._origen_aseguradora(solicitud)
+        if self.repositorio.obtener_por_correo(solicitud.correo) is not None:
+            raise ErrorValidacion(
+                "Ya existe una cuenta con ese correo. Volvé a ingresar con Google.",
+                codigo="correo_existente",
+            )
+        ahora = ahora_utc()
+        usuario = Usuario(
+            nombre=solicitud.nombre,
+            apellido=solicitud.apellido,
+            correo=solicitud.correo,
+            hash_contrasenia=self._hash_inutilizable(),
+            perfil=solicitud.perfil,
+            colegio=(solicitud.colegio or None) if solicitud.perfil == PERFIL_ABOGADO else None,
+            empresa=(solicitud.empresa or None) if solicitud.perfil == PERFIL_ASEGURADORA else None,
+            version_terminos=self.configuracion["VERSION_TERMINOS"],
+            aceptacion_terminos_en=ahora,
+            correo_verificado_en=ahora,
+            google_sub=identidad["sub"],
+        )
+        self.repositorio.preparar(usuario)
+        self.registro.registrar(
+            auditoria.CUENTA_REGISTRO, auditoria.EXITOSO, usuario=usuario, recurso=usuario,
+            detalle={
+                "perfil": usuario.perfil, "version_terminos": usuario.version_terminos,
+                "metodo": "google",
+            },
+        )
+        if aseguradora is not None:
+            self.organizaciones.crear_aseguradora(usuario, aseguradora)
+        incorporaciones = (
+            self.organizaciones.incorporar_al_verificar(usuario) if self.organizaciones else []
+        )
+        self.repositorio.guardar(usuario)
+        if incorporaciones:
+            self.organizaciones.avisar_incorporaciones(incorporaciones)
+        return usuario
+
+    def vincular_google(self, usuario, sub):
+        """Vincula la cuenta de Google a una cuenta existente con el mismo correo (RF52 CA2).
+
+        Solo se llama si Google informa el correo como verificado. Si la cuenta
+        todavía no estaba verificada, queda verificada y su contraseña se
+        reemplaza por una aleatoria, y se cierran sus sesiones: así nadie que
+        la haya registrado antes con ese correo ajeno conserva el acceso.
+        """
+        usuario.google_sub = sub
+        sin_verificar = not usuario.verificado
+        if sin_verificar:
+            usuario.correo_verificado_en = ahora_utc()
+            usuario.hash_contrasenia = self._hash_inutilizable()
+            usuario.version_sesion += 1
+        self.registro.registrar(
+            auditoria.CUENTA_VINCULACION_GOOGLE, auditoria.EXITOSO,
+            usuario=usuario, recurso=usuario,
+            detalle={"correo_verificado": sin_verificar, "contrasenia_anulada": sin_verificar},
+        )
+        incorporaciones = (
+            self.organizaciones.incorporar_al_verificar(usuario)
+            if sin_verificar and self.organizaciones else []
+        )
+        self.repositorio.guardar(usuario)
+        if incorporaciones:
+            self.organizaciones.avisar_incorporaciones(incorporaciones)
 
     def _enviar_verificacion(self, usuario):
         token = self.tokens.generar(
@@ -255,13 +350,21 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
         self.repositorio.guardar(usuario)
         self.correos.enviar_aviso_contrasenia_cambiada(usuario)
 
-    def preparar_cuenta_de_prueba(self, correo, contrasenia):
-        """Deja lista una cuenta para recorrer todas las pantallas en desarrollo (022).
+    def preparar_cuenta_de_prueba(  # pylint: disable=too-many-arguments
+        self, correo, contrasenia, *, administradora=True, nombre=("Valentina", "Prueba"),
+        estudio="Estudio de prueba evidentIA",
+    ):
+        """Deja lista una cuenta para recorrer las pantallas (022 y 028).
 
-        Crea, o restablece si ya existe, una cuenta Abogado verificada, activa,
-        sin bloqueos y con rol de Administrador, y le crea un estudio jurídico si
-        no tiene ninguna organización. Solo se usa desde la terminal (``flask
-        administracion cuenta-de-prueba``), que la rechaza en producción.
+        Crea, o restablece si ya existe, una cuenta Abogado verificada, activa y
+        sin bloqueos, y le crea un estudio jurídico si no tiene ninguna
+        organización. Solo se usa desde la terminal:
+
+        - ``flask administracion cuenta-de-prueba``: con rol de Administrador,
+          para desarrollo; se rechaza en producción.
+        - ``flask administracion cuenta-de-demostracion``: abogada sin rol de
+          Administrador, para mostrar la plataforma (028); la contraseña se
+          escribe en la terminal y debe cumplir la política.
 
         Returns:
             La cuenta preparada.
@@ -269,7 +372,7 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
         usuario = self.repositorio.obtener_por_correo(correo.lower())
         if usuario is None:
             usuario = Usuario(
-                nombre="Valentina", apellido="Prueba", correo=correo.lower(),
+                nombre=nombre[0], apellido=nombre[1], correo=correo.lower(),
                 hash_contrasenia="", perfil=PERFIL_ABOGADO, colegio="CPACF",
                 version_terminos=self.configuracion["VERSION_TERMINOS"],
                 aceptacion_terminos_en=ahora_utc(),
@@ -280,12 +383,11 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
         )
         usuario.correo_verificado_en = usuario.correo_verificado_en or ahora_utc()
         usuario.intentos_fallidos, usuario.bloqueado_hasta = 0, None
-        usuario.activo, usuario.rol = True, ROL_ADMINISTRADOR
+        usuario.activo = True
+        usuario.rol = ROL_ADMINISTRADOR if administradora else ROL_USUARIO
         self.repositorio.guardar(usuario)
         if not self.organizaciones.listar(usuario):
-            self.organizaciones.crear(
-                usuario, {"nombre": "Estudio de prueba evidentIA", "tipo": "estudio_juridico"}
-            )
+            self.organizaciones.crear(usuario, {"nombre": estudio, "tipo": "estudio_juridico"})
         return usuario
 
     def promover_administrador(self, correo):

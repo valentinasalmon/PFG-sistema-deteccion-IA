@@ -94,9 +94,9 @@ def test_casos_por_estado_recientes_y_actividad(ana, carla):
     assert panel["recientes"][0]["estado_nombre"] == "Borrador"
     textos = [evento["texto"] for evento in panel["actividad"]]
     assert textos == [
-        f"Ana López cargó la imagen «frente.png» en {segundo['numero']}",
-        f"Ana López creó el caso {segundo['numero']}",
-        f"Ana López creó el caso {primero['numero']}",
+        f"Cargaste la imagen «frente.png» en {segundo['numero']}",
+        f"Creaste el caso {segundo['numero']}",
+        f"Creaste el caso {primero['numero']}",
     ]
     assert panel["actividad"][0]["id_caso"] == segundo["id"]
     assert all("ip" not in evento for evento in panel["actividad"])
@@ -116,10 +116,10 @@ def test_cambios_de_estado_y_analisis_en_la_actividad(ana):
 
     numero = caso["numero"]
     assert textos[:4] == [
-        f"Ana López cerró el caso {numero}",
+        f"Cerraste el caso {numero}",
         f"Terminó el análisis de {numero}",
         f"Se generó el informe PDF de {numero}",
-        f"Ana López pidió el análisis de 1 imagen(es) de {numero}",
+        f"Pediste el análisis de 1 imagen(es) de {numero}",
     ]
 
 

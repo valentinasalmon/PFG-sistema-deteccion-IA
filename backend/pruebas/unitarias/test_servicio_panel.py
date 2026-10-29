@@ -6,7 +6,7 @@ import pytest
 from app.servicios import auditoria
 from app.servicios.servicio_panel import redactar_actividad
 
-ANA = SimpleNamespace(nombre="Ana", apellido="López")
+ANA = SimpleNamespace(id=7, nombre="Ana", apellido="López")
 
 
 def _entrada(accion, **detalle):
@@ -32,3 +32,21 @@ def test_estado_desconocido_y_cuenta_eliminada():
     assert redactar_actividad(entrada, None) == (
         "Una cuenta eliminada cambió el estado del caso CASO-2026-000007"
     )
+
+
+@pytest.mark.parametrize(("accion", "detalle", "esperado"), [
+    (auditoria.IMAGEN_CARGA, {"nombre": "foto.jpg"},
+     "Cargaste la imagen «foto.jpg» en CASO-2026-000007"),
+    (auditoria.CASO_CREACION, {}, "Creaste el caso CASO-2026-000007"),
+    (auditoria.ANALISIS_SOLICITUD, {"imagenes": 3},
+     "Pediste el análisis de 3 imagen(es) de CASO-2026-000007"),
+])
+def test_la_actividad_propia_va_en_segunda_persona(accion, detalle, esperado):
+    """Quien mira el panel no ve su propio nombre: «Cargaste…» (funcionalidad 028)."""
+    assert redactar_actividad(_entrada(accion, **detalle), ANA, id_lector=7) == esperado
+
+
+def test_la_actividad_de_otra_persona_lleva_su_nombre():
+    """Si la acción es de otra persona, se nombra a esa persona."""
+    texto = redactar_actividad(_entrada(auditoria.CASO_CREACION), ANA, id_lector=99)
+    assert texto == "Ana López creó el caso CASO-2026-000007"

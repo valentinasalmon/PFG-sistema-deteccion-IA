@@ -16,6 +16,11 @@
  * que el informe PDF (Sin indicios, débiles, moderados, fuertes) y cada capa
  * explica qué mide en "¿Qué significa?" (funcionalidad 022).
  *
+ * Desde la funcionalidad 028 es la etapa "Análisis" del caso: mientras corre
+ * se ve qué imagen se está analizando y en qué capa, con el progreso total; al
+ * terminar, los resultados de cada imagen quedan en filas desplegables y el
+ * informe se ve en la etapa siguiente.
+ *
  * Realiza: RF40, RF43, RF44, RF46; CA5 a CA7 y CA12 a CA14 de la funcionalidad
  * 007; CA6 de la 008; CA7 de la 009; CA4 de la 011; RNF10.
  */
@@ -72,20 +77,94 @@ function tipoDeEtiquetaDeAnalisis(estado) {
   return 'destacada'
 }
 
+const CAPAS = ['metadatos', 'c2pa', 'ela']
+// Títulos que informa el progreso del análisis (capa_actual) para cada capa.
+const CAPA_DEL_PROGRESO = {
+  Metadatos: 'metadatos',
+  'Credenciales de contenido': 'c2pa',
+  'Niveles de error (ELA)': 'ela',
+}
+const TITULOS_CORTOS = { metadatos: 'Metadatos', c2pa: 'C2PA', ela: 'Niveles de error' }
+
+/** Situación de cada imagen y de cada capa mientras corre el análisis (028). */
+function situacionDeImagen(analisis, posicion, imagen) {
+  const actual = analisis.progreso.imagen_actual
+  if (analisis.estado === 'en_cola' || posicion > actual) return 'espera'
+  if (posicion < actual || imagen.resultados.length >= CAPAS.length) return 'terminada'
+  return 'curso'
+}
+
+function porcentajeDelAnalisis(analisis) {
+  const total = analisis.imagenes.length * CAPAS.length
+  if (!total) return 0
+  const hechas = analisis.imagenes.reduce((suma, imagen) => suma + imagen.resultados.length, 0)
+  return Math.min(100, Math.round((hechas / total) * 100))
+}
+
 function Progreso({ analisis }) {
   const { imagen_actual: actual, capa_actual: capa } = analisis.progreso
+  const total = analisis.cantidad_imagenes
+  const porcentaje = porcentajeDelAnalisis(analisis)
+  const capaEnCurso = CAPA_DEL_PROGRESO[capa]
   return (
-    <div className="progreso-analisis" role="status">
-      <Cargando
-        texto={
-          analisis.estado === 'en_cola'
-            ? 'El análisis está en cola…'
-            : `Analizando la imagen ${Math.max(actual, 1)} de ${analisis.cantidad_imagenes}` +
-              (capa ? ` · capa ${capa}` : '') +
-              '…'
-        }
-      />
-      <p className="nota">Podés salir de esta pantalla: te avisamos por correo cuando termine.</p>
+    <div className="progreso-analisis">
+      <div className="progreso-analisis__cabecera" role="status">
+        <div>
+          <h3>{`Analizando ${total} imagen${total === 1 ? '' : 'es'}`}</h3>
+          <p className="nota">
+            {analisis.estado === 'en_cola'
+              ? 'El análisis está en cola…'
+              : `Imagen ${Math.max(actual, 1)} de ${total}${capa ? ` · ${capa}` : ''}.`}{' '}
+            Podés salir de esta pantalla: te avisamos por correo cuando termine.
+          </p>
+        </div>
+        <strong className="progreso-analisis__porcentaje">{porcentaje} %</strong>
+      </div>
+      <div
+        className="progreso-analisis__barra"
+        role="progressbar"
+        aria-label="Progreso del análisis"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={porcentaje}
+      >
+        <span style={{ width: `${porcentaje}%` }} />
+      </div>
+      <ul className="progreso-imagenes" aria-label="Imágenes del análisis">
+        {analisis.imagenes.map((imagen, indice) => {
+          const situacion = situacionDeImagen(analisis, indice + 1, imagen)
+          const hechas = new Set(imagen.resultados.map((resultado) => resultado.capa))
+          return (
+            <li key={`${imagen.id_imagen}-${indice}`} className={`progreso-imagen progreso-imagen--${situacion}`}>
+              <span className="progreso-imagen__miniatura" aria-hidden="true">
+                <Icono nombre="imagen" tamanio={22} />
+              </span>
+              <div>
+                <strong>{imagen.nombre}</strong>
+                <div className="progreso-imagen__capas">
+                  {CAPAS.map((codigo) => {
+                    const estadoCapa = hechas.has(codigo)
+                      ? 'hecha'
+                      : situacion === 'curso' && capaEnCurso === codigo
+                        ? 'curso'
+                        : 'espera'
+                    return (
+                      <span key={codigo} className={`capa-chip capa-chip--${estadoCapa}`}>
+                        {estadoCapa === 'hecha' && '✓ '}
+                        {TITULOS_CORTOS[codigo]}
+                        {estadoCapa === 'curso' && ' en curso'}
+                      </span>
+                    )
+                  })}
+                </div>
+              </div>
+              <span className="progreso-imagen__estado">
+                {{ terminada: 'Terminada', curso: 'Analizando…', espera: 'En espera' }[situacion]}
+              </span>
+            </li>
+          )
+        })}
+      </ul>
     </div>
   )
 }
@@ -176,7 +255,8 @@ function ResultadoDeCapa({ resultado }) {
   )
 }
 
-function ResumenDeImagen({ imagen }) {
+/** Nivel de cada capa de una imagen, en la escala del informe (también lo usa la etapa Informe). */
+export function ResumenDeImagen({ imagen }) {
   return (
     <ul className="resumen-capas" aria-label={`Resumen de ${imagen.nombre}`}>
       {imagen.resultados.map((resultado) => {
@@ -201,18 +281,28 @@ function ResumenDeImagen({ imagen }) {
   )
 }
 
+/** Resultados por imagen en filas desplegables: el resumen a la vista y el detalle al abrir (028). */
 function Resultados({ analisis }) {
-  return analisis.imagenes.map((imagen) => (
-    <article key={`${imagen.id_imagen}-${imagen.huella}`} className="resultado-imagen">
-      <div className="resultado-imagen__cabecera">
+  return analisis.imagenes.map((imagen, indice) => (
+    <details
+      key={`${imagen.id_imagen}-${imagen.huella}`}
+      className="resultado-imagen"
+      open={analisis.imagenes.length === 1 || indice === 0}
+    >
+      <summary className="resultado-imagen__cabecera">
         <h3>{imagen.nombre}</h3>
-        {imagen.integridad !== 'alterada' && (
-          <span className="integridad">
-            <Icono nombre="verificado" tamanio={18} />
-            Integridad verificada
-          </span>
+        {imagen.integridad === 'alterada' ? (
+          <span className="nivel nivel--nd">Integridad alterada</span>
+        ) : (
+          <ResumenDeImagen imagen={imagen} />
         )}
-      </div>
+      </summary>
+      {imagen.integridad !== 'alterada' && (
+        <span className="integridad">
+          <Icono nombre="verificado" tamanio={18} />
+          Integridad verificada
+        </span>
+      )}
       <p className="huella">SHA-256 {imagen.huella}</p>
       {imagen.integridad === 'alterada' ? (
         <Aviso tipo="error">
@@ -220,14 +310,9 @@ function Resultados({ analisis }) {
           excluyó del análisis por una anomalía de integridad.
         </Aviso>
       ) : (
-        <>
-          <ResumenDeImagen imagen={imagen} />
-          {imagen.resultados.map((resultado) => (
-            <ResultadoDeCapa key={resultado.capa} resultado={resultado} />
-          ))}
-        </>
+        imagen.resultados.map((resultado) => <ResultadoDeCapa key={resultado.capa} resultado={resultado} />)
       )}
-    </article>
+    </details>
   ))
 }
 
@@ -248,7 +333,7 @@ function Escala() {
   )
 }
 
-function AccionesDelInforme({ idCaso, analisis, puedeGenerar, alGenerar }) {
+function AccionesDelInforme({ idCaso, analisis, puedeGenerar, alGenerar, alVerInforme }) {
   const [error, setError] = useState(null)
   const [enviando, setEnviando] = useState(false)
 
@@ -268,15 +353,23 @@ function AccionesDelInforme({ idCaso, analisis, puedeGenerar, alGenerar }) {
     <div className="acciones-informe">
       {error && <Aviso tipo="error">{error}</Aviso>}
       {analisis.informe ? (
-        <button
-          type="button"
-          className="boton"
-          disabled={enviando}
-          onClick={() => ejecutar(() => descargarInforme(idCaso, analisis.informe.id))}
-        >
-          <Icono nombre="descargar" tamanio={18} />
-          Descargar el informe PDF
-        </button>
+        <div className="acciones-en-linea">
+          {alVerInforme && (
+            <button type="button" className="boton" onClick={alVerInforme}>
+              <Icono nombre="documento" tamanio={18} />
+              Ver el informe
+            </button>
+          )}
+          <button
+            type="button"
+            className={alVerInforme ? 'boton boton--secundario' : 'boton'}
+            disabled={enviando}
+            onClick={() => ejecutar(() => descargarInforme(idCaso, analisis.informe.id))}
+          >
+            <Icono nombre="descargar" tamanio={18} />
+            Descargar el informe PDF
+          </button>
+        </div>
       ) : (
         <>
           <Aviso tipo="info">No se pudo generar el informe PDF de este análisis.</Aviso>
@@ -301,7 +394,7 @@ function AccionesDelInforme({ idCaso, analisis, puedeGenerar, alGenerar }) {
   )
 }
 
-function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar }) {
+function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar, alVerInforme }) {
   const cargar = useCallback(() => obtenerAnalisis(idCaso, idAnalisis), [idCaso, idAnalisis])
   const { datos: analisis, error, recargar } = useDatos(cargar)
   const enCurso = Boolean(analisis?.en_curso)
@@ -334,6 +427,7 @@ function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar }) {
             idCaso={idCaso}
             analisis={analisis}
             puedeGenerar={puedeGenerar}
+            alVerInforme={alVerInforme}
             alGenerar={async () => {
               await recargar()
               await alTerminar()
@@ -346,7 +440,13 @@ function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar }) {
   )
 }
 
-export default function SeccionAnalisis({ idCaso, puedeGenerar = false, alTerminar }) {
+export default function SeccionAnalisis({
+  idCaso,
+  puedeGenerar = false,
+  alTerminar,
+  alVerInforme,
+  alCargarImagenes,
+}) {
   const cargar = useCallback(() => listarAnalisis(idCaso), [idCaso])
   const { datos: historial, error } = useDatos(cargar)
   const [elegido, setElegido] = useState(null)
@@ -359,7 +459,22 @@ export default function SeccionAnalisis({ idCaso, puedeGenerar = false, alTermin
       </section>
     )
   }
-  if (!historial || historial.length === 0) return null
+  if (!historial) return <Cargando texto="Cargando los análisis…" />
+  if (historial.length === 0) {
+    return (
+      <section className="seccion estado-vacio-etapa" aria-labelledby="titulo-analisis">
+        <h2 id="titulo-analisis">Análisis</h2>
+        <p className="nota">
+          Todavía no se analizó ninguna imagen. Cargalas y pedí el análisis desde la etapa «Cargar imágenes».
+        </p>
+        {alCargarImagenes && (
+          <button type="button" className="boton boton--secundario" onClick={alCargarImagenes}>
+            Ir a cargar imágenes
+          </button>
+        )}
+      </section>
+    )
+  }
   const idElegido = elegido ?? historial[0].id
 
   return (
@@ -400,6 +515,7 @@ export default function SeccionAnalisis({ idCaso, puedeGenerar = false, alTermin
         idAnalisis={idElegido}
         puedeGenerar={puedeGenerar}
         alTerminar={alTerminar}
+        alVerInforme={alVerInforme}
       />
     </section>
   )

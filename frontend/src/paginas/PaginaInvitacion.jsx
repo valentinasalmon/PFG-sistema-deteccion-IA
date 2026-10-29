@@ -23,6 +23,7 @@ import { formatearFecha } from '../utilidades/fechas.js'
 
 function Respuesta({ invitacion }) {
   const navegar = useNavigate()
+  const { recargarUsuario } = useSesion()
   const [estado, setEstado] = useState({ enviando: false, error: null, rechazada: false })
 
   async function responder(aceptar) {
@@ -30,6 +31,8 @@ function Respuesta({ invitacion }) {
     try {
       if (aceptar) {
         const respuesta = await aceptarInvitacion(invitacion.id)
+        // Con sesión iniciada, el menú pasa a mostrar «Organizaciones» (028).
+        await recargarUsuario().catch(() => {})
         navegar(`/organizaciones/${respuesta.id_organizacion}`, {
           state: { mensaje: respuesta.mensaje },
         })

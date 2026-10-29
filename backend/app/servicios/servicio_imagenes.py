@@ -17,7 +17,7 @@ from uuid import uuid4
 
 from app.integraciones.almacenamiento import ArchivoNoDisponible, disposicion_de_descarga
 from app.modelos.caso import ESTADO_ANALIZADO, ESTADO_BORRADOR, NIVEL_COLABORACION, NIVEL_LECTURA
-from app.modelos.imagen import TIPOS_MIME, Imagen
+from app.modelos.imagen import ORIGEN_COMPUTADORA, TIPOS_MIME, Imagen
 from app.servicios import auditoria
 from app.servicios.errores import ConflictoDatos, ErrorValidacion, NoEncontrado
 from app.utilidades import imagenes as lector
@@ -230,6 +230,7 @@ class ServicioImagenes:
             clave_miniatura=f"miniaturas/{uuid4().hex}.jpg", nombre_original=nombre,
             formato=formato, tamanio=len(contenido), ancho=dimensiones[0],
             alto=dimensiones[1], huella=huella, id_usuario=usuario.id,
+            origen=origen or ORIGEN_COMPUTADORA,
             sello_estado="pendiente" if self.sellos and self.sellos.activo else None,
         )
         self.almacenamiento.guardar(imagen.clave, contenido, imagen.tipo_mime)
