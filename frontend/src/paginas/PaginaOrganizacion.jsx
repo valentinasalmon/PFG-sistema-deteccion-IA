@@ -9,8 +9,8 @@
  * Realiza: RF11 a RF18; CA3, CA8, CA14 a CA20 y CA22 de la funcionalidad 004;
  * CA6, CA13 y CA18 de la 021.
  */
-import { useCallback, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router";
+import { useCallback, useState } from 'react'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import {
   abandonarOrganizacion,
   cancelarInvitacion,
@@ -24,52 +24,50 @@ import {
   listarMiembros,
   obtenerOrganizacion,
   reenviarInvitacion,
-} from "../api/organizaciones.js";
-import Aviso from "../componentes/Aviso.jsx";
-import BotonConfirmar from "../componentes/BotonConfirmar.jsx";
-import CampoTexto from "../componentes/CampoTexto.jsx";
-import Cargando from "../componentes/Cargando.jsx";
-import Etiqueta from "../componentes/Etiqueta.jsx";
-import Icono from "../componentes/Icono.jsx";
-import SeccionPlan from "../componentes/SeccionPlan.jsx";
-import { useDatos } from "../hooks/useDatos.js";
-import { useFormulario } from "../hooks/useFormulario.js";
-import { useSesion } from "../hooks/useSesion.js";
-import { formatearFecha } from "../utilidades/fechas.js";
+} from '../api/organizaciones.js'
+import Aviso from '../componentes/Aviso.jsx'
+import BotonConfirmar from '../componentes/BotonConfirmar.jsx'
+import CampoTexto from '../componentes/CampoTexto.jsx'
+import Cargando from '../componentes/Cargando.jsx'
+import Etiqueta from '../componentes/Etiqueta.jsx'
+import Icono from '../componentes/Icono.jsx'
+import SeccionPlan from '../componentes/SeccionPlan.jsx'
+import { useDatos } from '../hooks/useDatos.js'
+import { useFormulario } from '../hooks/useFormulario.js'
+import { useSesion } from '../hooks/useSesion.js'
+import { formatearFecha } from '../utilidades/fechas.js'
 
 const NOMBRES_PERFIL = {
-  abogado: "Abogado o abogada",
-  aseguradora: "Aseguradora",
-};
+  abogado: 'Abogado o abogada',
+  aseguradora: 'Aseguradora',
+}
 
 async function cargarOrganizacion(id) {
-  const organizacion = await obtenerOrganizacion(id);
+  const organizacion = await obtenerOrganizacion(id)
   const [miembros, invitaciones] = await Promise.all([
     listarMiembros(id),
-    organizacion.mi_rol === "referente"
-      ? listarInvitaciones(id)
-      : Promise.resolve([]),
-  ]);
-  return { organizacion, miembros, invitaciones };
+    organizacion.mi_rol === 'referente' ? listarInvitaciones(id) : Promise.resolve([]),
+  ])
+  return { organizacion, miembros, invitaciones }
 }
 
 /** Ejecuta una acción, muestra su mensaje y recarga la pantalla. */
 function useAccion(recargar) {
-  const [resultado, setResultado] = useState(null);
+  const [resultado, setResultado] = useState(null)
   const ejecutar = useCallback(
     async (accion) => {
-      setResultado(null);
+      setResultado(null)
       try {
-        const respuesta = await accion();
-        setResultado({ tipo: "exito", texto: respuesta?.mensaje ?? "Listo." });
-        await recargar();
+        const respuesta = await accion()
+        setResultado({ tipo: 'exito', texto: respuesta?.mensaje ?? 'Listo.' })
+        await recargar()
       } catch (error) {
-        setResultado({ tipo: "error", texto: error.message });
+        setResultado({ tipo: 'error', texto: error.message })
       }
     },
     [recargar],
-  );
-  return { resultado, ejecutar };
+  )
+  return { resultado, ejecutar }
 }
 
 /**
@@ -77,36 +75,29 @@ function useAccion(recargar) {
  * los edita en el lugar con el lápiz.
  */
 function CabeceraOrganizacion({ organizacion, esReferente, alGuardar }) {
-  const [editando, setEditando] = useState(false);
+  const [editando, setEditando] = useState(false)
   const { valores, errores, error, enviando, cambiar, enviar } = useFormulario({
     nombre: organizacion.nombre,
-    correo_contacto: organizacion.correo_contacto ?? "",
-    telefono: organizacion.telefono ?? "",
-  });
-  const [mensaje, setMensaje] = useState(null);
+    correo_contacto: organizacion.correo_contacto ?? '',
+    telefono: organizacion.telefono ?? '',
+  })
+  const [mensaje, setMensaje] = useState(null)
 
   async function manejarEnvio(evento) {
-    evento.preventDefault();
-    setMensaje(null);
-    const resultado = await enviar((datos) =>
-      editarOrganizacion(organizacion.id, datos),
-    );
+    evento.preventDefault()
+    setMensaje(null)
+    const resultado = await enviar((datos) => editarOrganizacion(organizacion.id, datos))
     if (resultado.ok) {
-      setMensaje(resultado.datos.mensaje);
-      setEditando(false);
-      await alGuardar();
+      setMensaje(resultado.datos.mensaje)
+      setEditando(false)
+      await alGuardar()
     }
   }
 
-  const contacto = [organizacion.correo_contacto, organizacion.telefono]
-    .filter(Boolean)
-    .join(" · ");
+  const contacto = [organizacion.correo_contacto, organizacion.telefono].filter(Boolean).join(' · ')
 
   return (
-    <section
-      className="cabecera-caso"
-      aria-labelledby="titulo-datos-organizacion"
-    >
+    <section className="cabecera-caso" aria-labelledby="titulo-datos-organizacion">
       <h2 id="titulo-datos-organizacion" className="solo-lectores">
         Datos de la organización
       </h2>
@@ -125,17 +116,13 @@ function CabeceraOrganizacion({ organizacion, esReferente, alGuardar }) {
       </div>
       <ul className="datos-en-linea">
         <li>{organizacion.tipo_nombre}</li>
-        <li>{esReferente ? "Sos Referente" : "Sos miembro"}</li>
+        <li>{esReferente ? 'Sos Referente' : 'Sos miembro'}</li>
         {organizacion.cuit && <li>CUIT {organizacion.cuit}</li>}
-        <li>{contacto || "Sin datos de contacto"}</li>
+        <li>{contacto || 'Sin datos de contacto'}</li>
       </ul>
       {mensaje && <Aviso tipo="exito">{mensaje}</Aviso>}
       {editando && (
-        <form
-          onSubmit={manejarEnvio}
-          className="formulario edicion-en-lugar"
-          noValidate
-        >
+        <form onSubmit={manejarEnvio} className="formulario edicion-en-lugar" noValidate>
           {error && <Aviso tipo="error">{error.message}</Aviso>}
           <div className="formulario__fila">
             <CampoTexto
@@ -144,10 +131,10 @@ function CabeceraOrganizacion({ organizacion, esReferente, alGuardar }) {
               value={valores.nombre}
               onChange={cambiar}
               error={errores.nombre}
-              readOnly={organizacion.tipo === "aseguradora"}
+              readOnly={organizacion.tipo === 'aseguradora'}
               ayuda={
-                organizacion.tipo === "aseguradora"
-                  ? "Es la denominación del catálogo de la Superintendencia de Seguros."
+                organizacion.tipo === 'aseguradora'
+                  ? 'Es la denominación del catálogo de la Superintendencia de Seguros.'
                   : undefined
               }
               required
@@ -180,34 +167,30 @@ function CabeceraOrganizacion({ organizacion, esReferente, alGuardar }) {
               Cancelar
             </button>
             <button type="submit" className="boton" disabled={enviando}>
-              {enviando ? "Guardando…" : "Guardar los datos"}
+              {enviando ? 'Guardando…' : 'Guardar los datos'}
             </button>
           </div>
         </form>
       )}
     </section>
-  );
+  )
 }
 
 function FormularioCargo({ organizacion, miembro, alTerminar }) {
   const { valores, errores, error, enviando, cambiar, enviar } = useFormulario({
-    cargo: miembro.cargo ?? "",
-  });
+    cargo: miembro.cargo ?? '',
+  })
 
   async function manejarEnvio(evento) {
-    evento.preventDefault();
+    evento.preventDefault()
     const resultado = await enviar((datos) =>
       editarCargo(organizacion.id, miembro.id_usuario, datos.cargo || null),
-    );
-    if (resultado.ok) await alTerminar(resultado.datos.mensaje);
+    )
+    if (resultado.ok) await alTerminar(resultado.datos.mensaje)
   }
 
   return (
-    <form
-      onSubmit={manejarEnvio}
-      className="formulario formulario--compacto"
-      noValidate
-    >
+    <form onSubmit={manejarEnvio} className="formulario formulario--compacto" noValidate>
       {error && !errores.cargo && <Aviso tipo="error">{error.message}</Aviso>}
       <CampoTexto
         etiqueta={`Cargo de ${miembro.nombre} ${miembro.apellido}`}
@@ -218,11 +201,7 @@ function FormularioCargo({ organizacion, miembro, alTerminar }) {
         error={errores.cargo}
       />
       <div className="acciones-en-linea">
-        <button
-          type="submit"
-          className="boton boton--chico"
-          disabled={enviando}
-        >
+        <button type="submit" className="boton boton--chico" disabled={enviando}>
           Guardar el cargo
         </button>
         <button
@@ -234,28 +213,19 @@ function FormularioCargo({ organizacion, miembro, alTerminar }) {
         </button>
       </div>
     </form>
-  );
+  )
 }
 
-function SeccionMiembros({
-  organizacion,
-  miembros,
-  esReferente,
-  idUsuario,
-  recargar,
-  children,
-}) {
-  const { resultado, ejecutar } = useAccion(recargar);
-  const [editando, setEditando] = useState(null);
-  const [mensajeCargo, setMensajeCargo] = useState(null);
-  const aviso = mensajeCargo
-    ? { tipo: "exito", texto: mensajeCargo }
-    : resultado;
+function SeccionMiembros({ organizacion, miembros, esReferente, idUsuario, recargar, children }) {
+  const { resultado, ejecutar } = useAccion(recargar)
+  const [editando, setEditando] = useState(null)
+  const [mensajeCargo, setMensajeCargo] = useState(null)
+  const aviso = mensajeCargo ? { tipo: 'exito', texto: mensajeCargo } : resultado
 
   async function terminarEdicion(mensaje) {
-    setEditando(null);
-    setMensajeCargo(mensaje);
-    if (mensaje) await recargar();
+    setEditando(null)
+    setMensajeCargo(mensaje)
+    if (mensaje) await recargar()
   }
 
   return (
@@ -263,15 +233,14 @@ function SeccionMiembros({
       <div className="seccion__cabecera">
         <h2 id="titulo-miembros">Miembros</h2>
         <span className="nota">
-          {miembros.length} de {organizacion.plan.limite_miembros} lugares
-          usados
+          {miembros.length} de {organizacion.plan.limite_miembros} lugares usados
         </span>
       </div>
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
       <ul className="lista-tarjetas">
         {miembros.map((miembro) => {
-          const nombre = `${miembro.nombre} ${miembro.apellido}`;
-          const esYo = miembro.id_usuario === idUsuario;
+          const nombre = `${miembro.nombre} ${miembro.apellido}`
+          const esYo = miembro.id_usuario === idUsuario
           return (
             <li key={miembro.id_usuario} className="tarjeta-item">
               <div className="tarjeta-item__principal">
@@ -280,14 +249,12 @@ function SeccionMiembros({
                 </span>
                 <span className="tarjeta-item__detalle">
                   {NOMBRES_PERFIL[miembro.perfil]}
-                  {miembro.cargo && ` · ${miembro.cargo}`} · Desde el{" "}
+                  {miembro.cargo && ` · ${miembro.cargo}`} · Desde el{' '}
                   {formatearFecha(miembro.incorporado_en)}
                 </span>
               </div>
-              <Etiqueta
-                tipo={miembro.rol === "referente" ? "destacada" : "neutra"}
-              >
-                {miembro.rol === "referente" ? "Referente" : "Miembro"}
+              <Etiqueta tipo={miembro.rol === 'referente' ? 'destacada' : 'neutra'}>
+                {miembro.rol === 'referente' ? 'Referente' : 'Miembro'}
               </Etiqueta>
               {esReferente && editando === miembro.id_usuario && (
                 <FormularioCargo
@@ -302,8 +269,8 @@ function SeccionMiembros({
                     type="button"
                     className="boton boton--secundario boton--chico"
                     onClick={() => {
-                      setMensajeCargo(null);
-                      setEditando(miembro.id_usuario);
+                      setMensajeCargo(null)
+                      setEditando(miembro.id_usuario)
                     }}
                     aria-label={`Editar el cargo de ${nombre}`}
                   >
@@ -316,12 +283,7 @@ function SeccionMiembros({
                         pregunta={`¿Designar a ${nombre} como Referente? Vas a pasar a ser miembro.`}
                         textoConfirmar="Designar"
                         onConfirmar={() =>
-                          ejecutar(() =>
-                            designarReferente(
-                              organizacion.id,
-                              miembro.id_usuario,
-                            ),
-                          )
+                          ejecutar(() => designarReferente(organizacion.id, miembro.id_usuario))
                         }
                       />
                       <BotonConfirmar
@@ -330,12 +292,7 @@ function SeccionMiembros({
                         textoConfirmar="Desvincular"
                         peligro
                         onConfirmar={() =>
-                          ejecutar(() =>
-                            desvincularMiembro(
-                              organizacion.id,
-                              miembro.id_usuario,
-                            ),
-                          )
+                          ejecutar(() => desvincularMiembro(organizacion.id, miembro.id_usuario))
                         }
                       />
                     </>
@@ -343,41 +300,32 @@ function SeccionMiembros({
                 </div>
               )}
             </li>
-          );
+          )
         })}
       </ul>
       {children}
     </section>
-  );
+  )
 }
 
-function SeccionInvitaciones({
-  organizacion,
-  invitaciones,
-  cantidadMiembros,
-  recargar,
-}) {
-  const { resultado, ejecutar } = useAccion(recargar);
-  const { valores, setValores, errores, error, enviando, cambiar, enviar } =
-    useFormulario({
-      correo: "",
-      cargo: "",
-    });
-  const [mensaje, setMensaje] = useState(null);
+function SeccionInvitaciones({ organizacion, invitaciones, cantidadMiembros, recargar }) {
+  const { resultado, ejecutar } = useAccion(recargar)
+  const { valores, setValores, errores, error, enviando, cambiar, enviar } = useFormulario({
+    correo: '',
+    cargo: '',
+  })
+  const [mensaje, setMensaje] = useState(null)
   // Las invitaciones pendientes ocupan un lugar del plan (032, CA10).
-  const lleno =
-    cantidadMiembros + invitaciones.length >= organizacion.plan.limite_miembros;
+  const lleno = cantidadMiembros + invitaciones.length >= organizacion.plan.limite_miembros
 
   async function manejarEnvio(evento) {
-    evento.preventDefault();
-    setMensaje(null);
-    const respuesta = await enviar((datos) =>
-      invitar(organizacion.id, datos.correo, datos.cargo),
-    );
+    evento.preventDefault()
+    setMensaje(null)
+    const respuesta = await enviar((datos) => invitar(organizacion.id, datos.correo, datos.cargo))
     if (respuesta.ok) {
-      setMensaje(respuesta.datos.mensaje);
-      setValores({ correo: "", cargo: "" });
-      await recargar();
+      setMensaje(respuesta.datos.mensaje)
+      setValores({ correo: '', cargo: '' })
+      await recargar()
     }
   }
 
@@ -392,28 +340,20 @@ function SeccionInvitaciones({
           {invitaciones.map((invitacion) => (
             <li key={invitacion.id} className="tarjeta-item">
               <div className="tarjeta-item__principal">
-                <span className="tarjeta-item__titulo">
-                  {invitacion.correo}
-                </span>
+                <span className="tarjeta-item__titulo">{invitacion.correo}</span>
                 <span className="tarjeta-item__detalle">
                   {invitacion.cargo && `${invitacion.cargo} · `}
                   {invitacion.vigente
                     ? `Vence el ${formatearFecha(invitacion.vence_en)}`
-                    : "Vencida"}
+                    : 'Vencida'}
                 </span>
               </div>
-              {!invitacion.vigente && (
-                <Etiqueta tipo="alerta">Vencida</Etiqueta>
-              )}
+              {!invitacion.vigente && <Etiqueta tipo="alerta">Vencida</Etiqueta>}
               <div className="acciones-en-linea">
                 <button
                   type="button"
                   className="boton boton--secundario boton--chico"
-                  onClick={() =>
-                    ejecutar(() =>
-                      reenviarInvitacion(organizacion.id, invitacion.id),
-                    )
-                  }
+                  onClick={() => ejecutar(() => reenviarInvitacion(organizacion.id, invitacion.id))}
                   aria-label={`Reenviar la invitación a ${invitacion.correo}`}
                 >
                   Reenviar
@@ -424,9 +364,7 @@ function SeccionInvitaciones({
                   textoConfirmar="Cancelar invitación"
                   peligro
                   onConfirmar={() =>
-                    ejecutar(() =>
-                      cancelarInvitacion(organizacion.id, invitacion.id),
-                    )
+                    ejecutar(() => cancelarInvitacion(organizacion.id, invitacion.id))
                   }
                 />
               </div>
@@ -446,9 +384,8 @@ function SeccionInvitaciones({
         {error && <Aviso tipo="error">{error.message}</Aviso>}
         {lleno && (
           <Aviso tipo="info" flotante={false}>
-            Los lugares del plan están ocupados por miembros e invitaciones
-            pendientes. Cancelá una invitación o cambiá de plan desde «Plan»
-            para sumar a alguien más.
+            Los lugares del plan están ocupados por miembros e invitaciones pendientes. Cancelá una
+            invitación o cambiá de plan desde «Plan» para sumar a alguien más.
           </Aviso>
         )}
         <div className="invitar__fila">
@@ -469,61 +406,54 @@ function SeccionInvitaciones({
             onChange={cambiar}
             error={errores.cargo}
           />
-          <button
-            type="submit"
-            className="boton invitar__boton"
-            disabled={enviando || lleno}
-          >
-            {enviando ? "Enviando…" : "Enviar invitación"}
+          <button type="submit" className="boton invitar__boton" disabled={enviando || lleno}>
+            {enviando ? 'Enviando…' : 'Enviar invitación'}
           </button>
         </div>
         <p className="nota">
-          Podés invitar a cualquier correo, tenga o no una cuenta. La invitación
-          vence a los 7 días y ocupa un lugar del plan mientras esté pendiente.
+          Podés invitar a cualquier correo, tenga o no una cuenta. La invitación vence a los 7 días
+          y ocupa un lugar del plan mientras esté pendiente.
         </p>
       </form>
     </>
-  );
+  )
 }
 
 function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
-  const navegar = useNavigate();
-  const { terminarSesion, recargarUsuario } = useSesion();
-  const [error, setError] = useState(null);
-  const [confirmacion, setConfirmacion] = useState("");
-  const [eliminando, setEliminando] = useState(false);
-  const [enviando, setEnviando] = useState(false);
-  const nombreCoincide = confirmacion.trim() === organizacion.nombre;
+  const navegar = useNavigate()
+  const { terminarSesion, recargarUsuario } = useSesion()
+  const [error, setError] = useState(null)
+  const [confirmacion, setConfirmacion] = useState('')
+  const [eliminando, setEliminando] = useState(false)
+  const [enviando, setEnviando] = useState(false)
+  const nombreCoincide = confirmacion.trim() === organizacion.nombre
 
   async function salir(accion) {
-    setError(null);
-    setEnviando(true);
+    setError(null)
+    setEnviando(true)
     try {
-      const respuesta = await accion();
+      const respuesta = await accion()
       // Si la cuenta quedó sin aseguradora, el servidor ya cerró la sesión (RN39).
       if (respuesta.cuenta_desactivada) {
-        terminarSesion("desactivada");
-        return;
+        terminarSesion('desactivada')
+        return
       }
       // Sin organizaciones, el menú deja de mostrar «Organizaciones» (028).
-      const usuario = await recargarUsuario().catch(() => null);
-      navegar(
-        usuario && !usuario.en_organizacion ? "/perfil" : "/organizaciones",
-        {
-          state: { mensaje: respuesta.mensaje },
-        },
-      );
+      const usuario = await recargarUsuario().catch(() => null)
+      navegar(usuario && !usuario.en_organizacion ? '/perfil' : '/organizaciones', {
+        state: { mensaje: respuesta.mensaje },
+      })
     } catch (errorApi) {
-      setError(errorApi.message);
-      setEnviando(false);
+      setError(errorApi.message)
+      setEnviando(false)
     }
   }
 
   const textoAbandono = unicoMiembro
-    ? "Sos el único miembro: si abandonás la organización, se eliminará."
+    ? 'Sos el único miembro: si abandonás la organización, se eliminará.'
     : esReferente
-      ? "Sos el Referente: para abandonar la organización, primero designá a otro miembro como Referente."
-      : "Vas a dejar de tener acceso a la organización.";
+      ? 'Sos el Referente: para abandonar la organización, primero designá a otro miembro como Referente.'
+      : 'Vas a dejar de tener acceso a la organización.'
 
   return (
     <section className="zona-riesgo-filas" aria-labelledby="titulo-salida">
@@ -537,16 +467,12 @@ function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
         <BotonConfirmar
           texto="Abandonar la organización"
           pregunta={
-            unicoMiembro
-              ? "¿Abandonar y eliminar la organización?"
-              : "¿Abandonar la organización?"
+            unicoMiembro ? '¿Abandonar y eliminar la organización?' : '¿Abandonar la organización?'
           }
           textoConfirmar="Abandonar"
           peligro
           deshabilitado={esReferente && !unicoMiembro}
-          onConfirmar={() =>
-            salir(() => abandonarOrganizacion(organizacion.id, unicoMiembro))
-          }
+          onConfirmar={() => salir(() => abandonarOrganizacion(organizacion.id, unicoMiembro))}
         />
       </div>
 
@@ -555,18 +481,16 @@ function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
           <div>
             <h3>Eliminar la organización</h3>
             <p className="nota">
-              Se eliminan la organización, sus miembros y sus invitaciones, y se
-              avisa por correo a todos los miembros. No se puede deshacer.
+              Se eliminan la organización, sus miembros y sus invitaciones, y se avisa por correo a
+              todos los miembros. No se puede deshacer.
             </p>
           </div>
           {eliminando ? (
             <form
               className="formulario zona-riesgo-filas__confirmar"
               onSubmit={(evento) => {
-                evento.preventDefault();
-                salir(() =>
-                  eliminarOrganizacion(organizacion.id, confirmacion),
-                );
+                evento.preventDefault()
+                salir(() => eliminarOrganizacion(organizacion.id, confirmacion))
               }}
               noValidate
             >
@@ -582,8 +506,8 @@ function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
                   type="button"
                   className="boton boton--fantasma"
                   onClick={() => {
-                    setEliminando(false);
-                    setConfirmacion("");
+                    setEliminando(false)
+                    setConfirmacion('')
                   }}
                 >
                   Cancelar
@@ -609,28 +533,28 @@ function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
         </div>
       )}
     </section>
-  );
+  )
 }
 
 export default function PaginaOrganizacion() {
-  const { id } = useParams();
-  const { state } = useLocation();
-  const { usuario } = useSesion();
-  const cargar = useCallback(() => cargarOrganizacion(id), [id]);
-  const { datos, error, cargando, recargar } = useDatos(cargar);
+  const { id } = useParams()
+  const { state } = useLocation()
+  const { usuario } = useSesion()
+  const cargar = useCallback(() => cargarOrganizacion(id), [id])
+  const { datos, error, cargando, recargar } = useDatos(cargar)
 
-  if (cargando) return <Cargando texto="Cargando la organización…" />;
+  if (cargando) return <Cargando texto="Cargando la organización…" />
   if (error) {
     return (
       <>
         <h1>Organización</h1>
         <Aviso tipo="error">{error.message}</Aviso>
       </>
-    );
+    )
   }
 
-  const { organizacion, miembros, invitaciones } = datos;
-  const esReferente = organizacion.mi_rol === "referente";
+  const { organizacion, miembros, invitaciones } = datos
+  const esReferente = organizacion.mi_rol === 'referente'
 
   return (
     <>
@@ -645,11 +569,10 @@ export default function PaginaOrganizacion() {
         alGuardar={recargar}
       />
       {state?.mensaje && <Aviso tipo="exito">{state.mensaje}</Aviso>}
-      {organizacion.estado === "pendiente" && (
+      {organizacion.estado === 'pendiente' && (
         <Aviso tipo="info">
-          La aseguradora está pendiente de aprobación. El Administrador de la
-          plataforma va a revisar el registro y te avisamos por correo; mientras
-          tanto no podés invitar a tu equipo.
+          La aseguradora está pendiente de aprobación. El Administrador de la plataforma va a
+          revisar el registro y te avisamos por correo; mientras tanto no podés invitar a tu equipo.
         </Aviso>
       )}
 
@@ -662,7 +585,7 @@ export default function PaginaOrganizacion() {
             idUsuario={usuario.id}
             recargar={recargar}
           >
-            {esReferente && organizacion.estado === "activa" && (
+            {esReferente && organizacion.estado === 'activa' && (
               <SeccionInvitaciones
                 organizacion={organizacion}
                 invitaciones={invitaciones}
@@ -682,5 +605,5 @@ export default function PaginaOrganizacion() {
         </div>
       </div>
     </>
-  );
+  )
 }

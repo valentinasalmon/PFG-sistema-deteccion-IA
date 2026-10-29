@@ -7,19 +7,19 @@
  *
  * Realiza: RF20 (CA2); CP-34.
  */
-import { useState } from "react";
-import { Link, useParams } from "react-router";
-import PanelPago from "../componentes/PanelPago.jsx";
-import ResultadoPago from "../componentes/ResultadoPago.jsx";
-import { useSesion } from "../hooks/useSesion.js";
+import { useState } from 'react'
+import { Link, useParams } from 'react-router'
+import PanelPago from '../componentes/PanelPago.jsx'
+import ResultadoPago from '../componentes/ResultadoPago.jsx'
+import { useSesion } from '../hooks/useSesion.js'
 
 export default function PaginaPago() {
-  const { token } = useParams();
-  const { usuario } = useSesion();
-  const [acreditado, setAcreditado] = useState(null);
+  const { token } = useParams()
+  const { usuario } = useSesion()
+  const [acreditado, setAcreditado] = useState(null)
 
   if (acreditado) {
-    const idOrganizacion = acreditado.organizacion.id;
+    const idOrganizacion = acreditado.organizacion.id
     return (
       <div className="registro-ancho">
         <ResultadoPago cobro={acreditado}>
@@ -36,11 +36,11 @@ export default function PaginaPago() {
           </div>
         </ResultadoPago>
       </div>
-    );
+    )
   }
   return (
     <div className="registro-ancho">
       <PanelPago token={token} alAcreditar={setAcreditado} />
     </div>
-  );
+  )
 }
