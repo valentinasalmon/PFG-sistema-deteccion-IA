@@ -15,5 +15,8 @@
 - [x] T10 — Pantalla del caso por etapas (cargar imágenes, análisis con progreso por imagen y capa, informe).
 - [x] T11 — Enlace de carga para la persona afectada (backend, migración, página pública, declaración, auditoría y origen de cada imagen).
 - [x] T12 — Cuenta de demostración (abogada sin rol de Administrador) para mostrar la plataforma.
-- [ ] T13 — Celular: ajustes restantes del frame 8 (las etapas y la galería ya se adaptan).
-- [ ] T14 — Inicio de sesión y registro (frames 9a a 9c). La autora pidió dejarlos para la tanda siguiente.
+
+## Tercera tanda (2026-10-29)
+- [x] T13 — Celular: tarjetas de imagen con los datos técnicos plegados, informe sin la huella en vertical, cabecera y zona de riesgo de la organización apiladas, barra de análisis compacta.
+- [x] T14 — Inicio de sesión (frames 9a y 9c): ventajas y rubros en el panel de marca, «Creá una» bajo el título, «¿La olvidaste?» junto a la contraseña y botón «Mostrar»; banda corta en el celular.
+- [ ] T15 — Registro (frame 9b): se rehace junto con el pago en el registro (032, frames 10a a 10g), que espera la validación de la autora.

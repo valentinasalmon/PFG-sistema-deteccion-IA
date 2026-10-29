@@ -108,6 +108,24 @@ const ASEGURADORAS = [
 ]
 const CATALOGO = { 'GET /api/catalogos/aseguradoras': { cuerpo: { aseguradoras: ASEGURADORAS } } }
 
+describe('inicio de sesión renovado (028)', () => {
+  it('permite ver la contraseña y ofrece recuperarla junto al campo', async () => {
+    simularApi()
+    const { usuario } = renderizarEn('/iniciar-sesion')
+
+    const campo = await screen.findByLabelText('Contraseña')
+    expect(campo).toHaveAttribute('type', 'password')
+    const mostrar = screen.getByRole('button', { name: /Mostrar la contraseña/ })
+    await usuario.click(mostrar)
+    expect(campo).toHaveAttribute('type', 'text')
+    expect(mostrar).toHaveAttribute('aria-pressed', 'true')
+    expect(mostrar).toHaveAccessibleName('Ocultar la contraseña')
+    expect(screen.getByRole('link', { name: '¿La olvidaste?' })).toHaveAttribute('href', '/recuperar-contrasenia')
+    expect(screen.getByRole('link', { name: 'Creá una' })).toHaveAttribute('href', '/registro')
+    expect(screen.getByText('Cadena de custodia sellada')).toBeInTheDocument()
+  })
+})
+
 describe('registro por pasos', () => {
   const RESPUESTA_REGISTRO = {
     'POST /api/cuentas/registro': { estado: 201, cuerpo: { mensaje: 'Te enviamos un correo para verificar tu cuenta.' } },
