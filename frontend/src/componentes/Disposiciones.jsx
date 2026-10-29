@@ -14,18 +14,18 @@
  *
  * Realiza: RF01 a RF07 (interfaz); RNF10 (funcionalidad 022).
  */
-import { useState } from "react";
-import { Link, Outlet } from "react-router";
-import { ContextoAcceso } from "../contextos/contextoAcceso.js";
-import Encabezado from "./Encabezado.jsx";
-import Icono from "./Icono.jsx";
+import { useState } from 'react'
+import { Link, Outlet } from 'react-router'
+import { ContextoAcceso } from '../contextos/contextoAcceso.js'
+import Encabezado from './Encabezado.jsx'
+import Icono from './Icono.jsx'
 
 function Pie() {
   return (
     <footer className="pie">
       <p>
-        La plataforma ofrece indicios para una evaluación preliminar y no emite
-        veredictos. Ante cualquier duda, consultá con un perito especializado.
+        La plataforma ofrece indicios para una evaluación preliminar y no emite veredictos. Ante cualquier
+        duda, consultá con un perito especializado.
       </p>
       <nav aria-label="Información legal" className="pie__enlaces">
         <Link to="/terminos">Términos de Uso</Link>
@@ -34,7 +34,7 @@ function Pie() {
         <Link to="/estado">Estado del sistema</Link>
       </nav>
     </footer>
-  );
+  )
 }
 
 export function DisposicionInterna() {
@@ -51,30 +51,30 @@ export function DisposicionInterna() {
         <Pie />
       </div>
     </div>
-  );
+  )
 }
 
 /** Lo que hace la plataforma, en tres puntos verificables (028, frame 9a). */
 const VENTAJAS = [
   {
-    icono: "buscar",
-    titulo: "Varios análisis por imagen",
-    texto: "Metadatos, credenciales de contenido (C2PA) y niveles de error.",
+    icono: 'buscar',
+    titulo: 'Varios análisis por imagen',
+    texto: 'Metadatos, credenciales de contenido (C2PA) y niveles de error.',
   },
   {
-    icono: "candado",
-    titulo: "Cadena de custodia sellada",
-    texto: "La huella de cada imagen queda registrada en Hedera.",
+    icono: 'candado',
+    titulo: 'Cadena de custodia sellada',
+    texto: 'La huella de cada imagen queda registrada en Hedera.',
   },
   {
-    icono: "documento",
-    titulo: "Informe verificable",
-    texto: "Cualquiera puede comprobar con el QR que el PDF no cambió.",
+    icono: 'documento',
+    titulo: 'Informe verificable',
+    texto: 'Cualquiera puede comprobar con el QR que el PDF no cambió.',
   },
-];
+]
 
 export function DisposicionAcceso() {
-  const [panelPasos, setPanelPasos] = useState(null);
+  const [panelPasos, setPanelPasos] = useState(null)
   return (
     <ContextoAcceso.Provider value={panelPasos}>
       <div className="acceso">
@@ -84,13 +84,10 @@ export function DisposicionAcceso() {
               <img src="/marca/logo-tipografia-blanca.png" alt="evidentIA" />
               <span className="acceso__escaneo" aria-hidden="true" />
             </div>
-            <p className="acceso__eslogan">
-              Tu primera línea de defensa contra el fraude visual
-            </p>
+            <p className="acceso__eslogan">Tu primera línea de defensa contra el fraude visual</p>
             <p className="acceso__bajada">
-              Detectá fotos editadas o generadas con inteligencia artificial
-              antes de que lleguen a un expediente o a la liquidación de un
-              siniestro.
+              Detectá fotos editadas o generadas con inteligencia artificial antes de que lleguen a un
+              expediente o a la liquidación de un siniestro.
             </p>
             <ul className="acceso__ventajas">
               {VENTAJAS.map((ventaja) => (
@@ -100,9 +97,7 @@ export function DisposicionAcceso() {
                   </span>
                   <span>
                     <strong>{ventaja.titulo}</strong>
-                    <span className="acceso__ventaja-texto">
-                      {ventaja.texto}
-                    </span>
+                    <span className="acceso__ventaja-texto">{ventaja.texto}</span>
                   </span>
                 </li>
               ))}
@@ -124,5 +119,5 @@ export function DisposicionAcceso() {
         </div>
       </div>
     </ContextoAcceso.Provider>
-  );
+  )
 }
