@@ -14,7 +14,7 @@
  * Un aviso de éxito que trae instrucciones o enlaces (por ejemplo, la copia de
  * datos) se deja en su lugar con ``flotante={false}``.
  *
- * @param {{tipo?: 'exito' | 'error' | 'info', flotante?: boolean, children: React.ReactNode}} props
+ * @param {{tipo?: 'exito' | 'error' | 'info' | 'alerta', flotante?: boolean, children: React.ReactNode}} props
  */
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
