@@ -7,11 +7,15 @@
  *   a la pantalla que se quería abrir o, si no había ninguna, al inicio. Así,
  *   al iniciar sesión, es esta guarda la que decide el destino (CA7).
  *
- * Realiza: CA12 y CA22 de la funcionalidad 002.
+ * - RutaPortada: en ``/``, sin sesión muestra la portada pública (033) y,
+ *   con sesión, deja pasar al Inicio.
+ *
+ * Realiza: CA12 y CA22 de la funcionalidad 002; CA1 de la 033.
  */
 import { Navigate, Outlet, useLocation } from 'react-router'
 import { useSesion } from '../hooks/useSesion.js'
 import Cargando from '../componentes/Cargando.jsx'
+import PaginaPortada from '../paginas/PaginaPortada.jsx'
 
 const MENSAJES_SALIDA = {
   cierre: 'Cerraste la sesión.',
@@ -36,6 +40,17 @@ export function RutaProtegida() {
       : { desde: ubicacion.pathname, mensaje: MENSAJES_SALIDA[motivoSalida] }
     return <Navigate to="/iniciar-sesion" replace state={estado} />
   }
+  return <Outlet />
+}
+
+export function RutaPortada() {
+  const { usuario, cargando, motivoSalida } = useSesion()
+  if (cargando) return <Cargando texto="Verificando la sesión…" />
+  // Recién cerrada la sesión, el aviso de salida se muestra en el inicio de sesión.
+  if (!usuario && motivoSalida) {
+    return <Navigate to="/iniciar-sesion" replace state={{ mensaje: MENSAJES_SALIDA[motivoSalida] }} />
+  }
+  if (!usuario) return <PaginaPortada />
   return <Outlet />
 }
 
