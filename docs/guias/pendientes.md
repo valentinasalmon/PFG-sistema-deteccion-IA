@@ -1,6 +1,6 @@
 # Lo que falta para llegar al 100 % (al 2026-10-27)
 
-Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm), que es la referencia de seguimiento desde el 2026-10-26 (ver la [bitácora](../bitacora/2026-10-26-reorganizacion-del-tablero.md)). Las tareas nuevas se cargan primero allá. La entrega es antes del 2026-11-19 (CP-16). La prioridad es una propuesta:
+Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm), que es la referencia de seguimiento desde el 2026-10-26 y que el agente actualiza solo desde el 2026-10-29 ([convenciones](tablero-trello.md)) (ver la [bitácora](../bitacora/2026-10-26-reorganizacion-del-tablero.md)). Las tareas nuevas se cargan primero allá. La entrega es antes del 2026-11-19 (CP-16). La prioridad es una propuesta:
 
 - **P1**: imprescindible para la entrega y la defensa.
 - **P2**: suma mucho y conviene hacerlo.

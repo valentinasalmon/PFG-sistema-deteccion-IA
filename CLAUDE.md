@@ -46,6 +46,7 @@ npm run lint && npm run test
 - Agregar una entrada en [docs/bitacora/](docs/bitacora/) con lo realizado, las decisiones y lo pendiente.
 - Si se tomó una decisión de arquitectura, registrarla como ADR en [docs/arquitectura/decisiones/](docs/arquitectura/decisiones/).
 - Agregar a [docs/informe-final/insumos.md](docs/informe-final/insumos.md) todo hallazgo, investigación, problema o decisión que deba quedar en el informe final del proyecto (pedido de la autora, 2026-10-25). Las investigaciones van completas en [docs/investigacion/](docs/investigacion/).
+- **Actualizar el tablero de Trello sin esperar a que se pida** (pedido de la autora, 2026-10-29): al terminar cualquier trabajo, mover las tarjetas afectadas y agregar las que falten, siguiendo [docs/guias/tablero-trello.md](docs/guias/tablero-trello.md).
 
 ## Comandos del flujo guiado por especificaciones
 
