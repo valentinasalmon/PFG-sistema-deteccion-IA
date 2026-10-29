@@ -4,8 +4,8 @@
  * - Pantallas de acceso (solo sin sesión): inicio de sesión, registro y
  *   recuperación de la contraseña.
  * - Pantallas de enlaces recibidos por correo (incluida la invitación a una
- *   organización), la carga desde el celular con un QR (024) y textos
- *   legales: accesibles con o sin sesión.
+ *   organización), la carga desde el celular con un QR (024), el pago del
+ *   plan (032) y textos legales: accesibles con o sin sesión.
  * - Pantallas internas: requieren sesión (CA22). Las de casos y
  *   organizaciones no son para la administradora, y el tablero de
  *   administración es solo para ella (funcionalidad 028).
@@ -35,6 +35,7 @@ import PaginaNuevaOrganizacion from './paginas/PaginaNuevaOrganizacion.jsx'
 import PaginaNuevoCaso from './paginas/PaginaNuevoCaso.jsx'
 import PaginaOrganizacion from './paginas/PaginaOrganizacion.jsx'
 import PaginaOrganizaciones from './paginas/PaginaOrganizaciones.jsx'
+import PaginaPago from './paginas/PaginaPago.jsx'
 import PaginaPerfil from './paginas/PaginaPerfil.jsx'
 import PaginaPrivacidad from './paginas/PaginaPrivacidad.jsx'
 import PaginaRecuperarContrasenia from './paginas/PaginaRecuperarContrasenia.jsx'
@@ -60,6 +61,7 @@ export default function App() {
         <Route path="/confirmar-correo" element={<PaginaConfirmarCorreo />} />
         <Route path="/invitaciones/responder" element={<PaginaInvitacion />} />
         <Route path="/cargar/:token" element={<PaginaCargaCelular />} />
+        <Route path="/pago/:token" element={<PaginaPago />} />
         <Route path="/verificar" element={<PaginaVerificarInforme />} />
         <Route path="/verificar/:codigo" element={<PaginaVerificarInforme />} />
         <Route path="/terminos" element={<PaginaTerminos />} />

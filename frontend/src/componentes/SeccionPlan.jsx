@@ -1,23 +1,31 @@
 /**
- * Plan del espacio de trabajo: límites, consumo del mes y cambio de plan con
- * pago simulado (funcionalidad 014).
+ * Plan del espacio de trabajo: límites, consumo del mes y cambio de plan
+ * (funcionalidad 014).
  *
- * El pago se presenta siempre como simulado: no pide datos de tarjeta ni
- * cobra nada; al confirmar, el plan se aplica de inmediato (RF20 CA2, CP-01).
+ * Desde la funcionalidad 032 el cambio de plan se paga por transferencia: se
+ * elige el plan nuevo, se pasa a la página de pago y el plan rige al
+ * acreditarse. Si el pago del alta está pendiente, se ofrece retomarlo. Con
+ * los lugares del plan ocupados, se sugiere pasar a Profesional.
  * Si el plan no se puede cargar, la sección no se muestra para no estorbar el
  * resto de la pantalla.
  *
- * Realiza: RF20 (CA1, CA2), RF19 (consumo visible).
+ * Realiza: RF20 (CA1, CA2), RF19 (consumo visible); CA8 y CA9 de la 032.
  */
-import { useCallback, useState } from 'react'
-import { cambiarPlan, obtenerPlan } from '../api/organizaciones.js'
-import { obtenerPlanPersonal } from '../api/perfil.js'
-import { useDatos } from '../hooks/useDatos.js'
-import { formatearDia } from '../utilidades/fechas.js'
-import Aviso from './Aviso.jsx'
+import { useCallback, useState } from "react";
+import { useNavigate } from "react-router";
+import {
+  cambiarPlan,
+  obtenerPlan,
+  retomarPago,
+} from "../api/organizaciones.js";
+import { obtenerPlanPersonal } from "../api/perfil.js";
+import { useDatos } from "../hooks/useDatos.js";
+import { formatearDia } from "../utilidades/fechas.js";
+import Aviso from "./Aviso.jsx";
+import SelectorPlan from "./SelectorPlan.jsx";
 
 function Consumo({ etiqueta, usado, limite }) {
-  const porcentaje = Math.min(100, Math.round((usado / limite) * 100))
+  const porcentaje = Math.min(100, Math.round((usado / limite) * 100));
   return (
     <div className="consumo">
       <div className="consumo__texto">
@@ -27,7 +35,7 @@ function Consumo({ etiqueta, usado, limite }) {
         </strong>
       </div>
       <div
-        className={`consumo__barra ${porcentaje >= 90 ? 'consumo__barra--alto' : ''}`}
+        className={`consumo__barra ${porcentaje >= 90 ? "consumo__barra--alto" : ""}`}
         role="meter"
         aria-label={etiqueta}
         aria-valuemin={0}
@@ -37,76 +45,99 @@ function Consumo({ etiqueta, usado, limite }) {
         <span style={{ width: `${porcentaje}%` }} />
       </div>
     </div>
-  )
+  );
 }
 
-function CambioDePlan({ idOrganizacion, plan, alTerminar }) {
-  const [elegido, setElegido] = useState(null)
-  const [confirmando, setConfirmando] = useState(false)
-  const [error, setError] = useState(null)
-  const otros = plan.disponibles.filter((p) => p.codigo !== plan.codigo)
+function CambioDePlan({ idOrganizacion, plan, alCancelar }) {
+  const navegar = useNavigate();
+  const otros = plan.disponibles.filter((p) => p.codigo !== plan.codigo);
+  const [elegido, setElegido] = useState(otros[0]?.codigo);
+  const [confirmando, setConfirmando] = useState(false);
+  const [error, setError] = useState(null);
 
   async function confirmar() {
-    setError(null)
-    setConfirmando(true)
+    setError(null);
+    setConfirmando(true);
     try {
-      const respuesta = await cambiarPlan(idOrganizacion, elegido.codigo)
-      await alTerminar(respuesta.mensaje)
+      const respuesta = await cambiarPlan(idOrganizacion, elegido);
+      navegar(`/pago/${respuesta.pago.token}`);
     } catch (errorApi) {
-      setError(errorApi.message)
-      setConfirmando(false)
+      setError(errorApi.message);
+      setConfirmando(false);
     }
   }
 
   return (
     <div className="cambio-plan">
-      <fieldset className="opciones-tarjeta opciones-tarjeta--dos">
-        <legend className="campo__etiqueta">Elegí el plan nuevo</legend>
-        {otros.map((opcion) => (
-          <label
-            key={opcion.codigo}
-            className={`opcion-tarjeta ${elegido?.codigo === opcion.codigo ? 'opcion-tarjeta--elegida' : ''}`}
+      <h3 id="titulo-paso">Elegí el plan nuevo</h3>
+      <SelectorPlan
+        planes={otros}
+        valor={elegido}
+        onChange={(evento) => setElegido(evento.target.value)}
+        nombre="plan-nuevo"
+      />
+      <p className="nota">
+        El plan nuevo rige cuando se acredita la transferencia. Hasta entonces
+        sigue el plan {plan.nombre}.
+      </p>
+      {error && <Aviso tipo="error">{error}</Aviso>}
+      <div className="acciones-en-linea">
+        <button
+          type="button"
+          className="boton boton--fantasma"
+          onClick={alCancelar}
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          className="boton"
+          disabled={confirmando || !elegido}
+          onClick={confirmar}
+        >
+          {confirmando ? "Preparando el pago…" : "Ir al pago"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PagoPendiente({ idOrganizacion, puedeRetomar }) {
+  const navegar = useNavigate();
+  const [error, setError] = useState(null);
+  const [enviando, setEnviando] = useState(false);
+
+  async function retomar() {
+    setError(null);
+    setEnviando(true);
+    try {
+      const respuesta = await retomarPago(idOrganizacion);
+      navegar(`/pago/${respuesta.pago.token}`);
+    } catch (errorApi) {
+      setError(errorApi.message);
+      setEnviando(false);
+    }
+  }
+
+  return (
+    <Aviso tipo="alerta" flotante={false}>
+      <strong>Falta el pago del plan.</strong> Hasta que se acredite no se
+      pueden invitar miembros ni cargar casos de la organización.
+      {puedeRetomar && (
+        <div className="acciones-en-linea">
+          <button
+            type="button"
+            className="boton boton--lima"
+            onClick={retomar}
+            disabled={enviando}
           >
-            <input
-              type="radio"
-              name="plan"
-              className="opcion-tarjeta__control"
-              checked={elegido?.codigo === opcion.codigo}
-              onChange={() => setElegido(opcion)}
-            />
-            <span className="opcion-tarjeta__titulo">{opcion.nombre}</span>
-            <span className="opcion-tarjeta__descripcion">
-              Hasta {opcion.miembros} miembros · {opcion.analisis_mes} análisis por mes ·{' '}
-              {opcion.imagenes_por_caso} imágenes por caso
-            </span>
-          </label>
-        ))}
-      </fieldset>
-      {elegido && (
-        <div className="pago-simulado" role="region" aria-label="Pago simulado">
-          <p>
-            <strong>Pago simulado.</strong> Este es un proyecto académico: no se piden datos de
-            tarjeta y no se cobra nada. Al confirmar, {elegido.nombre} se aplica de inmediato.
-          </p>
-          <dl className="datos-fijos">
-            <dt>Plan nuevo</dt>
-            <dd>{elegido.nombre}</dd>
-            <dt>Precio</dt>
-            <dd>{elegido.precio}</dd>
-          </dl>
-          {error && <Aviso tipo="error">{error}</Aviso>}
-          <div className="acciones-en-linea">
-            <button type="button" className="boton boton--fantasma" onClick={() => alTerminar(null)}>
-              Cancelar
-            </button>
-            <button type="button" className="boton" disabled={confirmando} onClick={confirmar}>
-              {confirmando ? 'Aplicando…' : 'Confirmar el cambio de plan'}
-            </button>
-          </div>
+            {enviando ? "Preparando…" : "Retomar el pago"}
+          </button>
         </div>
       )}
-    </div>
-  )
+      {error && <span className="campo__error">{error}</span>}
+    </Aviso>
+  );
 }
 
 /**
@@ -114,37 +145,64 @@ function CambioDePlan({ idOrganizacion, plan, alTerminar }) {
  */
 export default function SeccionPlan({ idOrganizacion }) {
   const cargar = useCallback(
-    () => (idOrganizacion ? obtenerPlan(idOrganizacion) : obtenerPlanPersonal()),
+    () =>
+      idOrganizacion ? obtenerPlan(idOrganizacion) : obtenerPlanPersonal(),
     [idOrganizacion],
-  )
-  const { datos: plan, error, recargar } = useDatos(cargar)
-  const [cambiando, setCambiando] = useState(false)
-  const [mensaje, setMensaje] = useState(null)
+  );
+  const { datos: plan, error } = useDatos(cargar);
+  const [cambiando, setCambiando] = useState(false);
 
-  if (error || !plan) return null
-
-  async function terminar(texto) {
-    setCambiando(false)
-    if (texto) {
-      setMensaje(texto)
-      await recargar()
-    }
-  }
+  if (error || !plan) return null;
+  const pagoPendiente = plan.estado_organizacion === "pago_pendiente";
+  const puedeCambiar =
+    plan.puede_cambiar && plan.estado_organizacion === "activa";
+  const lleno =
+    plan.consumo.miembros !== undefined &&
+    plan.consumo.miembros >= plan.limites.miembros;
+  const hayMayor = plan.disponibles?.some(
+    (p) => p.miembros > plan.limites.miembros,
+  );
 
   return (
     <section className="seccion" aria-labelledby="titulo-plan">
       <div className="seccion__cabecera">
         <h2 id="titulo-plan">Plan {plan.nombre}</h2>
-        {plan.puede_cambiar && !cambiando && (
-          <button type="button" className="boton boton--secundario" onClick={() => setCambiando(true)}>
+        {puedeCambiar && !cambiando && (
+          <button
+            type="button"
+            className="boton boton--secundario"
+            onClick={() => setCambiando(true)}
+          >
             Cambiar de plan
           </button>
         )}
       </div>
-      {mensaje && <Aviso tipo="exito">{mensaje}</Aviso>}
+      {pagoPendiente && (
+        <PagoPendiente
+          idOrganizacion={idOrganizacion}
+          puedeRetomar={plan.puede_cambiar}
+        />
+      )}
+      {lleno && hayMayor && puedeCambiar && !cambiando && (
+        <Aviso tipo="info" flotante={false}>
+          Ocupaste todos los lugares del plan. Para sumar más miembros,{" "}
+          <button
+            type="button"
+            className="boton-enlace"
+            onClick={() => setCambiando(true)}
+          >
+            pasá a un plan con más lugares
+          </button>
+          .
+        </Aviso>
+      )}
       <div className="consumos">
         {plan.consumo.miembros !== undefined && (
-          <Consumo etiqueta="Miembros" usado={plan.consumo.miembros} limite={plan.limites.miembros} />
+          <Consumo
+            etiqueta="Miembros"
+            usado={plan.consumo.miembros}
+            limite={plan.limites.miembros}
+          />
         )}
         <Consumo
           etiqueta="Análisis de este mes"
@@ -153,10 +211,16 @@ export default function SeccionPlan({ idOrganizacion }) {
         />
       </div>
       <p className="nota">
-        Hasta {plan.limites.imagenes_por_caso} imágenes por caso. Los análisis se renuevan el{' '}
-        {formatearDia(plan.renovacion)}.
+        Hasta {plan.limites.imagenes_por_caso} imágenes por caso. Los análisis
+        se renuevan el {formatearDia(plan.renovacion)}.
       </p>
-      {cambiando && <CambioDePlan idOrganizacion={idOrganizacion} plan={plan} alTerminar={terminar} />}
+      {cambiando && (
+        <CambioDePlan
+          idOrganizacion={idOrganizacion}
+          plan={plan}
+          alCancelar={() => setCambiando(false)}
+        />
+      )}
     </section>
-  )
+  );
 }

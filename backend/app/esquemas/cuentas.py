@@ -58,6 +58,10 @@ class SolicitudRegistro(EsquemaBase):
     # token de la invitación con la que la persona se suma a una organización.
     id_aseguradora: Optional[int] = None
     token_invitacion: Optional[str] = Field(default=None, max_length=500)
+    # Funcionalidad 032: el abogado que registra su estudio jurídico le da un
+    # nombre; el estudio y la aseguradora eligen el plan que pagan al final.
+    nombre_estudio: Optional[str] = Field(default=None, max_length=150)
+    plan: Optional[Literal["basico", "profesional"]] = None
 
     _politica = field_validator("contrasenia")(_exigir_politica)
 
@@ -85,6 +89,8 @@ class SolicitudRegistroGoogle(EsquemaBase):
     acepta_terminos: bool
     id_aseguradora: Optional[int] = None
     token_invitacion: Optional[str] = Field(default=None, max_length=500)
+    nombre_estudio: Optional[str] = Field(default=None, max_length=150)
+    plan: Optional[Literal["basico", "profesional"]] = None
     # Lo completa el servicio con el correo de Google; no se acepta del navegador.
     correo: Optional[str] = None
 

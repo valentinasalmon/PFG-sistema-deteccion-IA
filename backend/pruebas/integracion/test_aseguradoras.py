@@ -14,12 +14,14 @@ from app.modelos.organizacion import Organizacion
 from app.modelos.usuario import Usuario
 from pruebas.conftest import (
     CONTRASENIA_VALIDA,
+    crear_estudio_pagado,
     ID_EL_SURCO,
     ID_SEGUROS_GALICIA,
     datos_registro,
     entradas_auditoria,
     extraer_token,
     obtener_usuario,
+    pagar,
 )
 
 GALICIA = "SEGUROS GALICIA S.A."
@@ -52,6 +54,7 @@ def _registrar_aseguradora(
         id_aseguradora=id_aseguradora,
     ))
     assert respuesta.status_code == 201, respuesta.get_json()
+    pagar(cliente, respuesta)  # 032: el plan se paga antes de la aprobación
     _verificar(cliente, correos, correo)
     assert _iniciar(cliente, correo).status_code == 200
     return cliente
@@ -304,9 +307,7 @@ def test_invitacion_de_un_estudio_no_fija_el_perfil(
     """La invitación de un estudio jurídico solo precarga el correo: el perfil se elige."""
     registrar_y_verificar()
     _iniciar(cliente, "ana@ejemplo.com")
-    id_org = cliente.post(
-        "/api/organizaciones", json={"nombre": "Estudio", "tipo": "estudio_juridico"}
-    ).get_json()["organizacion"]["id"]
+    id_org = crear_estudio_pagado(cliente, "Estudio")
     cliente.post(f"/api/organizaciones/{id_org}/invitaciones", json={"correo": "eva@ejemplo.com"})
     assert _registrar_con_invitacion(nuevo_cliente(), correos, "eva@ejemplo.com").status_code == 201
     assert obtener_usuario(aplicacion, "eva@ejemplo.com").perfil == "abogado"

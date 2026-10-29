@@ -53,8 +53,9 @@ implementación siguiendo tareas.md, con pruebas
 | 025 | [Informe por rubro, breve y autosuficiente](025-informe-por-rubro/especificacion.md) | 10 | RF44, RF54 | Completado |
 | 026 | [Informe inalterable: huella en Hedera y verificación pública](026-informe-verificable/especificacion.md) | 10 | RF55 | Completado (firma digital opcional) |
 | 027 | [Inicio de sesión y registro con Google](027-inicio-con-google/especificacion.md) | 10 | RF52 | Implementada |
-| 028 | [Mejoras de usabilidad e interfaz](028-mejoras-interfaz/especificacion.md) | 10 | RNF10 | En curso: primera y segunda tanda integradas; tercera (celular e inicio de sesión) implementada; registro con pago en validación (032) |
+| 028 | [Mejoras de usabilidad e interfaz](028-mejoras-interfaz/especificacion.md) | 10 | RNF10 | En curso: primera y segunda tanda integradas; tercera (celular e inicio de sesión) implementada; el registro con pago pasó a la 032 |
 | 029 | [Huella de cada versión desplegada en Hedera ("host tokenizado")](029-version-en-hedera/especificacion.md) | 10 | RF56 | Completado (se activa en el próximo despliegue) |
 | 030 | [Revisión y refuerzo de la seguridad](030-seguridad/especificacion.md) | 10 | RNF01, RNF02, RNF20 | Implementada (se activa en el próximo despliegue) |
+| 032 | [Pago del plan en el registro](032-pago-en-el-registro/especificacion.md) | 10 | RF10, RF19, RF20 | Implementada (cobro simulado con Cresium; precios a confirmar) |
 
 Las fases, los hitos y el ciclo de trabajo están en [docs/guias/hoja-de-ruta.md](../guias/hoja-de-ruta.md).
