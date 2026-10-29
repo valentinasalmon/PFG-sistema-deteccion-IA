@@ -56,5 +56,8 @@ implementación siguiendo tareas.md, con pruebas
 | 028 | [Mejoras de usabilidad e interfaz](028-mejoras-interfaz/especificacion.md) | 10 | RNF10 | En curso: primera tanda implementada, segunda en validación |
 | 029 | [Huella de cada versión desplegada en Hedera ("host tokenizado")](029-version-en-hedera/especificacion.md) | 10 | RF56 | Completado (se activa en el próximo despliegue) |
 | 030 | [Revisión y refuerzo de la seguridad](030-seguridad/especificacion.md) | 10 | RNF01, RNF02, RNF20 | Implementada (se activa en el próximo despliegue) |
+| 031 | Traza de la experiencia de uso con Microsoft Clarity (CP-33) | 10 | RNF08, RNF10 | Pendiente: sin especificar |
+| 032 | Cobro de los planes con Cresium (CP-34) | 10 | RF19, RF20, RF22 | Pendiente: sin especificar; falta confirmar la API del proveedor |
+| 033 | Verificación de identidad de aseguradoras con Identik (CP-35) | 10 | RN36, RF01 | Pendiente: sin especificar |
 
 Las fases, los hitos y el ciclo de trabajo están en [docs/guias/hoja-de-ruta.md](../guias/hoja-de-ruta.md).
