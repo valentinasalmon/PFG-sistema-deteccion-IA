@@ -138,3 +138,9 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - Reglas de negocio nuevas: sin el pago acreditado no se invitan miembros ni se cargan casos de la organización; la aseguradora llega al Administrador recién pagada y, si se rechaza, el pago se devuelve; las invitaciones pendientes ocupan lugar del plan.
   - La landing pública lleva directo al registro con el camino y el plan elegidos (`/registro?tipo=estudio&plan=profesional`).
 - **Portada pública (033, 2026-10-29):** se diseñaron dos propuestas completas (A oscura, B clara) y la autora armó la versión final combinando secciones de cada una: diseño iterativo con la dueña del producto. Para el informe: la portada comunica el problema (imágenes alteradas con IA en siniestros y juicios), la propuesta de valor y el modelo de negocio (plan personal gratuito y planes pagos para organizaciones), siempre con el descargo de que la plataforma ofrece indicios y no veredictos.
+- **Pulido de UX/UI (034, 2026-10-29):** relevamiento de las 15 rutas en computadora y celular, y mockups de 49 pantallas en tres versiones validadas por la autora antes de programar (diseño iterativo con la dueña del producto). Para el informe:
+  - principio rector: ninguna pantalla sin acción ni salida (se documentó un «mapa de salidas»);
+  - el caso pasó de pestañas a un flujo vertical continuo (imágenes → análisis → informe), que refleja el proceso real de trabajo;
+  - acceso a pantalla completa y sin el panel de marca repetido; avisos arriba y diálogos centrados con X, Esc y foco atrapado (accesibilidad, WCAG 2.1 AA);
+  - ilustraciones propias de la marca en lugar de imágenes genéricas;
+  - Microsoft Clarity quedará para que la autora revise el uso antes del lanzamiento (mapas de calor), con enmascarado estricto.
