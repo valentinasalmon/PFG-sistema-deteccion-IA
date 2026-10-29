@@ -4598,3 +4598,200 @@ details.resultado-imagen > .integridad {
     grid-column: 1 / -1;
   }
 }
+
+/* ==========================================================================
+ * Funcionalidad 034: pulido de UX/UI (base común)
+ *
+ * Botones de 40 px (32 los chicos) con estados visibles, campos de 40 px con
+ * anillo de foco, formularios de ancho acotado, avisos flotantes arriba y
+ * diálogos centrados con X. En el celular, los controles miden 44 px.
+ * ========================================================================== */
+.boton {
+  min-height: 40px;
+  border-width: 1.5px;
+  font-weight: 700;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.15s;
+}
+
+.boton:not(.boton--secundario, .boton--fantasma, .boton--secundario-peligro, .boton-enlace) {
+  box-shadow: 0 4px 12px rgb(47 93 168 / 18%);
+}
+
+.boton--lima {
+  box-shadow: 0 4px 12px rgb(164 203 62 / 25%) !important;
+}
+
+.boton:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.boton:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.boton--chico {
+  min-height: 32px;
+  border-radius: 8px;
+}
+
+.boton--grande {
+  min-height: 48px;
+  padding: 0 1.4rem;
+  font-size: 1rem;
+}
+
+.campo__control {
+  min-height: 40px;
+  padding: 0.45rem 0.8rem;
+  border-width: 1.5px;
+  font-size: 0.95rem;
+}
+
+.campo__control:focus {
+  outline: none;
+  border-color: var(--azul);
+  box-shadow: 0 0 0 3px rgb(47 93 168 / 15%);
+}
+
+.formulario {
+  max-width: 40rem;
+}
+
+/* Avisos flotantes: arriba a la derecha, arriba al centro en el celular. */
+.avisos-flotantes {
+  top: 1rem;
+  bottom: auto;
+  right: 1rem;
+}
+
+.aviso--flotante {
+  background: var(--bosque);
+  border-radius: 12px;
+  animation: aviso-bajar 0.3s ease-out;
+}
+
+@keyframes aviso-bajar {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* Diálogo centrado con X, Esc y clic afuera. */
+.dialogo-velo {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(20 32 26 / 45%);
+  animation: dialogo-velo 0.2s ease-out;
+}
+
+.dialogo {
+  width: min(30rem, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: var(--superficie);
+  box-shadow: 0 30px 60px rgb(0 0 0 / 30%);
+  animation: dialogo-aparecer 0.2s ease-out;
+}
+
+.dialogo--ancho {
+  width: min(40rem, 100%);
+}
+
+.dialogo__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.dialogo__cabecera h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.dialogo__bajada {
+  margin: 0.3rem 0 0;
+  color: var(--tinta-2);
+  font-size: 0.9rem;
+}
+
+.dialogo__cerrar {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--tinta-2);
+  cursor: pointer;
+}
+
+.dialogo__cerrar:hover {
+  background: var(--fondo);
+  color: var(--tinta);
+}
+
+.dialogo__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+@keyframes dialogo-velo {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialogo-aparecer {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+body:has(.dialogo-velo) {
+  overflow: hidden;
+}
+
+@media (width <= 48rem) {
+  .boton {
+    min-height: 44px;
+  }
+
+  .boton--chico {
+    min-height: 36px;
+  }
+
+  .campo__control {
+    min-height: 44px;
+  }
+
+  .avisos-flotantes {
+    left: 0.75rem;
+    right: 0.75rem;
+    top: 0.75rem;
+    max-width: none;
+    align-items: stretch;
+  }
+
+  .dialogo__acciones .boton {
+    flex: 1 1 auto;
+  }
+}

@@ -288,7 +288,7 @@ describe('pantalla de la organización como Referente', () => {
     expect(solicitudes.some((s) => s.metodo === 'DELETE')).toBe(false)
 
     await usuario.click(screen.getByRole('button', { name: 'Cancelar invitación' }))
-    await usuario.click(within(screen.getByRole('group', { name: /¿Cancelar la invitación/ })).getByRole('button', { name: 'Cancelar invitación' }))
+    await usuario.click(within(screen.getByRole('dialog', { name: /¿Cancelar la invitación/ })).getByRole('button', { name: 'Cancelar invitación' }))
     expect(await screen.findByText('La invitación fue cancelada.')).toBeInTheDocument()
   })
 
@@ -338,7 +338,7 @@ describe('pantalla de la organización como Referente', () => {
     })
     const { usuario } = renderizarEn('/organizaciones/3')
     await usuario.click(await screen.findByRole('button', { name: 'Desvincular' }))
-    await usuario.click(within(screen.getByRole('group', { name: '¿Desvincular a Beto Paz?' })).getByRole('button', { name: 'Desvincular' }))
+    await usuario.click(within(screen.getByRole('dialog', { name: '¿Desvincular a Beto Paz?' })).getByRole('button', { name: 'Desvincular' }))
     expect(await screen.findByText('El miembro fue desvinculado de la organización.')).toBeInTheDocument()
 
     await usuario.click(screen.getByRole('button', { name: 'Designar Referente' }))
