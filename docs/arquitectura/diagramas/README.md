@@ -1,6 +1,9 @@
 # Diagramas del sistema
 
-Cada diagrama tiene su fuente en Mermaid (`.mmd`), que es la que se edita, y su imagen (`.png`), que es la que va al informe final. Se generaron a partir del código el 2026-10-29.
+Cada diagrama tiene su fuente editable y su imagen (`.png`), que es la que va al informe final. Se generaron a partir del código el 2026-10-29.
+
+- Los diagramas 01 a 03 se dibujan con la identidad visual de evidentIA: la fuente es un script de Python en `fuentes/` que genera el `.svg`.
+- Los diagramas 04 a 06 tienen su fuente en Mermaid (`.mmd`).
 
 | Archivo | Qué muestra | Dónde va en el informe |
 |---|---|---|
