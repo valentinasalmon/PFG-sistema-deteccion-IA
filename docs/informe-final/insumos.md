@@ -131,3 +131,11 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - segunda tanda: menú según el rol, pantalla del caso en tres etapas (carga, análisis con progreso por imagen y capa, informe) y un enlace para que la persona afectada suba sus propias fotos con una declaración expresa (CP-32). Es un aporte para la cadena de custodia: cada imagen registra si vino de la computadora, del celular de quien lleva el caso o de la persona afectada;
   - decisión de diseño: separar el trabajo por etapas redujo una pantalla de unos 8.800 px a una etapa por vez, sin perder información;
   - pendiente: validar con los tutores el texto de la declaración (Ley 25.326).
+
+## Integraciones sugeridas, sin definir (2026-10-29)
+
+- Llegaron tres sugerencias externas para la autora; quedan como cuestiones abiertas con propuesta provisoria y van al informe como **oportunidades** (Capítulo XI) y no como funcionalidades:
+  - **Microsoft Clarity** (CP-33): mapas de calor y grabaciones para mejorar la traza de la experiencia de uso. Tensión con la privacidad: solo en páginas públicas, con enmascaramiento y consentimiento, y con la CSP abierta a sus dominios.
+  - **Pasarela de pago** (CP-34): Mercado Pago o Cresium para cobrar los planes, hoy con pago simulado (CP-01). Se integraría detrás de una interfaz intercambiable, como el sello de tiempo.
+  - **Identik** (CP-35): verificación de identidad de quien registra una aseguradora, como refuerzo de la aprobación manual. Implica datos biométricos (sensibles).
+- Borrador de los capítulos del informe (AE2 y siguientes) redactado en el chat el 2026-10-29 a partir del documento de la autora, este archivo y la bitácora.
