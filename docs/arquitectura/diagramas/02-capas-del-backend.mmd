@@ -1,0 +1,17 @@
+flowchart TB
+  R["Rutas<br/>reciben el pedido HTTP, validan y responden"]
+  S["Servicios<br/>reglas de negocio, permisos y auditoría"]
+  RE["Repositorios<br/>consultas a la base de datos"]
+  M["Modelos<br/>tablas (SQLAlchemy)"]
+  R --> S --> RE --> M
+
+  subgraph Intercambiables["Patrón Strategy"]
+    direction LR
+    CA["Capas de análisis<br/>metadatos · C2PA · ELA · clasificador"]
+    AL["Almacenamiento<br/>local o Amazon S3"]
+    CO["Cola de trabajos<br/>sincrónica, en hilo o RQ"]
+    SE["Sello de tiempo<br/>simulado o Hedera"]
+  end
+  S --> Intercambiables
+
+  T["Tareas en segundo plano<br/>análisis y correos"] --> S
