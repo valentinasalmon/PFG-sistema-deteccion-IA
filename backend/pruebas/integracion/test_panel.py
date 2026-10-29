@@ -14,7 +14,7 @@ from PIL import Image
 from app.extensiones import db
 from app.modelos.caso import Caso
 from app.utilidades.tiempo import ahora_utc
-from pruebas.conftest import crear_estudio
+from pruebas.conftest import crear_estudio, crear_estudio_pagado
 
 CASO = {
     "espacio": "personal", "tipo": "automovilistico", "fecha_hecho": "2026-09-01",
@@ -155,9 +155,7 @@ def test_un_acceso_viejo_no_es_reciente(aplicacion, ana, beto, estudio):
 
 def test_invitaciones_y_transferencias_pendientes(ana, beto):
     """CA1 y CA3: la invitación y la transferencia que esperan respuesta."""
-    id_org = ana.post(
-        "/api/organizaciones", json={"nombre": "Estudio Pérez", "tipo": "estudio_juridico"}
-    ).get_json()["organizacion"]["id"]
+    id_org = crear_estudio_pagado(ana)
     ana.post(f"/api/organizaciones/{id_org}/invitaciones", json={"correo": "beto@ejemplo.com"})
     caso = _crear_caso(ana)
     ana.post(f"/api/casos/{caso['id']}/transferencia", json={"destino": "beto@ejemplo.com"})

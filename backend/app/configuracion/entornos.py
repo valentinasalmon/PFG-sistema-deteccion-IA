@@ -126,15 +126,18 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
     PLANES = {
         "basico": {
             "nombre": "Organización Básico", "miembros": 5, "imagenes_por_caso": 50,
-            "analisis_mes": 100, "precio": "[PRECIO A DEFINIR]",
+            "analisis_mes": 100, "almacenamiento_gb": 20, "precio": None,
         },
         "profesional": {
             "nombre": "Organización Profesional", "miembros": 25, "imagenes_por_caso": 100,
-            "analisis_mes": 500, "precio": "[PRECIO A DEFINIR]",
+            "analisis_mes": 500, "almacenamiento_gb": 100, "precio": None,
         },
     }
     PLAN_PERSONAL = {"nombre": "Personal", "imagenes_por_caso": 20, "analisis_mes": 10}
     PLAN_INICIAL_ORGANIZACION = "basico"
+    # Precio de cada plan: None se muestra «A confirmar» hasta que la autora lo defina (032).
+    # Cobro del plan por transferencia: hoy simulado con la forma de Cresium (CP-34, ADR-0020).
+    PROVEEDOR_PAGOS = "cresium_simulado"
     VIGENCIA_INVITACION = timedelta(days=7)  # RN10
 
     # --- Imágenes (funcionalidad 006) ---
