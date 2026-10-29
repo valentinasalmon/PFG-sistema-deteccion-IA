@@ -4919,3 +4919,167 @@ body:has(.dialogo-velo) {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- El caso como flujo vertical (034) --- */
+.flujo-caso {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flujo-caso__paso {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  column-gap: 1rem;
+  padding-bottom: 1.5rem;
+}
+
+.flujo-caso__paso:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 44px;
+  bottom: 0;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--linea);
+}
+
+.flujo-caso__paso--hecho:not(:last-child)::before {
+  background: var(--verde);
+}
+
+.flujo-caso__paso--actual:not(:last-child)::before {
+  background: linear-gradient(var(--azul), var(--linea));
+}
+
+.flujo-caso__nodo {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 2.5px solid var(--linea-control);
+  border-radius: 50%;
+  background: var(--superficie);
+  color: var(--tinta-2);
+}
+
+.flujo-caso__paso--hecho .flujo-caso__nodo {
+  border-color: var(--verde);
+  background: var(--verde);
+  color: #fff;
+}
+
+.flujo-caso__paso--actual .flujo-caso__nodo {
+  border-color: var(--azul);
+  color: var(--azul);
+  box-shadow: 0 0 0 6px rgb(47 93 168 / 14%);
+  animation: flujo-latido 2s ease-in-out infinite;
+}
+
+@keyframes flujo-latido {
+  50% {
+    box-shadow: 0 0 0 10px rgb(47 93 168 / 6%);
+  }
+}
+
+.flujo-caso__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  min-height: 44px;
+}
+
+.flujo-caso__titulo {
+  font-family: var(--fuente-titulos);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+a.flujo-caso__titulo:hover {
+  color: var(--azul);
+}
+
+.flujo-caso__paso--pendiente .flujo-caso__titulo {
+  color: var(--tinta-2);
+}
+
+.flujo-caso__chip {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--azul-suave);
+  color: var(--info);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.flujo-caso__chip--listo {
+  background: #e3f1e8;
+  color: #1d5a3a;
+}
+
+.flujo-caso__resumen {
+  color: var(--tinta-2);
+  font-size: 0.9rem;
+}
+
+.flujo-caso__cabecera .boton {
+  margin-left: auto;
+}
+
+.flujo-caso__cuerpo {
+  grid-column: 2;
+  min-width: 0;
+  margin-top: 0.5rem;
+}
+
+.flujo-caso__cuerpo > .seccion:first-child,
+.flujo-caso__cuerpo > section:first-child {
+  margin-top: 0;
+}
+
+@media (width <= 48rem) {
+  .flujo-caso__paso {
+    grid-template-columns: 34px minmax(0, 1fr);
+    column-gap: 0.7rem;
+  }
+
+  .flujo-caso__paso:not(:last-child)::before {
+    left: 15px;
+    top: 34px;
+  }
+
+  .flujo-caso__nodo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .flujo-caso__cabecera {
+    min-height: 34px;
+  }
+
+  .flujo-caso__cabecera .boton {
+    margin-left: 0;
+  }
+
+  .flujo-caso__cuerpo {
+    grid-column: 1 / -1;
+  }
+}
+
+/* El título de la sección ya está en el paso del flujo: queda solo para lectores de pantalla. */
+.flujo-caso__cuerpo > section > h2:first-child {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
