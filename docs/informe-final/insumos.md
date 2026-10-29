@@ -139,3 +139,8 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - **Pasarela de pago** (CP-34): Mercado Pago o Cresium para cobrar los planes, hoy con pago simulado (CP-01). Se integraría detrás de una interfaz intercambiable, como el sello de tiempo.
   - **Identik** (CP-35): verificación de identidad de quien registra una aseguradora, como refuerzo de la aprobación manual. Implica datos biométricos (sensibles).
 - Borrador de los capítulos del informe (AE2 y siguientes) redactado en el chat el 2026-10-29 a partir del documento de la autora, este archivo y la bitácora.
+
+## Búsqueda de marca en el INPI (2026-10-29)
+
+- La autora busca «evidentIA» en la base de marcas del INPI. Resultado: «EVIDENTIA» está concedida a un tercero en las clases 9 y 42 (denominativa, vence en 2036), y «EVIDENTIA ESTUDIO PERICIAL», del mismo sector, en la clase 42 (mixta). La denominación no puede registrarse en las clases del servicio (CP-36).
+- Para el Capítulo VIII: la búsqueda de antecedentes cumple su función, porque detecta el conflicto antes de invertir en la marca. Es también una lección aprendida: verificar la disponibilidad del nombre antes de construir la identidad visual.
