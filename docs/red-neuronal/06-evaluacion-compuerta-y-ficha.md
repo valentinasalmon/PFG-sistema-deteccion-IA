@@ -10,7 +10,7 @@ La etapa `evaluar` no usa el modelo de PyTorch: usa el **archivo ONNX exportado*
 |---|---|---|
 | **prueba** | Desempeño con generadores conocidos (los que se usaron para entrenar, con imágenes que no vio) | Siempre |
 | **no_visto** | Desempeño con generadores reservados que nunca vio. Como esa partición solo tiene sintéticas, se comparan contra **las reales de prueba**, que el modelo tampoco vio: así el AUC se puede calcular | Si la receta reserva generadores |
-| **condiciones_reales** | El conjunto propio: ChatGPT, Gemini, Copilot, fotos reales, ediciones, en versión original, WhatsApp y captura | Con `--conjunto-propio /ruta` |
+| **condiciones_reales** | El conjunto propio: ChatGPT, Gemini, Copilot, fotos reales, ediciones, en versión original y captura | Con `--conjunto-propio /ruta` |
 
 ## Qué produce
 
@@ -46,7 +46,7 @@ En el conjunto propio, el nombre de cada archivo empieza con su escena (`01-choq
 
 ### Por variante
 
-En el conjunto propio, las métricas se separan por **original, WhatsApp y captura**. Así se ve cuánto pierde el modelo cuando la foto pasó por una aplicación de mensajería.
+En el conjunto propio, las métricas se separan por **original y captura**. Así se ve cuánto pierde el modelo cuando la persona sube una captura de pantalla en lugar del archivo original.
 
 ## La compuerta de promoción
 

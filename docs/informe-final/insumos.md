@@ -157,3 +157,40 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
 - **Corrección metodológica:** la partición «no visto» solo tiene sintéticas; se evalúa contra las reales de prueba para que el AUC tenga sentido.
 - **Robustez operativa:** el entrenamiento completo saltea las etapas ya terminadas con el mismo manifiesto y guarda los datos preparados en Drive, para tolerar los cortes de Colab sin rehacer horas de trabajo.
 
+## Decisiones de alcance del conjunto propio y relevamiento completo de fuentes (2026-10-30)
+
+### Decisiones de la autora
+
+- **Sin escenas de viviendas** (CP-33): el sistema solo tiene casos automovilísticos y laborales (`TIPOS_CASO` del backend). Se quitaron de la especificación (010, CA12).
+- **Sin la versión de WhatsApp** en el conjunto propio: las fotos de un caso las sube la persona afectada desde el enlace de carga, así que llegan como **original, captura o imagen generada con IA**. Se evalúa en dos versiones (original y captura). La aumentación de entrenamiento sigue incluyendo recompresión JPEG, que cubre capturas, cámaras de celular y fotos que pasaron antes por alguna aplicación. Para el informe: es un ejemplo de cómo el diseño del sistema (el enlace de carga de la funcionalidad 028) cambia las condiciones que hay que medir en el modelo.
+
+### Relevamiento de fuentes: qué se encontró y qué se hizo con cada una
+
+Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-imagenes-sinteticas.md`.
+
+| Fuente | Tipo | Licencia | Decisión | Motivo |
+|---|---|---|---|---|
+| Community Forensics *Small* | Reales y sintéticas, cientos de generadores abiertos | CC BY-NC-SA 4.0 | Entrenamiento (base) | Ya probada en la prueba de concepto |
+| OpenFake | Generadores comerciales recientes | Cambia entre revisiones (CC BY-SA / BY-NC / BY-NC-SA) | Entrenamiento y no vistos | Fijar una revisión: ejemplo de que la licencia es parte de la versión de los datos |
+| Treasure, AIGenImages2026, MLLM-Generated | Generadores de 2025 y 2026 (GPT-image, Midjourney v7, Gemini, FLUX.2) | A verificar | Candidatos a no vistos | Medir generalización a herramientas comerciales nuevas |
+| ShareGPT-4o-Image | Solo GPT-4o | Sin licencia encontrada | Solo si se verifica | CA2: sin licencia verificable no se usa |
+| TrueFake | Imágenes compartidas en redes sociales | A verificar | Ya no es prioritaria | Su aporte era la recompresión de redes, que dejó de medirse |
+| Semi-Truths | Ediciones localizadas | «cc» sin variante | Solo para medir ediciones (CA13) | La capa 4 no es responsable de ediciones parciales |
+| VISION y FODB | Fotos reales de celulares, originales y reenviadas | CC BY-SA 4.0 / a verificar | Descartadas para evaluar | Escenas ajenas al sistema (regla de oro) y la versión WhatsApp ya no se mide |
+| CarDD | Fotos reales de autos dañados | Investigación no comercial | Reales del conjunto propio (escenas 1 a 3) | Misma escena que las generadas; no se usa para entrenar |
+| SCIN (Google y Stanford) | Fotos de piel sacadas por las personas, con tono de piel | Licencia de uso de datos SCIN, investigación | Reales de lesiones (escena 5), repartidas por tono | Único conjunto con fotos caseras de origen verificable y tono etiquetado |
+| Fitzpatrick17k | Fotos clínicas con tipo de piel 1 a 6 | CC BY-NC-SA 3.0 | Complemento para el tono de piel | Origen documentado, anterior a 2022 |
+| MOCS / ConstructionSite | Fotos reales de obras | CC BY-NC 4.0 | Reales de lugares de trabajo (escena 6) | Misma escena que las generadas |
+| SODA | Obras con trabajadores y herramientas | Sin verificar | Quizás, escena 7 | Pendiente de licencia |
+| Heridas de Kaggle, Roboflow y rupeshsah/wound | Heridas por tipo | Varias | **Descartadas** | Fotos juntadas de internet: origen no verificable (podrían ser generadas) y, en un caso, tamaño fijo de 350 × 350 que es un atajo de formato |
+| HOUSE DAMAGE LEVEL y otros de viviendas | Daños en casas | CC BY 4.0 | **Fuera de alcance** | Sin casos de viviendas en el sistema (CP-33) |
+| GenImage, WildFake, Chameleon | Detección de sintéticas | Sin licencia o a pedido | Descartados por ahora | Generadores viejos, sesgo de JPEG documentado o licencia no verificable |
+
+### Hallazgos para el informe
+
+- **Licencias:** casi todas son no comerciales y algunas cambian entre revisiones. Alcanza para el proyecto final; una versión comercial requeriría reentrenar con datos de licencia compatible.
+- **Atajos:** además del atajo de formato («Fake or JPEG?»), existe el **atajo de tema**. Si se suman fotos reales de una escena sin sintéticas de la misma escena, el modelo aprende el tema. Por eso las fotos reales de las escenas del sistema solo se usan para evaluar, y la evaluación se desglosa por escena.
+- **Equidad:** las lesiones se generan y se evalúan en seis tonos de piel (escala de Fitzpatrick aproximada). Si una herramienta se niega a generar con algún tono más que con otros, se registra como hallazgo.
+- **Gobernanza de datos:** antes de usar un conjunto se verifica en su revisión exacta, sin bajarlo entero; lo que no tiene licencia verificable queda excluido y anotado.
+- **Herramienta de generación más probable en casos reales:** Meta AI, porque está dentro de WhatsApp, Instagram y Facebook. Se genera desde la web para tener el archivo original.
+

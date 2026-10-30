@@ -4,7 +4,7 @@
 |---|---|
 | **AdamW** | Optimizador que decide cómo corregir los pesos en cada paso; estándar para reentrenar redes preentrenadas |
 | **AUC ROC** | Área bajo la curva ROC. Probabilidad de que el modelo le dé más puntaje a una sintética que a una real tomadas al azar. 1 = perfecto, 0,5 = azar. Métrica principal |
-| **Aumentación** | Transformaciones al azar (recompresión, reducción, recorte, espejo) aplicadas a cada imagen de entrenamiento para que el modelo resista a WhatsApp y no memorice |
+| **Aumentación** | Transformaciones al azar (recompresión, reducción, recorte, espejo) aplicadas a cada imagen de entrenamiento para que el modelo resista la recompresión y no memorice |
 | **Calibración** | Ajuste para que la probabilidad informada coincida con la frecuencia real de aciertos |
 | **Calidad JPEG** | Nivel de compresión de un JPEG (1 a 100). La exploración la estima a partir de la tabla de cuantización del archivo, para detectar sesgos de formato entre clases |
 | **Capa 4** | La red neuronal, una de las cuatro capas independientes del análisis de cada foto |
@@ -65,5 +65,5 @@
 | **Temperatura** | Número que divide al logit antes de la sigmoide para calibrar; `T > 1` modera la confianza |
 | **timm** | Biblioteca con cientos de redes preentrenadas con la misma interfaz |
 | **Transferencia de aprendizaje** | Partir de una red preentrenada y reentrenarla para otra tarea con menos datos |
-| **Variante** | Versión de una foto del conjunto propio: original, WhatsApp, captura o editada |
+| **Variante** | Versión de una foto del conjunto propio: original, captura o editada |
 | **Versión MAJOR.MINOR.PATCH** | Numeración del modelo: MAJOR cambia el contrato, MINOR reentrena con datos nuevos, PATCH corrige sin datos nuevos |

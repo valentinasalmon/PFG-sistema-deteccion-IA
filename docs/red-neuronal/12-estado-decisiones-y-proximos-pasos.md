@@ -40,6 +40,8 @@ Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento com
 | 2026-10-30 | «No visto» se evalúa contra las reales de prueba | La partición solo tiene sintéticas y sin reales el AUC no se puede calcular | Capítulo 6 |
 | 2026-10-30 | Las fotos reales de escenas del sistema (CarDD, SCIN, MOCS) no se usan para entrenar | No hay sintéticas de esas escenas en el entrenamiento: el modelo aprendería el tema | Capítulo 4 |
 | 2026-10-30 | El cuaderno de entrenamiento saltea etapas terminadas con el mismo manifiesto y guarda los datos preparados en Drive | Pedido de la autora: no rehacer horas de trabajo si Colab corta | Capítulo 8 |
+| 2026-10-30 | Sin escenas de viviendas en el conjunto propio (CP-33) | Decisión de la autora: el sistema solo tiene casos automovilísticos y laborales | Especificación, CA12 |
+| 2026-10-30 | Sin la versión de WhatsApp en el conjunto propio: solo original y captura | Decisión de la autora: las fotos las sube la persona afectada desde el enlace de carga, como original, captura o generada | Capítulo 4 |
 | 2026-10-30 | Plan de entrenamientos: 2 obligatorios (completo y repetición), 1 o 2 de ajuste y 1 o 2 de la demostración de reentrenamiento | Explicado a la autora | Capítulo 8 |
 
 ## Riesgos y cómo se mitigan
@@ -64,4 +66,3 @@ Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento com
 5. **Cuaderno 03:** entrenamiento completo, repetición para reproducibilidad y evaluación en condiciones reales (corre la autora, analiza y documenta el agente).
 6. **Publicación de `1.0.0`** y demostración de reentrenamiento (`1.1.0`).
 7. **Funcionalidad 012:** integrar el modelo en el análisis y el informe.
-8. **CP-33:** confirmar si las viviendas quedan fuera de la especificación (CA12).

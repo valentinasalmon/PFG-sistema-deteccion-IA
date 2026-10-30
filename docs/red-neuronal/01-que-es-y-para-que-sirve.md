@@ -2,7 +2,7 @@
 
 ## El problema
 
-Abogados y aseguradoras reciben fotos como prueba: el choque, la lesión en el trabajo, la máquina rota. evidentIA trabaja con dos tipos de caso: **automovilísticos** y **laborales** (accidentes de trabajo). Hoy cualquiera puede generar una foto falsa en segundos con ChatGPT, Gemini, Copilot o Midjourney. Además, las fotos casi siempre llegan **por WhatsApp**, que las recomprime y les borra los metadatos y las credenciales de contenido (C2PA). En ese escenario, las otras capas del análisis tienen poco para mirar y la red neuronal suele ser **el único indicio disponible**.
+Abogados y aseguradoras reciben fotos como prueba: el choque, la lesión en el trabajo, la máquina rota. evidentIA trabaja con dos tipos de caso: **automovilísticos** y **laborales** (accidentes de trabajo). Hoy cualquiera puede generar una foto falsa en segundos con ChatGPT, Gemini, Copilot o Midjourney. Las fotos llegan al sistema subidas por el profesional o **por la propia persona afectada, desde el enlace de carga del caso**. Puede subir la foto original, una **captura de pantalla** o una imagen hecha con IA. Una captura, o una imagen reenviada antes por una aplicación de mensajería, pierde los metadatos y las credenciales de contenido (C2PA). En ese escenario, las otras capas del análisis tienen poco para mirar y la red neuronal suele ser **el único indicio disponible**.
 
 ## Dónde está en el sistema: la capa 4
 

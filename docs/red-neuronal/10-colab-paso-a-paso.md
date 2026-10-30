@@ -33,7 +33,7 @@ En el cuaderno, ícono de la **llave**: agregar `HF_TOKEN` y `GITHUB_TOKEN` con 
 
 Descargarlos de la carpeta `red_neuronal/cuadernos/` de la rama `funcionalidad/010-red-neuronal` y subirlos en **Archivo → Subir cuaderno**. Cuando un cuaderno cambie en el repositorio, hay que volver a bajarlo.
 
-**Antes del 02:** con la misma cuenta del `HF_TOKEN`, aceptar las condiciones de los conjuntos que lo piden (OpenFake, Community Forensics, CarDD, ConstructionSite). Si no, aparecen como no disponibles.
+**Antes del 02:** con la misma cuenta del `HF_TOKEN`, aceptar las condiciones de los conjuntos que lo piden (OpenFake, Community Forensics, CarDD, ConstructionSite). Si el token es de grano fino, necesita el permiso de lectura de conjuntos con condiciones. Si no, aparecen como no disponibles. Los pasos completos, con los enlaces de cada conjunto y cómo abrir el cuaderno (bajarlo y subirlo, o abrirlo desde GitHub), están en la sección 11 de la [guía paso a paso](../guias/guia-paso-a-paso-conjunto-propio.md#11-aceptar-las-condiciones-en-hugging-face-y-correr-el-cuaderno-de-exploración).
 
 **Antes del 03:** la receta `configuracion/v1.yaml` tiene que estar completada con lo que devolvió el 02. Para publicar en Hugging Face (T33), el `HF_TOKEN` tiene que ser de tipo **Write** y existir el repositorio privado (E03); en el cuaderno, `PUBLICAR_EN_HUGGING_FACE = True`.
 

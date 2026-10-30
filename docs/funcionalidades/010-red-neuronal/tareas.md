@@ -169,7 +169,7 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
   - Verificación: AUC ≥ 0,90 sobre la prueba de generadores conocidos (CA10).
 - [ ] **T31 (manual)** — Verificación de reproducibilidad: repetir el entrenamiento con la misma configuración, manifiesto y semilla.
   - Verificación: diferencia de AUC < 0,01 (CA7).
-- [ ] **T32 (manual)** — Evaluación en condiciones reales: conjunto propio por herramienta y por variante (original, WhatsApp, captura) y fotos editadas (CA12, CA13), y generadores no vistos.
+- [ ] **T32 (manual)** — Evaluación en condiciones reales: conjunto propio por herramienta, por escena y por variante (original y captura; WhatsApp se quitó el 2026-10-30) y fotos editadas (CA12, CA13), y generadores no vistos.
   - Verificación: `metricas.json` con todos los grupos; gráficos respaldados en Drive.
 - [ ] **T33 (manual)** — Exportar, generar la ficha y publicar la versión `1.0.0` en Hugging Face a través de la compuerta. Copiar la ficha al repositorio.
   - Archivos: `red_neuronal/informes/1.0.0/ficha.md` (y gráficos `.png` livianos)

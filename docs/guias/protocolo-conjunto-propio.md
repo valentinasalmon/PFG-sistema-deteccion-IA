@@ -1,6 +1,6 @@
 # Protocolo del conjunto propio
 
-Guía para que la autora genere y reúna las imágenes del **conjunto propio**. Son fotos creadas con las herramientas que usaría alguien para falsificar una prueba, fotos reales **de las mismas escenas** y fotos reales editadas con IA, cada una en tres versiones. Sirve para medir la red neuronal **en las condiciones reales del sistema** (funcionalidad 010, CA12 y CA13; tareas T26 y E04).
+Guía para que la autora genere y reúna las imágenes del **conjunto propio**. Son fotos creadas con las herramientas que usaría alguien para falsificar una prueba, fotos reales **de las mismas escenas** y fotos reales editadas con IA, cada una en dos versiones (original y captura). Sirve para medir la red neuronal **en las condiciones reales del sistema** (funcionalidad 010, CA12 y CA13; tareas T26 y E04).
 
 > **Cómo hacerlo, paso a paso:** la [guía paso a paso del conjunto propio](guia-paso-a-paso-conjunto-propio.md) tiene la **lista maestra de 90 prompts ya armados y numerados**, las versiones de cada prompt, las carpetas, la rutina con cada imagen, las fotos reales a sacar y cómo buscar conjuntos de datos. Este protocolo tiene las reglas.
 
@@ -13,7 +13,7 @@ Guía para que la autora genere y reúna las imágenes del **conjunto propio**. 
 Por eso:
 - cada escena tiene su par: generadas **y** reales del mismo tipo (un choque generado se compara con choques reales);
 - la **diversidad de las personas** (tono de piel, edad, sexo) se cuida igual en las generadas y en las reales;
-- los conjuntos de fotos reales «generales» (por ejemplo, VISION) **no** se usan para evaluar. Como mucho sirven para entrenar la resistencia a WhatsApp, siempre que no desbalanceen los temas.
+- los conjuntos de fotos reales «generales» (por ejemplo, VISION) **no** se usan para evaluar. Como mucho sirven para entrenar la resistencia a la recompresión, siempre que no desbalanceen los temas.
 
 ## Herramientas (versiones gratuitas)
 
@@ -22,7 +22,7 @@ Por eso:
 | ChatGPT | Gratis | `chatgpt` | Pocas imágenes por día: repartirlas en varios días |
 | Gemini | Suscripción | `gemini` | La más cómoda para generar volumen; también edita fotos |
 | Copilot (Microsoft Designer) | Gratis | `copilot` | Imágenes cuadradas o apaisadas |
-| Meta AI (dentro de WhatsApp, Instagram o meta.ai) | Gratis | `meta-ai` | Muy realista y **muy probable en casos reales**, porque está dentro de WhatsApp |
+| Meta AI (dentro de WhatsApp, Instagram o meta.ai) | Gratis | `meta-ai` | Muy realista y **muy probable en casos reales**, porque está al alcance de cualquiera dentro de WhatsApp. Generar desde **meta.ai en la web** para descargar el archivo original |
 | Grok (X) | Gratis, con límite | `grok` | Opcional |
 | Otras gratuitas (Ideogram, Leonardo, Adobe Firefly) | Créditos gratis | `ideogram`, `leonardo`, `firefly` | Opcionales, para sumar variedad |
 
@@ -40,7 +40,7 @@ Anotar en la planilla, para cada imagen, **la herramienta, el modelo que dice us
 | **Fotos reales de las mismas escenas** | 200 | 300 |
 | **Fotos reales editadas con IA** (Gemini, ChatGPT, Meta AI) | 50 | 80 |
 
-Cada imagen se guarda en **tres versiones** (original, WhatsApp y captura). No hace falta hacerlo todo de una vez: se va sumando y se evalúa con lo que haya.
+Cada imagen se guarda en **dos versiones** (original y captura). No hace falta hacerlo todo de una vez: se va sumando y se evalúa con lo que haya.
 
 ## Las escenas
 
@@ -124,12 +124,13 @@ Cada prompt tiene **[partes entre corchetes]** que se cambian en cada imagen, el
 - no usar fotos de casos reales de clientes;
 - anotar el modelo del celular en la planilla.
 
-## Las tres versiones de cada imagen
+## Las dos versiones de cada imagen
+
+La versión de WhatsApp se quitó el 2026-10-30 (decisión de la autora): las fotos de un caso las sube la persona afectada desde el enlace de carga, así que llegan como original, como captura o generadas con IA.
 
 | Variante | Cómo se hace |
 |---|---|
 | **original** | El archivo tal cual lo descargaste de la herramienta o lo sacó el celular. Sin abrirlo ni guardarlo en ningún editor. Meta AI se usa desde **meta.ai en la web**: la imagen generada dentro de WhatsApp ya llega comprimida |
-| **whatsapp** | Enviarlo **como foto** (no como documento) a tu chat «Mensajes para mí» de WhatsApp y descargar la versión recibida |
 | **captura** | Abrir la imagen en pantalla completa en el celular y sacar una **captura de pantalla** |
 
 ## ¿Se comprimen las imágenes al guardarlas?
@@ -139,7 +140,7 @@ Cada prompt tiene **[partes entre corchetes]** que se cambian en cada imagen, el
 | Comprime | Cómo evitarlo |
 |---|---|
 | **Google Fotos** en calidad «Ahorro de almacenamiento» | Para pasar fotos del celular, usar la aplicación de **Drive** (botón **+ → Subir**) o un cable USB, no Google Fotos |
-| **WhatsApp, Telegram, Instagram** | Solo se usan a propósito para la variante **whatsapp** |
+| **WhatsApp, Telegram, Instagram** | No pasar las imágenes por ninguna aplicación de mensajería |
 | Abrir la imagen en un editor y «Guardar» o «Guardar como» | No abrirla en ningún editor: descargarla y moverla |
 | Algunos clientes de correo y la opción «enviar en tamaño reducido» | No pasar las imágenes por correo |
 | La copia que muestra el chat de ChatGPT, Gemini o Copilot al hacer clic derecho → «Copiar imagen» | Usar siempre el botón **Descargar** de la herramienta |
@@ -155,26 +156,26 @@ Mi unidad/
 └── evidentia/                        ← carpeta privada, sin compartir
     ├── conjunto-propio/
     │   ├── sintetica/
-    │   │   ├── chatgpt/              original/  whatsapp/  captura/
-    │   │   ├── gemini/               original/  whatsapp/  captura/
-    │   │   ├── copilot/              original/  whatsapp/  captura/
-    │   │   ├── meta-ai/              original/  whatsapp/  captura/
-    │   │   ├── grok/                 original/  whatsapp/  captura/
-    │   │   ├── gemini-edicion/       original/  whatsapp/  captura/
-    │   │   ├── chatgpt-edicion/      original/  whatsapp/  captura/
-    │   │   └── meta-ai-edicion/      original/  whatsapp/  captura/
+    │   │   ├── chatgpt/              original/  captura/
+    │   │   ├── gemini/               original/  captura/
+    │   │   ├── copilot/              original/  captura/
+    │   │   ├── meta-ai/              original/  captura/
+    │   │   ├── grok/                 original/  captura/
+    │   │   ├── gemini-edicion/       original/  captura/
+    │   │   ├── chatgpt-edicion/      original/  captura/
+    │   │   └── meta-ai-edicion/      original/  captura/
     │   └── real/
-    │       ├── celular-propio/       original/  whatsapp/  captura/
-    │       ├── conocidos/            original/  whatsapp/  captura/
-    │       ├── cardd/                original/  whatsapp/  captura/
-    │       ├── scin/                 original/  whatsapp/  captura/
-    │       └── obras/                original/  whatsapp/  captura/
+    │       ├── celular-propio/       original/  captura/
+    │       ├── conocidos/            original/  captura/
+    │       ├── cardd/                original/  captura/
+    │       ├── scin/                 original/  captura/
+    │       └── obras/                original/  captura/
     ├── planilla-conjunto-propio      ← Google Sheets
     └── prueba_de_concepto/           ← lo que ya generó Colab
 ```
 
 - La estructura es **fija**: el pipeline la lee como `<clase>/<generador>/<variante>/<archivo>`. Una herramienta nueva es una carpeta nueva dentro de `sintetica/`.
-- **Nombre de archivo:** `<escena>-<número>.<extensión>`, por ejemplo `01-choque-007.png`. La misma imagen lleva **el mismo nombre en sus tres variantes**.
+- **Nombre de archivo:** `<escena>-<número>.<extensión>`, por ejemplo `01-choque-007.png`. La misma imagen lleva **el mismo nombre en sus dos variantes**.
 - Sin espacios, tildes ni eñes en los nombres.
 - No guardar nada de esto en el repositorio ni en otra nube.
 
@@ -182,10 +183,10 @@ Mi unidad/
 
 La planilla completa, con el número y la versión del prompt, está en la sección 8 de la [guía paso a paso](guia-paso-a-paso-conjunto-propio.md#8-la-planilla). Ejemplo:
 
-| Archivo | Carpeta | N.° de prompt | Versión del prompt | Escena | Herramienta y modelo | Fecha | Tono de piel | Foto de origen | ¿WhatsApp? | ¿Captura? | Observaciones |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 01-choque-007 | gemini | 7 | v1 | 01 | Gemini 2.5 Flash Image | 2026-11-02 | — | — | sí | sí | |
-| 05-lesion-041 | meta-ai | 41 | v2 | 05 | Meta AI | 2026-11-02 | trigueña | — | sí | sí | Se negó con v1 |
+| Archivo | Carpeta | N.° de prompt | Versión del prompt | Escena | Herramienta y modelo | Fecha | Tono de piel | Foto de origen | ¿Captura? | Observaciones |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 01-choque-007 | gemini | 7 | v1 | 01 | Gemini 2.5 Flash Image | 2026-11-02 | — | — | sí | |
+| 05-lesion-041 | meta-ai | 41 | v2 | 05 | Meta AI | 2026-11-02 | trigueña | — | sí | Se negó con v1 |
 
 ## Reglas de privacidad
 

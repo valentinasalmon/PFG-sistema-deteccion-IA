@@ -52,7 +52,7 @@ Este capítulo registra **cada corrida** del modelo, de la más nueva a la más 
 - **la calibración funciona:** bajó el error de calibración a menos de la mitad.
 
 **Lo que no demuestra:**
-- **el desempeño real.** El AUC de 0,985 es optimista: hay una sola fuente, no hay generadores reservados, no hay generadores comerciales (ChatGPT, Gemini) y no hay fotos pasadas por WhatsApp. Esas condiciones se miden en el entrenamiento completo con el conjunto propio. **No hay que presentar estas cifras como el desempeño del sistema.**
+- **el desempeño real.** El AUC de 0,985 es optimista: hay una sola fuente, no hay generadores reservados, no hay generadores comerciales (ChatGPT, Gemini) y no hay capturas de pantalla ni fotos de las escenas del sistema. Esas condiciones se miden en el entrenamiento completo con el conjunto propio. **No hay que presentar estas cifras como el desempeño del sistema.**
 
 **La tabla por generador no es concluyente.** Con unas 3 imágenes por generador en la prueba, las métricas por generador son ruido estadístico. Igual aparecen pistas:
 - **BigGAN**, el único GAN clásico, fue el más difícil (exhaustividad 0,62);

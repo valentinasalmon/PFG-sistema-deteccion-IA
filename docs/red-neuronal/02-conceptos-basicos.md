@@ -65,7 +65,7 @@ Si se entrena demasiado, la red empieza a **memorizar** las imágenes de entrena
 
 ## Aumentación de datos
 
-Durante el entrenamiento, cada imagen se modifica un poco al azar cada vez que se usa: se achica, se recomprime en JPEG, se recorta en otra zona o se espeja. Así la red aprende patrones que **sobreviven a WhatsApp** y no depende de detalles irrelevantes.
+Durante el entrenamiento, cada imagen se modifica un poco al azar cada vez que se usa: se achica, se recomprime en JPEG, se recorta en otra zona o se espeja. Así la red aprende patrones que **sobreviven a la recompresión y a las capturas** y no depende de detalles irrelevantes.
 
 ## Métricas
 

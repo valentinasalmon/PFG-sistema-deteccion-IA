@@ -1,6 +1,6 @@
 # Guía paso a paso del conjunto propio
 
-Todo lo que tiene que hacer la autora con las imágenes del conjunto propio, en orden: qué generar, con qué prompt exacto, dónde guardarlo, cómo hacer las tres versiones, qué fotos reales sacar y cómo buscar conjuntos de datos para que el agente los evalúe.
+Todo lo que tiene que hacer la autora con las imágenes del conjunto propio, en orden: qué generar, con qué prompt exacto, dónde guardarlo, cómo hacer las dos versiones, qué fotos reales sacar y cómo buscar conjuntos de datos para que el agente los evalúe.
 
 Las **reglas** (por qué se hace así, privacidad, qué no se hace nunca) están en el [protocolo del conjunto propio](protocolo-conjunto-propio.md). Esta guía es el **cómo**. Si algo de acá contradice el protocolo, manda el protocolo y hay que avisar al agente.
 
@@ -14,9 +14,10 @@ Las **reglas** (por qué se hace así, privacidad, qué no se hace nunca) están
 | 2 | Generar las imágenes con la **lista maestra** (sección 5) en cada herramienta | 90 prompts por herramienta; empezar por los 40 de **prioridad A** | `sintetica/<herramienta>/original/` | 2 a 3 min por imagen |
 | 3 | Editar fotos reales con IA (sección 6) | 20 ediciones por herramienta (Gemini, ChatGPT, Meta AI) | `sintetica/<herramienta>-edicion/original/` | 3 min por imagen |
 | 4 | Sacar fotos reales propias (sección 7) | 30 a 50, de a poco | `real/celular-propio/original/` | Al pasar por la calle |
-| 5 | Hacer las versiones **WhatsApp** y **captura** de todo lo anterior (sección 4) | Todas | `.../whatsapp/` y `.../captura/` | 1 min por imagen, en tandas |
+| 5 | Hacer la versión **captura** de todo lo anterior (sección 4) | Todas | `.../captura/` | 1 min por imagen, en tandas |
 | 6 | Completar la planilla | Una fila por imagen | `evidentia/planilla-conjunto-propio` | Al terminar cada tanda |
 | 7 | Buscar conjuntos de datos y pasarlos al chat (sección 9) | Cuando aparezcan | Chat con el agente | 5 min por conjunto |
+| 8 | Aceptar las condiciones en Hugging Face y correr el cuaderno de exploración (sección 11) | Una vez, **antes que lo demás** | Colab, en CPU | 15 min + 10 a 20 min de ejecución |
 
 No hace falta terminar todo: **con la prioridad A de dos herramientas** ya se puede correr una primera evaluación. Se va sumando.
 
@@ -30,24 +31,24 @@ Mi unidad/
     ├── planilla-conjunto-propio            ← Hoja de cálculo de Google (sección 8)
     └── conjunto-propio/
         ├── sintetica/
-        │   ├── chatgpt/            original/  whatsapp/  captura/
-        │   ├── gemini/             original/  whatsapp/  captura/
-        │   ├── copilot/            original/  whatsapp/  captura/
-        │   ├── meta-ai/            original/  whatsapp/  captura/
-        │   ├── grok/               original/  whatsapp/  captura/    (opcional)
-        │   ├── chatgpt-edicion/    original/  whatsapp/  captura/
-        │   ├── gemini-edicion/     original/  whatsapp/  captura/
-        │   └── meta-ai-edicion/    original/  whatsapp/  captura/
+        │   ├── chatgpt/            original/  captura/
+        │   ├── gemini/             original/  captura/
+        │   ├── copilot/            original/  captura/
+        │   ├── meta-ai/            original/  captura/
+        │   ├── grok/               original/  captura/    (opcional)
+        │   ├── chatgpt-edicion/    original/  captura/
+        │   ├── gemini-edicion/     original/  captura/
+        │   └── meta-ai-edicion/    original/  captura/
         └── real/
-            ├── celular-propio/     original/  whatsapp/  captura/
-            ├── conocidos/          original/  whatsapp/  captura/    (opcional)
-            ├── cardd/              original/  whatsapp/  captura/    (la llena el agente, sección 7)
-            ├── scin/               original/  whatsapp/  captura/    (ídem)
-            └── obras/              original/  whatsapp/  captura/    (ídem)
+            ├── celular-propio/     original/  captura/
+            ├── conocidos/          original/  captura/    (opcional)
+            ├── cardd/              original/  captura/    (la llena el agente, sección 7)
+            ├── scin/               original/  captura/    (ídem)
+            └── obras/              original/  captura/    (ídem)
 ```
 
 - Las carpetas que no uses pueden quedar vacías o no existir.
-- Una herramienta nueva (por ejemplo, Ideogram) es una carpeta nueva dentro de `sintetica/` con sus tres subcarpetas.
+- Una herramienta nueva (por ejemplo, Ideogram) es una carpeta nueva dentro de `sintetica/` con sus dos subcarpetas.
 - La **foto real original** que usaste para una edición va en `real/celular-propio/` (o `real/conocidos/`), con su propio nombre.
 
 ## 3. Cómo se llama cada archivo
@@ -58,7 +59,7 @@ Mi unidad/
 
 - El **número** es el **N.° de prompt** de la lista maestra, con tres cifras. Así, `05-lesion-041.png` es el prompt 41 en **todas** las herramientas: la misma escena generada por ChatGPT, Gemini, Copilot y Meta AI, cada una en su carpeta. Eso permite comparar las herramientas con el mismo contenido.
 - La extensión es **la que trae el archivo al descargarlo** (`.png`, `.jpg`, `.webp`). No convertir.
-- Las tres versiones llevan **el mismo nombre**, cada una en su carpeta (`original/01-choque-007.png`, `whatsapp/01-choque-007.jpg`, `captura/01-choque-007.png`). La extensión puede cambiar entre versiones: está bien.
+- Las dos versiones llevan **el mismo nombre**, cada una en su carpeta (`original/01-choque-007.png`, `captura/01-choque-007.png`). La extensión puede cambiar entre versiones: está bien.
 - Si una herramienta da dos imágenes para un prompt, guardar **solo la primera**.
 - Ediciones: la escena y un número del **201 al 220**, según la tabla de la sección 6 (por ejemplo, `01-choque-201.png` es la edición E01). Van en otra numeración para no chocar con la lista maestra.
 - Fotos reales propias: la escena y un número desde el 301 (`01-choque-301.jpg`, `06-lugar-trabajo-302.jpg`).
@@ -93,17 +94,9 @@ Siempre se empieza con **v1**, el texto tal cual de la lista. Solo si hace falta
 
 Si con v3 tampoco sale creíble, anotarlo en «Observaciones» y pasar al siguiente prompt. **No** se descartan imágenes porque «se notan falsas»: también hay que medir esas.
 
-### 4.3 Versión WhatsApp
+### 4.3 Versión captura
 
-Se hace **en tandas** (de a 20 o 30):
-
-1. En el celular, abrir el chat **«Mensajes para mí»** (en WhatsApp: tu propio contacto, «Tú»).
-2. Pasar las originales al celular con la aplicación de **Drive** (descargarlas desde Drive), **no** con Google Fotos.
-3. Enviarlas **como foto** (ícono de la cámara o galería), **no** como documento, y con la **calidad de fotos en «Estándar»** (*Ajustes → Almacenamiento y datos → Calidad de subida de fotos*), que es lo que usa la mayoría de la gente.
-4. Abrir cada foto recibida → **⋮ → Guardar** (o se guarda sola en la carpeta *WhatsApp Images*).
-5. Subirlas a `whatsapp/` desde la aplicación de Drive y **renombrarlas** con el mismo nombre de la original (WhatsApp les cambia el nombre a `IMG-2026...-WA0001.jpg`). Conviene enviarlas en el mismo orden que la lista para no confundirse.
-
-### 4.4 Versión captura
+> **Sin versión de WhatsApp** (decisión de la autora, 2026-10-30): las fotos de un caso las sube la persona afectada desde el enlace de carga, así que llegan como original, como captura o generadas con IA. Si ya tenías alguna versión de WhatsApp hecha, guardala aparte: no estorba, pero no hace falta seguir.
 
 1. En el celular, abrir la original en **pantalla completa** (desde Drive o la galería).
 2. Sacar una **captura de pantalla** sin hacer zoom.
@@ -264,13 +257,13 @@ Con tu celular, **sin modo retrato, sin filtros, sin HDR forzado** (dejá la cá
 | 6 | Autos, brazos, rodillas y escaleras **sanos** para las ediciones de la sección 6 | — | 10 |
 | 7 | (Opcional) Moretones, raspones o yesos de conocidos, con consentimiento y sin cara | 05 | Los que haya |
 
-Nombre: escena + número desde el 301 (`01-choque-301.jpg`). Pasarlas a Drive con la **aplicación de Drive** o por cable, nunca por Google Fotos ni WhatsApp.
+Nombre: escena + número desde el 301 (`01-choque-301.jpg`). Pasarlas a Drive con la **aplicación de Drive** o por cable, nunca por Google Fotos ni por una aplicación de mensajería.
 
 ### 7.2 Las que salen de conjuntos públicos (las prepara el agente)
 
 | Carpeta | De dónde | Escenas | Qué hacés vos |
 |---|---|---|---|
-| `real/cardd/` | CarDD: autos dañados reales | 01 a 03 | Aceptar las condiciones del conjunto en Hugging Face. El agente prepara una celda que copia una muestra de 150 a tu Drive; vos hacés las versiones WhatsApp y captura |
+| `real/cardd/` | CarDD: autos dañados reales | 01 a 03 | Aceptar las condiciones del conjunto en Hugging Face. El agente prepara una celda que copia una muestra de 150 a tu Drive; vos hacés las capturas |
 | `real/scin/` | SCIN: fotos de piel sacadas por las propias personas, con el tono de piel etiquetado | 05 | Ídem (25 por tono de piel) |
 | `real/obras/` | MOCS: obras reales | 06 | Aceptar las condiciones en Hugging Face (ConstructionSite); ídem |
 
@@ -280,11 +273,11 @@ Esto se hace después de correr el cuaderno de exploración, que confirma que es
 
 Hoja de cálculo de Google `evidentia/planilla-conjunto-propio`, con estas columnas (una fila por imagen, no por versión):
 
-| Archivo | Carpeta | N.° de prompt | Versión del prompt | Escena | Herramienta y modelo | Fecha | Tono de piel | Foto de origen (ediciones) | ¿WhatsApp? | ¿Captura? | Observaciones |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 01-choque-007 | gemini | 7 | v1 | 01 | Gemini 2.5 Flash Image | 2026-11-02 | — | — | sí | sí | |
-| 05-lesion-041 | chatgpt | 41 | v2 | 05 | ChatGPT (GPT-image) | 2026-11-03 | trigueña | — | sí | no | Se negó con v1 |
-| 01-choque-201 | gemini-edicion | E01 | — | 01 | Gemini | 2026-11-04 | — | 01-choque-301 | sí | sí | |
+| Archivo | Carpeta | N.° de prompt | Versión del prompt | Escena | Herramienta y modelo | Fecha | Tono de piel | Foto de origen (ediciones) | ¿Captura? | Observaciones |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 01-choque-007 | gemini | 7 | v1 | 01 | Gemini 2.5 Flash Image | 2026-11-02 | — | — | sí | |
+| 05-lesion-041 | chatgpt | 41 | v2 | 05 | ChatGPT (GPT-image) | 2026-11-03 | trigueña | — | no | Se negó con v1 |
+| 01-choque-201 | gemini-edicion | E01 | — | 01 | Gemini | 2026-11-04 | — | 01-choque-301 | sí | |
 
 - **Herramienta y modelo:** lo que diga la herramienta (por ejemplo, en Gemini aparece el nombre del modelo). Si no lo dice, solo la herramienta.
 - **Tono de piel:** el del prompt en las generadas; en las reales, el que veas, con las mismas seis palabras.
@@ -322,7 +315,77 @@ Con eso el agente responde: **si sirve**, **qué aporta que no tengamos**, **su 
 
 ## 10. Cuándo avisar al agente
 
-- Al terminar la **prioridad A de dos herramientas** con sus tres versiones: ya se puede correr la primera evaluación en condiciones reales.
+- Al terminar la **prioridad A de dos herramientas** con sus dos versiones: ya se puede correr la primera evaluación en condiciones reales.
 - Si una herramienta se niega sistemáticamente con alguna escena o algún tono de piel.
 - Si encontrás un conjunto de datos (sección 9).
 - Si algo de esta guía no se entiende: se corrige la guía.
+
+## 11. Aceptar las condiciones en Hugging Face y correr el cuaderno de exploración
+
+Es lo primero que hay que hacer: con su resultado el agente completa la receta v1 y prepara las fotos reales de CarDD, SCIN y MOCS.
+
+### 11.1 Aceptar las condiciones de cada conjunto
+
+Varios conjuntos de Hugging Face piden aceptar condiciones antes de dejar bajarlos. Se aceptan **una sola vez**, con **la misma cuenta del `HF_TOKEN`** que está en los secretos de Colab.
+
+1. Entrar a [huggingface.co](https://huggingface.co) con tu cuenta.
+2. Abrir cada enlace de la tabla. Si arriba aparece un recuadro del estilo *«You need to agree to share your contact information to access this dataset»*, completar lo que pida (nombre, institución: **Universidad / proyecto final de carrera**, uso: **investigación académica, no comercial**) y tocar **Agree and access repository**.
+3. Si después dice *«Your request is pending»*, la aprobación es manual: avisame cuál y seguimos con los demás.
+4. Si no aparece ningún recuadro, no hay nada que aceptar.
+
+| Conjunto | Enlace | ¿Pide aceptar? |
+|---|---|---|
+| Community Forensics *Small* | [OwensLab/CommunityForensics-Small](https://huggingface.co/datasets/OwensLab/CommunityForensics-Small) | Sí (ya lo aceptaste para la prueba de concepto) |
+| OpenFake | [ComplexDataLab/OpenFake](https://huggingface.co/datasets/ComplexDataLab/OpenFake) | Probablemente |
+| Treasure | [ThreeLiu/Treasure](https://huggingface.co/datasets/ThreeLiu/Treasure) | Verificar |
+| MLLM-Generated-Image-Detection | [zr-zhang/MLLM-Generated-Image-Detection-Dataset](https://huggingface.co/datasets/zr-zhang/MLLM-Generated-Image-Detection-Dataset) | Verificar |
+| ShareGPT-4o-Image | [FreedomIntelligence/ShareGPT-4o-Image](https://huggingface.co/datasets/FreedomIntelligence/ShareGPT-4o-Image) | Verificar |
+| Semi-Truths | [semi-truths/Semi-Truths](https://huggingface.co/datasets/semi-truths/Semi-Truths) | Verificar |
+| CarDD | [harpreetsahota/CarDD](https://huggingface.co/datasets/harpreetsahota/CarDD) | Verificar |
+| ConstructionSite (MOCS) | [LouisChen15/ConstructionSite](https://huggingface.co/datasets/LouisChen15/ConstructionSite) | Sí |
+
+**Si el `HF_TOKEN` es de grano fino** (*fine-grained*), en [Settings → Access Tokens](https://huggingface.co/settings/tokens) → el token → **Edit permissions**, tiene que tener tildado *«Read access to contents of all public gated repos you can access»*. Sin eso, aunque aceptes las condiciones, el cuaderno ve el conjunto como no disponible (error 401 o 403). Un token clásico de tipo **Read** ya lo incluye.
+
+### 11.2 Abrir el cuaderno en Colab
+
+Es un cuaderno **nuevo** en Colab: no se toca el de la prueba de concepto. Hay dos formas; la primera es la más simple.
+
+**Forma A: bajarlo y subirlo (recomendada)**
+
+1. En GitHub, entrar al repositorio, elegir la rama **`funcionalidad/010-red-neuronal`** (botón de ramas arriba a la izquierda) y abrir `red_neuronal/cuadernos/02_exploracion_datos_colab.ipynb`.
+2. Tocar el botón **Download raw file** (ícono de la flecha hacia abajo, arriba a la derecha del archivo).
+3. Abrir [colab.research.google.com](https://colab.research.google.com) → **Archivo → Subir cuaderno** → elegir el archivo bajado.
+
+**Forma B: abrirlo directo desde GitHub**
+
+1. En Colab: **Archivo → Abrir cuaderno → pestaña GitHub**.
+2. Tildar **Incluir repositorios privados** y autorizar a Colab en GitHub la primera vez.
+3. Elegir el repositorio, la rama `funcionalidad/010-red-neuronal` y el cuaderno `02_exploracion_datos_colab.ipynb`.
+
+En los dos casos, **Archivo → Guardar una copia en Drive** para tenerlo a mano. Si el cuaderno cambia en el repositorio, hay que volver a bajarlo.
+
+### 11.3 Correrlo
+
+1. **Entorno de ejecución → Cambiar tipo de entorno de ejecución → CPU**. No usa GPU: así no gasta unidades de cómputo.
+2. Los secretos `HF_TOKEN` y `GITHUB_TOKEN` son de tu cuenta y ya están cargados. Revisar en el ícono de la **llave** que los dos tengan **Acceso al cuaderno** activado *en este cuaderno* (se activa por cuaderno).
+3. **Entorno de ejecución → Ejecutar todas** y aceptar el permiso de **Google Drive**.
+4. Esperar: tarda unos **10 a 20 minutos**. En la sección 3 aparece `Explorando <conjunto>...` por cada uno. Si uno falla, no detiene a los demás: queda «excluido» con el motivo.
+5. Los resultados quedan en Drive, en `MyDrive/evidentia/exploracion/` (`exploracion.md`, `exploracion.json` y `propuesta_receta_v1.yaml`).
+
+### 11.4 Qué pasarme
+
+1. La **tabla** de la sección 4 del cuaderno.
+2. La salida de la sección 5 (columnas y generadores de cada conjunto).
+3. La **propuesta** de la sección 7.
+4. Si algún conjunto quedó «pendiente de aprobación» en Hugging Face.
+
+Antes de pegar, revisar que no aparezca ningún token (`hf_…`, `github_pat_…`). No hay imágenes ni datos personales en esa salida.
+
+| Si ves… | Qué pasa | Qué hacer |
+|---|---|---|
+| `GatedRepoError`, 401 o 403 en un conjunto | Faltan aceptar sus condiciones o el token no tiene permiso para conjuntos con condiciones | Sección 11.1 y volver a ejecutar todo |
+| `RepositoryNotFoundError` o 404 | El conjunto cambió de nombre o se borró | Pasame el mensaje: lo reemplazo |
+| «faltan las columnas …» | El conjunto usa otros nombres de columnas | Pasame la salida de la sección 5: corrijo los candidatos |
+| «no tiene archivos Parquet» | El conjunto está en otro formato | Normal en algunos (CarDD, Semi-Truths): lo resuelvo yo |
+| `SecretNotFoundError` | Falta activar el acceso del secreto en este cuaderno | Ícono de la llave → Acceso al cuaderno |
+

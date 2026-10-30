@@ -17,7 +17,7 @@ Se descargan de **Hugging Face**, una plataforma pública de conjuntos de datos 
 
 **Búsqueda continua de datos (2026-10-30).** La autora decidió seguir buscando conjuntos y generando imágenes para mejorar la red. La investigación con todos los candidatos (OpenFake, Treasure, AIGenImages2026, TrueFake, Semi-Truths y otros), sus licencias y su uso propuesto está en [docs/investigacion/2026-10-30-conjuntos-de-datos-imagenes-sinteticas.md](../investigacion/2026-10-30-conjuntos-de-datos-imagenes-sinteticas.md). Conclusiones clave:
 - casi todas las licencias son no comerciales y cambian entre revisiones, así que la receta fija una revisión concreta de cada conjunto;
-- no hay conjuntos públicos con fotos pasadas por WhatsApp, por eso el conjunto propio es un aporte original;
+- no hay conjuntos públicos con fotos generadas por las herramientas comerciales de hoy en las escenas del sistema (choques, lesiones, accidentes de trabajo) y en versión original y captura: por eso el conjunto propio es un aporte original;
 - el sesgo de formato documentado en GenImage («Fake or JPEG?») confirma la necesidad de la normalización anti-atajos.
 
 La **licencia** de cada conjunto se verifica y se registra en la ficha (CA2). Un conjunto sin licencia verificable se excluye. Casi todos son **solo para investigación**: alcanza para el proyecto final, pero una versión comercial requeriría reentrenar con datos de licencia compatible.
@@ -52,7 +52,7 @@ Unas 70 000 imágenes en total. Los valores marcados «a confirmar» (nombres de
 
 ### Conjunto propio (para evaluar en condiciones reales)
 
-Lo arma la autora siguiendo el [protocolo del conjunto propio](../guias/protocolo-conjunto-propio.md) (tarea T26): fotos generadas con **ChatGPT, Gemini, Copilot** (y Midjourney si hay acceso), **fotos reales propias** y **fotos reales editadas con IA**, de escenas de los dos tipos de caso del sistema: **automovilístico** (choques, rayones, vidrios rotos, lugar del siniestro) y **laboral** (lesiones, lugar del accidente de trabajo, herramientas y elementos de protección dañados). Cada una en tres versiones: **original, enviada por WhatsApp y captura de pantalla**.
+Lo arma la autora siguiendo el [protocolo del conjunto propio](../guias/protocolo-conjunto-propio.md) (tarea T26): fotos generadas con **ChatGPT, Gemini, Copilot** (y Midjourney si hay acceso), **fotos reales propias** y **fotos reales editadas con IA**, de escenas de los dos tipos de caso del sistema: **automovilístico** (choques, rayones, vidrios rotos, lugar del siniestro) y **laboral** (lesiones, lugar del accidente de trabajo, herramientas y elementos de protección dañados). Cada una en dos versiones: **original y captura de pantalla**. La versión de WhatsApp se quitó el 2026-10-30 (decisión de la autora): las fotos de un caso las sube la persona afectada desde el enlace de carga, así que llegan como original, como captura o generadas con IA.
 
 - **Regla de oro (criterio de la autora, 2026-10-30):** las fotos reales son **de las mismas escenas** que las generadas. Si no, el modelo podría distinguir el tema en lugar de la generación. Las fotos reales salen de CarDD (autos dañados), de fotos propias de la autora como complemento y de conjuntos de lesiones y de seguridad en obras que se sigan verificando.
 - **Diversidad:** las lesiones se generan en seis tonos de piel para medir si el modelo funciona igual para todas las personas.
@@ -61,7 +61,7 @@ Lo arma la autora siguiendo el [protocolo del conjunto propio](../guias/protocol
 - **Fotos reales de conjuntos públicos:** CarDD (autos dañados), SCIN (fotos de piel sacadas por las propias personas, con el tono de piel etiquetado) y MOCS (obras), en `real/cardd/`, `real/scin/` y `real/obras/`. Ver la investigación.
 - Se guarda en una carpeta **privada** de Google Drive (`evidentia/conjunto-propio/`), con la estructura `<clase>/<generador>/<variante>/`.
 - **Nunca** se usa para entrenar ni se sube al repositorio: solo para evaluar (CA12, CA13).
-- Se evalúa **sin normalizar**, tal como llega, porque lo que se quiere medir es justamente el efecto de WhatsApp y de las capturas.
+- Se evalúa **sin normalizar**, tal como llega, porque lo que se quiere medir es justamente el efecto de las capturas.
 
 ### Lo que nunca se usa
 
@@ -77,7 +77,7 @@ Las imágenes no se suben a Git (son muchas, pesadas y tienen licencias). Lo que
 | fuente | `community_forensics` |
 | clase | 0 (real) o 1 (sintética) |
 | generador | `BigGAN`, `Fred99774/girlnew`… |
-| variante | `original`, `whatsapp`, `captura`, `editada` |
+| variante | `original`, `captura`, `editada` (`whatsapp` sigue admitida en el código, pero el conjunto propio ya no la usa) |
 | partición | `entrenamiento`, `validacion`, `prueba`, `no_visto` |
 | huella | SHA-256 de la imagen |
 
@@ -111,7 +111,7 @@ Genera `validacion.json` con los errores y un resumen (conteos por clase, partic
 
 ### Normalización anti-atajos (CA5)
 
-Problema: las fotos reales suelen ser **JPEG de cámara** y las generadas suelen ser **PNG** o de tamaños típicos (512 × 512, 1024 × 1024). Si se dejaran así, el modelo podría aprender un **atajo**: «PNG cuadrado = sintética». Tendría métricas excelentes y fallaría con la primera foto generada que llegue en JPEG por WhatsApp.
+Problema: las fotos reales suelen ser **JPEG de cámara** y las generadas suelen ser **PNG** o de tamaños típicos (512 × 512, 1024 × 1024). Si se dejaran así, el modelo podría aprender un **atajo**: «PNG cuadrado = sintética». Tendría métricas excelentes y fallaría con la primera foto generada que llegue en JPEG o como captura.
 
 Solución: **todas las imágenes, de las dos clases, pasan por el mismo proceso**:
 

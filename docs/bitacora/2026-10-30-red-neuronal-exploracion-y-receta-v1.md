@@ -29,5 +29,13 @@
 - Autora: aceptar las condiciones de los conjuntos en Hugging Face y correr el cuaderno 02 en CPU; pasar la tabla, los generadores y la propuesta.
 - Agente: completar `v1.yaml` con esos datos y preparar la copia de las muestras de CarDD, SCIN y MOCS a Drive.
 - Autora: empezar la prioridad A de la lista maestra (E04).
-- CP-33: confirmar si «daños en viviendas» sale de CA12.
-- Tablero de Trello: el agente no tiene acceso en esta sesión; mover a mano las tarjetas de T25, T27 y T29.
+- Tablero de Trello: actualizado en la segunda parte de la sesión (ver abajo).
+
+## Segunda parte: decisiones de la autora sobre el alcance
+
+- **Viviendas fuera** (CP-33 resuelta): se quitaron de CA12 de la especificación.
+- **Sin versión de WhatsApp**: la persona afectada sube sus fotos desde el enlace de carga, así que llegan como original, captura o generadas con IA. El conjunto propio queda con dos versiones (original y captura). Se actualizaron la especificación (CA12), los capítulos 1, 2, 4, 5, 6, 11 y 12 de `docs/red-neuronal/`, el glosario, el protocolo, la guía y la tarea T32. El código sigue admitiendo la variante `whatsapp` (no estorba y permite volver a medirla).
+- **Guía:** sección nueva para aceptar las condiciones de cada conjunto en Hugging Face (con el permiso que necesita un token de grano fino) y abrir y correr el cuaderno 02 en Colab.
+- **Insumos del informe:** relevamiento completo de fuentes con la decisión y el motivo de cada una.
+- **Trello:** tarjeta de la 010 con las casillas de T24, T26 y T29 marcadas, T32 sin WhatsApp, descripción y comentario de actualización; tarjeta nueva para que la autora corra el cuaderno 02.
+

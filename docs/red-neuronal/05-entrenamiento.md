@@ -74,7 +74,7 @@ Cada vez que una imagen de entrenamiento se usa, pasa por transformaciones al az
 | Paso | Probabilidad | Qué hace | Simula |
 |---|---|---|---|
 | Reducción | 30 % | Achica la imagen entre el 50 % y el 100 % | Fotos reenviadas, capturas |
-| Recompresión JPEG | 50 % | Calidad al azar entre 50 y 95 | WhatsApp y otras apps |
+| Recompresión JPEG | 50 % | Calidad al azar entre 50 y 95 | Capturas, cámaras de celular y fotos que pasaron antes por alguna aplicación |
 | Recorte al azar | siempre | Un recorte de 224 × 224 de cualquier zona | Que la huella esté en cualquier parte |
 | Espejo horizontal | 50 % | Da vuelta la imagen | Variedad sin cambiar el contenido |
 
