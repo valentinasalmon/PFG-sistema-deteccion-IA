@@ -5284,7 +5284,15 @@ a.flujo-caso__titulo:hover {
   }
 
   .contadores li {
-    flex-basis: 8.5rem;
+    flex-basis: auto;
+  }
+
+  .contador {
+    height: 100%;
+  }
+
+  .contador__texto {
+    white-space: nowrap;
   }
 }
 
@@ -5540,4 +5548,35 @@ a.flujo-caso__titulo:hover {
 .comparador__ayuda {
   margin: 0.35rem 0 0;
   text-align: center;
+}
+
+.estado-vacio__titulo {
+  margin: 0;
+  color: var(--tinta);
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.estado-vacio--pagina {
+  padding-block: 1.5rem;
+}
+
+h1.estado-vacio__titulo {
+  font-family: var(--fuente-titulos);
+  font-size: 1.5rem;
+}
+
+.filtros > .boton--fantasma {
+  align-self: flex-start;
+}
+
+@media (width <= 720px) {
+  .formulario .pasos__acciones {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .formulario .pasos__acciones .boton {
+    justify-content: center;
+  }
 }

@@ -22,6 +22,7 @@ import Aviso from '../componentes/Aviso.jsx'
 import CampoSeleccion from '../componentes/CampoSeleccion.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
+import EstadoVacio from '../componentes/EstadoVacio.jsx'
 import Icono from '../componentes/Icono.jsx'
 import { IlustracionCarpeta } from '../componentes/Ilustraciones.jsx'
 import { useDatos } from '../hooks/useDatos.js'
@@ -185,29 +186,26 @@ function Filtros({ filtros, clave, espacios, alAplicar, etiquetaReferencia }) {
 
 /** Lista sin resultados: dice por qué y ofrece cómo seguir. */
 function ListaVacia({ filtros, conFiltros, alQuitar }) {
+  let titulo = 'Todavía no tenés casos.'
+  if (conFiltros) {
+    titulo = filtros.busqueda ? `Ningún caso coincide con «${filtros.busqueda}».` : 'No hay casos con esos filtros.'
+  }
   return (
-    <div className="estado-vacio">
-      <IlustracionCarpeta clase="estado-vacio__ilustracion" />
-      <p>
-        <strong>
-          {!conFiltros && 'Todavía no tenés casos.'}
-          {conFiltros && filtros.busqueda && `Ningún caso coincide con «${filtros.busqueda}».`}
-          {conFiltros && !filtros.busqueda && 'No hay casos con esos filtros.'}
-        </strong>
-      </p>
-      <p>{conFiltros ? 'Probá con el número del caso o quitá los filtros.' : 'Creá el primero y cargá sus fotos.'}</p>
-      <div className="estado-vacio__acciones">
-        {conFiltros && (
-          <button type="button" className="boton boton--secundario" onClick={alQuitar}>
-            Quitar los filtros
-          </button>
-        )}
-        <Link to="/casos/nuevo" className="boton">
-          <Icono nombre="mas" tamanio={18} />
-          Nuevo caso
-        </Link>
-      </div>
-    </div>
+    <EstadoVacio
+      Ilustracion={IlustracionCarpeta}
+      titulo={titulo}
+      texto={conFiltros ? 'Probá con el número del caso o quitá los filtros.' : 'Creá el primero y cargá sus fotos.'}
+    >
+      {conFiltros && (
+        <button type="button" className="boton boton--secundario" onClick={alQuitar}>
+          Quitar los filtros
+        </button>
+      )}
+      <Link to="/casos/nuevo" className="boton">
+        <Icono nombre="mas" tamanio={18} />
+        Nuevo caso
+      </Link>
+    </EstadoVacio>
   )
 }
 

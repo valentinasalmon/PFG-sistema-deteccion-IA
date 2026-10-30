@@ -24,6 +24,7 @@ import { Link } from 'react-router'
 import { obtenerPanel } from '../api/panel.js'
 import Aviso from '../componentes/Aviso.jsx'
 import Cargando from '../componentes/Cargando.jsx'
+import EstadoVacio from '../componentes/EstadoVacio.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
 import FilaCaso from '../componentes/FilaCaso.jsx'
 import Icono from '../componentes/Icono.jsx'
@@ -224,12 +225,12 @@ function Recientes({ casos }) {
       }
     >
       {casos.length === 0 ? (
-        <div className="estado-vacio">
-          <div className="visor estado-vacio__visor">
-            <Icono nombre="casos" tamanio={28} />
-          </div>
-          <p>Todavía no tenés casos. Creá el primero desde «Nuevo caso».</p>
-        </div>
+        <EstadoVacio Ilustracion={IlustracionCarpeta} titulo="Todavía no tenés casos recientes.">
+          <Link to="/casos/nuevo" className="boton">
+            <Icono nombre="mas" tamanio={18} />
+            Nuevo caso
+          </Link>
+        </EstadoVacio>
       ) : (
         <ul className="lista-casos lista-casos--recuadro">
           {casos.map((caso) => (

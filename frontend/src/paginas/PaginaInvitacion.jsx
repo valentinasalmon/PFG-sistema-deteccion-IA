@@ -17,6 +17,8 @@ import {
 } from '../api/organizaciones.js'
 import Aviso from '../componentes/Aviso.jsx'
 import Cargando from '../componentes/Cargando.jsx'
+import EstadoVacio from '../componentes/EstadoVacio.jsx'
+import { IlustracionReloj } from '../componentes/Ilustraciones.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { formatearFecha } from '../utilidades/fechas.js'
@@ -165,10 +167,15 @@ export default function PaginaInvitacion() {
       {invitacion.vigente ? (
         <Acciones invitacion={invitacion} token={token} />
       ) : (
-        <Aviso tipo="error">
-          Esta invitación ya no está vigente: venció, fue cancelada o ya fue respondida. Pedile a
-          la organización que te invite de nuevo.
-        </Aviso>
+        <EstadoVacio
+          Ilustracion={IlustracionReloj}
+          titulo="Esta invitación ya no está vigente."
+          texto="Venció, fue cancelada o ya fue respondida. Pedile a la organización que te invite de nuevo."
+        >
+          <Link to="/" className="boton boton--secundario">
+            Ir a evidentIA
+          </Link>
+        </EstadoVacio>
       )}
     </>
   )
