@@ -8,10 +8,12 @@
 | Integración continua (`red_neuronal.yml`) | ✔ Hecha |
 | Cuaderno de Colab | ✔ Hecho y corregido con la primera corrida |
 | Prueba de concepto (CA1, T24) | ✔ Hecha: AUC 0,985, ≈ 11 min en T4 |
-| Exploración de datos y licencias (T25) | Pendiente |
-| Protocolo del conjunto propio (T26) y armado (E04) | Pendiente |
+| Investigación de conjuntos de datos | ✔ Hecha el 2026-10-30 (falta verificar licencias en Colab con el cuaderno de exploración) |
+| Exploración de datos y licencias (T25) | Pendiente: cuaderno |
+| Protocolo del conjunto propio (T26) | ✔ Hecho: [docs/guias/protocolo-conjunto-propio.md](../guias/protocolo-conjunto-propio.md) |
+| Armado del conjunto propio (E04) | Pendiente (autora) |
 | Receta v1 (T27) y datos en Drive (T28) | Pendiente |
-| Cuaderno de entrenamiento que corra solo (Kaggle en segundo plano) | Pendiente |
+| Cuaderno de entrenamiento completo en Colab que saltee las etapas ya hechas | Pendiente |
 | Entrenamiento completo, reproducibilidad y condiciones reales (T30 a T32) | Pendiente |
 | Repositorio de modelos en Hugging Face (E03) y publicación de `1.0.0` (T33) | Pendiente |
 | Integración en el backend y el informe (funcionalidad 012) | Pendiente |
@@ -31,7 +33,9 @@ Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento com
 | 2026-10-26 | Pasar de Kaggle a Google Colab con respaldo en Drive | Preferencia de la autora; misma lógica | Bitácora del 2026-10-28 |
 | 2026-10-30 | Colab Pro disponible por un año (suscripción a Gemini) | Ya no hace falta evaluar si pagarlo | CP-21 |
 | 2026-10-30 | Documentación propia y siempre al día de la red neuronal | Pedido de la autora: entender la red de punta a punta | Esta carpeta |
-| 2026-10-30 | Buscar que el entrenamiento completo corra solo (Kaggle en segundo plano) | Pedido de la autora: no depender de estar frente a la computadora | Capítulo 10 |
+| 2026-10-30 | **Entrenar en Colab Pro**, a mano; Kaggle automático queda como opción futura | Decisión de la autora: 3 o 4 sesiones de 2 a 3 h con unos 15 min de atención cada una | Capítulo 10 |
+| 2026-10-30 | Seguir buscando conjuntos de datos y generando imágenes propias | Pedido de la autora: la red mejora con datos nuevos, no con repeticiones | Capítulo 4 e investigación del 2026-10-30 |
+| 2026-10-30 | Plan de entrenamientos: 2 obligatorios (completo y repetición), 1 o 2 de ajuste y 1 o 2 de la demostración de reentrenamiento | Explicado a la autora | Capítulo 8 |
 
 ## Riesgos y cómo se mitigan
 
@@ -51,7 +55,7 @@ Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento com
 1. **T25. Exploración de datos** (agente): cuaderno que revise cada fuente candidata (disponibilidad, licencia, generadores, formatos) y proponga la receta.
 2. **T26. Protocolo del conjunto propio** (agente) y **E04. Armado** (autora).
 3. **T27. Receta v1** (agente): menos generadores con más imágenes cada uno, generadores reservados, nuevas fuentes y más épocas.
-4. **Cuaderno que corra solo** (agente): versión de Kaggle en segundo plano y salto automático de las etapas ya hechas.
+4. **Cuaderno de entrenamiento completo en Colab** (agente), que saltee solo las etapas ya terminadas.
 5. **E03. Repositorio de modelos** en Hugging Face (autora).
 6. **T28 a T33. Datos, entrenamiento completo, reproducibilidad, condiciones reales y publicación de `1.0.0`** (corre la autora, analiza y documenta el agente).
 7. **Funcionalidad 012:** integrar el modelo en el análisis y el informe.

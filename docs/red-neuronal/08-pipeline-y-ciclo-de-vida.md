@@ -94,6 +94,7 @@ flowchart LR
 | **Entrenamiento completo** (T29 a T31) | Entrenar con la receta v1, iterar hasta AUC ≥ 0,90 y verificar la reproducibilidad | Pendiente |
 | **Condiciones reales** (T32) | Evaluar con el conjunto propio por herramienta y por variante | Pendiente |
 | **Publicación** (T33) | Publicar `1.0.0` en Hugging Face a través de la compuerta y copiar la ficha | Pendiente |
+| **Demostración de reentrenamiento** | Reservar un generador comercial (por ejemplo, Gemini) como no visto en la 1.0.0, medir cuánto le cuesta, sumarlo a los datos y publicar la 1.1.0 mostrando la mejora | Planificado (decisión del 2026-10-30) |
 | **Integración** (012) | El backend usa el modelo y el informe muestra la capa 4 | Pendiente |
 | **Mantenimiento** (CA18) | Vigilar generadores nuevos y reentrenar | Continuo |
 

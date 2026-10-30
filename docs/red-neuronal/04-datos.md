@@ -13,7 +13,12 @@ Se descargan de **Hugging Face**, una plataforma pública de conjuntos de datos 
 | **Community Forensics (*Small*)** | Fotos reales y generadas por **cientos de generadores** (Stable Diffusion y sus ajustes finos, GAN, DeepFloyd, GLIDE, etc.) | En uso desde la prueba de concepto |
 | OpenFake | Imágenes de generadores comerciales recientes | Previsto para la receta v1 (T25 a T27) |
 | MS COCOAI | Fotos de COCO y sus versiones generadas | Previsto para la receta v1 |
-| ShareGPT-4o-Image | Imágenes generadas con GPT-4o | Previsto para la receta v1 |
+| ShareGPT-4o-Image | Imágenes generadas con GPT-4o | Previsto para la receta v1 si se verifica la licencia |
+
+**Búsqueda continua de datos (2026-10-30).** La autora decidió seguir buscando conjuntos y generando imágenes para mejorar la red. La investigación con todos los candidatos (OpenFake, Treasure, AIGenImages2026, TrueFake, Semi-Truths y otros), sus licencias y su uso propuesto está en [docs/investigacion/2026-10-30-conjuntos-de-datos-imagenes-sinteticas.md](../investigacion/2026-10-30-conjuntos-de-datos-imagenes-sinteticas.md). Conclusiones clave:
+- casi todas las licencias son no comerciales y cambian entre revisiones, así que la receta fija una revisión concreta de cada conjunto;
+- no hay conjuntos públicos con fotos pasadas por WhatsApp, por eso el conjunto propio es un aporte original;
+- el sesgo de formato documentado en GenImage («Fake or JPEG?») confirma la necesidad de la normalización anti-atajos.
 
 La **licencia** de cada conjunto se verifica y se registra en la ficha (CA2). Un conjunto sin licencia verificable se excluye. Casi todos son **solo para investigación**: alcanza para el proyecto final, pero una versión comercial requeriría reentrenar con datos de licencia compatible.
 
@@ -21,7 +26,7 @@ Las columnas de Community Forensics se confirmaron con su esquema: `image_data` 
 
 ### Conjunto propio (para evaluar en condiciones reales)
 
-Lo arma la autora siguiendo un protocolo (tarea T26): fotos generadas con **ChatGPT, Gemini, Copilot** (y Midjourney si hay acceso), **fotos reales propias** y **fotos reales editadas con IA**, de escenas del ámbito del sistema (daños en vehículos, lesiones, viviendas, documentos, recibos, capturas). Cada una en tres versiones: **original, enviada por WhatsApp y captura de pantalla**.
+Lo arma la autora siguiendo el [protocolo del conjunto propio](../guias/protocolo-conjunto-propio.md) (tarea T26): fotos generadas con **ChatGPT, Gemini, Copilot** (y Midjourney si hay acceso), **fotos reales propias** y **fotos reales editadas con IA**, de escenas del ámbito del sistema (daños en vehículos, lesiones, viviendas, documentos, recibos, capturas). Cada una en tres versiones: **original, enviada por WhatsApp y captura de pantalla**.
 
 - Se guarda en una carpeta **privada** de Google Drive (`evidentia/conjunto-propio/`), con la estructura `<clase>/<generador>/<variante>/`.
 - **Nunca** se usa para entrenar ni se sube al repositorio: solo para evaluar (CA12, CA13).

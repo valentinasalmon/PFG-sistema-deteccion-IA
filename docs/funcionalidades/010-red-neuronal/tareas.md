@@ -149,7 +149,7 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
   - Archivos: `red_neuronal/cuadernos/01_exploracion_datos.ipynb`
   - Verificación: el cuaderno ejecutado muestra la tabla de fuentes con su licencia; las fuentes no disponibles o sin licencia verificable quedan excluidas y anotadas.
   - Commit: `funcionalidad(clasificador): agregar cuaderno de exploracion de datos`
-- [ ] **T26** — Protocolo de recolección del conjunto propio: herramientas y fecha, cantidad por herramienta, lista de *prompts* por escena del ámbito del sistema, fotos reales equivalentes, fotos editadas, procedimiento para generar las versiones de WhatsApp y de captura, nombres de archivo, planilla de control y reglas de privacidad.
+- [x] **T26** — Protocolo de recolección del conjunto propio: herramientas y fecha, cantidad por herramienta, lista de *prompts* por escena del ámbito del sistema, fotos reales equivalentes, fotos editadas, procedimiento para generar las versiones de WhatsApp y de captura, nombres de archivo, planilla de control y reglas de privacidad.
   - Archivos: `docs/guias/protocolo-conjunto-propio.md`
   - Verificación: la autora puede seguirlo sin preguntas (E04).
   - Commit: `documentacion(guias): agregar protocolo del conjunto propio`

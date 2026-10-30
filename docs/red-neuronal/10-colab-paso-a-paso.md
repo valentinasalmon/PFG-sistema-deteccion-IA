@@ -73,7 +73,9 @@ Pedido de la autora (2026-10-30): poder dejar el entrenamiento corriendo sin est
 | Colab Pro+ | Sí (ejecución en segundo plano) | 24 h | Unos US$ 50 por mes | No recomendado: hay alternativa gratis |
 | **Colab Pro (actual)** | No: necesita la pestaña abierta y actividad | Varias horas | Incluido con Gemini | En uso; retoma lo hecho si se corta |
 
-**Recomendación:**
+**Decisión de la autora (2026-10-30): se entrena en Colab Pro**, a mano. Una corrida completa lleva unas 2 a 3 horas con unos 15 minutos de atención. Kaggle automático queda como opción futura si el reentrenamiento se vuelve frecuente.
+
+**Recomendación original:**
 - **Colab Pro** para corridas cortas o cuando se quiere ver el avance (prueba de concepto, exploración de datos).
 - **Kaggle en segundo plano** para el entrenamiento completo (2 a 3 horas estimadas), que así corre solo.
 
