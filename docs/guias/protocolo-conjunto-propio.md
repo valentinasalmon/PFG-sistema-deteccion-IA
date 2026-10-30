@@ -2,6 +2,8 @@
 
 Guía para que la autora genere y reúna las imágenes del **conjunto propio**. Son fotos creadas con las herramientas que usaría alguien para falsificar una prueba, fotos reales **de las mismas escenas** y fotos reales editadas con IA, cada una en tres versiones. Sirve para medir la red neuronal **en las condiciones reales del sistema** (funcionalidad 010, CA12 y CA13; tareas T26 y E04).
 
+> **Cómo hacerlo, paso a paso:** la [guía paso a paso del conjunto propio](guia-paso-a-paso-conjunto-propio.md) tiene la **lista maestra de 90 prompts ya armados y numerados**, las versiones de cada prompt, las carpetas, la rutina con cada imagen, las fotos reales a sacar y cómo buscar conjuntos de datos. Este protocolo tiene las reglas.
+
 > **Estas imágenes nunca se usan para entrenar ni se suben al repositorio.** Se guardan en una carpeta privada de Google Drive y solo se usan para evaluar.
 
 ## Regla de oro: misma escena, misma diversidad
@@ -110,8 +112,8 @@ Cada prompt tiene **[partes entre corchetes]** que se cambian en cada imagen, el
 | Fuente | Escenas que cubre | Estado |
 |---|---|---|
 | **CarDD**: 4 000 fotos reales de autos dañados | 1, 2, 3 | La incorpora el agente; licencia de investigación a aceptar |
-| **Conjuntos de seguridad en obras** (fotos reales de obras y fábricas) | 6, 7 | Pendiente de buscar y verificar |
-| **Conjuntos de heridas o lesiones** (de uso médico o académico) | 5 | Pendiente de buscar y verificar; cuidado con la privacidad |
+| **MOCS** (fotos reales de obras; copia en Hugging Face como ConstructionSite) | 6, 7 | Encontrado el 2026-10-30; CC BY-NC 4.0, pide aceptar condiciones |
+| **SCIN** (Google y Stanford): fotos de piel sacadas por las propias personas, con el tono de piel etiquetado | 5 | Encontrado el 2026-10-30; licencia de investigación. Los conjuntos de heridas que circulan (Kaggle, Roboflow) se descartaron: son fotos juntadas de internet, sin origen verificable |
 | **Fotos propias con el celular** (complemento): autos estacionados con golpes o rayones, calles, obras vistas desde la vereda, herramientas | 1, 2, 3, 4, 6, 7 | Opcional, de a poco. Unas **30 a 50** ya suman mucho |
 | **Fotos de familiares o conocidos** con consentimiento: moretones, raspones, yesos (sin cara) | 5 | Opcional |
 
@@ -126,7 +128,7 @@ Cada prompt tiene **[partes entre corchetes]** que se cambian en cada imagen, el
 
 | Variante | Cómo se hace |
 |---|---|
-| **original** | El archivo tal cual lo descargaste de la herramienta o lo sacó el celular. Sin abrirlo ni guardarlo en ningún editor |
+| **original** | El archivo tal cual lo descargaste de la herramienta o lo sacó el celular. Sin abrirlo ni guardarlo en ningún editor. Meta AI se usa desde **meta.ai en la web**: la imagen generada dentro de WhatsApp ya llega comprimida |
 | **whatsapp** | Enviarlo **como foto** (no como documento) a tu chat «Mensajes para mí» de WhatsApp y descargar la versión recibida |
 | **captura** | Abrir la imagen en pantalla completa en el celular y sacar una **captura de pantalla** |
 
@@ -163,7 +165,10 @@ Mi unidad/
     │   │   └── meta-ai-edicion/      original/  whatsapp/  captura/
     │   └── real/
     │       ├── celular-propio/       original/  whatsapp/  captura/
-    │       └── conocidos/            original/  whatsapp/  captura/
+    │       ├── conocidos/            original/  whatsapp/  captura/
+    │       ├── cardd/                original/  whatsapp/  captura/
+    │       ├── scin/                 original/  whatsapp/  captura/
+    │       └── obras/                original/  whatsapp/  captura/
     ├── planilla-conjunto-propio      ← Google Sheets
     └── prueba_de_concepto/           ← lo que ya generó Colab
 ```
@@ -175,10 +180,12 @@ Mi unidad/
 
 ## Planilla de control
 
-| Archivo | Carpeta | Escena | Herramienta y modelo | Fecha | Prompt o descripción | Tono de piel (si hay persona) | ¿3 variantes? | Observaciones |
-|---|---|---|---|---|---|---|---|---|
-| 01-choque-007 | gemini | 1 | Gemini 2.5 Flash Image | 2026-11-02 | «Foto realista…» | — | sí | |
-| 04-lesion-012 | meta-ai | 4 | Meta AI | 2026-11-02 | «Foto tomada con un celular de un moretón…» | morena | sí | |
+La planilla completa, con el número y la versión del prompt, está en la sección 8 de la [guía paso a paso](guia-paso-a-paso-conjunto-propio.md#8-la-planilla). Ejemplo:
+
+| Archivo | Carpeta | N.° de prompt | Versión del prompt | Escena | Herramienta y modelo | Fecha | Tono de piel | Foto de origen | ¿WhatsApp? | ¿Captura? | Observaciones |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 01-choque-007 | gemini | 7 | v1 | 01 | Gemini 2.5 Flash Image | 2026-11-02 | — | — | sí | sí | |
+| 05-lesion-041 | meta-ai | 41 | v2 | 05 | Meta AI | 2026-11-02 | trigueña | — | sí | sí | Se negó con v1 |
 
 ## Reglas de privacidad
 
@@ -190,4 +197,4 @@ Mi unidad/
 
 ## Cuando esté listo (o con una parte)
 
-Avisar al agente. La evaluación se corre en Colab con `python -m clasificador evaluar --conjunto-propio <carpeta>`. El resultado sale **por herramienta y por variante**. El agente suma el desglose **por escena y por tono de piel**, a partir del prefijo del nombre y de la planilla. Todo queda en la ficha del modelo y en el capítulo 11 de [docs/red-neuronal/](../red-neuronal/README.md).
+Avisar al agente. La evaluación se corre en Colab con el cuaderno `03_entrenamiento_completo_colab.ipynb`, que usa la carpeta de Drive si existe (`python -m clasificador evaluar --conjunto-propio <carpeta>`). El resultado sale **por herramienta, por variante y por escena** (el prefijo del nombre del archivo). El agente suma el desglose **por tono de piel** a partir de la planilla. Todo queda en la ficha del modelo y en el capítulo 11 de [docs/red-neuronal/](../red-neuronal/README.md).

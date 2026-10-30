@@ -148,3 +148,12 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - el 82 % del tiempo se va en obtener y preparar los datos, no en entrenar.
 - La autora cuenta con Colab Pro por un año (suscripción a Gemini), lo que elimina el costo de GPU del presupuesto.
 
+## Exploración de datos, receta v1 y conjunto propio (2026-10-30)
+
+- **Exploración antes de entrenar:** cada conjunto se verifica en su revisión exacta (licencia, columnas, generadores, formatos) sin bajarlo entero, leyendo solo las columnas livianas de los Parquet. Un conjunto sin licencia verificable se excluye (CA2). Es un buen ejemplo de gobernanza de datos para el informe.
+- **Atajos por tema, no solo por formato:** si se agregan fotos reales de autos dañados o de lesiones al entrenamiento sin sintéticas de las mismas escenas, el modelo aprende el tema. Por eso esas fotos solo se usan para evaluar, y la evaluación se desglosa por escena (reales y sintéticas del mismo tema).
+- **No hay conjuntos públicos de lesiones con origen verificable** fotografiadas con celular: los que circulan están armados con fotos de internet. Se usa SCIN (piel fotografiada por las propias personas, con tono de piel etiquetado), fotos de conocidos con consentimiento y Fitzpatrick17k para el tono de piel.
+- **Diseño del conjunto propio:** 90 prompts numerados y equilibrados (escenas, autos, luces, seis tonos de piel), el mismo prompt en todas las herramientas, versiones del prompt registradas (v1, v2 si la herramienta se niega, v3 si sale con aspecto de render) y tres variantes de cada imagen. Si una herramienta se niega más con algún tono de piel, también se registra como hallazgo.
+- **Corrección metodológica:** la partición «no visto» solo tiene sintéticas; se evalúa contra las reales de prueba para que el AUC tenga sentido.
+- **Robustez operativa:** el entrenamiento completo saltea las etapas ya terminadas con el mismo manifiesto y guarda los datos preparados en Drive, para tolerar los cortes de Colab sin rehacer horas de trabajo.
+
