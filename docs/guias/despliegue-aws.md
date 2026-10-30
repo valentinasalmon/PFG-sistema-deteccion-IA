@@ -257,6 +257,19 @@ El cliente se crea con tu cuenta de Google en https://console.cloud.google.com. 
    - La segunda vez entra directo.
    - Con tu correo de administradora, se vincula a tu cuenta existente.
 
+## Activar Microsoft Clarity antes del lanzamiento (funcionalidad 034)
+
+Clarity graba cómo se usa la plataforma (mapas de calor y recorridos) para que la autora detecte fricciones. Es una herramienta tuya: los usuarios no ven nada. Sin configurar, la plataforma no lo carga.
+
+1. Entrá a [clarity.microsoft.com](https://clarity.microsoft.com) con tu cuenta y tocá **New project**. Nombre: `evidentIA`; sitio: la dirección de la plataforma.
+2. En **Settings → Masking**, elegí **Strict**. La plataforma, además, enmascara toda la página: Clarity ve los clics y el recorrido, pero no textos, datos de casos ni fotos.
+3. En **Settings → Setup**, copiá el **Project ID** (unas diez letras y números).
+4. En GitHub: **Settings → Secrets and variables → Actions → Variables → New repository variable**. Nombre: `CLARITY_ID`; valor: el Project ID. No es un secreto (queda a la vista en la página), pero no hace falta pasarlo por el chat.
+5. Publicá cualquier cambio en `main` (o volvé a correr el último despliegue): la interfaz se compila con Clarity.
+6. A las pocas horas vas a ver las primeras sesiones en el panel de Clarity.
+
+Para apagarlo, borrá la variable `CLARITY_ID` y volvé a desplegar.
+
 ## Cuando compres el dominio
 
 1. En `terraform.tfvars`, poné `dominio = "tu-dominio.com.ar"` y ejecutá `terraform apply`.
