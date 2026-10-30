@@ -45,7 +45,7 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   Las alternativas evaluadas y descartadas (cable, AirDrop, Quick Share, iCloud, LocalSend, correo, WhatsApp, app nativa) están en la investigación.
 - **Etapa 1 implementada** (funcionalidad 024): soporte de HEIC sin convertir el original, detectado por la caja `ftyp`, y ELA con validez limitada en HEIC.
 - **El tutor aprobó el QR hacia la galería (2026-10-26). Etapa 2 implementada:**
-  - enlace de un solo uso (15 minutos, 30 fotos, solo carga en ese caso);
+  - enlace de un solo uso (15 minutos, sin tope de fotos más allá del límite del plan, solo carga en ese caso);
   - token de 192 bits, del que solo se guarda la huella;
   - QR en SVG generado en el servidor;
   - página del celular sin sesión, con galería y cámara;

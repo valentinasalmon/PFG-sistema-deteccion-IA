@@ -38,8 +38,8 @@ export default function CargaDesdeCelular({ enlace, error, restante, abrir, cerr
           </ol>
           <p className="nota">
             Las fotos aparecen acá a medida que se suben. El código vence en{' '}
-            <strong aria-live="off">{formatearRestante(restante)}</strong>, solo sirve para este caso y
-            permite hasta {enlace.maximo} fotos.
+            <strong aria-live="off">{formatearRestante(restante)}</strong> y solo sirve para este caso. Podés
+            subir todas las fotos que quieras, dentro del límite de tu plan.
           </p>
         </div>
       ) : (
