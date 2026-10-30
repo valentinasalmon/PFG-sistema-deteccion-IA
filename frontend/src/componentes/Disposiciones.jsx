@@ -3,18 +3,15 @@
  *
  * - DisposicionInterna: pantallas con sesión, con el menú lateral (022).
  * - DisposicionAcceso: pantallas de acceso (registro, inicio de sesión,
- *   recuperación), divididas en un panel de marca verde bosque, con el logo
- *   centrado dentro de las esquinas de visor y el eslogan, y el formulario en
- *   una tarjeta (sin tarjeta de muestra ni servicios, por pedido de la
- *   autora). Desde la 028 el panel suma tres ventajas reales y para quién es.
- *   En un celular el panel de marca se reduce a una banda corta con el logo.
+ *   recuperación, enlaces y páginas públicas). Desde la 034 ocupan toda la
+ *   pantalla: el logo con el nombre arriba de una tarjeta centrada, sin el
+ *   panel de marca dividido (pedido de la autora).
  *
  * Ambas incluyen el pie con los enlaces a los Términos de Uso y a la
  * Política de Privacidad.
  *
  * Realiza: RF01 a RF07 (interfaz); RNF10 (funcionalidad 022).
  */
-import { useState } from 'react'
 import { Link, Outlet } from 'react-router'
 import { ContextoAcceso } from '../contextos/contextoAcceso.js'
 import Encabezado from './Encabezado.jsx'
@@ -54,69 +51,29 @@ export function DisposicionInterna() {
   )
 }
 
-/** Lo que hace la plataforma, en tres puntos verificables (028, frame 9a). */
-const VENTAJAS = [
-  {
-    icono: 'buscar',
-    titulo: 'Varios análisis por imagen',
-    texto: 'Metadatos, credenciales de contenido (C2PA) y niveles de error.',
-  },
-  {
-    icono: 'candado',
-    titulo: 'Cadena de custodia sellada',
-    texto: 'La huella de cada imagen queda registrada en Hedera.',
-  },
-  {
-    icono: 'documento',
-    titulo: 'Informe verificable',
-    texto: 'Cualquiera puede comprobar con el QR que el PDF no cambió.',
-  },
-]
-
+/**
+ * Acceso a pantalla completa (034): sin panel dividido, el logo con el nombre
+ * arriba de una tarjeta centrada y un fondo suave de la marca.
+ */
 export function DisposicionAcceso() {
-  const [panelPasos, setPanelPasos] = useState(null)
   return (
-    <ContextoAcceso.Provider value={panelPasos}>
-      <div className="acceso">
-        <section className="acceso__marca" aria-label="evidentIA">
-          <div className="acceso__mensaje">
-            <div className="visor acceso__visor">
-              <img src="/marca/logo-tipografia-blanca.png" alt="evidentIA" />
-              <span className="acceso__escaneo" aria-hidden="true" />
-            </div>
-            <p className="acceso__eslogan">Tu primera línea de defensa contra el fraude visual</p>
-            <p className="acceso__bajada">
-              Detectá fotos editadas o generadas con inteligencia artificial antes de que lleguen a un
-              expediente o a la liquidación de un siniestro.
-            </p>
-            <ul className="acceso__ventajas">
-              {VENTAJAS.map((ventaja) => (
-                <li key={ventaja.titulo}>
-                  <span className="acceso__ventaja-icono" aria-hidden="true">
-                    <Icono nombre={ventaja.icono} tamanio={22} />
-                  </span>
-                  <span>
-                    <strong>{ventaja.titulo}</strong>
-                    <span className="acceso__ventaja-texto">{ventaja.texto}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <ul className="acceso__rubros" aria-label="Para quién es">
-              <li>Estudios jurídicos</li>
-              <li>Aseguradoras</li>
-              <li>Peritos</li>
-            </ul>
-          </div>
-          {/* El registro dibuja acá sus pasos con nombre (032); si lo hace, se oculta lo anterior. */}
-          <div className="acceso__pasos" ref={setPanelPasos} />
-        </section>
+    <ContextoAcceso.Provider value={null}>
+      <div className="acceso acceso--completo">
+        <header className="acceso__cabecera">
+          <Link to="/" className="acceso__volver">
+            <Icono nombre="izquierda" tamanio={16} />
+            evidentIA
+          </Link>
+        </header>
         <div className="acceso__formulario">
           <main id="contenido" className="tarjeta-acceso">
+            <Link to="/" className="tarjeta-acceso__logo" aria-label="evidentIA, ir a la portada">
+              <img src="/marca/logo-tipografia-negra.png" alt="" />
+            </Link>
             <Outlet />
           </main>
-          <Pie />
         </div>
+        <Pie />
       </div>
     </ContextoAcceso.Provider>
   )

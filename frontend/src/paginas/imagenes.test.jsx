@@ -160,7 +160,7 @@ describe('imágenes del caso', () => {
 
     await screen.findByRole('img', { name: 'Vista previa de frente.jpg' })
     await usuario.click(within(seccion()).getByRole('button', { name: 'Eliminar' }))
-    await usuario.click(within(seccion()).getByRole('button', { name: 'Eliminar' }))
+    await usuario.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Eliminar' }))
 
     expect(await screen.findByText('Se eliminó «frente.jpg».')).toBeInTheDocument()
     expect(screen.getByText('Todavía no hay imágenes en este caso.')).toBeInTheDocument()

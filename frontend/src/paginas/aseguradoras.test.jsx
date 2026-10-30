@@ -268,7 +268,7 @@ describe('administración', () => {
     })
     const { usuario } = renderizarEn('/administracion')
     await usuario.click(await screen.findByRole('button', { name: 'Aprobar' }))
-    await usuario.click(within(screen.getByRole('group', { name: /¿Aprobar/ })).getByRole('button', { name: 'Aprobar' }))
+    await usuario.click(within(screen.getByRole('dialog', { name: /¿Aprobar/ })).getByRole('button', { name: 'Aprobar' }))
     expect(await screen.findByText('SEGUROS GALICIA S.A. fue aprobada.')).toBeInTheDocument()
     expect(screen.getByText('No hay aseguradoras pendientes.')).toBeInTheDocument()
     expect(solicitudes.some((s) => s.ruta.endsWith('/aprobacion'))).toBe(true)
@@ -282,7 +282,7 @@ describe('administración', () => {
     })
     const { usuario } = renderizarEn('/administracion')
     await usuario.click(await screen.findByRole('button', { name: 'Aprobar' }))
-    await usuario.click(within(screen.getByRole('group', { name: /¿Aprobar/ })).getByRole('button', { name: 'Aprobar' }))
+    await usuario.click(within(screen.getByRole('dialog', { name: /¿Aprobar/ })).getByRole('button', { name: 'Aprobar' }))
     expect(await screen.findByText('La aseguradora no existe o ya fue revisada.')).toBeInTheDocument()
   })
 

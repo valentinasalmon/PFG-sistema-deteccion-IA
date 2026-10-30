@@ -154,7 +154,7 @@ describe('inicio de sesión renovado (028)', () => {
     expect(mostrar).toHaveAccessibleName('Ocultar la contraseña')
     expect(screen.getByRole('link', { name: '¿La olvidaste?' })).toHaveAttribute('href', '/recuperar-contrasenia')
     expect(screen.getByRole('link', { name: 'Creá una' })).toHaveAttribute('href', '/registro')
-    expect(screen.getByText('Cadena de custodia sellada')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'evidentIA, ir a la portada' })).toHaveAttribute('href', '/')
   })
 })
 

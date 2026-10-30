@@ -17,21 +17,19 @@ const CAMINOS = [
     valor: 'independiente',
     icono: 'perfil',
     titulo: 'Abogado o abogada independiente',
-    descripcion:
-      'Trabajás solo. Plan personal gratuito. Más adelante podés crear tu estudio desde Mi perfil.',
+    descripcion: 'Gratis. Podés crear tu estudio después, desde Mi perfil.',
   },
   {
     valor: 'estudio',
     icono: 'organizaciones',
     titulo: 'Abogado con estudio jurídico',
-    descripcion: 'Registrás tu estudio, elegís un plan y sumás a tu equipo.',
+    descripcion: 'Tu equipo, con plan Básico o Profesional.',
   },
   {
     valor: 'aseguradora',
     icono: 'verificado',
     titulo: 'Aseguradora',
-    descripcion:
-      'Para quien administra la cuenta de la empresa. La aprueba un Administrador; tu equipo se suma por invitación.',
+    descripcion: 'Con plan y aprobación de un Administrador; tu equipo entra por invitación.',
   },
 ]
 

@@ -43,3 +43,4 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-29 | [Interfaz (028), tercera tanda, y propuesta del pago en el registro (032)](2026-10-29-funcionalidad-028-tercera-tanda.md) |
 | 2026-10-29 | [Funcionalidad 032: pago del plan en el registro](2026-10-29-funcionalidad-032-pago-en-el-registro.md) |
 | 2026-10-29 | [Funcionalidad 033: portada pública con los planes](2026-10-29-funcionalidad-033-portada.md) |
+| 2026-10-29 | [Funcionalidad 034: pulido de UX/UI, primera tanda](2026-10-29-funcionalidad-034-pulido-ux.md) |

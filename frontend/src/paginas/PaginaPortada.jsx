@@ -17,6 +17,15 @@ import { useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { listarPlanes } from '../api/pagos.js'
 import Icono from '../componentes/Icono.jsx'
+import {
+  IlustracionAlerta,
+  IlustracionCadena,
+  IlustracionCelular,
+  IlustracionEquipo,
+  IlustracionEscudo,
+  IlustracionInforme,
+  IlustracionReloj,
+} from '../componentes/Ilustraciones.jsx'
 import { useAparecer } from '../hooks/useAparecer.js'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
@@ -37,16 +46,19 @@ const NIVELES = {
 
 const PROBLEMAS = [
   {
+    Ilustracion: IlustracionAlerta,
     titulo: 'Fotos que no resisten una pericia',
     texto:
       'Se presentan imágenes sin saber si fueron retocadas, recortadas o generadas, y el problema aparece cuando ya es tarde.',
   },
   {
+    Ilustracion: IlustracionReloj,
     titulo: 'Revisión manual, lenta y cara',
     texto:
       'Cada caso dudoso termina en un perito, aunque muchas imágenes podrían ordenarse antes con indicios técnicos.',
   },
   {
+    Ilustracion: IlustracionCadena,
     titulo: 'Sin cadena de custodia',
     texto:
       'Las fotos viajan por chats y correos: nadie puede demostrar después que la imagen analizada es la misma que se recibió.',
@@ -56,6 +68,7 @@ const PROBLEMAS = [
 const SOLUCIONES = [
   {
     icono: 'candado',
+    Ilustracion: IlustracionCadena,
     titulo: 'Cadena de custodia en Hedera',
     texto:
       'La huella SHA-256 de cada imagen y de cada informe queda sellada en una red pública: nadie puede cambiarla sin que se note.',
@@ -63,22 +76,26 @@ const SOLUCIONES = [
   },
   {
     icono: 'documento',
+    Ilustracion: IlustracionInforme,
     titulo: 'Informe PDF verificable',
     texto: 'Breve, adaptado al rubro, con un código para que cualquiera lo verifique sin cuenta.',
   },
   {
     icono: 'celular',
+    Ilustracion: IlustracionCelular,
     titulo: 'Fotos desde el celular',
     texto: 'Un enlace para que la persona afectada suba sus propias fotos.',
   },
   {
     icono: 'organizaciones',
+    Ilustracion: IlustracionEquipo,
     titulo: 'Trabajo en equipo',
     texto: 'Casos compartidos con permisos y auditoría de cada acción.',
     variante: 'lima',
   },
   {
     icono: 'perfil',
+    Ilustracion: IlustracionEscudo,
     titulo: 'Persona en el circuito',
     texto: 'Indicios, nunca veredictos. Umbrales publicados y la decisión siempre humana.',
   },
@@ -87,6 +104,7 @@ const SOLUCIONES = [
 const SEGMENTOS = [
   {
     icono: 'perfil',
+    Ilustracion: IlustracionEscudo,
     titulo: 'Abogados independientes',
     texto:
       'Revisás las fotos de tu cliente antes de presentarlas y adjuntás el informe verificable al escrito. Plan personal gratuito.',
@@ -95,6 +113,7 @@ const SEGMENTOS = [
   },
   {
     icono: 'organizaciones',
+    Ilustracion: IlustracionEquipo,
     titulo: 'Estudios jurídicos',
     texto:
       'Registrás el estudio, sumás a tu equipo y comparten casos con permisos. Plan Básico o Profesional.',
@@ -103,6 +122,7 @@ const SEGMENTOS = [
   },
   {
     icono: 'escudo',
+    Ilustracion: IlustracionInforme,
     titulo: 'Aseguradoras',
     texto:
       'Revisás las fotos de cada siniestro antes de derivarlo y detectás reclamos dudosos. Un Administrador aprueba la cuenta y el equipo entra por invitación.',
@@ -341,6 +361,9 @@ export default function PaginaPortada() {
                 <a href="#problema">El problema</a>
               </li>
               <li>
+                <a href="#como-funciona">Cómo funciona</a>
+              </li>
+              <li>
                 <a href="#solucion">La solución</a>
               </li>
               <li>
@@ -443,6 +466,7 @@ export default function PaginaPortada() {
                 data-aparecer
                 style={{ '--orden': indice }}
               >
+                <problema.Ilustracion clase="portada-problema__ilustracion" />
                 <span className="portada-problema__numero" aria-hidden="true">
                   0{indice + 1}
                 </span>
@@ -454,7 +478,40 @@ export default function PaginaPortada() {
         </div>
       </section>
 
-      <section id="solucion" className="portada-seccion" aria-labelledby="titulo-solucion">
+      <section id="como-funciona" className="portada-seccion" aria-labelledby="titulo-como-funciona">
+        <div className="portada-contenedor">
+          <div className="portada-cabeza" data-aparecer>
+            <small>Cómo funciona</small>
+            <h2 id="titulo-como-funciona">De la foto al informe en tres pasos.</h2>
+          </div>
+          <ol className="portada-pasos">
+            <li className="portada-paso" data-aparecer style={{ '--orden': 0 }}>
+              <IlustracionCelular clase="portada-paso__ilustracion" />
+              <h3>Cargás las fotos</h3>
+              <p>Desde la computadora, tu celular o el de la persona afectada, con un enlace.</p>
+            </li>
+            <li className="portada-paso" data-aparecer style={{ '--orden': 1 }}>
+              <div className="visor portada-paso__foto">
+                <Foto calor />
+                <span className="portada-escaneo" />
+              </div>
+              <h3>Se analizan por capas</h3>
+              <p>Metadatos, credenciales C2PA, niveles de error y una red neuronal.</p>
+            </li>
+            <li className="portada-paso" data-aparecer style={{ '--orden': 2 }}>
+              <IlustracionInforme clase="portada-paso__ilustracion" />
+              <h3>Descargás el informe</h3>
+              <p>Breve, por rubro, sellado en Hedera y verificable con un código.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section
+        id="solucion"
+        className="portada-seccion portada-seccion--fondo"
+        aria-labelledby="titulo-solucion"
+      >
         <div className="portada-contenedor">
           <div className="portada-titulo-doble" data-aparecer>
             <div className="portada-cabeza">
@@ -495,9 +552,7 @@ export default function PaginaPortada() {
                 data-aparecer
                 style={{ '--orden': indice }}
               >
-                <span className="portada-celda__icono">
-                  <Icono nombre={solucion.icono} tamanio={28} />
-                </span>
+                <solucion.Ilustracion clase="portada-celda__ilustracion" />
                 <h3>{solucion.titulo}</h3>
                 <p>{solucion.texto}</p>
               </article>
@@ -527,9 +582,7 @@ export default function PaginaPortada() {
                 data-aparecer
                 style={{ '--orden': indice }}
               >
-                <span className="portada-segmento__icono">
-                  <Icono nombre={segmento.icono} tamanio={26} />
-                </span>
+                <segmento.Ilustracion clase="portada-segmento__ilustracion" />
                 <h3>{segmento.titulo}</h3>
                 <p>{segmento.texto}</p>
                 <Link to={segmento.enlace}>
