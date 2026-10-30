@@ -1,5 +1,5 @@
 /**
- * Pruebas de la portada pública (funcionalidad 033).
+ * Pruebas de la portada pública (funcionalidades 033 y 034).
  */
 import { screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
@@ -30,18 +30,25 @@ describe('portada pública', () => {
     simularApi(PLANES)
     renderizarEn('/')
     expect(
-      await screen.findByRole('heading', { level: 1, name: /Revisá cada foto del caso/ }),
+      await screen.findByRole('heading', { level: 1, name: /Esa foto es real\? Sabelo en minutos/ }),
     ).toBeInTheDocument()
     for (const titulo of [
-      /Probar que no se editó/,
-      /confiar en una imagen/,
-      /imágenes como prueba/,
-      /Elegí tu plan/,
+      /Cuatro miradas sobre cada foto/,
+      /Para abogados y estudios/,
+      /Para aseguradoras/,
+      /Empezá en tres pasos/,
+      /Empezá gratis y sumá a tu equipo/,
     ]) {
       expect(screen.getByRole('heading', { level: 2, name: titulo })).toBeInTheDocument()
     }
     expect(screen.getByText(/no emite veredictos/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Iniciar sesión' })).toHaveAttribute('href', '/iniciar-sesion')
+    // La portada habla de beneficios: no nombra proveedores ni la infraestructura.
+    expect(document.body.textContent).not.toMatch(/AWS|Hedera|SHA-256|Irlanda/)
+    expect(screen.getByRole('link', { name: /Registrar mi aseguradora/ })).toHaveAttribute(
+      'href',
+      '/registro?tipo=aseguradora',
+    )
   })
 
   it('con sesión, la raíz sigue siendo el Inicio (CA1)', async () => {
@@ -51,13 +58,13 @@ describe('portada pública', () => {
     })
     renderizarEn('/')
     expect(await screen.findByRole('heading', { name: 'Hola, Ana' })).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: /Elegí tu plan/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /Empezá gratis y sumá/ })).not.toBeInTheDocument()
   })
 
   it('los planes llevan al registro con el camino y el plan elegidos (CA2, CA3)', async () => {
     simularApi({ ...CON_SESION, ...PLANES })
     const { usuario } = renderizarEn('/presentacion')
-    const planes = (await screen.findByRole('heading', { name: /Elegí tu plan/ })).closest('section')
+    const planes = (await screen.findByRole('heading', { name: /Empezá gratis y sumá/ })).closest('section')
 
     expect(await within(planes).findByText('Hasta 25 miembros')).toBeInTheDocument()
     expect(within(planes).getAllByText('A confirmar')).toHaveLength(2)
