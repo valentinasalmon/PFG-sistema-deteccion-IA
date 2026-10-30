@@ -42,18 +42,18 @@ Cada imagen se guarda en **tres versiones** (original, WhatsApp y captura). No h
 
 ## Las escenas
 
-| # | Escena | Prefijo del nombre |
-|---|---|---|
-| 1 | Choque de auto (abolladura, golpe) | `01-choque` |
-| 2 | Rayón o daño leve en un auto | `02-rayon` |
-| 3 | Vidrio roto (parabrisas, ventanilla, ventana) | `03-vidrio` |
-| 4 | Lesión en una persona (moretón, raspón, corte, quemadura, yeso) | `04-lesion` |
-| 5 | Humedad o rotura en una pared o un techo | `05-humedad` |
-| 6 | Daño por agua (piso inundado, mueble mojado) | `06-agua` |
-| 7 | Objeto dañado (celular, electrodoméstico) | `07-objeto` |
-| 8 | Documento: ticket, factura, recibo | `08-documento` |
-| 9 | Captura de una conversación de chat | `09-chat` |
-| 10 | Calle o esquina donde ocurrió un hecho | `10-calle` |
+El sistema tiene **dos tipos de caso: automovilístico y laboral** (accidentes de trabajo). Las escenas son solo de esos dos ámbitos (criterio de la autora, 2026-10-30).
+
+| # | Tipo | Escena | Prefijo del nombre |
+|---|---|---|---|
+| 1 | Automovilístico | Choque de auto o moto (abolladura, golpe) | `01-choque` |
+| 2 | Automovilístico | Rayón o daño leve | `02-rayon` |
+| 3 | Automovilístico | Vidrio roto (parabrisas, ventanilla, óptica) | `03-vidrio` |
+| 4 | Automovilístico | Lugar del siniestro (esquina, calle, ruta) | `04-calle` |
+| 5 | Automovilístico y laboral | Lesión en una persona (moretón, raspón, corte, quemadura, fractura con yeso, vendaje) | `05-lesion` |
+| 6 | Laboral | Lugar del accidente de trabajo (obra, andamio, escalera, fábrica, depósito, taller) | `06-lugar-trabajo` |
+| 7 | Laboral | Máquina, herramienta o elemento de protección dañado (casco, guante, amoladora, escalera rota) | `07-herramienta` |
+| 8 | Ambos (opcional) | Documento: certificado médico, constancia de la ART, presupuesto de taller | `08-documento` |
 
 ## Prompts con partes intercambiables
 
@@ -74,7 +74,10 @@ Cada prompt tiene **[partes entre corchetes]** que se cambian en cada imagen, el
 | **[persona]** | una mujer joven, un hombre joven, una mujer adulta, un hombre adulto, una persona mayor, un adolescente |
 | **[parte del cuerpo]** | antebrazo, mano, rodilla, pierna, hombro, espalda, tobillo, frente (sin mostrar la cara completa) |
 | **[lesión]** | moretón violeta, moretón amarillento de varios días, raspón, corte con puntos, quemadura leve, inflamación, yeso, vendaje |
-| **[ambiente]** | dormitorio, cocina, baño, living, local comercial, oficina |
+| **[ambiente]** | consultorio, guardia de un hospital, casa, vestuario de una fábrica |
+| **[trabajo]** | albañil en una obra, operario de fábrica, repartidor en moto, mecánico de taller, electricista, empleada de depósito, cocinero, enfermera |
+| **[lugar de trabajo]** | una obra en construcción, un andamio, una fábrica, un depósito con estanterías, un taller mecánico, la cocina de un restaurante, un campo |
+| **[accidente laboral]** | caída de una escalera, caída de un andamio, corte con una amoladora, golpe con una máquina, quemadura con aceite, resbalón en un piso mojado, aplastamiento de un pie |
 
 **Diversidad de tonos de piel:** repartir las lesiones en partes iguales entre los seis tonos de la lista, que siguen de forma aproximada la escala de Fitzpatrick usada en dermatología. Un moretón se ve muy distinto en piel clara y en piel oscura, y un sistema que solo funciona bien con piel clara sería injusto. Hacer lo mismo con las fotos reales, en la medida de lo posible.
 
@@ -82,14 +85,12 @@ Cada prompt tiene **[partes entre corchetes]** que se cambian en cada imagen, el
 
 1. **Choque:** «Foto realista tomada con un celular del [parte del auto] [daño] de un [auto] [color] después de un choque, en [lugar], [luz], tomada [ángulo]. Que parezca una foto común, sin filtros.»
 2. **Rayón:** «Foto de celular de la [parte del auto] [rayada / con la pintura saltada] de un [auto] [color] estacionado en [lugar], [luz], [ángulo].»
-3. **Vidrio:** «Foto de celular del [parabrisas astillado / la ventanilla trasera rota / el vidrio de la ventana partido] de un [auto o una casa], [luz], [ángulo], con vidrios en el piso.»
-4. **Lesión:** «Foto tomada con un celular de un [lesión] en el/la [parte del cuerpo] de [persona] de piel [tono de piel], luz de [ambiente], sin mostrar la cara. Que parezca una foto casera para mostrarle a un médico.»
-5. **Humedad:** «Foto realista de una mancha de humedad [en la esquina del techo / en la pared, con pintura descascarada / con moho negro] de un/a [ambiente], [luz], tomada con el celular.»
-6. **Agua:** «Foto de celular del piso de [ambiente] inundado con [dos centímetros de agua / un charco grande], [con un mueble mojado / con cajas mojadas], [luz].»
-7. **Objeto:** «Foto de celular de [un celular Samsung / un iPhone / un televisor / una heladera] con [la pantalla rota en forma de telaraña / una abolladura / la puerta rota] sobre [una mesa de madera / el piso], [luz].»
-8. **Documento:** «Foto de [un ticket de supermercado / una factura de taller mecánico / un recibo de pago] [arrugado / doblado] sobre [una mesa / el tablero de un auto], tomada con el celular, con letra legible y montos en pesos argentinos.»
-9. **Chat:** «Captura de pantalla de una conversación de WhatsApp en español rioplatense entre dos personas que hablan de [un choque / un daño en la casa / un reclamo al seguro], con hora y doble tilde azul.»
-10. **Calle:** «Foto tomada con un celular de [una esquina con semáforo / una calle con autos estacionados / una ruta] en [lugar], [luz], [ángulo], como la que sacaría un testigo.»
+3. **Vidrio:** «Foto de celular del [parabrisas astillado / la ventanilla trasera rota / la óptica delantera partida] de un [auto] [color], [luz], [ángulo], con vidrios en el piso.»
+4. **Lugar del siniestro:** «Foto tomada con un celular de [una esquina con semáforo / una calle con autos estacionados / una ruta con banquina] en [lugar], [luz], [ángulo], como la que sacaría un testigo después de un choque.»
+5. **Lesión:** «Foto tomada con un celular de un [lesión] en el/la [parte del cuerpo] de [persona] de piel [tono de piel], [con ropa de trabajo / con ropa común], en [ambiente], sin mostrar la cara. Que parezca una foto casera para mostrarle a un médico o a la ART.»
+6. **Lugar del accidente de trabajo:** «Foto realista tomada con un celular de [lugar de trabajo] justo después de [accidente laboral], [luz], [ángulo], sin personas o con personas de espaldas. Que parezca la foto que saca un compañero de trabajo.»
+7. **Herramienta o protección dañada:** «Foto de celular de [un casco de obra partido / un guante de trabajo roto y manchado / una amoladora con el disco roto / una escalera de aluminio doblada] en el piso de [lugar de trabajo], [luz].»
+8. **Documento (opcional):** «Foto de [un certificado médico / una constancia de una ART / un presupuesto de un taller mecánico] [doblado / sobre una mesa], tomada con el celular, con letra legible, en español de Argentina.»
 
 ### Fotos reales editadas con IA (CA13)
 
@@ -97,7 +98,8 @@ Cada prompt tiene **[partes entre corchetes]** que se cambian en cada imagen, el
 2. Subirla a **Gemini**, **ChatGPT** o **Meta AI** y pedir una edición localizada:
    - «Agregale una abolladura grande en la [parte del auto], que se vea real.»
    - «Agregá un [lesión] en el/la [parte del cuerpo].»
-   - «Agregá una mancha de humedad en la pared de la derecha.»
+   - «Agregale un yeso en el brazo.»
+   - «Hacé que la escalera aparezca doblada y caída en el piso.»
    - «Hacé que el parabrisas aparezca roto.»
 3. Guardar la imagen editada que devuelve la herramienta.
 
@@ -108,10 +110,10 @@ Cada prompt tiene **[partes entre corchetes]** que se cambian en cada imagen, el
 | Fuente | Escenas que cubre | Estado |
 |---|---|---|
 | **CarDD**: 4 000 fotos reales de autos dañados | 1, 2, 3 | La incorpora el agente; licencia de investigación a aceptar |
-| **Fotos propias con el celular** (complemento): autos estacionados con golpes o rayones, paredes con humedad, objetos rotos, tickets, calles | 1, 2, 3, 5, 6, 7, 8, 10 | Opcional, de a poco. Unas **30 a 50** ya suman mucho |
-| **Fotos de familiares o conocidos** con consentimiento: moretones, raspones, yesos (sin cara) | 4 | Opcional |
-| Capturas de chats propios con nombres tapados | 9 | Opcional |
-| Conjuntos con escenas de lesiones o viviendas | 4, 5, 6 | Pendiente de buscar: la autora pasa enlaces y el agente los verifica |
+| **Conjuntos de seguridad en obras** (fotos reales de obras y fábricas) | 6, 7 | Pendiente de buscar y verificar |
+| **Conjuntos de heridas o lesiones** (de uso médico o académico) | 5 | Pendiente de buscar y verificar; cuidado con la privacidad |
+| **Fotos propias con el celular** (complemento): autos estacionados con golpes o rayones, calles, obras vistas desde la vereda, herramientas | 1, 2, 3, 4, 6, 7 | Opcional, de a poco. Unas **30 a 50** ya suman mucho |
+| **Fotos de familiares o conocidos** con consentimiento: moretones, raspones, yesos (sin cara) | 5 | Opcional |
 
 **No** se bajan fotos sueltas de internet: pueden estar generadas o editadas y su origen no se puede verificar.
 
@@ -127,6 +129,20 @@ Cada prompt tiene **[partes entre corchetes]** que se cambian en cada imagen, el
 | **original** | El archivo tal cual lo descargaste de la herramienta o lo sacó el celular. Sin abrirlo ni guardarlo en ningún editor |
 | **whatsapp** | Enviarlo **como foto** (no como documento) a tu chat «Mensajes para mí» de WhatsApp y descargar la versión recibida |
 | **captura** | Abrir la imagen en pantalla completa en el celular y sacar una **captura de pantalla** |
+
+## ¿Se comprimen las imágenes al guardarlas?
+
+**Google Drive no comprime nada:** guarda el archivo tal cual, se suba desde la web, desde la aplicación del celular o desde Google Drive para computadoras. Lo que sí comprime, y hay que evitar para la versión **original**:
+
+| Comprime | Cómo evitarlo |
+|---|---|
+| **Google Fotos** en calidad «Ahorro de almacenamiento» | Para pasar fotos del celular, usar la aplicación de **Drive** (botón **+ → Subir**) o un cable USB, no Google Fotos |
+| **WhatsApp, Telegram, Instagram** | Solo se usan a propósito para la variante **whatsapp** |
+| Abrir la imagen en un editor y «Guardar» o «Guardar como» | No abrirla en ningún editor: descargarla y moverla |
+| Algunos clientes de correo y la opción «enviar en tamaño reducido» | No pasar las imágenes por correo |
+| La copia que muestra el chat de ChatGPT, Gemini o Copilot al hacer clic derecho → «Copiar imagen» | Usar siempre el botón **Descargar** de la herramienta |
+
+Descargar a la computadora y después subir a Drive **no cambia el archivo**. Para comprobarlo, el tamaño en KB tiene que ser el mismo en la computadora y en Drive.
 
 ## Dónde se guarda
 
