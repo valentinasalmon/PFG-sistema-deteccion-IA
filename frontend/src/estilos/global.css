@@ -5301,3 +5301,243 @@ a.flujo-caso__titulo:hover {
 .formulario__agregar {
   align-self: flex-start;
 }
+
+/* Buscador «Buscar o ir a…» (Ctrl K) */
+.buscador-rapido__abrir {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  background: var(--fondo);
+  color: var(--tinta-2);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.buscador-rapido__abrir:hover {
+  border-color: var(--azul);
+}
+
+.buscador-rapido__abrir span {
+  flex: 1;
+  text-align: left;
+}
+
+.buscador-rapido kbd,
+.buscador-rapido__abrir kbd {
+  padding: 0.05rem 0.35rem;
+  border: 1px solid var(--linea);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--superficie);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--tinta-2);
+}
+
+.buscador-rapido {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.buscador-rapido__campo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  padding: 0 0.85rem;
+  border: 1.5px solid var(--azul);
+  border-radius: var(--radio);
+  box-shadow: 0 0 0 3px var(--azul-suave);
+  color: var(--tinta-2);
+}
+
+.buscador-rapido__campo input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--tinta);
+}
+
+.buscador-rapido__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  max-height: min(22rem, 50vh);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.buscador-rapido__opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 44px;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--radio-chico);
+  cursor: pointer;
+}
+
+.buscador-rapido__opcion[aria-selected='true'] {
+  background: var(--azul-suave);
+}
+
+.buscador-rapido__icono {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--fondo);
+  color: var(--azul);
+}
+
+.buscador-rapido__texto {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.buscador-rapido__texto small {
+  overflow: hidden;
+  color: var(--tinta-2);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.buscador-rapido__grupo {
+  flex: none;
+  color: var(--tinta-2);
+  font-size: 0.75rem;
+}
+
+.buscador-rapido__estado:empty {
+  display: none;
+}
+
+.buscador-rapido__estado,
+.buscador-rapido__ayuda {
+  margin: 0;
+  color: var(--tinta-2);
+  font-size: 0.8rem;
+}
+
+@media (width <= 720px) {
+  .buscador-rapido__abrir kbd,
+  .buscador-rapido__ayuda {
+    display: none;
+  }
+}
+
+/* Comparador de la foto con su mapa de niveles de error */
+.comparador {
+  max-width: 36rem;
+}
+
+.comparador__lienzo {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radio);
+  background-color: #26302b;
+  touch-action: pan-y;
+}
+
+.comparador__foto,
+.comparador__mapa {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.comparador__mapa {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  object-fit: contain;
+  clip-path: inset(0 0 0 var(--corte));
+}
+
+.comparador__foto {
+  object-fit: contain;
+}
+
+.comparador__linea {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--corte);
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--lima);
+  box-shadow: 0 0 0 1px rgb(20 32 26 / 35%);
+  pointer-events: none;
+}
+
+.comparador__linea::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--lima);
+  border-radius: 50%;
+  background: var(--bosque);
+  transform: translate(-50%, -50%);
+}
+
+.comparador__rotulo {
+  position: absolute;
+  top: 0.5rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgb(20 32 26 / 75%);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.comparador__rotulo--foto {
+  left: 0.5rem;
+}
+
+.comparador__rotulo--mapa {
+  right: 0.5rem;
+}
+
+.comparador__control {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+}
+
+.comparador__lienzo:has(.comparador__control:focus-visible) {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+
+.comparador__ayuda {
+  margin: 0.35rem 0 0;
+  text-align: center;
+}
