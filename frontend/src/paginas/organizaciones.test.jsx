@@ -15,6 +15,7 @@ const ORGANIZACION = {
   correo_contacto: null,
   telefono: '11 5555-0000',
   mi_rol: 'referente',
+  estado: 'activa',
   plan: PLAN,
 }
 const ANA = {
@@ -138,39 +139,79 @@ describe('mis organizaciones', () => {
 })
 
 describe('crear organización', () => {
-  it('crea un estudio jurídico (CA1; RN40)', async () => {
+  const PLANES = {
+    'GET /api/catalogos/planes': {
+      cuerpo: {
+        planes: [
+          { codigo: 'basico', nombre: 'Organización Básica', miembros: 5, analisis_mes: 300, imagenes_por_caso: 50, precio: null },
+          { codigo: 'profesional', nombre: 'Organización Profesional', miembros: 25, analisis_mes: 1500, imagenes_por_caso: 100, precio: null },
+        ],
+      },
+    },
+  }
+
+  async function completarDatos(usuario, nombre = 'Estudio Pérez') {
+    await usuario.type(await screen.findByLabelText('Nombre'), nombre)
+    await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
+  }
+
+  it('crea un estudio jurídico con su plan y lleva al pago (CA1; RN40; CA9 de la 032)', async () => {
     const { solicitudes } = apiDeOrganizacion({
       invitaciones: [],
       miembros: [ANA],
-      extra: { 'POST /api/organizaciones': { estado: 201, cuerpo: { organizacion: ORGANIZACION } } },
+      extra: {
+        ...PLANES,
+        'POST /api/organizaciones': {
+          estado: 201,
+          cuerpo: { organizacion: { ...ORGANIZACION, estado: 'pago_pendiente' }, pago: { token: 'tok' } },
+        },
+        'GET /api/pagos/tok': {
+          cuerpo: {
+            cobro: {
+              referencia: 'EVD-AAAAAA', estado: 'pendiente', motivo: 'alta',
+              plan: { codigo: 'profesional', nombre: 'Organización Profesional', precio: null },
+              organizacion: { id: 3, nombre: 'Estudio Pérez', tipo: 'estudio_juridico' },
+              proveedor: 'Cresium (simulado)', titular: 'evidentIA', cvu: '0000123400000000000009',
+              alias: 'EVIDENTIA.AAAAAA', permite_simular: true, acreditado_en: null,
+            },
+          },
+        },
+      },
     })
     const { usuario } = renderizarEn('/organizaciones/nueva')
-    await usuario.type(await screen.findByLabelText('Nombre'), 'Estudio Pérez')
+    expect(await screen.findByText('Datos del estudio')).toHaveAttribute('aria-current', 'step')
+    await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
+    expect(screen.getByText('Escribí el nombre del estudio.')).toBeInTheDocument()
     await usuario.type(screen.getByLabelText(/Teléfono/), '11 5555-0000')
-    await usuario.click(screen.getByRole('button', { name: 'Crear estudio jurídico' }))
-    expect(await screen.findByText(/Ya podés invitar a tu equipo/)).toBeInTheDocument()
+    await completarDatos(usuario)
+    await usuario.click(await screen.findByRole('radio', { name: /Organización Profesional/ }))
+    await usuario.click(screen.getByRole('button', { name: 'Ir al pago' }))
+
+    expect(await screen.findByRole('heading', { name: 'Pagá el plan por transferencia' })).toBeInTheDocument()
     expect(solicitudes.find((s) => s.metodo === 'POST' && s.ruta === '/api/organizaciones').cuerpo).toEqual({
       nombre: 'Estudio Pérez',
       tipo: 'estudio_juridico',
       correo_contacto: '',
       telefono: '11 5555-0000',
+      plan: 'profesional',
     })
   })
 
   it('muestra los errores del backend junto a cada campo', async () => {
     simularApi({
       ...CON_SESION,
+      ...PLANES,
       'POST /api/organizaciones': {
         estado: 400,
-        cuerpo: { mensaje: 'Revisá los datos marcados.', errores: { correo_contacto: 'El correo electrónico no es válido.' } },
+        cuerpo: { mensaje: 'Revisá los datos marcados.', errores: { nombre: 'Ya tenés un estudio con ese nombre.' } },
       },
     })
     const { usuario } = renderizarEn('/organizaciones/nueva')
-    await usuario.type(await screen.findByLabelText('Nombre'), 'X')
-    await usuario.type(screen.getByLabelText(/Correo de contacto/), 'mal')
-    await usuario.click(screen.getByRole('button', { name: 'Crear estudio jurídico' }))
-    expect(await screen.findByText('El correo electrónico no es válido.')).toBeInTheDocument()
-    expect(screen.getByLabelText(/Correo de contacto/)).toHaveAttribute('aria-invalid', 'true')
+    await completarDatos(usuario, 'X')
+    await screen.findByRole('radio', { name: /Organización Básica/ })
+    await usuario.click(screen.getByRole('button', { name: 'Ir al pago' }))
+    expect(await screen.findByText('Ya tenés un estudio con ese nombre.')).toBeInTheDocument()
+    expect(screen.getByLabelText('Nombre')).toHaveAttribute('aria-invalid', 'true')
   })
 })
 
@@ -247,7 +288,7 @@ describe('pantalla de la organización como Referente', () => {
     expect(solicitudes.some((s) => s.metodo === 'DELETE')).toBe(false)
 
     await usuario.click(screen.getByRole('button', { name: 'Cancelar invitación' }))
-    await usuario.click(within(screen.getByRole('group', { name: /¿Cancelar la invitación/ })).getByRole('button', { name: 'Cancelar invitación' }))
+    await usuario.click(within(screen.getByRole('dialog', { name: /¿Cancelar la invitación/ })).getByRole('button', { name: 'Cancelar invitación' }))
     expect(await screen.findByText('La invitación fue cancelada.')).toBeInTheDocument()
   })
 
@@ -297,7 +338,7 @@ describe('pantalla de la organización como Referente', () => {
     })
     const { usuario } = renderizarEn('/organizaciones/3')
     await usuario.click(await screen.findByRole('button', { name: 'Desvincular' }))
-    await usuario.click(within(screen.getByRole('group', { name: '¿Desvincular a Beto Paz?' })).getByRole('button', { name: 'Desvincular' }))
+    await usuario.click(within(screen.getByRole('dialog', { name: '¿Desvincular a Beto Paz?' })).getByRole('button', { name: 'Desvincular' }))
     expect(await screen.findByText('El miembro fue desvinculado de la organización.')).toBeInTheDocument()
 
     await usuario.click(screen.getByRole('button', { name: 'Designar Referente' }))
@@ -514,35 +555,78 @@ describe('enlace de invitación', () => {
   })
 })
 
-describe('plan y pago simulado (funcionalidad 014)', () => {
+describe('plan y pago del cambio de plan (funcionalidades 014 y 032)', () => {
   const PLAN_ORG = {
     codigo: 'basico', nombre: 'Organización Básico', puede_cambiar: true, renovacion: '2026-11-01',
+    estado_organizacion: 'activa',
     limites: { miembros: 5, analisis_mes: 100, imagenes_por_caso: 50 },
     consumo: { miembros: 2, analisis_mes: 7 },
     disponibles: [
-      { codigo: 'basico', nombre: 'Organización Básico', miembros: 5, analisis_mes: 100, imagenes_por_caso: 50, precio: '[PRECIO A DEFINIR]' },
-      { codigo: 'profesional', nombre: 'Organización Profesional', miembros: 25, analisis_mes: 500, imagenes_por_caso: 100, precio: '[PRECIO A DEFINIR]' },
+      { codigo: 'basico', nombre: 'Organización Básico', miembros: 5, analisis_mes: 100, imagenes_por_caso: 50, precio: null },
+      { codigo: 'profesional', nombre: 'Organización Profesional', miembros: 25, analisis_mes: 500, imagenes_por_caso: 100, precio: null },
     ],
   }
+  const COBRO = {
+    referencia: 'EVD-BBBBBB', estado: 'pendiente', motivo: 'cambio_plan',
+    plan: { codigo: 'profesional', nombre: 'Organización Profesional', precio: null },
+    organizacion: { id: 3, nombre: 'Estudio Pérez', tipo: 'estudio_juridico' },
+    proveedor: 'Cresium (simulado)', titular: 'evidentIA', cvu: '0000123400000000000010',
+    alias: 'EVIDENTIA.BBBBBB', permite_simular: true, acreditado_en: null,
+  }
 
-  it('muestra el consumo y cambia de plan con el pago simulado (RF20)', async () => {
+  it('muestra el consumo y el cambio de plan lleva al pago (RF20; CA8 de la 032)', async () => {
     const { solicitudes } = apiDeOrganizacion({
       extra: {
         'GET /api/organizaciones/3/plan': { cuerpo: { plan: PLAN_ORG } },
-        'POST /api/organizaciones/3/plan': {
-          cuerpo: { plan: { ...PLAN_ORG, codigo: 'profesional', nombre: 'Organización Profesional' }, mensaje: 'Listo: el plan nuevo ya está activo. El pago fue simulado; no se cobró nada.' },
-        },
+        'POST /api/organizaciones/3/plan': { estado: 201, cuerpo: { pago: { token: 'tok-cambio' } } },
+        'GET /api/pagos/tok-cambio': { cuerpo: { cobro: COBRO } },
       },
     })
     const { usuario } = renderizarEn('/organizaciones/3')
 
     expect(await screen.findByRole('meter', { name: 'Análisis de este mes' })).toHaveAttribute('aria-valuenow', '7')
     await usuario.click(screen.getByRole('button', { name: 'Cambiar de plan' }))
-    await usuario.click(screen.getByRole('radio', { name: /Organización Profesional/ }))
-    expect(screen.getByText(/no se piden datos de tarjeta y no se cobra nada/)).toBeInTheDocument()
-    await usuario.click(screen.getByRole('button', { name: 'Confirmar el cambio de plan' }))
+    expect(screen.getByRole('radio', { name: /Organización Profesional/ })).toBeChecked()
+    expect(screen.getByText(/rige cuando se acredita la transferencia/)).toBeInTheDocument()
+    await usuario.click(screen.getByRole('button', { name: 'Ir al pago' }))
 
-    expect(await screen.findByText(/El pago fue simulado/)).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Pagá el plan por transferencia' })).toBeInTheDocument()
     expect(solicitudes.find((s) => s.metodo === 'POST').cuerpo).toEqual({ plan: 'profesional' })
+  })
+
+  it('con el pago pendiente no deja invitar y ofrece retomarlo (CA9 de la 032)', async () => {
+    const { solicitudes } = apiDeOrganizacion({
+      organizacion: { ...ORGANIZACION, estado: 'pago_pendiente' },
+      extra: {
+        'GET /api/organizaciones/3/plan': { cuerpo: { plan: { ...PLAN_ORG, estado_organizacion: 'pago_pendiente' } } },
+        'POST /api/organizaciones/3/cobro': { estado: 201, cuerpo: { pago: { token: 'tok-retomado' } } },
+        'GET /api/pagos/tok-retomado': { cuerpo: { cobro: { ...COBRO, motivo: 'alta' } } },
+      },
+    })
+    const { usuario } = renderizarEn('/organizaciones/3')
+
+    expect(await screen.findByText('Falta el pago del plan.')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Invitar miembros' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Cambiar de plan' })).not.toBeInTheDocument()
+    await usuario.click(screen.getByRole('button', { name: 'Retomar el pago' }))
+    expect(await screen.findByRole('heading', { name: 'Pagá el plan por transferencia' })).toBeInTheDocument()
+    expect(solicitudes.some((s) => s.metodo === 'POST' && s.ruta === '/api/organizaciones/3/cobro')).toBe(true)
+  })
+
+  it('con los lugares ocupados no deja invitar y sugiere otro plan (CA10 de la 032)', async () => {
+    const otros = [3, 4, 5].map((n) => ({ ...BETO, id_usuario: n, correo: `m${n}@ejemplo.com` }))
+    apiDeOrganizacion({
+      miembros: [ANA, BETO, ...otros.slice(0, 2)],
+      extra: {
+        'GET /api/organizaciones/3/plan': {
+          cuerpo: { plan: { ...PLAN_ORG, consumo: { miembros: 5, analisis_mes: 0 } } },
+        },
+      },
+    })
+    renderizarEn('/organizaciones/3')
+
+    expect(await screen.findByText(/Los lugares del plan están ocupados/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Enviar invitación' })).toBeDisabled()
+    expect(await screen.findByRole('button', { name: 'pasá a un plan con más lugares' })).toBeInTheDocument()
   })
 })

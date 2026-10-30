@@ -235,6 +235,13 @@ El cliente se crea con tu cuenta de Google en https://console.cloud.google.com. 
    **Crear**. Google muestra el **ID de cliente** y el **secreto**: dejá la ventana abierta.
    Si Google rechaza la dirección `sslip.io`, probá solo en local hasta comprar el dominio (CP-30). Con el dominio, agregás `https://tu-dominio/api/google/retorno`.
 5. **En local**: en `backend/.env` agregá `GOOGLE_ID_CLIENTE=...` y `GOOGLE_SECRETO_CLIENTE=...` y reiniciá `flask run`. El archivo `.env` no se sube.
+   - Para comprobarlo: `curl -s http://localhost:5000/api/google/estado` tiene que responder `{"habilitado": true}`.
+   - Si responde `false`, revisá que las dos claves tengan valor sin mostrarlas:
+     ```bash
+     python -c "from dotenv import dotenv_values; v=dotenv_values('.env'); print({k: len(v.get(k) or '') for k in ('GOOGLE_ID_CLIENTE','GOOGLE_SECRETO_CLIENTE')})"
+     ```
+     El ID tiene unos 72 caracteres y el secreto, unos 35.
+   - Si las dos tienen valor y sigue en `false`, quedó abierto un backend viejo que arrancó antes de cargar las claves: el modo de depuración se reinicia cuando cambia el código, no cuando cambia el `.env`. Cerralo con `pkill -f "flask --app wsgi run"`, comprobá que `ss -ltnp | grep 5000` no muestre nada y volvé a arrancarlo.
 6. **En producción**:
    - Guardá el secreto cifrado en SSM (pegalo y apretá Enter; no se ve nada):
      ```bash

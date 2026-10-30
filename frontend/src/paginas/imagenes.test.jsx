@@ -86,7 +86,8 @@ describe('imágenes del caso', () => {
     expect(vista).toHaveAttribute('src', '/api/archivos/token-miniatura')
     const zona = seccion()
     expect(within(zona).getByRole('heading', { name: 'Imágenes cargadas (1 de 20)' })).toBeInTheDocument()
-    expect(within(zona).getByText(/JPEG · 4000 × 3000 px · 1,5 MB/)).toBeInTheDocument()
+    expect(within(zona).getByText('JPEG · 1,5 MB')).toBeInTheDocument()
+    expect(within(zona).getByText('4000 × 3000 px')).toBeInTheDocument()
     expect(within(zona).getByText(`SHA-256: ${'a'.repeat(64)}`)).toBeInTheDocument()
     expect(within(zona).getByText(/Cargada el 19\/10\/2026 por Ana López/)).toBeInTheDocument()
   })
@@ -159,7 +160,7 @@ describe('imágenes del caso', () => {
 
     await screen.findByRole('img', { name: 'Vista previa de frente.jpg' })
     await usuario.click(within(seccion()).getByRole('button', { name: 'Eliminar' }))
-    await usuario.click(within(seccion()).getByRole('button', { name: 'Eliminar' }))
+    await usuario.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Eliminar' }))
 
     expect(await screen.findByText('Se eliminó «frente.jpg».')).toBeInTheDocument()
     expect(screen.getByText('Todavía no hay imágenes en este caso.')).toBeInTheDocument()

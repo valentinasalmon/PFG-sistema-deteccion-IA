@@ -57,6 +57,7 @@ const TRAZOS = {
     </>
   ),
   derecha: <path d="M9 6l6 6-6 6" />,
+  izquierda: <path d="M15 6l-6 6 6 6" />,
   descargar: <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />,
   imagen: (
     <>
@@ -115,6 +116,19 @@ const TRAZOS = {
     </>
   ),
   marca: <path d="M5 12l5 5L20 7" />,
+  // Funcionalidad 033: portada.
+  capas: (
+    <>
+      <path d="M12 3l9 5-9 5-9-5z" />
+      <path d="M3 13l9 5 9-5" />
+    </>
+  ),
+  escudo: (
+    <>
+      <path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z" />
+      <path d="M8.5 12l2.5 2.5 4.5-5" />
+    </>
+  ),
 }
 
 /**

@@ -157,6 +157,10 @@ class ServicioGoogle:
     def completar_registro(self, pendiente, solicitud):
         """Crea la cuenta con lo que completó la persona e inicia sesión (RF52 CA1).
 
+        Returns:
+            ``(usuario, token)``: el token del enlace de pago si la persona
+            registró un estudio jurídico o una aseguradora (032), o None.
+
         Raises:
             NoEncontrado: si no hay un registro con Google pendiente o venció.
             ErrorValidacion: si faltan datos o el correo ya tiene cuenta.
@@ -166,5 +170,5 @@ class ServicioGoogle:
                 "Pasó demasiado tiempo. Volvé a elegir \"Continuar con Google\".",
                 codigo="registro_google_vencido",
             )
-        usuario = self.cuentas.registrar_con_google(solicitud, pendiente)
-        return self.sesion.autenticar_con_google(usuario)
+        usuario, token = self.cuentas.registrar_con_google(solicitud, pendiente)
+        return self.sesion.autenticar_con_google(usuario), token

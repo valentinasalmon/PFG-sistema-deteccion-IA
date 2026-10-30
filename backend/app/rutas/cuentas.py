@@ -34,9 +34,15 @@ def _servicio():
 
 @cuentas_bp.post("/registro")
 def registrar():
-    """Registra una cuenta. La respuesta es igual si el correo ya existía (RF01 CA3)."""
-    _servicio().registrar(validar(SolicitudRegistro, request.get_json(silent=True)))
-    return jsonify({"mensaje": MENSAJE_REGISTRO}), 201
+    """Registra una cuenta. La respuesta es igual si el correo ya existía (RF01 CA3).
+
+    Si se registró un estudio jurídico o una aseguradora, trae el token del
+    enlace de pago del plan (funcionalidad 032).
+    """
+    token = _servicio().registrar(validar(SolicitudRegistro, request.get_json(silent=True)))
+    return jsonify({
+        "mensaje": MENSAJE_REGISTRO, "pago": {"token": token} if token else None,
+    }), 201
 
 
 @cuentas_bp.post("/verificacion")

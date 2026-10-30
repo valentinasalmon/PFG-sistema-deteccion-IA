@@ -10,7 +10,7 @@ import io
 import pytest
 from PIL import Image
 
-from pruebas.conftest import crear_estudio, entradas_auditoria
+from pruebas.conftest import crear_estudio, entradas_auditoria, pagar
 
 CASO = {"espacio": "personal", "tipo": "automovilistico", "fecha_hecho": "2026-09-01",
         "lugar": "Av. Corrientes 1234"}
@@ -75,14 +75,20 @@ def test_plan_y_consumo_de_la_organizacion(ana, estudio):
 
 
 def test_cambio_de_plan_con_pago_simulado(aplicacion, ana, estudio):
-    """CA2: se aplica de inmediato y queda auditado como pago simulado."""
+    """CA2 y 032 (CA8): el plan nuevo rige recién al acreditarse el pago."""
     respuesta = ana.post(f"/api/organizaciones/{estudio}/plan", json={"plan": "profesional"})
 
-    assert respuesta.status_code == 200
-    assert "simulado" in respuesta.get_json()["mensaje"]
-    assert respuesta.get_json()["plan"]["limites"]["miembros"] == 25
+    assert respuesta.status_code == 201
+    ruta = f"/api/organizaciones/{estudio}/plan"
+    assert ana.get(ruta).get_json()["plan"]["codigo"] == "basico"
     entrada = entradas_auditoria(aplicacion, "organizacion.cambio_plan")[-1]
-    assert entrada["detalle"] == {"anterior": "basico", "nuevo": "profesional", "pago": "simulado"}
+    assert entrada["detalle"] == {"anterior": "basico", "nuevo": "profesional", "pago": "pendiente"}
+
+    cobro = pagar(ana, respuesta)
+    assert cobro["estado"] == "acreditado" and cobro["motivo"] == "cambio_plan"
+    plan = ana.get(ruta).get_json()["plan"]
+    assert plan["codigo"] == "profesional" and plan["limites"]["miembros"] == 25
+    assert ana.post(ruta, json={"plan": "profesional"}).status_code == 409
 
 
 def test_solo_el_referente_cambia_el_plan(beto, estudio):

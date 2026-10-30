@@ -3823,3 +3823,1263 @@ details.resultado-imagen > .integridad {
     transition: none;
   }
 }
+
+/* --- Acceso (028, frames 9a y 9c): ventajas, contraseña visible y celular --- */
+.acceso__ventajas {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 30rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.acceso__ventajas li {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: 0.875rem;
+  align-items: start;
+}
+
+.acceso__ventajas strong {
+  display: block;
+}
+
+.acceso__ventaja-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid rgb(164 203 62 / 45%);
+  border-radius: var(--radio);
+  color: var(--lima);
+}
+
+.acceso__ventaja-texto {
+  display: block;
+  font-size: 0.875rem;
+  color: #c9d6ce;
+}
+
+.acceso__rubros {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.acceso__rubros li {
+  padding: 0.25rem 0.875rem;
+  border: 1px solid rgb(255 255 255 / 25%);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  color: #e6efe0;
+}
+
+.tarjeta-acceso__bajada {
+  margin: 0 0 1.25rem;
+  color: var(--tinta-2);
+}
+
+.campo__cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.campo__enlace {
+  font-size: 0.875rem;
+}
+
+.campo-contrasenia {
+  position: relative;
+}
+
+.campo-contrasenia .campo__control {
+  width: 100%;
+  padding-right: 6.5rem;
+}
+
+.campo-contrasenia__mostrar {
+  position: absolute;
+  top: 50%;
+  right: 0.25rem;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: var(--radio-chico);
+  background: none;
+  color: var(--azul);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.campo-contrasenia__mostrar:hover {
+  background: var(--azul-suave);
+}
+
+@media (width <= 48rem) {
+  .acceso__marca {
+    flex-direction: row;
+    padding: 0.875rem 1rem;
+  }
+
+  .acceso__mensaje {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    text-align: left;
+  }
+
+  .acceso__visor {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .acceso__visor img {
+    width: 7.5rem;
+  }
+
+  .acceso__escaneo,
+  .acceso__ventajas,
+  .acceso__rubros {
+    display: none;
+  }
+
+  .acceso__eslogan {
+    font-family: var(--fuente-texto);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: #cfd9d3;
+  }
+
+  .acceso__formulario {
+    padding: 1.25rem 1rem 0;
+  }
+
+  .tarjeta-acceso {
+    padding: 1.5rem 1.25rem;
+    box-shadow: none;
+  }
+}
+
+/* --- Celular (028, tercera tanda) --- */
+.tarjeta-imagen__mas > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--azul);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tarjeta-imagen__mas[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+@media (width <= 48rem) {
+  .acceso__visor {
+    flex: 0 0 auto;
+  }
+
+  .acceso__visor img {
+    width: 7.5rem;
+    max-width: none;
+  }
+
+  .informe-pdf,
+  .informe-pdf__datos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .informe-pdf__icono {
+    display: none;
+  }
+
+  .informe-pdf__datos dt {
+    margin-top: 0.375rem;
+  }
+
+  .informe-pdf .huella {
+    font-size: 0.6875rem;
+  }
+
+  .resumen-capas {
+    gap: 0.375rem;
+  }
+
+  .resumen-capas__item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .datos-en-linea {
+    flex-direction: column;
+  }
+
+  .datos-en-linea li + li::before {
+    content: none;
+  }
+
+  .zona-riesgo-filas__fila {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .zona-riesgo-filas__fila > div:first-child {
+    flex-basis: auto;
+  }
+
+  .tarjeta-imagen__datos {
+    padding: 0.625rem;
+  }
+
+  .tarjeta-imagen__datos .boton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .barra-analisis {
+    padding: 0.75rem;
+  }
+
+  .barra-analisis__texto .nota {
+    display: none;
+  }
+}
+
+/* --- Pago en el registro (funcionalidad 032) --- */
+
+/* Registro y pago: tarjeta más ancha, porque cada paso tiene más información. */
+.acceso:has(.registro-ancho) .acceso__formulario {
+  flex-grow: 2;
+}
+
+.acceso:has(.registro-ancho) .tarjeta-acceso {
+  max-width: 50rem;
+}
+
+/* Con los pasos en el panel verde, el panel se angosta y se oculta el eslogan. */
+.acceso:has(.acceso__pasos:not(:empty)) .acceso__marca {
+  flex: 0 1 25rem;
+  justify-content: flex-start;
+  padding: 2.5rem 2rem;
+}
+
+.acceso:has(.acceso__pasos:not(:empty)) .acceso__mensaje {
+  display: none;
+}
+
+.panel-pasos__titulo {
+  margin: 0 0 0.5rem;
+  font-family: var(--fuente-titulos);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.panel-pasos__bajada {
+  margin: 0 0 1.5rem;
+  color: #c9d6ce;
+}
+
+.panel-pasos__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.panel-pasos__paso {
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+  color: #c9d6ce;
+}
+
+.panel-pasos__paso strong {
+  display: block;
+  color: #fff;
+}
+
+.panel-pasos__paso--pendiente strong {
+  color: #c9d6ce;
+}
+
+.panel-pasos__detalle {
+  display: block;
+  font-size: 0.875rem;
+}
+
+.panel-pasos__numero {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid #5d7466;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.panel-pasos__paso--actual .panel-pasos__numero {
+  border-color: var(--lima);
+  color: var(--lima);
+}
+
+.panel-pasos__paso--hecho .panel-pasos__numero {
+  border-color: var(--lima);
+  background: var(--lima);
+  color: var(--tinta);
+}
+
+/* Tarjetas de elección: camino del registro y plan. */
+.selector-camino,
+.selector-plan {
+  display: grid;
+  gap: 0.875rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  border: 0;
+}
+
+.selector-camino {
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+}
+
+.selector-plan {
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.camino,
+.plan-tarjeta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border: 2px solid var(--linea);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.camino:hover,
+.plan-tarjeta:hover {
+  border-color: var(--linea-control);
+}
+
+.camino--elegido,
+.plan-tarjeta--elegida {
+  border-color: var(--azul);
+  background: var(--azul-suave);
+  box-shadow: 0 0 0 1px var(--azul);
+}
+
+.camino__control,
+.plan-tarjeta__control {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  accent-color: var(--azul);
+}
+
+.camino:has(:focus-visible),
+.plan-tarjeta:has(:focus-visible) {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+
+.camino__icono {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radio-chico);
+  background: var(--exito-fondo);
+  color: var(--verde);
+}
+
+.camino__titulo,
+.plan-tarjeta__nombre {
+  padding-right: 1.75rem;
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  line-height: 1.3;
+}
+
+.camino__descripcion {
+  color: var(--tinta-2);
+  font-size: 0.9375rem;
+}
+
+.plan-tarjeta__precio {
+  color: var(--tinta-2);
+}
+
+.plan-tarjeta__precio strong {
+  font-family: var(--fuente-titulos);
+  font-size: 1.5rem;
+  color: var(--tinta);
+}
+
+.plan-tarjeta__limites {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}
+
+.plan-tarjeta__limites li::before {
+  content: '✓';
+  margin-right: 0.5rem;
+  color: var(--verde);
+  font-weight: 700;
+}
+
+/* Pasos chicos de la creación del estudio desde Mi perfil. */
+.pasitos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+  font-weight: 600;
+  color: var(--tinta-2);
+}
+
+.pasito {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pasito--actual {
+  color: var(--tinta);
+}
+
+.pasito__numero {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 2px solid var(--linea-control);
+  border-radius: 50%;
+  font-size: 0.8125rem;
+}
+
+.pasito--actual .pasito__numero {
+  border-color: var(--azul);
+  color: var(--azul);
+}
+
+.pasito--hecho .pasito__numero {
+  border-color: var(--verde);
+  background: var(--verde);
+  color: #fff;
+}
+
+.aviso--alerta {
+  color: var(--alerta);
+  background: var(--alerta-fondo);
+  border-color: var(--alerta-borde);
+}
+
+.aviso--alerta::before {
+  content: '!';
+  background: #8a6510;
+}
+
+/* Pantalla de pago por transferencia. */
+.pago__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.pago__cabecera h2 {
+  margin: 0;
+  font-size: 1.375rem;
+}
+
+.pago__proveedor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+  border-radius: 999px;
+  background: var(--fondo);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.pago__proveedor > span {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--bosque);
+  color: var(--lima);
+  font-weight: 800;
+  font-size: 0.75rem;
+}
+
+.pago__cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 15rem;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.pago__principal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pago__datos {
+  margin: 0;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+}
+
+.pago__dato {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+}
+
+.pago__dato + .pago__dato {
+  border-top: 1px solid var(--linea-suave);
+}
+
+.pago__dato dt {
+  color: var(--tinta-2);
+  font-size: 0.875rem;
+}
+
+.pago__dato dd {
+  margin: 0;
+}
+
+.pago__valor {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.pago__valor--texto {
+  font-family: inherit;
+}
+
+.pago__copiar {
+  min-height: 44px;
+  padding: 0 0.5rem;
+}
+
+.pago__estado {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radio);
+  background: var(--fondo);
+}
+
+.pago__estado .nota {
+  display: block;
+  font-size: 0.875rem;
+}
+
+.pago__estado--ok {
+  background: var(--exito-fondo);
+  color: var(--exito);
+}
+
+.pago__girando {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 3px solid var(--linea);
+  border-top-color: var(--azul);
+  border-radius: 50%;
+  animation: girar 0.9s linear infinite;
+}
+
+.pago__resumen {
+  align-self: start;
+  padding: 1.25rem;
+  border-radius: var(--radio);
+  background: var(--bosque);
+  color: #fff;
+}
+
+.pago__resumen dl {
+  margin: 0.75rem 0 0;
+}
+
+.pago__resumen dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #2f4637;
+}
+
+.pago__resumen dt {
+  color: #c9d6ce;
+}
+
+.pago__resumen dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+
+.pago__resumen .pago__total {
+  border-bottom: 0;
+  font-size: 1.125rem;
+}
+
+.pago__resumen .pago__total dd {
+  color: var(--lima);
+}
+
+.pago__acciones {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+/* Resultado del pago. */
+.resultado-pago {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.resultado-pago h2 {
+  margin: 0;
+}
+
+.resultado-pago p {
+  max-width: 34rem;
+  margin: 0;
+  color: var(--tinta-2);
+}
+
+.resultado-pago__icono {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: var(--exito-fondo);
+  color: var(--verde);
+}
+
+.resultado-pago__icono--espera {
+  background: var(--info-fondo);
+  color: var(--info);
+}
+
+.resultado-pago__etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resultado-pago__orden {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.25rem;
+  margin: 0.5rem 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: orden;
+  font-size: 0.9375rem;
+  color: var(--tinta-2);
+}
+
+.resultado-pago__orden li {
+  counter-increment: orden;
+}
+
+.resultado-pago__orden li::before {
+  content: counter(orden) '. ';
+  font-weight: 700;
+}
+
+.resultado-pago__paso--hecho {
+  color: var(--exito);
+}
+
+.resultado-pago__paso--hecho::before {
+  content: '✓ ' !important;
+}
+
+.resultado-pago__paso--actual {
+  color: var(--tinta);
+  font-weight: 700;
+}
+
+@media (width <= 48rem) {
+  /* En el celular los pasos se ven en la barra de avance de la tarjeta. */
+  .acceso__pasos {
+    display: none;
+  }
+
+  .acceso:has(.acceso__pasos:not(:empty)) .acceso__marca {
+    flex-basis: 100%;
+    padding: 1.5rem;
+  }
+
+  .acceso:has(.acceso__pasos:not(:empty)) .acceso__mensaje {
+    display: flex;
+  }
+
+  .tarjeta-acceso {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .pago__cuerpo {
+    grid-template-columns: 1fr;
+  }
+
+  .pago__dato {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .pago__dato dt {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ==========================================================================
+ * Funcionalidad 034: pulido de UX/UI (base común)
+ *
+ * Botones de 40 px (32 los chicos) con estados visibles, campos de 40 px con
+ * anillo de foco, formularios de ancho acotado, avisos flotantes arriba y
+ * diálogos centrados con X. En el celular, los controles miden 44 px.
+ * ========================================================================== */
+.boton {
+  min-height: 40px;
+  border-width: 1.5px;
+  font-weight: 700;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.15s;
+}
+
+.boton:not(.boton--secundario, .boton--fantasma, .boton--secundario-peligro, .boton-enlace) {
+  box-shadow: 0 4px 12px rgb(47 93 168 / 18%);
+}
+
+.boton--lima {
+  box-shadow: 0 4px 12px rgb(164 203 62 / 25%) !important;
+}
+
+.boton:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.boton:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.boton--chico {
+  min-height: 32px;
+  border-radius: 8px;
+}
+
+.boton--grande {
+  min-height: 48px;
+  padding: 0 1.4rem;
+  font-size: 1rem;
+}
+
+.campo__control {
+  min-height: 40px;
+  padding: 0.45rem 0.8rem;
+  border-width: 1.5px;
+  font-size: 0.95rem;
+}
+
+.campo__control:focus {
+  outline: none;
+  border-color: var(--azul);
+  box-shadow: 0 0 0 3px rgb(47 93 168 / 15%);
+}
+
+.formulario {
+  max-width: 40rem;
+}
+
+/* Avisos flotantes: arriba a la derecha, arriba al centro en el celular. */
+.avisos-flotantes {
+  top: 1rem;
+  bottom: auto;
+  right: 1rem;
+}
+
+.aviso--flotante {
+  background: var(--bosque);
+  border-radius: 12px;
+  animation: aviso-bajar 0.3s ease-out;
+}
+
+@keyframes aviso-bajar {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* Diálogo centrado con X, Esc y clic afuera. */
+.dialogo-velo {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(20 32 26 / 45%);
+  animation: dialogo-velo 0.2s ease-out;
+}
+
+.dialogo {
+  width: min(30rem, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: var(--superficie);
+  box-shadow: 0 30px 60px rgb(0 0 0 / 30%);
+  animation: dialogo-aparecer 0.2s ease-out;
+}
+
+.dialogo--ancho {
+  width: min(40rem, 100%);
+}
+
+.dialogo__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.dialogo__cabecera h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.dialogo__bajada {
+  margin: 0.3rem 0 0;
+  color: var(--tinta-2);
+  font-size: 0.9rem;
+}
+
+.dialogo__cerrar {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--tinta-2);
+  cursor: pointer;
+}
+
+.dialogo__cerrar:hover {
+  background: var(--fondo);
+  color: var(--tinta);
+}
+
+.dialogo__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+@keyframes dialogo-velo {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialogo-aparecer {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+body:has(.dialogo-velo) {
+  overflow: hidden;
+}
+
+@media (width <= 48rem) {
+  .boton {
+    min-height: 44px;
+  }
+
+  .boton--chico {
+    min-height: 36px;
+  }
+
+  .campo__control {
+    min-height: 44px;
+  }
+
+  .avisos-flotantes {
+    left: 0.75rem;
+    right: 0.75rem;
+    top: 0.75rem;
+    max-width: none;
+    align-items: stretch;
+  }
+
+  .dialogo__acciones .boton {
+    flex: 1 1 auto;
+  }
+}
+
+/* --- Acceso a pantalla completa (034) --- */
+.acceso--completo {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  flex-wrap: nowrap;
+  background:
+    radial-gradient(36rem 24rem at 10% 6%, rgb(164 203 62 / 18%), transparent 70%),
+    radial-gradient(34rem 22rem at 92% 96%, rgb(47 93 168 / 10%), transparent 70%),
+    var(--fondo);
+}
+
+.acceso--completo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgb(20 32 26 / 8%) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse at center, transparent 35%, #000 80%);
+  pointer-events: none;
+}
+
+.acceso__cabecera {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+}
+
+.acceso__volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  color: var(--tinta-2);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.acceso__volver:hover {
+  color: var(--tinta);
+}
+
+.acceso--completo .acceso__formulario {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.acceso--completo .tarjeta-acceso {
+  max-width: 26rem;
+  padding: 2rem;
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgb(20 32 26 / 10%);
+}
+
+.acceso--completo:has(.registro-ancho) .tarjeta-acceso {
+  max-width: 42rem;
+}
+
+.tarjeta-acceso__logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.tarjeta-acceso__logo img {
+  height: 34px;
+  width: auto;
+}
+
+.tarjeta-acceso h1 {
+  text-align: center;
+}
+
+.acceso--completo .pie {
+  position: relative;
+  padding: 1rem 1.5rem 1.5rem;
+  border: 0;
+  background: transparent;
+  text-align: center;
+}
+
+@media (width <= 48rem) {
+  .acceso--completo .acceso__formulario {
+    place-items: start stretch;
+    padding: 0 0.75rem 1rem;
+  }
+
+  .acceso--completo .tarjeta-acceso {
+    max-width: none;
+    padding: 1.4rem 1.1rem;
+    box-shadow: none;
+  }
+
+  .acceso__cabecera {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* Pie compacto (034): una línea de descargo y los enlaces, sin peso visual. */
+.pie {
+  padding: 1.25rem 1.5rem;
+  font-size: 0.8rem;
+  color: var(--tinta-3, var(--tinta-2));
+}
+
+.pie p {
+  margin-bottom: 0.4rem;
+}
+
+.acceso--completo .selector-camino {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (width <= 48rem) {
+  .acceso--completo .selector-camino {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- El caso como flujo vertical (034) --- */
+.flujo-caso {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flujo-caso__paso {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  column-gap: 1rem;
+  padding-bottom: 1.5rem;
+}
+
+.flujo-caso__paso:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 44px;
+  bottom: 0;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--linea);
+}
+
+.flujo-caso__paso--hecho:not(:last-child)::before {
+  background: var(--verde);
+}
+
+.flujo-caso__paso--actual:not(:last-child)::before {
+  background: linear-gradient(var(--azul), var(--linea));
+}
+
+.flujo-caso__nodo {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 2.5px solid var(--linea-control);
+  border-radius: 50%;
+  background: var(--superficie);
+  color: var(--tinta-2);
+}
+
+.flujo-caso__paso--hecho .flujo-caso__nodo {
+  border-color: var(--verde);
+  background: var(--verde);
+  color: #fff;
+}
+
+.flujo-caso__paso--actual .flujo-caso__nodo {
+  border-color: var(--azul);
+  color: var(--azul);
+  box-shadow: 0 0 0 6px rgb(47 93 168 / 14%);
+  animation: flujo-latido 2s ease-in-out infinite;
+}
+
+@keyframes flujo-latido {
+  50% {
+    box-shadow: 0 0 0 10px rgb(47 93 168 / 6%);
+  }
+}
+
+.flujo-caso__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  min-height: 44px;
+}
+
+.flujo-caso__titulo {
+  font-family: var(--fuente-titulos);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+a.flujo-caso__titulo:hover {
+  color: var(--azul);
+}
+
+.flujo-caso__paso--pendiente .flujo-caso__titulo {
+  color: var(--tinta-2);
+}
+
+.flujo-caso__chip {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--azul-suave);
+  color: var(--info);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.flujo-caso__chip--listo {
+  background: #e3f1e8;
+  color: #1d5a3a;
+}
+
+.flujo-caso__resumen {
+  color: var(--tinta-2);
+  font-size: 0.9rem;
+}
+
+.flujo-caso__cabecera .boton {
+  margin-left: auto;
+}
+
+.flujo-caso__cuerpo {
+  grid-column: 2;
+  min-width: 0;
+  margin-top: 0.5rem;
+}
+
+.flujo-caso__cuerpo > .seccion:first-child,
+.flujo-caso__cuerpo > section:first-child {
+  margin-top: 0;
+}
+
+@media (width <= 48rem) {
+  .flujo-caso__paso {
+    grid-template-columns: 34px minmax(0, 1fr);
+    column-gap: 0.7rem;
+  }
+
+  .flujo-caso__paso:not(:last-child)::before {
+    left: 15px;
+    top: 34px;
+  }
+
+  .flujo-caso__nodo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .flujo-caso__cabecera {
+    min-height: 34px;
+  }
+
+  .flujo-caso__cabecera .boton {
+    margin-left: 0;
+  }
+
+  .flujo-caso__paso {
+    column-gap: 0.55rem;
+  }
+}
+
+/* El título de la sección ya está en el paso del flujo: queda solo para lectores de pantalla. */
+.flujo-caso__cuerpo > section > h2:first-child {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

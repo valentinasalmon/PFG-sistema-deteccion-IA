@@ -1,8 +1,9 @@
 """Rutas de catálogos públicos.
 
 GET /api/catalogos/aseguradoras    Aseguradoras de la SSN para el registro (CP-18)
+GET /api/catalogos/planes          Planes de las organizaciones y sus límites (032)
 """
-from flask import Blueprint, jsonify
+from flask import Blueprint, current_app, jsonify
 
 from app.esquemas.organizaciones import aseguradora_de_catalogo_a_dict
 from app.servicios.fabrica import crear_catalogo_aseguradoras
@@ -17,4 +18,15 @@ def aseguradoras():
         "aseguradoras": [
             aseguradora_de_catalogo_a_dict(a) for a in crear_catalogo_aseguradoras().todas()
         ]
+    })
+
+
+@catalogos_bp.get("/planes")
+def planes():
+    """Planes Básico y Profesional con sus límites; el precio vacío es «A confirmar»."""
+    return jsonify({
+        "planes": [
+            {"codigo": codigo, **datos} for codigo, datos in current_app.config["PLANES"].items()
+        ],
+        "personal": current_app.config["PLAN_PERSONAL"],
     })
