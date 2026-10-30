@@ -2,7 +2,7 @@
  * Pruebas de la carga condicional de Microsoft Clarity (034, CA8).
  */
 import { afterEach, describe, expect, it } from 'vitest'
-import { iniciarClarity } from './clarity.js'
+import { ID_PROYECTO, iniciarClarity } from './clarity.js'
 
 function scriptsDeClarity() {
   return document.querySelectorAll('script[src^="https://www.clarity.ms/tag/"]')
@@ -15,6 +15,16 @@ afterEach(() => {
 })
 
 describe('Clarity', () => {
+  it('no se carga sola fuera de producción (desarrollo y pruebas)', () => {
+    expect(iniciarClarity()).toBe(false)
+    expect(scriptsDeClarity()).toHaveLength(0)
+  })
+
+  it('usa el proyecto de evidentIA', () => {
+    expect(iniciarClarity(ID_PROYECTO)).toBe(true)
+    expect(scriptsDeClarity()[0].src).toBe('https://www.clarity.ms/tag/z5vsmarsef')
+  })
+
   it('no carga nada sin identificador', () => {
     expect(iniciarClarity(undefined)).toBe(false)
     expect(iniciarClarity('')).toBe(false)

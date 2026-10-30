@@ -162,10 +162,6 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - name: Compilar la interfaz
         working-directory: frontend
-        env:
-          # Microsoft Clarity (034): vacío no carga nada. No es secreto: el
-          # identificador queda a la vista en la página.
-          VITE_CLARITY_ID: ${{ vars.CLARITY_ID }}
         run: npm ci && npm run build
       - name: Armar el artefacto
         run: >
