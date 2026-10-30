@@ -390,7 +390,7 @@ describe('pantalla del caso', () => {
     expect(solicitudes.find((s) => s.metodo === 'PATCH').cuerpo).toEqual({ nivel: 'colaboracion' })
 
     await usuario.click(screen.getByRole('button', { name: 'Revocar' }))
-    await usuario.click(screen.getByRole('button', { name: 'Revocar' }))
+    await usuario.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Revocar' }))
     expect(await screen.findByText('Se revocó el acceso.')).toBeInTheDocument()
   })
 

@@ -129,7 +129,7 @@ describe('enlace para la persona afectada en el caso (028, CP-32)', () => {
     expect(await within(panel).findByText(/Vence el 04\/11\/2026/)).toBeInTheDocument()
 
     await usuario.click(within(panel).getByRole('button', { name: 'Anular' }))
-    await usuario.click(within(panel).getByRole('button', { name: 'Anular' }))
+    await usuario.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Anular' }))
     await vi.waitFor(() => expect(within(panel).queryByText(/Vence el 04\/11\/2026/)).not.toBeInTheDocument())
   })
 })

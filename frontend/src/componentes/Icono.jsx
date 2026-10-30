@@ -57,6 +57,7 @@ const TRAZOS = {
     </>
   ),
   derecha: <path d="M9 6l6 6-6 6" />,
+  izquierda: <path d="M15 6l-6 6 6 6" />,
   descargar: <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />,
   imagen: (
     <>

@@ -59,6 +59,7 @@ implementación siguiendo tareas.md, con pruebas
 | 031 | Traza de la experiencia de uso con Microsoft Clarity (CP-33) | 10 | RNF08, RNF10 | Pendiente: se deja lista en la 034 (T10) para que la autora revise el uso antes del lanzamiento |
 | 032 | [Pago del plan en el registro](032-pago-en-el-registro/especificacion.md) | 10 | RF10, RF19, RF20 | Implementada (cobro simulado con Cresium; precios a confirmar) |
 | 033 | [Portada pública con los planes](033-portada/especificacion.md) | 10 | RF19, RF20, RNF10 | Implementada (primera versión; se puede seguir enriqueciendo el diseño) |
+| 034 | [Pulido de UX/UI de todo el sistema](034-pulido-ux/especificacion.md) | 10 | RNF10 | En curso: base, acceso, flujo del caso y portada hechos; resto por tandas |
 | 035 | Verificación de identidad de aseguradoras con Identik (CP-35) | 10 | RN36, RF01 | Pendiente: sin especificar |
 
 Las fases, los hitos y el ciclo de trabajo están en [docs/guias/hoja-de-ruta.md](../guias/hoja-de-ruta.md).
