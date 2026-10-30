@@ -38,7 +38,7 @@ Un modelo no es un archivo aislado sino el producto de un **ciclo de vida**: dat
 
 ### Prueba de concepto
 
-- [ ] **CA1 — Recorrido completo**: con un subconjunto de no más de 10 000 imágenes, el pipeline se ejecuta de punta a punta y produce un modelo ONNX que clasifica una imagen en CPU. La prueba de concepto no exige umbral de desempeño; su objetivo es validar el pipeline y estimar tiempos y recursos del entrenamiento completo, que se registran en la bitácora.
+- [x] **CA1 — Recorrido completo**: con un subconjunto de no más de 10 000 imágenes, el pipeline se ejecuta de punta a punta y produce un modelo ONNX que clasifica una imagen en CPU. La prueba de concepto no exige umbral de desempeño; su objetivo es validar el pipeline y estimar tiempos y recursos del entrenamiento completo, que se registran en la bitácora.
 
 ### Datos
 

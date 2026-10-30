@@ -137,3 +137,14 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - segunda tanda: menú según el rol, pantalla del caso en tres etapas (carga, análisis con progreso por imagen y capa, informe) y un enlace para que la persona afectada suba sus propias fotos con una declaración expresa (CP-32). Es un aporte para la cadena de custodia: cada imagen registra si vino de la computadora, del celular de quien lleva el caso o de la persona afectada;
   - decisión de diseño: separar el trabajo por etapas redujo una pantalla de unos 8.800 px a una etapa por vez, sin perder información;
   - pendiente: validar con los tutores el texto de la declaración (Ley 25.326).
+
+## Prueba de concepto de la red neuronal (2026-10-30)
+
+- El pipeline del clasificador corrió de punta a punta en Colab (GPU T4) con 10 000 imágenes, en unos 11 minutos. Resultados: AUC de prueba 0,985, exactitud 0,933, calibración por temperatura (ECE de 0,047 a 0,021), modelo ONNX idéntico al de PyTorch (diferencia 2,6 × 10⁻⁶) y 24 ms por imagen en CPU.
+- Para el informe:
+  - es la validación del diseño MLOps (ADR-0014): etapas separadas, respaldo en Drive, ficha generada automáticamente y registro en MLflow;
+  - **las métricas de la prueba de concepto no deben presentarse como desempeño real:** una sola fuente, sin generadores no vistos ni imágenes recomprimidas. El resultado válido es el del entrenamiento completo con el conjunto propio;
+  - lección aprendida: con muchos generadores y pocas imágenes por cada uno, las métricas por generador son ruido; la receta v1 usa menos generadores con más imágenes;
+  - el 82 % del tiempo se va en obtener y preparar los datos, no en entrenar.
+- La autora cuenta con Colab Pro por un año (suscripción a Gemini), lo que elimina el costo de GPU del presupuesto.
+

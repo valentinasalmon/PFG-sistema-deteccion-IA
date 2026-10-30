@@ -139,8 +139,8 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
   - Archivos: `red_neuronal/cuadernos/00_prueba_de_concepto.ipynb`, `red_neuronal/cuadernos/01_prueba_de_concepto_colab.ipynb`
   - Verificación: se ejecuta en Colab con GPU de punta a punta y produce un `.onnx` que `PredictorOnnx` usa en CPU.
   - Commit: `funcionalidad(clasificador): agregar cuaderno de prueba de concepto`
-- [ ] **T24 (manual)** — Ejecutar la prueba de concepto en Colab (`01_prueba_de_concepto_colab.ipynb`) y registrar los tiempos por etapa, el uso de memoria y de disco, y las métricas obtenidas (sin umbral). Estimar el tiempo del entrenamiento completo.
-  - Verificación: entrada de bitácora con los valores medidos.
+- [x] **T24 (manual)** — Ejecutar la prueba de concepto en Colab (`01_prueba_de_concepto_colab.ipynb`) y registrar los tiempos por etapa, el uso de memoria y de disco, y las métricas obtenidas (sin umbral). Estimar el tiempo del entrenamiento completo.
+  - Verificación: entrada de bitácora con los valores medidos (hecho el 2026-10-30: AUC de prueba 0,985, ≈ 11 min en una T4; ver la bitácora del 2026-10-30).
   - Commit: `documentacion(bitacora): registrar prueba de concepto de la red neuronal`
 
 ## Fase K — Datos reales
