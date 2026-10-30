@@ -105,14 +105,16 @@ describe('listado de casos', () => {
     const { usuario } = renderizarEn('/casos')
     await screen.findByRole('link', { name: 'CASO-2026-000007' })
 
-    await usuario.type(screen.getByLabelText('Buscar un caso'), 'exp-55')
+    // Los filtros se aplican solos: el estado al elegirlo y la búsqueda al dejar de escribir (034).
     await usuario.selectOptions(screen.getByLabelText('Estado'), 'archivado')
-    await usuario.click(screen.getByRole('button', { name: 'Buscar' }))
+    await usuario.type(screen.getByLabelText('Buscar un caso'), 'exp-55')
+    expect(screen.queryByRole('button', { name: 'Buscar' })).not.toBeInTheDocument()
 
-    expect(await screen.findByText('No hay casos con esos filtros.')).toBeInTheDocument()
+    expect(await screen.findByText('Ningún caso coincide con «exp-55».')).toBeInTheDocument()
     expect(solicitudes.map((s) => s.ruta)).toContain('/api/casos?busqueda=exp-55&estado=archivado')
+    expect(screen.getByLabelText('Buscar un caso')).toHaveValue('exp-55')
 
-    await usuario.click(screen.getByRole('button', { name: 'Limpiar los filtros' }))
+    await usuario.click(screen.getByRole('button', { name: 'Quitar los filtros' }))
     expect(await screen.findByRole('link', { name: 'CASO-2026-000007' })).toBeInTheDocument()
   })
 
@@ -150,7 +152,7 @@ describe('listado de casos', () => {
     apiDeListado({ casos: [] })
     renderizarEn('/casos')
 
-    expect(await screen.findByText('Todavía no tenés casos. Creá el primero.')).toBeInTheDocument()
+    expect(await screen.findByText('Todavía no tenés casos.')).toBeInTheDocument()
   })
 })
 
@@ -233,7 +235,7 @@ describe('nuevo caso', () => {
     await usuario.click(screen.getByRole('radio', { name: /Automovilístico/ }))
     await usuario.type(screen.getByLabelText('Fecha del hecho'), '2026-10-01')
     await usuario.type(screen.getByLabelText('Lugar del hecho'), 'Av. Corrientes 1234')
-    await usuario.click(screen.getByRole('button', { name: 'Crear caso' }))
+    await usuario.click(screen.getByRole('button', { name: 'Crear y cargar las fotos' }))
 
     expect(await screen.findByText('Se creó el caso CASO-2026-000007.')).toBeInTheDocument()
     const envio = solicitudes.find((s) => s.metodo === 'POST' && s.ruta === '/api/casos')
@@ -249,13 +251,24 @@ describe('nuevo caso', () => {
     const { solicitudes } = simularApi({ ...CON_SESION, 'GET /api/organizaciones': { cuerpo: { organizaciones: [] } } })
     const { usuario } = renderizarEn('/casos/nuevo')
 
-    await usuario.click(await screen.findByRole('button', { name: 'Crear caso' }))
+    await usuario.click(await screen.findByRole('button', { name: 'Crear y cargar las fotos' }))
 
     expect(screen.getByText('Elegí el tipo de caso.')).toBeInTheDocument()
     expect(screen.getByText('Indicá la fecha del hecho.')).toBeInTheDocument()
     expect(screen.getByText('Indicá el lugar del hecho.')).toBeInTheDocument()
     expect(screen.getByText('Personal')).toBeInTheDocument()
     expect(solicitudes.some((s) => s.metodo === 'POST')).toBe(false)
+  })
+
+  it('deja el expediente y la descripción a un clic (034)', async () => {
+    simularApi({ ...CON_SESION, 'GET /api/organizaciones': { cuerpo: { organizaciones: [] } } })
+    const { usuario } = renderizarEn('/casos/nuevo')
+
+    const agregar = await screen.findByRole('button', { name: 'Agregar expediente y descripción' })
+    expect(screen.queryByLabelText(/Descripción/)).not.toBeInTheDocument()
+    await usuario.click(agregar)
+    expect(screen.getByLabelText(/Expediente/)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Descripción/)).toBeInTheDocument()
   })
 
   it('muestra los errores que devuelve la API', async () => {
@@ -272,7 +285,7 @@ describe('nuevo caso', () => {
     await usuario.click(await screen.findByRole('radio', { name: /Laboral/ }))
     await usuario.type(screen.getByLabelText('Fecha del hecho'), '2026-10-01')
     await usuario.type(screen.getByLabelText('Lugar del hecho'), 'Fábrica')
-    await usuario.click(screen.getByRole('button', { name: 'Crear caso' }))
+    await usuario.click(screen.getByRole('button', { name: 'Crear y cargar las fotos' }))
 
     expect(await screen.findByText('La fecha del hecho no puede ser futura.')).toBeInTheDocument()
   })
@@ -287,7 +300,7 @@ describe('nuevo caso', () => {
     renderizarEn('/casos/nuevo')
 
     expect(await screen.findByText(/aseguradora aprobada por el Administrador/)).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Crear caso' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Crear y cargar las fotos' })).not.toBeInTheDocument()
   })
 })
 

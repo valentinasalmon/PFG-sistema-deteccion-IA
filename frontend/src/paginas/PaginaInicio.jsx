@@ -12,7 +12,12 @@
  * misma fila que la lista de casos, y la actividad en dos columnas, con la
  * propia en segunda persona y el enlace solo en el número del caso.
  *
- * Realiza: RF48 (CA1 a CA3), CU30; RN31; CA7 de la funcionalidad 002.
+ * Desde la funcionalidad 034: «Seguí donde lo dejaste» con la acción que
+ * corresponde al caso activo más reciente, contadores con ícono y color por
+ * estado y, para quien todavía no tiene casos, los tres pasos para empezar.
+ *
+ * Realiza: RF48 (CA1 a CA3), CU30; RN31; CA7 de la funcionalidad 002; CA1 de
+ * la funcionalidad 034.
  */
 import { useState } from 'react'
 import { Link } from 'react-router'
@@ -22,6 +27,7 @@ import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
 import FilaCaso from '../componentes/FilaCaso.jsx'
 import Icono from '../componentes/Icono.jsx'
+import { IlustracionCarpeta } from '../componentes/Ilustraciones.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { textosDelRubro } from '../utilidades/lenguaje.js'
@@ -39,6 +45,22 @@ const ICONOS_ACTIVIDAD = {
   'informe.generacion': 'documento',
   'caso.creacion': 'mas',
   'caso.edicion': 'lapiz',
+}
+
+/** Ícono de cada contador de estado. */
+const ICONOS_ESTADO = {
+  borrador: 'lapiz',
+  en_analisis: 'analisis',
+  analizado: 'verificado',
+  cerrado: 'candado',
+  archivado: 'capas',
+}
+
+/** Qué falta en un caso activo y cómo se llama el botón que lo resuelve. */
+const SIGUIENTE_PASO = {
+  borrador: { situacion: 'Faltan las fotos o el análisis', accion: 'Seguir con las fotos', icono: 'imagen' },
+  en_analisis: { situacion: 'Análisis en curso', accion: 'Ver el avance', icono: 'analisis' },
+  analizado: { situacion: 'Análisis listo', accion: 'Ver los resultados', icono: 'documento' },
 }
 
 function EnlaceCaso({ caso }) {
@@ -62,13 +84,69 @@ function CasosPorEstado({ porEstado }) {
     <ul className="contadores" aria-label="Tus casos por estado">
       {OPCIONES_ESTADO.map(({ valor, texto }) => (
         <li key={valor}>
-          <Link to={`/casos?estado=${valor}`} className="contador">
+          <Link to={`/casos?estado=${valor}`} className={`contador contador--${valor}`}>
+            <span className="contador__icono" aria-hidden="true">
+              <Icono nombre={ICONOS_ESTADO[valor]} tamanio={18} />
+            </span>
             <span className="contador__cifra">{porEstado[valor] ?? 0}</span>
             <span className="contador__texto">{texto}</span>
           </Link>
         </li>
       ))}
     </ul>
+  )
+}
+
+/**
+ * Atajo al caso activo actualizado más recientemente, con su próximo paso,
+ * para retomar el trabajo sin buscarlo (034, mockup I1).
+ */
+function SeguiDonde({ casos }) {
+  const caso = casos.find((item) => SIGUIENTE_PASO[item.estado])
+  if (!caso) return null
+  const paso = SIGUIENTE_PASO[caso.estado]
+  return (
+    <section className="retomar" aria-labelledby="titulo-retomar">
+      <span className="retomar__icono" aria-hidden="true">
+        <Icono nombre={paso.icono} tamanio={24} />
+      </span>
+      <div className="retomar__texto">
+        <h2 id="titulo-retomar" className="retomar__antetitulo">
+          Seguí donde lo dejaste
+        </h2>
+        <p className="retomar__caso">
+          {caso.numero} · {paso.situacion}
+        </p>
+        <p className="retomar__detalle">
+          {[caso.lugar, `actualizado el ${formatearFecha(caso.actualizado_en)}`].filter(Boolean).join(' · ')}
+        </p>
+      </div>
+      <Link to={`/casos/${caso.id}`} className="boton">
+        {paso.accion}
+        <Icono nombre="derecha" tamanio={18} />
+      </Link>
+    </section>
+  )
+}
+
+/** Bienvenida para quien todavía no tiene casos: los tres pasos y la acción. */
+function PrimerCaso() {
+  return (
+    <section className="seccion primer-caso" aria-labelledby="titulo-primer-caso">
+      <IlustracionCarpeta clase="primer-caso__ilustracion" />
+      <div className="primer-caso__texto">
+        <h2 id="titulo-primer-caso">Tu primer caso</h2>
+        <ol className="primer-caso__pasos">
+          <li>Creá el caso con la fecha y el lugar del hecho.</li>
+          <li>Cargá las fotos o pedíselas a la persona afectada.</li>
+          <li>Analizalas y descargá el informe.</li>
+        </ol>
+        <Link to="/casos/nuevo" className="boton">
+          <Icono nombre="mas" tamanio={18} />
+          Crear mi primer caso
+        </Link>
+      </div>
+    </section>
   )
 }
 
@@ -210,6 +288,11 @@ function Actividad({ eventos }) {
   )
 }
 
+/** Verdadero si la persona no tiene ningún caso, en ningún estado. */
+function sinCasos(panel) {
+  return panel.recientes.length === 0 && Object.values(panel.por_estado).every((cantidad) => !cantidad)
+}
+
 export default function PaginaInicio() {
   const { usuario } = useSesion()
   const { datos: panel, error, cargando } = useDatos(obtenerPanel)
@@ -226,22 +309,31 @@ export default function PaginaInicio() {
       {error && <Aviso tipo="error">{error.message}</Aviso>}
       {panel && (
         <>
-          <CasosPorEstado porEstado={panel.por_estado} />
+          {sinCasos(panel) ? (
+            <PrimerCaso />
+          ) : (
+            <>
+              <SeguiDonde casos={panel.recientes} />
+              <CasosPorEstado porEstado={panel.por_estado} />
+            </>
+          )}
           <Pendientes
             invitaciones={panel.invitaciones}
             transferencias={panel.transferencias}
             proximos={panel.proximos_a_destruir}
           />
-          <div className="panel-columnas">
-            <div className="panel-columnas__principal">
-              <Recientes casos={panel.recientes} />
-              <AnalisisEnCurso analisis={panel.analisis_en_curso} />
+          {!sinCasos(panel) && (
+            <div className="panel-columnas">
+              <div className="panel-columnas__principal">
+                <Recientes casos={panel.recientes} />
+                <AnalisisEnCurso analisis={panel.analisis_en_curso} />
+              </div>
+              <div className="panel-columnas__lateral">
+                <Actividad eventos={panel.actividad} />
+                <Compartidos compartidos={panel.compartidos} />
+              </div>
             </div>
-            <div className="panel-columnas__lateral">
-              <Actividad eventos={panel.actividad} />
-              <Compartidos compartidos={panel.compartidos} />
-            </div>
-          </div>
+          )}
         </>
       )}
     </>
