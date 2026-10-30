@@ -7,7 +7,7 @@
 
 - Se armó una primera versión de los diagramas del informe (cronograma, secuencia de un caso, entidad-relación, y despliegue y componentes en UML 2.5). La autora no los aprobó: se quitaron del repositorio y se rehacen más adelante.
 - La autora buscó la marca en el INPI: «EVIDENTIA» está concedida a un tercero en las clases 9 y 42; decidió mantener el nombre para el proyecto académico (CP-36).
-- La autora decidió sumar Clarity, Cresium e Identik al alcance (031 a 033); si no llegan, pasan a trabajo futuro.
+- La autora decidió sumar Clarity, Cresium e Identik al alcance (031, 032 y 035: el 033 lo tomó la portada); si no llegan, pasan a trabajo futuro.
 
 ## Decisiones
 

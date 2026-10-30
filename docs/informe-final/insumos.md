@@ -132,15 +132,25 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - decisión de diseño: separar el trabajo por etapas redujo una pantalla de unos 8.800 px a una etapa por vez, sin perder información;
   - pendiente: validar con los tutores el texto de la declaración (Ley 25.326).
 
+  - tercera tanda (2026-10-29): inicio de sesión con ventajas reales y contraseña visible, y revisión completa a 390 px de ancho (celular).
+- **Pago en el registro (032, 2026-10-29):** la autora decidió cobrar el plan al registrar un estudio jurídico o una aseguradora, simulado con Cresium (fintech argentina: cobro por transferencia a un CVU con conciliación automática, comisión desde el 0,4 %; sin API pública ni entorno de pruebas). Para el informe: es una decisión de modelo de negocio que conecta el plan con los límites del sistema (miembros, análisis, almacenamiento).
+  - Implementación (ADR-0020): el proveedor de pagos es intercambiable (patrón Strategy, como el análisis y el almacenamiento); hoy un proveedor simulado genera el CVU, el alias y la referencia, y cuando haya API de Cresium se cambia solo esa pieza.
+  - Seguridad: el enlace de pago lleva un token aleatorio y la base guarda solo su huella SHA-256; un registro con un correo existente genera un cobro «señuelo» igual a uno real, para no revelar qué correos están registrados (RF01 CA3).
+  - Reglas de negocio nuevas: sin el pago acreditado no se invitan miembros ni se cargan casos de la organización; la aseguradora llega al Administrador recién pagada y, si se rechaza, el pago se devuelve; las invitaciones pendientes ocupan lugar del plan.
+  - La landing pública lleva directo al registro con el camino y el plan elegidos (`/registro?tipo=estudio&plan=profesional`).
+- **Portada pública (033, 2026-10-29):** se diseñaron dos propuestas completas (A oscura, B clara) y la autora armó la versión final combinando secciones de cada una: diseño iterativo con la dueña del producto. Para el informe: la portada comunica el problema (imágenes alteradas con IA en siniestros y juicios), la propuesta de valor y el modelo de negocio (plan personal gratuito y planes pagos para organizaciones), siempre con el descargo de que la plataforma ofrece indicios y no veredictos.
+
+
 ## Integraciones sugeridas, sin definir (2026-10-29)
 
-- Llegaron tres sugerencias externas para la autora; quedan como cuestiones abiertas con propuesta provisoria y van al informe como **oportunidades** (Capítulo XI) y no como funcionalidades:
-  - **Microsoft Clarity** (CP-33): mapas de calor y grabaciones para mejorar la traza de la experiencia de uso. Tensión con la privacidad: solo en páginas públicas, con enmascaramiento y consentimiento, y con la CSP abierta a sus dominios.
-  - **Pasarela de pago** (CP-34): Mercado Pago o Cresium para cobrar los planes, hoy con pago simulado (CP-01). Se integraría detrás de una interfaz intercambiable, como el sello de tiempo.
-  - **Identik** (CP-35): verificación de identidad de quien registra una aseguradora, como refuerzo de la aprobación manual. Implica datos biométricos (sensibles).
+- Llegaron tres sugerencias externas para la autora. Estado al 2026-10-30:
+  - **Microsoft Clarity** (CP-33, funcionalidad 031): la autora lo usa para revisar la experiencia de uso antes del lanzamiento; se deja configurable en la 034 (T10), con enmascaramiento estricto y la CSP abierta solo a sus dominios.
+  - **Cobro con Cresium** (CP-34): implementado como pago simulado en el registro (funcionalidad 032, ADR-0020), detrás de un proveedor intercambiable; Mercado Pago quedó descartado por ahora.
+  - **Identik** (CP-35, funcionalidad 035): verificación de identidad de quien registra una aseguradora, como refuerzo de la aprobación manual. Implica datos biométricos (sensibles); sigue pendiente.
 - Borrador de los capítulos del informe (AE2 y siguientes) redactado en el chat el 2026-10-29 a partir del documento de la autora, este archivo y la bitácora.
 
 ## Búsqueda de marca en el INPI (2026-10-29)
 
 - La autora busca «evidentIA» en la base de marcas del INPI. Resultado: «EVIDENTIA» está concedida a un tercero en las clases 9 y 42 (denominativa, vence en 2036), y «EVIDENTIA ESTUDIO PERICIAL», del mismo sector, en la clase 42 (mixta). La denominación no puede registrarse en las clases del servicio (CP-36).
 - Para el Capítulo VIII: la búsqueda de antecedentes cumple su función, porque detecta el conflicto antes de invertir en la marca. Es también una lección aprendida: verificar la disponibilidad del nombre antes de construir la identidad visual.
+

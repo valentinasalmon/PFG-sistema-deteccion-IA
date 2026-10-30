@@ -25,8 +25,10 @@ import Aviso from '../componentes/Aviso.jsx'
 import BotonConfirmar from '../componentes/BotonConfirmar.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
+import Etiqueta from '../componentes/Etiqueta.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
+import { NOMBRES_DE_PLAN } from '../utilidades/planes.js'
 import { rangoDelPeriodo } from '../utilidades/periodos.js'
 
 function FormularioRechazo({ aseguradora, alTerminar }) {
@@ -121,6 +123,11 @@ function Pendientes() {
                 <span className="tarjeta-item__detalle">
                   Por {aseguradora.referente.nombre} ({aseguradora.referente.correo})
                   {!aseguradora.referente.verificado && ' · correo sin verificar'}
+                </span>
+                <span className="tarjeta-item__detalle">
+                  <Etiqueta tipo="destacada">Pago acreditado</Etiqueta> Plan{' '}
+                  {NOMBRES_DE_PLAN[aseguradora.plan] ?? aseguradora.plan}. Si la rechazás, el pago se
+                  devuelve.
                 </span>
               </div>
               {rechazando === aseguradora.id ? (
@@ -367,7 +374,11 @@ function Listados() {
   const [busqueda, setBusqueda] = useState('')
   const [consulta, setConsulta] = useState({ busqueda: '', pagina: 1 })
   const cargar = useCallback(
-    () => listarParaAdministracion(recurso, { busqueda: consulta.busqueda, pagina: consulta.pagina }),
+    () =>
+      listarParaAdministracion(recurso, {
+        busqueda: consulta.busqueda,
+        pagina: consulta.pagina,
+      }),
     [recurso, consulta],
   )
   const { datos, error, cargando } = useDatos(cargar)

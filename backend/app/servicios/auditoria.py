@@ -56,6 +56,8 @@ MEMBRESIA_ABANDONO = "membresia.abandono"
 ORGANIZACION_APROBACION = "organizacion.aprobacion"
 ORGANIZACION_RECHAZO = "organizacion.rechazo"
 ORGANIZACION_CAMBIO_PLAN = "organizacion.cambio_plan"  # funcionalidad 014, pago simulado
+# Cobro del plan por transferencia: creación, acreditación y devolución (funcionalidad 032).
+ORGANIZACION_COBRO = "organizacion.cobro"
 CUENTA_DESACTIVACION = "cuenta.desactivacion"
 CUENTA_REACTIVACION = "cuenta.reactivacion"
 CUENTA_PROMOCION_ADMINISTRADOR = "cuenta.promocion_administrador"

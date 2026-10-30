@@ -1,13 +1,14 @@
-"""Planes, consumo y cambio de plan con pago simulado (funcionalidad 014).
+"""Planes, consumo y cambio de plan con pago simulado (funcionalidades 014 y 032).
 
-Los límites de cada plan son datos de configuración (RF19 CA3). El cambio de
-plan recorre un pago **simulado**: no pide ni guarda datos de pago, aplica el
-plan de inmediato y queda en la auditoría como pago simulado (RF20 CA2, CP-01).
+Los límites de cada plan son datos de configuración (RF19 CA3). Desde la 032
+el cambio de plan genera un cobro por transferencia (hoy simulado con la forma
+de Cresium) y el plan nuevo rige recién cuando se acredita (RF20 CA2, CP-34).
 
 Realiza: RF19 (CA2, CA3), RF20 (CA1, CA2).
 """
 from datetime import datetime
 
+from app.modelos.cobro import MOTIVO_CAMBIO_PLAN
 from app.servicios import auditoria
 from app.servicios.errores import AccesoDenegado, ConflictoDatos, ErrorValidacion
 from app.utilidades.tiempo import ahora_utc
@@ -84,6 +85,7 @@ class ServicioPlanes:
         return {
             "codigo": organizacion.plan,
             "nombre": planes[organizacion.plan]["nombre"],
+            "estado_organizacion": organizacion.estado,
             "limites": planes[organizacion.plan],
             "consumo": {
                 "miembros": len(organizacion.membresias),
@@ -95,10 +97,16 @@ class ServicioPlanes:
         }
 
     def cambiar_plan(self, id_organizacion, usuario, codigo):
-        """Aplica otro plan después de un pago simulado (RF20 CA2). Solo el Referente.
+        """Pide pasar a otro plan: genera el cobro y el plan rige al acreditarse (RF20 CA2).
+
+        Solo el Referente de una organización activa.
+
+        Returns:
+            El token del enlace de pago del plan nuevo.
 
         Raises:
             AccesoDenegado: si no es Referente.
+            ConflictoDatos: si la organización no está activa o ya tiene ese plan.
             ErrorValidacion: si el plan no existe o los miembros superan su límite.
         """
         organizacion, membresia = self.organizaciones.obtener(id_organizacion, usuario)
@@ -113,12 +121,20 @@ class ServicioPlanes:
                 "miembros. Desvinculá a algunos antes de cambiarlo."
             )
             raise ErrorValidacion(mensaje, {"plan": mensaje})
-        anterior = organizacion.plan
-        organizacion.plan = codigo
+        if not organizacion.activa:
+            raise ConflictoDatos(
+                "Primero tiene que acreditarse el pago del plan actual.", codigo="pago_pendiente"
+            )
+        if codigo == organizacion.plan:
+            raise ConflictoDatos("La organización ya tiene ese plan.", codigo="mismo_plan")
+        pagos = self.organizaciones.pagos
+        _, token = pagos.crear_cobro(
+            codigo, organizacion=organizacion, motivo=MOTIVO_CAMBIO_PLAN, usuario=usuario
+        )
         self.registro.registrar(
             auditoria.ORGANIZACION_CAMBIO_PLAN, auditoria.EXITOSO, usuario=usuario,
             recurso=(auditoria.TIPO_ORGANIZACION, organizacion.id),
-            detalle={"anterior": anterior, "nuevo": codigo, "pago": "simulado"},
+            detalle={"anterior": organizacion.plan, "nuevo": codigo, "pago": "pendiente"},
             confirmar=True,
         )
-        return organizacion
+        return token

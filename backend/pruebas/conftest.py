@@ -169,11 +169,27 @@ def cuenta(aplicacion, correos):  # pylint: disable=redefined-outer-name
     return _crear
 
 
+def pagar(cliente_web, respuesta):
+    """Simula la acreditación del pago que trae la respuesta (funcionalidad 032)."""
+    token = respuesta.get_json()["pago"]["token"]
+    acreditacion = cliente_web.post(f"/api/pagos/{token}/simulacion")
+    assert acreditacion.status_code == 200, acreditacion.get_json()
+    return acreditacion.get_json()["cobro"]
+
+
+def crear_estudio_pagado(cliente_web, nombre="Estudio Pérez", **datos):
+    """Crea un estudio jurídico, simula el pago de su plan y devuelve su id."""
+    respuesta = cliente_web.post(
+        "/api/organizaciones", json={"nombre": nombre, "tipo": "estudio_juridico", **datos}
+    )
+    assert respuesta.status_code == 201, respuesta.get_json()
+    pagar(cliente_web, respuesta)
+    return respuesta.get_json()["organizacion"]["id"]
+
+
 def crear_estudio(referente, miembro, correo_miembro, nombre="Estudio Pérez"):
     """Crea un estudio jurídico del referente y suma al miembro; devuelve su id."""
-    id_org = referente.post(
-        "/api/organizaciones", json={"nombre": nombre, "tipo": "estudio_juridico"}
-    ).get_json()["organizacion"]["id"]
+    id_org = crear_estudio_pagado(referente, nombre)
     id_inv = referente.post(
         f"/api/organizaciones/{id_org}/invitaciones", json={"correo": correo_miembro}
     ).get_json()["invitacion"]["id"]

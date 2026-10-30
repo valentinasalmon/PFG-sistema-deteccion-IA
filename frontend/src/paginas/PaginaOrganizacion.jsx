@@ -37,7 +37,10 @@ import { useFormulario } from '../hooks/useFormulario.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 
-const NOMBRES_PERFIL = { abogado: 'Abogado o abogada', aseguradora: 'Aseguradora' }
+const NOMBRES_PERFIL = {
+  abogado: 'Abogado o abogada',
+  aseguradora: 'Aseguradora',
+}
 
 async function cargarOrganizacion(id) {
   const organizacion = await obtenerOrganizacion(id)
@@ -156,7 +159,11 @@ function CabeceraOrganizacion({ organizacion, esReferente, alGuardar }) {
             />
           </div>
           <div className="acciones-en-linea">
-            <button type="button" className="boton boton--fantasma" onClick={() => setEditando(false)}>
+            <button
+              type="button"
+              className="boton boton--fantasma"
+              onClick={() => setEditando(false)}
+            >
               Cancelar
             </button>
             <button type="submit" className="boton" disabled={enviando}>
@@ -301,13 +308,15 @@ function SeccionMiembros({ organizacion, miembros, esReferente, idUsuario, recar
   )
 }
 
-function SeccionInvitaciones({ organizacion, invitaciones, recargar }) {
+function SeccionInvitaciones({ organizacion, invitaciones, cantidadMiembros, recargar }) {
   const { resultado, ejecutar } = useAccion(recargar)
   const { valores, setValores, errores, error, enviando, cambiar, enviar } = useFormulario({
     correo: '',
     cargo: '',
   })
   const [mensaje, setMensaje] = useState(null)
+  // Las invitaciones pendientes ocupan un lugar del plan (032, CA10).
+  const lleno = cantidadMiembros + invitaciones.length >= organizacion.plan.limite_miembros
 
   async function manejarEnvio(evento) {
     evento.preventDefault()
@@ -373,6 +382,12 @@ function SeccionInvitaciones({ organizacion, invitaciones, recargar }) {
         <h3 id="titulo-invitar">Invitar miembros</h3>
         {mensaje && <Aviso tipo="exito">{mensaje}</Aviso>}
         {error && <Aviso tipo="error">{error.message}</Aviso>}
+        {lleno && (
+          <Aviso tipo="info" flotante={false}>
+            Los lugares del plan están ocupados por miembros e invitaciones pendientes. Cancelá una
+            invitación o cambiá de plan desde «Plan» para sumar a alguien más.
+          </Aviso>
+        )}
         <div className="invitar__fila">
           <CampoTexto
             etiqueta="Correo electrónico"
@@ -391,7 +406,7 @@ function SeccionInvitaciones({ organizacion, invitaciones, recargar }) {
             onChange={cambiar}
             error={errores.cargo}
           />
-          <button type="submit" className="boton invitar__boton" disabled={enviando}>
+          <button type="submit" className="boton invitar__boton" disabled={enviando || lleno}>
             {enviando ? 'Enviando…' : 'Enviar invitación'}
           </button>
         </div>
@@ -451,7 +466,9 @@ function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
         </div>
         <BotonConfirmar
           texto="Abandonar la organización"
-          pregunta={unicoMiembro ? '¿Abandonar y eliminar la organización?' : '¿Abandonar la organización?'}
+          pregunta={
+            unicoMiembro ? '¿Abandonar y eliminar la organización?' : '¿Abandonar la organización?'
+          }
           textoConfirmar="Abandonar"
           peligro
           deshabilitado={esReferente && !unicoMiembro}
@@ -555,8 +572,7 @@ export default function PaginaOrganizacion() {
       {organizacion.estado === 'pendiente' && (
         <Aviso tipo="info">
           La aseguradora está pendiente de aprobación. El Administrador de la plataforma va a
-          revisar el registro y te avisamos por correo; mientras tanto no podés invitar a tu
-          equipo.
+          revisar el registro y te avisamos por correo; mientras tanto no podés invitar a tu equipo.
         </Aviso>
       )}
 
@@ -569,10 +585,11 @@ export default function PaginaOrganizacion() {
             idUsuario={usuario.id}
             recargar={recargar}
           >
-            {esReferente && organizacion.estado !== 'pendiente' && (
+            {esReferente && organizacion.estado === 'activa' && (
               <SeccionInvitaciones
                 organizacion={organizacion}
                 invitaciones={invitaciones}
+                cantidadMiembros={miembros.length}
                 recargar={recargar}
               />
             )}
