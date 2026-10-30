@@ -257,6 +257,16 @@ El cliente se crea con tu cuenta de Google en https://console.cloud.google.com. 
    - La segunda vez entra directo.
    - Con tu correo de administradora, se vincula a tu cuenta existente.
 
+## Microsoft Clarity (funcionalidades 031 y 034)
+
+Clarity graba cómo se usa la plataforma (mapas de calor y recorridos) para que la autora detecte fricciones antes del lanzamiento. Es una herramienta de la autora: los usuarios no ven nada.
+
+- **Está instalado** con el proyecto `z5vsmarsef` (constante `ID_PROYECTO` de `frontend/src/utilidades/clarity.js`). Se carga solo en la compilación de producción, la que se despliega en AWS; en desarrollo y en las pruebas, no.
+- **Todo el contenido queda enmascarado:** la plataforma marca la página entera con `data-clarity-mask`. Clarity ve los clics y el recorrido, pero no textos, datos de casos ni fotos. Además, en el panel de Clarity conviene elegir **Settings → Masking → Strict**.
+- **La cabecera de seguridad (CSP)** de Nginx permite solo los dominios de Clarity. Se instala sola en cada despliegue.
+- **Ver los datos:** en [clarity.microsoft.com](https://clarity.microsoft.com), proyecto evidentIA. Las primeras sesiones aparecen a las pocas horas del despliegue.
+- **Apagarlo:** cambiar `ID_PROYECTO` por `''` y desplegar.
+
 ## Cuando compres el dominio
 
 1. En `terraform.tfvars`, poné `dominio = "tu-dominio.com.ar"` y ejecutá `terraform apply`.

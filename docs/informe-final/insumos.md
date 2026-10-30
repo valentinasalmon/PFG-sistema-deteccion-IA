@@ -145,6 +145,12 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - acceso a pantalla completa y sin el panel de marca repetido; avisos arriba y diálogos centrados con X, Esc y foco atrapado (accesibilidad, WCAG 2.1 AA);
   - ilustraciones propias de la marca en lugar de imágenes genéricas;
   - Microsoft Clarity quedará para que la autora revise el uso antes del lanzamiento (mapas de calor), con enmascarado estricto.
+- **Pulido de UX/UI, segunda tanda (034, 2026-10-30):** para el informe:
+  - reducción de fricción medible en pasos: la búsqueda de casos se aplica sola, sin botón; crear un caso lleva directo a cargar las fotos; «Seguí donde lo dejaste» retoma el caso activo con un clic;
+  - patrón de «paleta de comandos» (Ctrl K), habitual en herramientas profesionales, adaptado al rol;
+  - comparador deslizable de la foto con su mapa de niveles de error, para leer el indicio sin alternar imágenes (apoyo a la persona en el circuito, ADR-0017);
+  - ningún vacío ni error sin salida: componente único con ilustración, explicación y acción;
+  - Clarity solo con identificador, enmascarando toda la página; antes de activarlo, la política de privacidad debe nombrarlo (CP-37). Es un ejemplo de privacidad desde el diseño.
 
 
 ## Integraciones sugeridas, sin definir (2026-10-29)
