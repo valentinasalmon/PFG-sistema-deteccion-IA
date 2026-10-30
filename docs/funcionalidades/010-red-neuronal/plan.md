@@ -182,7 +182,7 @@ Ninguna. La organización por etapas de `red_neuronal/` no contradice la arquite
 |---|---|
 | El modelo aprende atajos (formato, tamaño, temática) en lugar de huellas de generación | Normalización JPEG y de tamaños para ambas clases (CA5); evaluación por generador; revisión de errores en el cuaderno de exploración |
 | Algún conjunto requiere aceptar términos o deja de estar disponible | Verificación en `01_exploracion_datos` antes del entrenamiento; las fuentes son intercambiables (Strategy) |
-| Cuota de GPU de Colab gratuito (sin garantía; sesiones de hasta unas 12 h que se cortan por inactividad) | Respaldo en Drive después de cada etapa; prueba de concepto para estimar tiempos; Colab Pro solo si las sesiones no alcanzan; puntos de control por época para retomar; recortes de 224 px |
+| Cuota de GPU de Colab gratuito (sin garantía; sesiones de hasta unas 12 h que se cortan por inactividad) | Respaldo en Drive después de cada etapa; prueba de concepto para estimar tiempos; la autora tiene Colab Pro por un año (suscripción a Gemini, 2026-10-30); puntos de control por época para retomar; recortes de 224 px |
 | Diferencias entre la versión de Python o de bibliotecas de Kaggle y la del backend (Colab o Kaggle) | El paquete de inferencia solo depende de numpy, Pillow y onnxruntime; versión de *opset* fija; integración continua con Python 3.12 (backend) y 3.13 |
 | Desempeño bajo frente a generadores comerciales no vistos | Se mide y se declara en la ficha (CA11 a CA13); disparador de reentrenamiento (CA18) |
 | Fuga de datos personales del conjunto propio | Carpeta privada de Drive; `.gitignore`; nunca se usa en entrenamiento |
