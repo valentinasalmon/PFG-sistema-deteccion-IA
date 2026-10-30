@@ -11,6 +11,7 @@ from PIL import Image
 
 from app.extensiones import db
 from app.modelos.enlace_carga import EnlaceCarga
+from app.servicios import servicio_enlaces_carga
 from app.utilidades.tiempo import ahora_utc
 from pruebas.conftest import entradas_auditoria
 

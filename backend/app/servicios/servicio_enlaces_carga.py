@@ -221,7 +221,10 @@ class ServicioEnlacesCarga:
         }
 
     def _restantes(self, enlace):
-        """Fotos que todavía admite el enlace: el lugar libre del plan y, para la persona afectada, el tope."""
+        """Fotos que todavía admite el enlace.
+
+        Es el lugar libre del plan; para la persona afectada, además, el tope del enlace.
+        """
         lugar = self.imagenes.lugar_disponible(enlace.caso)
         if enlace.tipo == TIPO_PERSONA_AFECTADA:
             return min(lugar, max(0, MAXIMO_CARGAS - enlace.cargas))
