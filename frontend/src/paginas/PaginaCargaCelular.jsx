@@ -21,6 +21,8 @@ import { Link, useParams } from 'react-router'
 import { cargarConEnlace, consultarEnlaceCarga } from '../api/cargaCelular.js'
 import Aviso from '../componentes/Aviso.jsx'
 import Cargando from '../componentes/Cargando.jsx'
+import EstadoVacio from '../componentes/EstadoVacio.jsx'
+import { IlustracionRoto } from '../componentes/Ilustraciones.jsx'
 import Icono from '../componentes/Icono.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { formatearTamanio } from '../utilidades/archivos.js'
@@ -243,8 +245,11 @@ export default function PaginaCargaCelular() {
   if (error) {
     return (
       <>
-        <h1>Subir fotos</h1>
-        <Aviso tipo="error">{error.message}</Aviso>
+        <EstadoVacio Ilustracion={IlustracionRoto} titulo="No se puede usar este enlace" texto={error.message} encabezado>
+          <Link to="/" className="boton boton--secundario">
+            Ir a evidentIA
+          </Link>
+        </EstadoVacio>
       </>
     )
   }

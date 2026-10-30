@@ -40,8 +40,8 @@ La autora pidió un sistema limpio, sin fricciones, orientado a la usuaria princ
 - [ ] **CA4**: En el caso, Imágenes, Análisis e Informe se ven como un flujo vertical con el estado de cada paso.
 - [ ] **CA5**: Acceso y registro se muestran a pantalla completa, con la tarjeta centrada y solo el logo con el nombre.
 - [ ] **CA6**: Los resultados siguen diciendo que son indicios y no veredictos (RN27) y el pie del sistema lo recuerda en una línea.
-- [ ] **CA7**: Ctrl K abre el buscador desde cualquier pantalla interna; Esc lo cierra.
-- [ ] **CA8**: Clarity se carga solo con el identificador configurado y con enmascarado estricto.
+- [x] **CA7**: Ctrl K abre el buscador desde cualquier pantalla interna; Esc lo cierra.
+- [x] **CA8**: Clarity se carga solo con el identificador configurado y con enmascarado estricto.
 - [ ] **CA9**: Las animaciones se apagan con «reducir movimiento» y todo se puede usar con el teclado (RNF10).
 
 ## Preguntas abiertas

@@ -100,14 +100,46 @@ describe('panel principal', () => {
     expect(enlaces[0].closest('li')).toHaveTextContent('Ana López cargó la imagen «frente.jpg» en CASO-2026-000001')
   })
 
-  it('con el panel vacío solo muestra el resumen de casos', async () => {
+  it('sin casos muestra los tres pasos para empezar (034)', async () => {
     api(VACIO)
     renderizarEn('/')
 
-    expect(await screen.findByText(/Todavía no tenés casos/)).toBeInTheDocument()
-    for (const titulo of ['Pendientes', 'Análisis en curso', 'Actividad reciente']) {
+    const primero = await screen.findByRole('region', { name: 'Tu primer caso' })
+    expect(within(primero).getAllByRole('listitem')).toHaveLength(3)
+    expect(within(primero).getByRole('link', { name: 'Crear mi primer caso' })).toHaveAttribute('href', '/casos/nuevo')
+    for (const titulo of ['Pendientes', 'Análisis en curso', 'Actividad reciente', 'Seguí donde lo dejaste']) {
       expect(screen.queryByRole('region', { name: titulo })).not.toBeInTheDocument()
     }
+    expect(screen.queryByRole('list', { name: 'Tus casos por estado' })).not.toBeInTheDocument()
+  })
+
+  it('sin casos igual muestra las invitaciones pendientes', async () => {
+    api({ ...VACIO, invitaciones: COMPLETO.invitaciones })
+    renderizarEn('/')
+
+    expect(await screen.findByRole('region', { name: 'Tu primer caso' })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Pendientes' })).toHaveTextContent('Carla Gómez te invitó')
+  })
+
+  it('ofrece seguir con el caso activo más reciente y su próximo paso (034)', async () => {
+    api({
+      ...COMPLETO,
+      recientes: [caso(2, { estado: 'cerrado', estado_nombre: 'Cerrado' }), caso(4, { estado: 'analizado', lugar: 'Av. Corrientes 1234' })],
+    })
+    renderizarEn('/')
+
+    const retomar = await screen.findByRole('region', { name: 'Seguí donde lo dejaste' })
+    expect(retomar).toHaveTextContent('CASO-2026-000004 · Análisis listo')
+    expect(retomar).toHaveTextContent('Av. Corrientes 1234')
+    expect(within(retomar).getByRole('link', { name: 'Ver los resultados' })).toHaveAttribute('href', '/casos/4')
+  })
+
+  it('no ofrece seguir si todos los casos recientes están cerrados', async () => {
+    api({ ...COMPLETO, recientes: [caso(2, { estado: 'cerrado', estado_nombre: 'Cerrado' })] })
+    renderizarEn('/')
+
+    await screen.findByRole('region', { name: 'Casos recientes' })
+    expect(screen.queryByRole('region', { name: 'Seguí donde lo dejaste' })).not.toBeInTheDocument()
   })
 
   it('muestra 5 eventos y despliega el resto a pedido', async () => {

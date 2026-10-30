@@ -10,12 +10,15 @@
  * plataforma ve solo Administración y Mi perfil; «Organizaciones» aparece
  * solo para quien es miembro de alguna.
  *
- * Realiza: RF04 y CA7, CA11 de la funcionalidad 002; RNF10.
+ * Desde la funcionalidad 034 suma el buscador «Buscar o ir a…» (Ctrl K).
+ *
+ * Realiza: RF04 y CA7, CA11 de la funcionalidad 002; CA7 de la 034; RNF10.
  */
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router'
 import { useSesion } from '../hooks/useSesion.js'
 import { textosDelRubro } from '../utilidades/lenguaje.js'
+import BuscadorRapido from './BuscadorRapido.jsx'
 import Icono from './Icono.jsx'
 
 export default function Encabezado() {
@@ -56,6 +59,7 @@ export default function Encabezado() {
             Nuevo caso
           </Link>
         )}
+        <BuscadorRapido alAbrir={cerrarMenu} />
         <nav aria-label="Principal" className="encabezado__navegacion">
           {esAdministradora ? (
             <NavLink to="/administracion" onClick={cerrarMenu}>
