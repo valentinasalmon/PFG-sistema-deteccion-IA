@@ -5,7 +5,10 @@
  * componente del sistema responde. Fue la página inicial del esqueleto
  * caminante; desde la funcionalidad 002 el inicio es la pantalla con sesión.
  *
- * Realiza: CA4 y CA5 de la funcionalidad 001.
+ * También muestra si el sello en Hedera está activo, en qué red y cuándo se
+ * confirmó el último, para comprobar en producción que funciona (023, 029).
+ *
+ * Realiza: CA4 y CA5 de la funcionalidad 001; RF37.
  */
 import { useEffect, useState } from 'react'
 import { obtenerSalud } from '../api/salud.js'
@@ -15,6 +18,42 @@ const NOMBRES_COMPONENTES = {
   api: 'API',
   base_de_datos: 'Base de datos',
   redis: 'Cola de tareas (Redis)',
+}
+
+/** Texto de cada estado del sello que informa la API. */
+const ESTADOS_SELLO = {
+  ok: 'Funciona',
+  con_demoras: 'Con demoras: hay sellos esperando confirmación',
+  con_fallas: 'Con fallas: hay sellos que no se pudieron registrar',
+  error: 'No se pudo consultar',
+  desactivado: 'Desactivado',
+}
+
+/** Nombre del modo del sello: Hedera con su red, simulado o nada si está apagado. */
+function nombreDelModo(sello) {
+  if (sello.modo === 'hedera') return `Hedera (${sello.red})`
+  if (sello.modo === 'simulado') return 'Simulado'
+  return null
+}
+
+/** Fila con el estado del sello de tiempo (Hedera o simulado). */
+function EstadoSello({ sello }) {
+  if (!sello) return null
+  const modo = nombreDelModo(sello)
+  return (
+    <li>
+      <span>Sello de tiempo{modo ? ` · ${modo}` : ''}</span>
+      <strong>
+        {ESTADOS_SELLO[sello.estado] ?? sello.estado}
+        {sello.ultimo && (
+          <small className="nota">
+            {' '}
+            · último confirmado el {new Date(`${sello.ultimo}Z`).toLocaleString('es-AR')}
+          </small>
+        )}
+      </strong>
+    </li>
+  )
 }
 
 export default function PaginaEstado() {
@@ -53,6 +92,7 @@ export default function PaginaEstado() {
                 <strong>{estado === 'ok' ? 'Funciona' : 'No responde'}</strong>
               </li>
             ))}
+            <EstadoSello sello={salud.sello} />
           </ul>
           <p className="nota">
             Entorno: {salud.entorno} · Versión {salud.version}
