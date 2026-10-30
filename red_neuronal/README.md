@@ -4,6 +4,7 @@ Entrenamiento, evaluación y exportación del clasificador de imágenes sintéti
 
 Los conjuntos de datos (`datos/`) y los modelos (`modelos/`) **no se suben al repositorio**. Cada versión del modelo se documenta en `informes/` con su conjunto de datos, hiperparámetros, semilla y métricas.
 
+- **Documentación completa de la red neuronal (empezar por acá): [docs/red-neuronal/](../docs/red-neuronal/README.md)**
 - Especificación: [docs/funcionalidades/010-red-neuronal/especificacion.md](../docs/funcionalidades/010-red-neuronal/especificacion.md)
 - Plan técnico: [docs/funcionalidades/010-red-neuronal/plan.md](../docs/funcionalidades/010-red-neuronal/plan.md)
 - Ciclo de vida, flujos y MLOps: [docs/guias/ciclo-de-vida-red-neuronal.md](../docs/guias/ciclo-de-vida-red-neuronal.md)
