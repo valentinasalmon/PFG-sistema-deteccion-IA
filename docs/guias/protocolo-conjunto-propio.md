@@ -63,7 +63,18 @@ Reparto sugerido por herramienta: **5 a 8 imágenes por escena**, que suman entr
 
 ## Fotos reales
 
-- Tomarlas con el **celular propio**, de las mismas escenas.
+**Qué cuenta como «real»:** cualquier foto tomada con una cámara, aunque no muestre un hecho real. Un auto estacionado, una pared con humedad, el propio brazo, un ticket: todas son reales. No hace falta un choque de verdad.
+
+**De dónde salen, en orden de preferencia:**
+1. **Conjuntos académicos de fotos reales** (no hace falta sacarlas): VISION (fotos de 35 celulares, ya con su versión de WhatsApp), FODB (si se verifica la licencia) y CarDD (autos dañados). El agente las incorpora con el cuaderno de exploración.
+2. **Fotos propias con el celular**, de las escenas de la tabla: suman las condiciones de Argentina (autos, calles, documentos locales).
+3. **Fotos de familiares o conocidos**, con su consentimiento por escrito y sin datos personales.
+
+**No** se bajan fotos sueltas de internet: pueden estar generadas o editadas y su origen no se puede verificar.
+
+**Si se sacan fotos propias:**
+
+- Tomarlas de las mismas escenas.
 - **No** usar fotos de casos reales de clientes ni de terceros sin su consentimiento.
 - **No** mostrar caras, patentes legibles, documentos de identidad ni datos personales. Si aparecen, elegir otra foto (no taparlos en la original, porque eso ya es una edición).
 - Anotar el modelo del celular en la planilla.

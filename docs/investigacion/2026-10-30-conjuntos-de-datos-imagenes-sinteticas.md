@@ -21,6 +21,9 @@ Investigación para la receta de datos v1 de la red neuronal (funcionalidad 010,
 | **ShareGPT-4o-Image** (FreedomIntelligence) | Imágenes de GPT-4o | GPT-4o | No se encontró la licencia del conjunto | Solo si se verifica la licencia |
 | **TrueFake** (Univ. de Trento, IJCNN 2025) | 600 000 imágenes, 180 000 **compartidas en Facebook, X y Telegram** | 5 de difusión y 3 GAN | Público en GitHub; verificar licencia | **Evaluación en condiciones reales** (recompresión de redes sociales) |
 | **Semi-Truths** (NeurIPS 2024) | 850 000 imágenes con **ediciones localizadas** (inpainting) sobre 27 600 reales | Varios modelos de difusión | Figura solo como «cc», sin variante; las fotos de origen tienen licencias propias | Medir **ediciones parciales** (CA13), sin entrenar |
+| **VISION** (Univ. de Florencia, 2017) | **Fotos reales de 35 celulares**, en versión nativa y **compartidas por WhatsApp y Facebook** (34 427 imágenes) | — (todas reales) | CC BY-SA 4.0 | **Fotos reales para el conjunto propio**, con su variante de WhatsApp ya hecha |
+| **FODB · Forchheim Image Database** (2021) | 143 escenas tomadas con 27 celulares, cada una en 6 versiones: original y copias de Facebook, Instagram, Telegram, Twitter y **WhatsApp** | — (todas reales) | No se encontró: verificar | Fotos reales con WhatsApp, si la licencia lo permite |
+| **CarDD** (USTC, 2022) | 4 000 fotos reales de **autos dañados**, con caras y patentes tapadas | — (todas reales) | Solo investigación no comercial; requiere aceptar las condiciones de Flickr y Shutterstock | Fotos reales de **choques** para el conjunto propio |
 | GenImage | Un millón de pares, 8 generadores | 7 de difusión y 1 GAN (2023) | No se encontró | Descartado: generadores viejos y **sesgo de JPEG** documentado (ver abajo) |
 | WildFake (AAAI 2025) | 3,7 millones de imágenes de comunidades | Muchos | No se encontró | Descartado por ahora: sin licencia verificable |
 | Chameleon (ICLR 2024) | Imágenes que personas creyeron reales | Varios | Solo investigación académica, a pedido por correo | Opcional, como prueba difícil |
@@ -29,6 +32,8 @@ Investigación para la receta de datos v1 de la red neuronal (funcionalidad 010,
 
 - **Sesgo de formato en los conjuntos públicos.** El trabajo «Fake or JPEG?» muestra que en conjuntos como GenImage las reales son JPEG y las generadas PNG, y los detectores aprenden a distinguir el formato en lugar de la generación. Nuestra **normalización anti-atajos** (todo a JPEG con calidad y tamaño al azar, igual para las dos clases) responde justamente a esto. Es un buen argumento para el informe.
 - **La recompresión de redes sociales baja el desempeño.** TrueFake muestra que los detectores entrenados con imágenes limpias empeoran con imágenes compartidas en redes. No encontramos ningún conjunto público con WhatsApp: por eso **el conjunto propio, con su variante de WhatsApp, es un aporte original del proyecto**.
+- **Fotos reales con WhatsApp sí existen:** VISION y FODB tienen fotos de celulares en versión original y reenviadas por WhatsApp. Cubren la parte real del conjunto propio sin depender de que la autora saque cientos de fotos. CarDD aporta fotos reales de autos dañados, la escena más importante del sistema.
+- **Bajar fotos sueltas de internet no garantiza que sean reales:** pueden estar generadas o editadas. Las fotos reales se toman de conjuntos académicos con origen documentado (cámara y fecha), preferentemente anteriores a 2022, o las saca la autora con su celular.
 - **Las licencias son casi todas no comerciales.** Alcanzan para el proyecto final; una versión comercial requeriría reentrenar (ya registrado como pregunta abierta de la especificación).
 - **Las licencias cambian entre revisiones** (OpenFake es el ejemplo más claro). La receta tiene que fijar una **revisión concreta** de cada conjunto, y la ficha la registra.
 
@@ -50,6 +55,10 @@ Con eso se arma la receta v1 (T27).
 - **Ediciones:** las del conjunto propio y una muestra de Semi-Truths, solo para medir.
 
 ## Fuentes
+
+- [VISION: README de la Universidad de Florencia](https://lesc.dinfo.unifi.it/VISION/README.txt) y [artículo](https://link.springer.com/doi/10.1186/s13635-017-0067-2)
+- [The Forchheim Image Database for Camera Identification in the Wild](https://arxiv.org/pdf/2011.02241)
+- [CarDD: A New Dataset for Vision-based Car Damage Detection](https://arxiv.org/pdf/2211.00945) y [copia en Hugging Face](https://huggingface.co/datasets/harpreetsahota/CarDD/commit/c8abb22ec09d2ef65594caa87545ed0a7fa99318)
 
 - [Treasure (Hugging Face)](https://huggingface.co/datasets/ThreeLiu/Treasure/blob/main/README.md) y [Fleet: Few Shots Lead Effective AI-generated Image Detection](https://arxiv.org/pdf/2606.31082)
 - [Automated In-the-Wild Data Collection for Continual AI Generated Image Detection (ACM)](https://dl.acm.org/doi/10.1145/3810988.3812662)
