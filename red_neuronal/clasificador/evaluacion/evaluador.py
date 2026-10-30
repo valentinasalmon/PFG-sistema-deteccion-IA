@@ -3,7 +3,9 @@
 Usa el mismo ``PredictorOnnx`` que el backend, de modo que las métricas
 reportadas son las del modelo que realmente se publica (CA14). Produce:
 
-- ``metricas.json``: total, por partición, por generador y por variante.
+- ``metricas.json``: total, por partición, por generador, por variante y,
+  en el conjunto propio, por escena (prefijo del nombre del archivo, por
+  ejemplo ``01-choque-007.png`` → ``01-choque``, según el protocolo).
 - ``predicciones.csv``: la probabilidad de cada imagen, para analizar errores.
 - ``curva_roc.png`` y ``matriz_confusion.png``: gráficos para la ficha.
 
@@ -12,7 +14,8 @@ Realiza: RNF24 CA3; CA10 a CA13 de la funcionalidad 010.
 
 import csv
 import json
-from dataclasses import dataclass
+import re
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
@@ -27,6 +30,15 @@ from clasificador.evaluacion.metricas import (
 )
 from clasificador.inferencia.predictor import PredictorOnnx
 
+# Nombre de archivo del conjunto propio: <escena>-<número>, p. ej. 05-lesion-012.
+_PATRON_ESCENA = re.compile(r"^(\d{2}-[a-z-]+?)-\d+$")
+
+
+def escena_de(ruta_relativa: str) -> str | None:
+    """Escena del protocolo del conjunto propio según el nombre del archivo."""
+    coincidencia = _PATRON_ESCENA.match(Path(ruta_relativa).stem)
+    return coincidencia.group(1) if coincidencia else None
+
 
 @dataclass(frozen=True)
 class InformeMetricas:
@@ -37,6 +49,7 @@ class InformeMetricas:
     por_particion: dict[str, dict]
     por_generador: dict[str, dict]
     por_variante: dict[str, dict]
+    por_escena: dict[str, dict] = field(default_factory=dict)
 
     def a_diccionario(self) -> dict:
         """Representación serializable a JSON."""
@@ -47,6 +60,7 @@ class InformeMetricas:
             "por_particion": self.por_particion,
             "por_generador": self.por_generador,
             "por_variante": self.por_variante,
+            "por_escena": self.por_escena,
         }
 
 
@@ -122,6 +136,7 @@ def evaluar(
     directorio_salida.mkdir(parents=True, exist_ok=True)
     probabilidades = predecir_registros(predictor, registros, raiz)
     etiquetas = np.asarray([registro.clase for registro in registros])
+    escenas = [escena_de(registro.ruta_relativa) or "sin_escena" for registro in registros]
     informe = InformeMetricas(
         version_modelo=predictor.version,
         total=calcular_metricas(etiquetas, probabilidades),
@@ -132,6 +147,12 @@ def evaluar(
             etiquetas, probabilidades, [r.generador for r in registros]
         ),
         por_variante=metricas_por_grupo(etiquetas, probabilidades, [r.variante for r in registros]),
+        # Las fotos reales son de las mismas escenas que las generadas (regla de
+        # oro): el AUC por escena compara reales y sintéticas del mismo tema.
+        por_escena=(
+            metricas_por_grupo(etiquetas, probabilidades, escenas)
+            if any(escena != "sin_escena" for escena in escenas) else {}
+        ),
     )
     (directorio_salida / "metricas.json").write_text(
         json.dumps(informe.a_diccionario(), ensure_ascii=False, indent=2), encoding="utf-8"

@@ -1,12 +1,14 @@
 """Prueba de integración del pipeline completo (tarea T22).
 
 Recorre todas las etapas con la línea de comandos, como lo hará el cuaderno
-de Kaggle, sobre un conjunto pequeño generado en memoria y en CPU:
+de Colab, sobre un conjunto pequeño generado en memoria y en CPU:
 
     obtener → validar → preparar → entrenar → exportar → evaluar → publicar
 
-Verifica que cada etapa deja sus salidas y que la versión queda publicada
-en un registro local con su ficha.
+Verifica que cada etapa deja sus salidas, que ``estado`` informa qué etapas
+están terminadas (para que el cuaderno saltee lo ya hecho), que el generador
+reservado se evalúa como «no visto» y que la versión queda publicada en un
+registro local con su ficha.
 """
 
 import json
@@ -17,11 +19,13 @@ import yaml
 
 from clasificador import pipeline
 from clasificador.__main__ import principal
+from clasificador.configuracion import cargar_configuracion
 from clasificador.inferencia.predictor import PredictorOnnx
 from clasificador.registro.registro_modelos import RegistroLocal
 from pruebas.conftest import crear_imagen_real, crear_imagen_sintetica
 
 CANTIDAD_POR_GRUPO = 24
+CANTIDAD_RESERVADAS = 8
 
 
 def _crear_conjunto(raiz: Path) -> None:
@@ -36,6 +40,10 @@ def _crear_conjunto(raiz: Path) -> None:
         for indice in range(CANTIDAD_POR_GRUPO):
             semilla = 5000 + indice + (100 if generador == "generador_b" else 0)
             crear_imagen_sintetica(250, 250, semilla).save(carpeta / f"s{indice:03d}.webp")
+    carpeta = raiz / "sintetica" / "generador_reservado" / "original"
+    carpeta.mkdir(parents=True, exist_ok=True)
+    for indice in range(CANTIDAD_RESERVADAS):
+        crear_imagen_sintetica(250, 250, 9000 + indice).save(carpeta / f"n{indice:03d}.png")
 
 
 @pytest.fixture
@@ -54,10 +62,11 @@ def configuracion_pipeline(tmp_path, monkeypatch):
                 {
                     "nombre": "propio", "tipo": "carpeta_local", "ruta": str(tmp_path / "fuente"),
                     "cantidad_reales": 2 * CANTIDAD_POR_GRUPO,
-                    "cantidad_sinteticas": 2 * CANTIDAD_POR_GRUPO,
+                    "cantidad_sinteticas": 2 * CANTIDAD_POR_GRUPO + CANTIDAD_RESERVADAS,
                     "licencia": "imágenes generadas para pruebas",
                 }
             ],
+            "generadores_reservados": ["generador_reservado"],
             "lado_menor": [224, 240],
             "desbalance_tolerado": 0.2,  # grupos chicos: el redondeo desbalancea
         },
@@ -80,8 +89,13 @@ def test_el_pipeline_completo_publica_una_version(configuracion_pipeline):
     trabajo = raiz / "trabajo"
     configuracion = ["--configuracion", str(ruta)]
 
+    assert not any(pipeline.estado_etapas(cargar_configuracion(ruta)).values())
     for etapa in ("obtener", "validar", "preparar", "entrenar"):
         assert principal([etapa, *configuracion]) == 0, etapa
+    estado = pipeline.estado_etapas(cargar_configuracion(ruta))
+    assert [etapa for etapa, hecha in estado.items() if hecha] == [
+        "obtener", "validar", "preparar", "entrenar"
+    ]
     assert (trabajo / "preparado" / "manifiesto.csv").is_file()
     entrenamiento = json.loads((trabajo / "entrenamiento" / "resultado.json").read_text("utf-8"))
     assert entrenamiento["temperatura"] > 0
@@ -95,6 +109,10 @@ def test_el_pipeline_completo_publica_una_version(configuracion_pipeline):
     metricas = json.loads((trabajo / "evaluacion" / "prueba" / "metricas.json").read_text("utf-8"))
     assert metricas["total"]["auc"] >= 0.6
     assert (trabajo / "evaluacion" / "condiciones_reales" / "metricas.json").is_file()
+    ruta_no_visto = trabajo / "evaluacion" / "no_visto" / "metricas.json"
+    no_visto = json.loads(ruta_no_visto.read_text("utf-8"))
+    assert no_visto["total"]["auc"] is not None  # se compara contra las reales de prueba
+    assert "generador_reservado" in no_visto["por_generador"]
 
     registro = f"local:{raiz / 'registro'}"
     publicar = ["publicar", *configuracion, "--version", "0.1.0", "--registro", registro]
@@ -104,6 +122,8 @@ def test_el_pipeline_completo_publica_una_version(configuracion_pipeline):
     assert "# Ficha del modelo 0.1.0" in ficha
     assert "### Condiciones reales de uso" in ficha
     assert (raiz / "registro" / "v0.1.0" / "mlruns.zip").is_file()
+    assert all(pipeline.estado_etapas(cargar_configuracion(ruta)).values())
+    assert principal(["estado", *configuracion]) == 0
 
     # Una versión publicada es inmutable.
     assert principal(publicar) == 1

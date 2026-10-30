@@ -23,9 +23,19 @@ Sirve para que Colab clone el repositorio, que es privado.
 
 En el cuaderno, ícono de la **llave**: agregar `HF_TOKEN` y `GITHUB_TOKEN` con **Acceso al cuaderno** activado. Los secretos son de la cuenta, no del cuaderno: se cargan una vez. **Nunca** se pegan en una celda ni en el chat.
 
-### 4. El cuaderno
+### 4. Los cuadernos
 
-Descargar `red_neuronal/cuadernos/01_prueba_de_concepto_colab.ipynb` de la rama `funcionalidad/010-red-neuronal` y subirlo en **Archivo → Subir cuaderno**. Cuando el cuaderno cambie en el repositorio, hay que volver a bajarlo.
+| Cuaderno | Para qué | GPU | Tiempo |
+|---|---|---|---|
+| `01_prueba_de_concepto_colab.ipynb` | La prueba de concepto (hecha) | T4 | ≈ 11 min |
+| `02_exploracion_datos_colab.ipynb` | **T25:** revisar cada conjunto candidato (licencia, revisión, columnas, generadores, formatos) y proponer la receta v1 | **No: usar CPU** | 10 a 20 min |
+| `03_entrenamiento_completo_colab.ipynb` | **T28 a T33:** entrenamiento completo con la receta v1, saltea lo ya hecho | T4 o L4 | 2 a 3 h |
+
+Descargarlos de la carpeta `red_neuronal/cuadernos/` de la rama `funcionalidad/010-red-neuronal` y subirlos en **Archivo → Subir cuaderno**. Cuando un cuaderno cambie en el repositorio, hay que volver a bajarlo.
+
+**Antes del 02:** con la misma cuenta del `HF_TOKEN`, aceptar las condiciones de los conjuntos que lo piden (OpenFake, Community Forensics, CarDD, ConstructionSite). Si no, aparecen como no disponibles.
+
+**Antes del 03:** la receta `configuracion/v1.yaml` tiene que estar completada con lo que devolvió el 02. Para publicar en Hugging Face (T33), el `HF_TOKEN` tiene que ser de tipo **Write** y existir el repositorio privado (E03); en el cuaderno, `PUBLICAR_EN_HUGGING_FACE = True`.
 
 ## Correrlo
 
@@ -61,7 +71,9 @@ Colab desconecta por **inactividad** (nadie toca la página) y por **duración m
 
 **No** usar scripts de clics automáticos: van contra las condiciones de Colab y pueden suspender la cuenta.
 
-**Si igual pasa:** **Reconectar → Ejecutar todo**. El cuaderno recupera de Drive lo terminado. El entrenamiento retoma desde la última época guardada (`ultimo.pt`). Las imágenes no se guardan en Drive y se vuelven a bajar.
+**Si igual pasa:** **Reconectar → Ejecutar todo**. El cuaderno recupera de Drive lo terminado. El entrenamiento retoma desde la última época guardada (`ultimo.pt`). En la prueba de concepto las imágenes no se guardaban y se volvían a bajar; el cuaderno 03 guarda los **datos preparados** en `MyDrive/evidentia/datos/<receta>/preparado.tar` y, con `python -m clasificador estado`, **saltea cada etapa ya terminada** (capítulo 8).
+
+**Si cambiás la receta:** cambiale el `nombre` en el YAML (por ejemplo, `v1b`). Cada receta tiene su carpeta en Drive, y el cuaderno se detiene si en la carpeta hay resultados de otra configuración.
 
 ## Dejarla entrenando sola
 

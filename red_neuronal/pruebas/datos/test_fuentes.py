@@ -219,3 +219,31 @@ def test_hugging_face_excluye_filas_por_columna():
         _config_hf(excluir={"nsfw_flag": ["True"]}), semilla=0, cargador=lambda _: filas
     )
     assert len(list(fuente.iterar())) == 4
+
+
+def test_hugging_face_filtra_generadores_incluidos():
+    """Con generadores incluidos, las sintéticas de otros generadores se saltean."""
+    filas = _filas()
+    filas[1]["modelo"] = "flux"
+    fuente = FuenteHuggingFace(
+        _config_hf(generadores_incluidos=["sdxl"]), semilla=0, cargador=lambda _: filas
+    )
+    ejemplos = list(fuente.iterar())
+    assert {e.generador for e in ejemplos if e.clase == 1} == {"sdxl"}
+    assert sum(e.clase == 0 for e in ejemplos) == 3
+
+
+def test_hugging_face_con_clase_fija():
+    """Un conjunto de una sola clase no necesita columna de clase."""
+    config = _config_hf(columna_clase=None, valores_sinteticos=[], clase_fija="real")
+    fuente = FuenteHuggingFace(config, semilla=0, cargador=lambda _: _filas())
+    assert {e.clase for e in fuente.iterar()} == {0}
+
+
+def test_obtener_respeta_la_cuota_por_generador(tmp_path):
+    """Ningún generador aporta más sintéticas que su cuota."""
+    filas = _filas()
+    filas[5]["modelo"] = "flux"
+    fuente = FuenteHuggingFace(_config_hf(), semilla=0, cargador=lambda _: filas)
+    registros = obtener_de_fuente(fuente, tmp_path, {0: 0, 1: 2}, cuota_por_generador=1)
+    assert sorted(r.generador for r in registros) == ["flux", "sdxl"]

@@ -9,7 +9,7 @@ La etapa `evaluar` no usa el modelo de PyTorch: usa el **archivo ONNX exportado*
 | Conjunto | Qué mide | Cuándo |
 |---|---|---|
 | **prueba** | Desempeño con generadores conocidos (los que se usaron para entrenar, con imágenes que no vio) | Siempre |
-| **no_visto** | Desempeño con generadores reservados que nunca vio | Si la receta reserva generadores |
+| **no_visto** | Desempeño con generadores reservados que nunca vio. Como esa partición solo tiene sintéticas, se comparan contra **las reales de prueba**, que el modelo tampoco vio: así el AUC se puede calcular | Si la receta reserva generadores |
 | **condiciones_reales** | El conjunto propio: ChatGPT, Gemini, Copilot, fotos reales, ediciones, en versión original, WhatsApp y captura | Con `--conjunto-propio /ruta` |
 
 ## Qué produce
@@ -39,6 +39,10 @@ Con el umbral de reporte de 0,5, cuenta los cuatro casos:
 El AUC necesita las dos clases. Para cada generador se comparan **sus** imágenes contra **todas** las reales del conjunto. Responde a: «¿qué tan bien separa el modelo las imágenes de este generador de las fotos reales?».
 
 > **Cuidado al leerla:** con pocas imágenes por generador, la tabla es ruido estadístico. En la prueba de concepto había unas 3 imágenes de cada generador en el conjunto de prueba, y por eso la precisión por generador da valores muy bajos (unos pocos falsos positivos entre 500 reales pesan contra 3 positivos). La receta v1 usa menos generadores con más imágenes cada uno.
+
+### Por escena
+
+En el conjunto propio, el nombre de cada archivo empieza con su escena (`01-choque-007.png`). Las métricas se separan también **por escena**. Como las fotos reales son de las mismas escenas que las generadas (regla de oro), el AUC de cada escena compara reales y sintéticas **del mismo tema**: mide la generación y no el tema. El desglose por tono de piel se arma con la planilla.
 
 ### Por variante
 

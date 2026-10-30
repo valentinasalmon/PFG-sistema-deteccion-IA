@@ -54,6 +54,8 @@ flowchart LR
 - Especificación de la funcionalidad: [docs/funcionalidades/010-red-neuronal/especificacion.md](../funcionalidades/010-red-neuronal/especificacion.md)
 - Plan técnico y tareas: [plan.md](../funcionalidades/010-red-neuronal/plan.md), [tareas.md](../funcionalidades/010-red-neuronal/tareas.md)
 - Decisiones de arquitectura: [ADR-0014](../arquitectura/decisiones/0014-ciclo-de-vida-y-mlops-del-clasificador.md) (ciclo de vida y MLOps) y [ADR-0015](../arquitectura/decisiones/0015-arquitectura-y-contrato-de-inferencia-del-clasificador.md) (arquitectura y contrato de inferencia)
+- Conjunto propio: [protocolo](../guias/protocolo-conjunto-propio.md) (reglas) y [guía paso a paso](../guias/guia-paso-a-paso-conjunto-propio.md) (lista maestra de prompts, carpetas, rutina y cómo buscar conjuntos)
+- Investigación de conjuntos de datos: [2026-10-30](../investigacion/2026-10-30-conjuntos-de-datos-imagenes-sinteticas.md)
 - Código: [red_neuronal/](../../red_neuronal/)
 
 ## Cómo se mantiene esta documentación

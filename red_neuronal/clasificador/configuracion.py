@@ -46,10 +46,29 @@ class ConfiguracionFuente(_Esquema):
     columna_imagen: str = "image"
     columna_clase: str | None = None
     valores_sinteticos: list[str] = Field(default_factory=list)
+    clase_fija: Literal["real", "sintetica"] | None = Field(
+        default=None,
+        description="Para conjuntos de una sola clase (p. ej. solo fotos reales de autos).",
+    )
     columna_generador: str | None = None
     excluir: dict[str, list[str]] = Field(
         default_factory=dict,
         description="Filas a descartar por columna, p. ej. {'nsfw_flag': ['True']}.",
+    )
+    archivos: list[str] = Field(
+        default_factory=list,
+        description=(
+            "Archivos del conjunto que se leen (muestreo por archivos). Vacío: todos. "
+            "Los propone el cuaderno de exploración (T25) con una semilla fija."
+        ),
+    )
+    generadores_incluidos: list[str] = Field(
+        default_factory=list,
+        description="Si no está vacía, solo se toman sintéticas de estos generadores.",
+    )
+    cuota_por_generador: int | None = Field(
+        default=None, ge=1,
+        description="Máximo de sintéticas de un mismo generador, para que ninguno domine.",
     )
     # Carpeta local
     ruta: Path | None = None
@@ -61,12 +80,21 @@ class ConfiguracionFuente(_Esquema):
     @model_validator(mode="after")
     def _validar_segun_tipo(self) -> "ConfiguracionFuente":
         if self.tipo == "hugging_face":
-            if not self.conjunto or not self.columna_clase:
-                raise ValueError("una fuente de Hugging Face requiere 'conjunto' y 'columna_clase'")
-            if not self.valores_sinteticos:
+            if not self.conjunto:
+                raise ValueError("una fuente de Hugging Face requiere 'conjunto'")
+            if self.clase_fija is None and not self.columna_clase:
+                raise ValueError("indicar 'columna_clase' o, si tiene una sola clase, 'clase_fija'")
+            if self.clase_fija is None and not self.valores_sinteticos:
                 raise ValueError("indicar en 'valores_sinteticos' qué valores son sintéticos")
         if self.tipo == "carpeta_local" and self.ruta is None:
             raise ValueError("una fuente 'carpeta_local' requiere 'ruta'")
+        if self.tipo == "carpeta_local" and (
+            self.archivos or self.generadores_incluidos or self.cuota_por_generador
+        ):
+            raise ValueError(
+                "'archivos', 'generadores_incluidos' y 'cuota_por_generador' "
+                "solo se usan en fuentes de Hugging Face"
+            )
         if self.cantidad_reales + self.cantidad_sinteticas == 0:
             raise ValueError(f"la fuente '{self.nombre}' no pide ninguna imagen")
         return self

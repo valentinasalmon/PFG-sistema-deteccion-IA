@@ -165,3 +165,23 @@ def test_las_fuentes_con_nombre_repetido_se_rechazan(tmp_path):
     contenido = _MINIMA.rstrip("\n") + "\n" + fuente
     with pytest.raises(ErrorConfiguracion, match="mismo nombre"):
         cargar_configuracion(_escribir(tmp_path, contenido))
+
+
+def test_la_receta_v1_es_valida():
+    """La receta v1 versionada cumple el esquema."""
+    configuracion = cargar_configuracion(RUTA_PRUEBA_DE_CONCEPTO.parent / "v1.yaml")
+    assert configuracion.nombre == "v1"
+    assert configuracion.datos.generadores_reservados
+
+
+def test_el_muestreo_por_archivos_es_solo_para_hugging_face(tmp_path):
+    """Una carpeta local no admite archivos, generadores ni cuotas."""
+    # pylint: disable-next=import-outside-toplevel
+    from clasificador.configuracion import ConfiguracionFuente
+
+    with pytest.raises(ValueError, match="solo se usan en fuentes de Hugging Face"):
+        ConfiguracionFuente(nombre="p", tipo="carpeta_local", ruta=tmp_path,
+                            cantidad_reales=1, licencia="propia", cuota_por_generador=3)
+    with pytest.raises(ValueError, match="clase_fija"):
+        ConfiguracionFuente(nombre="h", tipo="hugging_face", conjunto="a/b",
+                            cantidad_reales=1, licencia="x")

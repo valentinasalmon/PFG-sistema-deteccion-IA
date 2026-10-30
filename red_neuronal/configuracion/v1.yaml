@@ -1,0 +1,86 @@
+# Receta de datos y entrenamiento v1 (tarea T27). PROVISORIA.
+#
+# Se completa con lo que devuelve el cuaderno de exploración (T25):
+#   - `revision`: el commit exacto de cada conjunto (la licencia puede cambiar
+#     entre revisiones; la ficha del modelo registra cuál se usó);
+#   - `archivos`: los archivos Parquet elegidos al azar con la semilla
+#     (muestreo por archivos, bitácora del 2026-10-19);
+#   - `generadores_incluidos` y `cuota_por_generador`: los generadores con más
+#     imágenes y un máximo por cada uno, para que las métricas por generador
+#     signifiquen algo (lección de la prueba de concepto).
+# Mientras tanto, los valores marcados «a confirmar» son los esperados según
+# la documentación de cada conjunto.
+#
+# Decisiones de la receta (capítulo 4 de docs/red-neuronal/):
+#   - entrenamiento con Community Forensics (generadores abiertos) y OpenFake
+#     (generadores comerciales);
+#   - un generador comercial reservado como «no visto» (Gemini / Imagen), que
+#     después se suma para la demostración de reentrenamiento (versión 1.1.0);
+#   - las fotos reales de autos (CarDD) NO se usan para entrenar: no hay
+#     sintéticas de autos dañados en el entrenamiento, y el modelo aprendería
+#     «auto dañado = real» (regla de oro). Van al conjunto propio, para evaluar.
+#   - más épocas que la prueba de concepto, que mejoró hasta la última.
+
+nombre: v1
+semilla: 42
+datos:
+  fuentes:
+    - nombre: community_forensics
+      tipo: hugging_face
+      conjunto: OwensLab/CommunityForensics-Small
+      revision: main                      # fijar el commit que informe la exploración
+      columna_imagen: image_data
+      columna_clase: label
+      valores_sinteticos: ["1"]
+      columna_generador: model_name
+      excluir: { nsfw_flag: ["True"] }   # contenido explícito: no se usa
+      archivos: []                        # completar con la propuesta de la exploración
+      cuota_por_generador: 400
+      cantidad_reales: 20000
+      cantidad_sinteticas: 20000
+      licencia: CC BY-NC-SA 4.0 (verificar en la revisión fijada)
+
+    - nombre: openfake
+      tipo: hugging_face
+      conjunto: ComplexDataLab/OpenFake
+      revision: main                      # fijar: la licencia cambia entre revisiones
+      columna_imagen: image               # a confirmar
+      columna_clase: label                # a confirmar
+      valores_sinteticos: ["fake"]        # a confirmar
+      columna_generador: model            # a confirmar
+      excluir: { model: ["imagen-4.0"] }  # el reservado no se cuenta acá (a confirmar el nombre)
+      archivos: []
+      cuota_por_generador: 1500
+      cantidad_reales: 15000
+      cantidad_sinteticas: 15000
+      licencia: CC BY-NC-SA 4.0 (verificar en la revisión fijada)
+
+    - nombre: openfake_no_visto
+      tipo: hugging_face
+      conjunto: ComplexDataLab/OpenFake
+      revision: main
+      columna_imagen: image
+      columna_clase: label
+      valores_sinteticos: ["fake"]
+      columna_generador: model
+      generadores_incluidos: ["imagen-4.0"]   # a confirmar el nombre exacto
+      archivos: []
+      cantidad_sinteticas: 1500
+      licencia: CC BY-NC-SA 4.0 (verificar en la revisión fijada)
+
+  generadores_reservados: ["imagen-4.0"]      # a confirmar: van completos a «no_visto»
+  proporciones: { entrenamiento: 0.8, validacion: 0.1, prueba: 0.1 }
+  calidad_jpeg: [75, 95]
+  lado_menor: [256, 512]
+
+entrenamiento:
+  arquitectura: efficientnet_b0
+  epocas: 15
+  tamanio_lote: 64
+  tasa_aprendizaje: 0.0003
+  paciencia: 3
+  trabajadores_carga: 4
+  precision_mixta: true
+
+exportacion: { opset: 18, tolerancia: 0.001 }
+compuerta: { auc_minimo: 0.90 }

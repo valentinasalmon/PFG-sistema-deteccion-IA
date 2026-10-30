@@ -11,7 +11,7 @@ Se descargan de **Hugging Face**, una plataforma pública de conjuntos de datos 
 | Conjunto | Qué tiene | Estado |
 |---|---|---|
 | **Community Forensics (*Small*)** | Fotos reales y generadas por **cientos de generadores** (Stable Diffusion y sus ajustes finos, GAN, DeepFloyd, GLIDE, etc.) | En uso desde la prueba de concepto |
-| OpenFake | Imágenes de generadores comerciales recientes | Previsto para la receta v1 (T25 a T27) |
+| OpenFake | Imágenes de generadores comerciales recientes | En la receta v1 provisoria (`configuracion/v1.yaml`); a confirmar con la exploración |
 | MS COCOAI | Fotos de COCO y sus versiones generadas | Previsto para la receta v1 |
 | ShareGPT-4o-Image | Imágenes generadas con GPT-4o | Previsto para la receta v1 si se verifica la licencia |
 
@@ -24,6 +24,32 @@ La **licencia** de cada conjunto se verifica y se registra en la ficha (CA2). Un
 
 Las columnas de Community Forensics se confirmaron con su esquema: `image_data` (bytes de la imagen), `label` (1 = sintética), `model_name` (generador), `nsfw_flag` (contenido explícito, que se descarta), `subset`, `real_source` y `architecture`.
 
+### Exploración de candidatos (T25)
+
+Antes de usar un conjunto se lo explora con `python -m clasificador explorar` (cuaderno `02_exploracion_datos_colab.ipynb`). Para cada candidato de `configuracion/candidatos_v1.yaml`:
+
+1. pide a Hugging Face la **revisión exacta** y la **licencia de la ficha** en esa revisión. Si la licencia falta o es «other», el conjunto queda **excluido** y anotado, salvo que se haya verificado a mano en el artículo (campo `licencia_verificada_a_mano`) (CA2);
+2. lee el **esquema** y confirma las columnas que espera la receta;
+3. lee solo las **columnas livianas** (clase y generador) de una muestra de archivos al azar, sin bajar imágenes, y cuenta por clase y por generador;
+4. baja **un solo grupo de filas** de algunos archivos y mide formato, tamaño y **calidad JPEG** (estimada con la tabla de cuantización) de cada clase, para ver si hay sesgo de formato;
+5. deja `exploracion.json` y una tabla `exploracion.md` con la decisión de cada candidato;
+6. propone el bloque de la receta: revisión fija, archivos, generadores con más imágenes y cuota por generador.
+
+### La receta v1 (T27, provisoria)
+
+`configuracion/v1.yaml` aplica lo aprendido en la prueba de concepto:
+
+| Decisión | Cómo |
+|---|---|
+| Menos generadores, más imágenes por cada uno | `generadores_incluidos` y `cuota_por_generador` |
+| Muestreo por archivos (en Parquet, leer una imagen baja la columna de imágenes de todo el archivo) | `archivos`, propuestos por la exploración |
+| Revisión fija de cada conjunto | `revision` con el commit que informa la exploración |
+| Un generador comercial reservado como no visto | Una fuente aparte con solo ese generador y `generadores_reservados`; la fuente principal lo excluye para no desbalancear el entrenamiento |
+| Más épocas | 15, con paciencia 3 |
+| Fotos reales de escenas del sistema **fuera** del entrenamiento | CarDD, SCIN y MOCS van al conjunto propio. En el entrenamiento no hay sintéticas de autos dañados ni de lesiones: si se sumaran solo reales, el modelo aprendería «auto dañado = real» |
+
+Unas 70 000 imágenes en total. Los valores marcados «a confirmar» (nombres de columnas y de generadores de OpenFake) se completan con la salida de la exploración.
+
 ### Conjunto propio (para evaluar en condiciones reales)
 
 Lo arma la autora siguiendo el [protocolo del conjunto propio](../guias/protocolo-conjunto-propio.md) (tarea T26): fotos generadas con **ChatGPT, Gemini, Copilot** (y Midjourney si hay acceso), **fotos reales propias** y **fotos reales editadas con IA**, de escenas de los dos tipos de caso del sistema: **automovilístico** (choques, rayones, vidrios rotos, lugar del siniestro) y **laboral** (lesiones, lugar del accidente de trabajo, herramientas y elementos de protección dañados). Cada una en tres versiones: **original, enviada por WhatsApp y captura de pantalla**.
@@ -31,6 +57,8 @@ Lo arma la autora siguiendo el [protocolo del conjunto propio](../guias/protocol
 - **Regla de oro (criterio de la autora, 2026-10-30):** las fotos reales son **de las mismas escenas** que las generadas. Si no, el modelo podría distinguir el tema en lugar de la generación. Las fotos reales salen de CarDD (autos dañados), de fotos propias de la autora como complemento y de conjuntos de lesiones y de seguridad en obras que se sigan verificando.
 - **Diversidad:** las lesiones se generan en seis tonos de piel para medir si el modelo funciona igual para todas las personas.
 - Herramientas gratuitas: ChatGPT, Gemini (suscripción), Copilot, Meta AI, Grok y otras.
+- **Cómo se genera:** la [guía paso a paso](../guias/guia-paso-a-paso-conjunto-propio.md) tiene una **lista maestra de 90 prompts numerados** (el mismo prompt en todas las herramientas, para comparar con el mismo contenido), versiones v1, v2 (suave, si la herramienta se niega) y v3 (más realista), 20 ediciones de fotos reales, la lista de fotos reales que saca la autora y cómo buscar conjuntos nuevos.
+- **Fotos reales de conjuntos públicos:** CarDD (autos dañados), SCIN (fotos de piel sacadas por las propias personas, con el tono de piel etiquetado) y MOCS (obras), en `real/cardd/`, `real/scin/` y `real/obras/`. Ver la investigación.
 - Se guarda en una carpeta **privada** de Google Drive (`evidentia/conjunto-propio/`), con la estructura `<clase>/<generador>/<variante>/`.
 - **Nunca** se usa para entrenar ni se sube al repositorio: solo para evaluar (CA12, CA13).
 - Se evalúa **sin normalizar**, tal como llega, porque lo que se quiere medir es justamente el efecto de WhatsApp y de las capturas.
@@ -59,7 +87,7 @@ La **huella del manifiesto completo** (SHA-256 de todo su contenido, sin importa
 
 1. Recorre cada fuente **mezclada con una semilla fija**. Es importante: los conjuntos suelen venir ordenados por generador, y tomar «las primeras N» daría un solo generador.
 2. Descarta las filas excluidas por la receta (por ejemplo, contenido explícito).
-3. Saltea imágenes repetidas dentro de la fuente (misma huella).
+3. Saltea imágenes repetidas dentro de la fuente (misma huella) y, si la receta lo pide, las de generadores no incluidos o que ya llenaron su cuota.
 4. Guarda las imágenes **sin modificarlas**, con su formato original, hasta completar las cantidades pedidas por clase.
 5. Escribe el **manifiesto crudo**.
 
@@ -120,3 +148,5 @@ flowchart LR
 | Imágenes descargadas y preparadas | Disco de Colab durante la corrida | No se guardan (se vuelven a bajar) |
 | Manifiestos y resultados | `MyDrive/evidentia/prueba_de_concepto/` (o la carpeta de la versión) | Respaldo en Drive y huella en la ficha |
 | Conjunto propio | `MyDrive/evidentia/conjunto-propio/` | Planilla de control con fecha |
+| Exploración de candidatos | `MyDrive/evidentia/exploracion/` | Tabla de licencias en la bitácora |
+| Datos preparados de una receta | `MyDrive/evidentia/datos/<receta>/preparado.tar` | Huella del manifiesto en la ficha |

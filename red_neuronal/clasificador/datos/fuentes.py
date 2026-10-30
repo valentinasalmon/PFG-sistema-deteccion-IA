@@ -45,6 +45,7 @@ class EjemploCrudo:
     clase: int
     generador: str
     variante: str = "original"
+    nombre: str | None = None  # ruta dentro de la fuente, si tiene nombre propio
 
 
 class FuenteDatos(ABC):
@@ -95,13 +96,19 @@ def _cargar_desde_hugging_face(configuracion: ConfiguracionFuente) -> Iterable[d
 
     Se importa ``datasets`` acá adentro para que el resto del paquete no
     dependa de esa biblioteca. El *token* se toma de la variable de entorno
-    ``HF_TOKEN`` (secreto de Kaggle); nunca de un archivo del repositorio.
+    ``HF_TOKEN`` (secreto de Colab); nunca de un archivo del repositorio.
+
+    Si la receta fija ``archivos``, solo se leen esos archivos: en Parquet,
+    leer una imagen obliga a bajar la columna de imágenes de todo el archivo,
+    así que muestrear por archivos ahorra descargas (bitácora del 2026-10-19).
+
     """
     # pylint: disable-next=import-outside-toplevel
     from datasets import Image as ColumnaImagen, load_dataset
 
     conjunto = load_dataset(
         configuracion.conjunto,
+        data_files=configuracion.archivos or None,
         split=configuracion.division,
         revision=configuracion.revision,
         streaming=True,
@@ -135,10 +142,15 @@ class FuenteHuggingFace(FuenteDatos):
         filas = self.cargador(self.configuracion)
         if hasattr(filas, "shuffle"):
             filas = filas.shuffle(seed=self.semilla, buffer_size=self.tamanio_bufer)
+        incluidos = set(self.configuracion.generadores_incluidos)
         for fila in filas:
             if self._excluida(fila):
                 continue
-            yield self._convertir(fila)
+            ejemplo = self._convertir(fila)
+            excluido = ejemplo.clase == CLASE_SINTETICA and ejemplo.generador not in incluidos
+            if incluidos and excluido:
+                continue
+            yield ejemplo
 
     def _excluida(self, fila: dict) -> bool:
         """Indica si la fila cumple algún criterio de exclusión de la receta.
@@ -154,16 +166,19 @@ class FuenteHuggingFace(FuenteDatos):
     def _convertir(self, fila: dict) -> EjemploCrudo:
         config = self.configuracion
         for columna in (config.columna_imagen, config.columna_clase):
-            if columna not in fila:
+            if columna is not None and columna not in fila:
                 raise ErrorFuente(
                     f"la fuente '{config.nombre}' no tiene la columna '{columna}'; "
                     f"columnas disponibles: {sorted(fila)}"
                 )
-        clase = (
-            CLASE_SINTETICA
-            if str(fila[config.columna_clase]) in config.valores_sinteticos
-            else CLASE_REAL
-        )
+        if config.clase_fija is not None:
+            clase = _NOMBRES_CLASE[config.clase_fija]
+        else:
+            clase = (
+                CLASE_SINTETICA
+                if str(fila[config.columna_clase]) in config.valores_sinteticos
+                else CLASE_REAL
+            )
         if clase == CLASE_REAL:
             generador = "real"
         elif config.columna_generador and fila.get(config.columna_generador):
@@ -202,6 +217,7 @@ class FuenteCarpetaLocal(FuenteDatos):
                 clase=_NOMBRES_CLASE[partes[0]],
                 generador=partes[1],
                 variante=partes[2],
+                nombre="/".join(partes),
             )
 
 

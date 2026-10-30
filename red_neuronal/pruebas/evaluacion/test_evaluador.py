@@ -7,7 +7,7 @@ import torch
 from PIL import Image
 
 from clasificador.datos.manifiesto import RegistroImagen
-from clasificador.evaluacion.evaluador import evaluar
+from clasificador.evaluacion.evaluador import escena_de, evaluar
 from clasificador.exportacion.onnx import exportar_onnx
 from clasificador.inferencia.predictor import PredictorOnnx
 from clasificador.inferencia.preprocesamiento import preprocesar
@@ -62,3 +62,13 @@ def test_evaluar_con_una_sola_clase_no_genera_curva_roc(predictor, directorio_im
     assert informe.total["auc"] is None
     assert not (salida / "curva_roc.png").exists()
     assert (salida / "matriz_confusion.png").is_file()
+
+
+@pytest.mark.parametrize("ruta, escena", [
+    ("crudo/propio/sintetica/gemini/original/01-choque-007.png", "01-choque"),
+    ("x/06-lugar-trabajo-003.jpg", "06-lugar-trabajo"),
+    ("crudo/cf/0000012.jpg", None),
+])
+def test_escena_segun_el_nombre_del_archivo(ruta, escena):
+    """El prefijo del nombre del protocolo identifica la escena."""
+    assert escena_de(ruta) == escena

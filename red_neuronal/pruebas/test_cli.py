@@ -68,3 +68,22 @@ def test_resumir_resultados():
     assert "historial" not in _resumir({"auc": 0.9, "historial": [1, 2]})
     assert _resumir(None) == "None"
     assert _resumir(ResultadoValidacion(resumen={"clase": {"real": 1}})).startswith("sin errores")
+
+
+def test_explorar_desde_la_linea_de_comandos(tmp_path, monkeypatch, capsys):
+    """'explorar' usa el archivo de candidatos y deja la tabla de fuentes."""
+    # pylint: disable=import-outside-toplevel
+    from clasificador.datos import exploracion
+    from pruebas.datos.test_exploracion import _InspectorSimulado
+
+    monkeypatch.setattr(exploracion, "InspectorHuggingFace", _InspectorSimulado)
+    candidatos = tmp_path / "candidatos.yaml"
+    candidatos.write_text(
+        "candidatos:\n  - {nombre: s, conjunto: a/b, columna_clase: label, "
+        "valores_sinteticos: [fake], columna_generador: model, uso: entrenamiento}\n",
+        encoding="utf-8",
+    )
+    codigo = principal(["explorar", "--candidatos", str(candidatos), "--salida", str(tmp_path)])
+    assert codigo == 0
+    assert '"a/b": true' in capsys.readouterr().out
+    assert (tmp_path / "exploracion.md").is_file()

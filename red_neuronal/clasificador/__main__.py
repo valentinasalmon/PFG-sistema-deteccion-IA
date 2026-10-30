@@ -1,7 +1,9 @@
 """Línea de comandos del pipeline: ``python -m clasificador <etapa>``.
 
 Cada subcomando ejecuta una etapa del ciclo de vida con una configuración
-YAML. Los cuadernos de Kaggle solo llaman a estos comandos (ADR-0014).
+YAML. Los cuadernos de Colab solo llaman a estos comandos (ADR-0014).
+Además, ``estado`` informa qué etapas ya están terminadas y ``explorar``
+revisa los conjuntos candidatos antes de armar una receta (T25).
 
 Ejemplos::
 
@@ -12,12 +14,15 @@ Ejemplos::
     python -m clasificador exportar --configuracion ... --version 0.1.0
     python -m clasificador evaluar  --configuracion ... [--conjunto-propio /ruta]
     python -m clasificador publicar --configuracion ... --version 0.1.0 \\
-        --registro local:/kaggle/working/registro
+        --registro local:/content/registro
+    python -m clasificador estado   --configuracion ...
+    python -m clasificador explorar --candidatos configuracion/candidatos_v1.yaml \\
+        --salida /content/exploracion
 
 El código de salida es 0 si la etapa terminó bien y 1 ante un error
 esperable (configuración, datos, compuerta), con el motivo en español.
 
-Realiza: CA1 y CA19 de la funcionalidad 010.
+Realiza: CA1, CA2 y CA19 de la funcionalidad 010.
 """
 
 import argparse
@@ -26,6 +31,7 @@ import sys
 from pathlib import Path
 
 from clasificador.configuracion import ErrorConfiguracion, cargar_configuracion
+from clasificador.datos.exploracion import ErrorInspeccion
 from clasificador.datos.fuentes import ErrorFuente
 from clasificador.datos.manifiesto import ErrorManifiesto
 from clasificador.datos.obtencion import ErrorObtencion
@@ -42,6 +48,7 @@ from clasificador.registro.registro_modelos import (
 ERRORES_ESPERABLES = (
     ErrorConfiguracion,
     ErrorFuente,
+    ErrorInspeccion,
     ErrorManifiesto,
     ErrorObtencion,
     ErrorValidacionDatos,
@@ -127,8 +134,9 @@ def construir_analizador() -> argparse.ArgumentParser:
         "exportar": "exporta el modelo a ONNX y verifica la coincidencia",
         "evaluar": "evalúa el modelo ONNX",
         "publicar": "genera la ficha, aplica la compuerta y publica la versión",
+        "estado": "informa qué etapas ya están terminadas",
     }
-    for etapa in ETAPAS:
+    for etapa in (*ETAPAS, "estado"):
         sub = subcomandos.add_parser(etapa, help=descripciones[etapa])
         sub.add_argument("--configuracion", required=True, type=Path, help="archivo YAML")
         if etapa in ("exportar", "publicar"):
@@ -141,17 +149,29 @@ def construir_analizador() -> argparse.ArgumentParser:
         if etapa == "evaluar":
             sub.add_argument("--conjunto-propio", type=Path, default=None,
                              help="carpeta del conjunto propio (CA12, CA13)")
+    explorar = subcomandos.add_parser(
+        "explorar", help="revisa disponibilidad, licencia y contenido de los candidatos (T25)"
+    )
+    explorar.add_argument("--candidatos", required=True, type=Path, help="archivo YAML")
+    explorar.add_argument("--salida", required=True, type=Path, help="carpeta de resultados")
     return analizador
 
 
 def ejecutar(argumentos: argparse.Namespace) -> object:
     """Ejecuta la etapa pedida y devuelve su resultado."""
-    # Se importa acá para que '--help' no cargue PyTorch.
-    # pylint: disable-next=import-outside-toplevel
+    # Se importan acá para que '--help' y 'explorar' no carguen PyTorch.
+    # pylint: disable=import-outside-toplevel
+    etapa = argumentos.etapa
+    if etapa == "explorar":
+        from clasificador.datos.exploracion import cargar_candidatos, explorar
+
+        informes = explorar(cargar_candidatos(argumentos.candidatos), argumentos.salida)
+        return {informe.conjunto: informe.incluido for informe in informes}
     from clasificador import pipeline
 
     configuracion = cargar_configuracion(argumentos.configuracion)
-    etapa = argumentos.etapa
+    if etapa == "estado":
+        return pipeline.estado_etapas(configuracion)
     if etapa == "exportar":
         return pipeline.etapa_exportar(configuracion, argumentos.version)
     if etapa == "evaluar":

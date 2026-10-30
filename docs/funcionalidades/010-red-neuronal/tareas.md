@@ -18,7 +18,7 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
   - Verificación: en Colab, `from google.colab import userdata; userdata.get("HF_TOKEN")` devuelve el *token* sin error. **Nunca imprimirlo.**
 - [ ] **E03 (externa)** — Crear en Hugging Face el repositorio de modelos **privado** `pfg-clasificador-sintetico`.
   - Verificación: el repositorio aparece como *Private* en el perfil.
-- [ ] **E04 (externa)** — Armar el conjunto propio siguiendo el protocolo de T26: imágenes de ChatGPT, Gemini y Copilot, fotos reales propias, fotos editadas con IA, y sus versiones por WhatsApp y captura. Guardarlo **fuera del repositorio**.
+- [ ] **E04 (externa)** — Armar el conjunto propio siguiendo el protocolo de T26 y la [guía paso a paso](../../guias/guia-paso-a-paso-conjunto-propio.md) (lista maestra de 90 prompts): imágenes de ChatGPT, Gemini y Copilot, fotos reales propias, fotos editadas con IA, y sus versiones por WhatsApp y captura. Guardarlo **fuera del repositorio**.
   - Verificación: la planilla de control del protocolo está completa.
 
 ## Fase B — Base del paquete
@@ -145,16 +145,16 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
 
 ## Fase K — Datos reales
 
-- [ ] **T25** — Cuaderno de exploración de datos: muestra de cada fuente, conteos por generador, formato, tamaño y compresión, ejemplos visuales, y verificación de disponibilidad, licencia y revisión de cada conjunto.
-  - Archivos: `red_neuronal/cuadernos/01_exploracion_datos.ipynb`
+- [ ] **T25** — Cuaderno de exploración de datos: muestra de cada fuente, conteos por generador, formato, tamaño y compresión, ejemplos visuales, y verificación de disponibilidad, licencia y revisión de cada conjunto. *Código, pruebas y cuaderno hechos el 2026-10-30 (`clasificador/datos/exploracion.py`, `python -m clasificador explorar`, `configuracion/candidatos_v1.yaml`); falta ejecutarlo en Colab.*
+  - Archivos: `red_neuronal/cuadernos/02_exploracion_datos_colab.ipynb` (el número 01 ya lo usa la prueba de concepto)
   - Verificación: el cuaderno ejecutado muestra la tabla de fuentes con su licencia; las fuentes no disponibles o sin licencia verificable quedan excluidas y anotadas.
   - Commit: `funcionalidad(clasificador): agregar cuaderno de exploracion de datos`
 - [x] **T26** — Protocolo de recolección del conjunto propio: herramientas y fecha, cantidad por herramienta, lista de *prompts* por escena del ámbito del sistema, fotos reales equivalentes, fotos editadas, procedimiento para generar las versiones de WhatsApp y de captura, nombres de archivo, planilla de control y reglas de privacidad.
   - Archivos: `docs/guias/protocolo-conjunto-propio.md`
   - Verificación: la autora puede seguirlo sin preguntas (E04).
   - Commit: `documentacion(guias): agregar protocolo del conjunto propio`
-- [ ] **T27** — Receta de datos versión 1 a partir de la exploración: fuentes, revisiones fijas, cantidades por generador y clase, generadores reservados como no vistos y semilla. Para Community Forensics, muestreo **por archivos** elegidos al azar de cada clase (ver la bitácora del 2026-10-19).
-  - Archivos: `red_neuronal/configuracion/datos_v1.yaml`, `red_neuronal/configuracion/entrenamiento_v1.yaml`
+- [ ] **T27** — Receta de datos versión 1 a partir de la exploración: fuentes, revisiones fijas, cantidades por generador y clase, generadores reservados como no vistos y semilla. Para Community Forensics, muestreo **por archivos** elegidos al azar de cada clase (ver la bitácora del 2026-10-19). *Provisoria el 2026-10-30: el esquema admite `archivos`, `generadores_incluidos`, `cuota_por_generador` y `clase_fija`; falta completarla con la salida de T25.*
+  - Archivos: `red_neuronal/configuracion/v1.yaml` (un solo archivo, como la prueba de concepto: el esquema reúne datos y entrenamiento)
   - Verificación: `python -m clasificador validar` sobre una muestra pequeña de la receta pasa.
   - Commit: `funcionalidad(clasificador): agregar receta de datos v1`
 - [ ] **T28 (manual)** — Ejecutar `obtener → validar → preparar` en Colab con la receta v1 y guardar el resultado comprimido en Google Drive (carpeta privada `evidentia/datos/v1/`). Cargar el conjunto propio de E04 en `evidentia/conjunto-propio/` de Drive, sin compartir.
@@ -162,8 +162,8 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
 
 ## Fase L — Entrenamiento, evaluación y publicación
 
-- [ ] **T29** — Cuadernos de entrenamiento y de evaluación del conjunto propio, que solo orquestan las etapas.
-  - Archivos: `red_neuronal/cuadernos/02_entrenamiento.ipynb`, `red_neuronal/cuadernos/03_evaluacion_conjunto_propio.ipynb`
+- [x] **T29** — Cuadernos de entrenamiento y de evaluación del conjunto propio, que solo orquestan las etapas. *Hecho el 2026-10-30 en un solo cuaderno, que saltea las etapas ya terminadas (`python -m clasificador estado`), guarda los datos preparados en Drive y evalúa el conjunto propio cuando aparece en Drive.*
+  - Archivos: `red_neuronal/cuadernos/03_entrenamiento_completo_colab.ipynb`
   - Commit: `funcionalidad(clasificador): agregar cuadernos de entrenamiento y evaluacion`
 - [ ] **T30 (manual)** — Entrenamiento completo en Colab con la configuración v1. Si no alcanza AUC ≥ 0,90, analizar los errores por generador, ajustar la configuración (por ejemplo, comparar con ConvNeXt-Tiny) y repetir; cada intento queda en MLflow.
   - Verificación: AUC ≥ 0,90 sobre la prueba de generadores conocidos (CA10).

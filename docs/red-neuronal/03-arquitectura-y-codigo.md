@@ -10,7 +10,9 @@
 red_neuronal/
 ├── pyproject.toml             Paquete, dependencias y herramientas de calidad
 ├── configuracion/
-│   └── prueba_de_concepto.yaml   Una configuración por ejecución (datos, hiperparámetros, umbrales)
+│   ├── prueba_de_concepto.yaml   Una configuración por ejecución (datos, hiperparámetros, umbrales)
+│   ├── v1.yaml                   Receta v1 del entrenamiento completo (provisoria hasta la exploración)
+│   └── candidatos_v1.yaml        Conjuntos candidatos que revisa la exploración (T25)
 ├── clasificador/              El paquete
 │   ├── __main__.py            Línea de comandos: python -m clasificador <etapa>
 │   ├── configuracion.py       Esquema validado de la configuración (pydantic)
@@ -21,6 +23,7 @@ red_neuronal/
 │   │   ├── manifiesto.py      La tabla que identifica cada imagen y su huella
 │   │   ├── validacion.py      Etapa validar: corruptas, duplicadas, fugas, balance
 │   │   ├── preparacion.py     Etapa preparar: normalización anti-atajos y particiones
+│   │   ├── exploracion.py     Revisa candidatos: licencia, revisión, columnas, generadores, formatos
 │   │   ├── conjunto.py        Dataset de PyTorch a partir del manifiesto
 │   │   └── aumentacion.py     Aumentaciones de entrenamiento
 │   ├── modelo/
@@ -46,8 +49,10 @@ red_neuronal/
 │       └── ficha_modelo.md.j2   Plantilla de la ficha
 ├── cuadernos/
 │   ├── 00_prueba_de_concepto.ipynb         Versión para Kaggle
-│   └── 01_prueba_de_concepto_colab.ipynb   Versión para Colab (la que se usa)
-├── pruebas/                   177 pruebas automáticas (sin GPU ni descargas)
+│   ├── 01_prueba_de_concepto_colab.ipynb   Prueba de concepto en Colab (hecha)
+│   ├── 02_exploracion_datos_colab.ipynb    Exploración de candidatos y propuesta de receta (T25, T27)
+│   └── 03_entrenamiento_completo_colab.ipynb   Entrenamiento completo que saltea lo ya hecho (T28 a T33)
+├── pruebas/                   203 pruebas automáticas (sin GPU ni descargas)
 ├── informes/                  Fichas de cada versión publicada (en Git)
 ├── datos/                     Vacía en Git: las imágenes nunca se suben
 └── modelos/                   Vacía en Git: los modelos nunca se suben
@@ -87,7 +92,7 @@ El paquete `inferencia` es especial: **solo depende de numpy, Pillow y onnxrunti
 | Patrón | Dónde | Por qué |
 |---|---|---|
 | **Pipeline** | `pipeline.py`, una función por etapa | Cada etapa lee lo que dejó la anterior en disco y escribe lo suyo. Se puede repetir o retomar una etapa sin rehacer las demás |
-| **Strategy** | `FuenteDatos`, `RegistradorExperimentos`, `RegistroModelos` | Los servicios externos (Hugging Face, MLflow) se cambian por simulaciones en las pruebas o por otro proveedor sin tocar las etapas |
+| **Strategy** | `FuenteDatos`, `InspectorConjuntos`, `RegistradorExperimentos`, `RegistroModelos` | Los servicios externos (Hugging Face, MLflow) se cambian por simulaciones en las pruebas o por otro proveedor sin tocar las etapas |
 | **Factory** | `crear_modelo`, `crear_fuente`, `crear_registro` | La configuración elige la implementación por nombre: cambiar de red o de fuente es cambiar una palabra en el YAML |
 | **Configuración externa validada** | `configuracion.py` + YAML | Los hiperparámetros no están en el código. Un error (un campo mal escrito, proporciones que no suman 1) falla al inicio, no después de una hora de GPU |
 | **Envoltorio** | `ModeloExportable` | Agrega la temperatura y la sigmoide al modelo sin modificarlo, para que el ONNX devuelva directamente una probabilidad |
@@ -122,6 +127,16 @@ exportacion: { opset: 18, tolerancia: 0.001 }
 compuerta: { auc_minimo: 0.90 }
 ```
 
+Campos de una fuente de Hugging Face que se agregaron para la receta v1 (2026-10-30):
+
+| Campo | Para qué |
+|---|---|
+| `revision` | Commit exacto del conjunto: la licencia puede cambiar entre revisiones |
+| `archivos` | Muestreo **por archivos**: solo se leen los Parquet elegidos por la exploración con la semilla |
+| `generadores_incluidos` | Solo se toman sintéticas de estos generadores |
+| `cuota_por_generador` | Máximo de sintéticas por generador, para que ninguno domine |
+| `clase_fija` | Conjuntos de una sola clase (por ejemplo, solo fotos reales de autos) |
+
 El esquema (`configuracion.py`) **rechaza campos desconocidos**: si se escribe `epoca` en lugar de `epocas`, falla con un mensaje en español en vez de usar el valor por defecto sin avisar.
 
 ## La línea de comandos
@@ -134,6 +149,11 @@ python -m clasificador entrenar --configuracion ...
 python -m clasificador exportar --configuracion ... --version 0.1.0
 python -m clasificador evaluar  --configuracion ... [--conjunto-propio /ruta]
 python -m clasificador publicar --configuracion ... --version 0.1.0 --registro local:/ruta
+python -m clasificador estado   --configuracion ...      # qué etapas ya están terminadas
+python -m clasificador explorar --candidatos configuracion/candidatos_v1.yaml --salida /ruta
 ```
+
+- **`estado`** responde, para cada etapa, si ya está terminada **con el manifiesto actual** (misma huella). El cuaderno de entrenamiento completo lo usa para saltear lo ya hecho después de un corte.
+- **`explorar`** no necesita PyTorch: revisa los conjuntos candidatos en Hugging Face sin bajarlos enteros (capítulo 4).
 
 Devuelve 0 si la etapa terminó bien y 1 ante un error esperable (configuración, datos, compuerta), siempre con el motivo en español. Toda la interfaz, incluida la ayuda, está en español.

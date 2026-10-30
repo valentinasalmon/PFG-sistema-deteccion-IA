@@ -37,6 +37,7 @@ from clasificador.datos.aumentacion import AumentacionEntrenamiento, Transformac
 from clasificador.datos.conjunto import ConjuntoImagenes, filtrar_particion
 from clasificador.datos.fuentes import FuenteCarpetaLocal
 from clasificador.datos.manifiesto import (
+    CLASE_REAL,
     RegistroImagen,
     escribir_manifiesto,
     huella_archivo,
@@ -118,6 +119,66 @@ def _escribir_json(ruta: Path, contenido: dict) -> None:
 
 def _leer_json(ruta: Path) -> dict:
     return json.loads(Path(ruta).read_text(encoding="utf-8"))
+
+
+# --- estado de las etapas ----------------------------------------------------------
+
+
+def _imagenes_presentes(manifiesto: Path, raiz: Path) -> bool:
+    """Indica si el manifiesto existe y todas sus imágenes están en el disco."""
+    if not manifiesto.is_file():
+        return False
+    registros = leer_manifiesto(manifiesto)
+    return all((raiz / registro.ruta_relativa).is_file() for registro in registros)
+
+
+def _huella_coincide(resultado: Path, huella: str | None) -> bool:
+    """Indica si un resultado existe y se hizo con el manifiesto actual."""
+    return resultado.is_file() and _leer_json(resultado).get("huella_manifiesto") == huella
+
+
+def estado_etapas(configuracion: Configuracion) -> dict[str, bool]:
+    """Indica qué etapas ya están terminadas en el directorio de trabajo.
+
+    Lo usa el cuaderno de entrenamiento completo para saltear lo ya hecho
+    después de un corte de Colab, sin rehacer horas de trabajo. Una etapa
+    cuenta como terminada solo si su resultado corresponde **al manifiesto
+    actual** (misma huella): un resultado viejo de otra receta no se reutiliza.
+    El entrenamiento a medias (``ultimo.pt`` sin ``resultado.json``) no cuenta
+    como terminado: al repetir la etapa se reanuda desde la última época.
+
+    Realiza: CA1 y RNF24 CA2 de la funcionalidad 010.
+    """
+    rutas = Rutas(configuracion.directorio_trabajo)
+    preparada = _imagenes_presentes(rutas.manifiesto, rutas.preparado)
+    huella = huella_manifiesto(leer_manifiesto(rutas.manifiesto)) if preparada else None
+    validacion_sin_errores = (
+        rutas.validacion.is_file() and not _leer_json(rutas.validacion).get("errores")
+    )
+    entrenada = preparada and (rutas.entrenamiento / "mejor.pt").is_file() and _huella_coincide(
+        rutas.resultado_entrenamiento, huella
+    )
+    exportada = entrenada and rutas.modelo.is_file() and _huella_coincide(
+        rutas.resultado_exportacion, huella
+    )
+    metricas = rutas.evaluacion / "prueba" / "metricas.json"
+    evaluada = exportada and metricas.is_file() and (
+        metricas.stat().st_mtime >= rutas.modelo.stat().st_mtime
+    )
+    compuerta = rutas.raiz / "compuerta.json"
+    publicada = (
+        evaluada and compuerta.is_file() and rutas.paquete.is_dir()
+        and not _leer_json(compuerta).get("motivos_rechazo", ["sin decisión"])
+    )
+    return {
+        "obtener": preparada or _imagenes_presentes(rutas.manifiesto_crudo, rutas.raiz),
+        "validar": preparada or validacion_sin_errores,
+        "preparar": preparada,
+        "entrenar": entrenada,
+        "exportar": exportada,
+        "evaluar": evaluada,
+        "publicar": publicada,
+    }
 
 
 # --- obtener y validar -----------------------------------------------------------
@@ -345,9 +406,14 @@ def etapa_evaluar(configuracion: Configuracion, conjunto_propio: Path | None = N
     predictor = PredictorOnnx(rutas.modelo)
     registros = leer_manifiesto(rutas.manifiesto)
     informes = {}
-    for particion in ("prueba", "no_visto"):
-        seleccion = filtrar_particion(registros, particion)
-        if seleccion:
+    prueba = filtrar_particion(registros, "prueba")
+    no_visto = filtrar_particion(registros, "no_visto")
+    # «no_visto» solo tiene sintéticas de los generadores reservados: se
+    # comparan contra las reales de prueba, que el modelo tampoco vio, para que
+    # el AUC sea calculable.
+    reales_prueba = [registro for registro in prueba if registro.clase == CLASE_REAL]
+    for particion, seleccion in (("prueba", prueba), ("no_visto", no_visto + reales_prueba)):
+        if seleccion and (particion == "prueba" or no_visto):
             informes[particion] = evaluar(
                 predictor, seleccion, rutas.preparado, rutas.evaluacion / particion
             ).a_diccionario()

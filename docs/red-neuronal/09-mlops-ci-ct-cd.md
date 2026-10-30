@@ -17,7 +17,7 @@ MLOps es aplicar ingeniería de software a esos tres elementos para poder **repr
 | Práctica | Qué automatiza | Cuándo | En evidentIA |
 |---|---|---|---|
 | **CI** · Integración continua | Análisis estático y pruebas del código del pipeline, sin GPU ni datos reales | En cada cambio de `red_neuronal/` que se sube a GitHub | Flujo `.github/workflows/red_neuronal.yml` |
-| **CT** · Entrenamiento continuo | Volver a entrenar cuando cambian los datos o el código | A pedido, cuando la vigilancia lo indica | El cuaderno de Colab |
+| **CT** · Entrenamiento continuo | Volver a entrenar cuando cambian los datos o el código | A pedido, cuando la vigilancia lo indica | El cuaderno `03_entrenamiento_completo_colab.ipynb`, que saltea las etapas ya terminadas |
 | **CD** · Entrega continua del modelo | Exportar, verificar la compuerta y publicar la versión | Al terminar un entrenamiento | Etapas `exportar`, `evaluar` y `publicar` |
 
 ### CI: qué se prueba sin GPU
@@ -28,7 +28,7 @@ El flujo de GitHub Actions corre en **Python 3.12** (la versión del backend) y 
 2. `pylint` sobre el código;
 3. `pytest` con **cobertura mínima del 80 %**.
 
-Las 177 pruebas verifican que **el código hace lo que debe**, con imágenes generadas en memoria:
+Las 203 pruebas verifican que **el código hace lo que debe**, con imágenes generadas en memoria:
 
 | Tipo | Qué verifica |
 |---|---|
@@ -38,7 +38,8 @@ Las 177 pruebas verifican que **el código hace lo que debe**, con imágenes gen
 | Métricas | Con casos armados a mano, AUC = 1 con separación perfecta y 0,5 con predicciones constantes; la agrupación por generador es correcta |
 | Exportación | El ONNX coincide con PyTorch y lleva sus metadatos |
 | Compuerta | Rechaza cada incumplimiento e informa todos los motivos juntos |
-| Integración | Pipeline mínimo completo (`preparar → entrenar → exportar → evaluar → publicar`) con 40 imágenes; la misma imagen da la misma probabilidad con PyTorch y con ONNX |
+| Exploración | Con un inspector simulado: licencia no verificable excluida, columnas faltantes, conjuntos sin Parquet, conteos por clase y generador, calidad JPEG estimada y propuesta de receta válida |
+| Integración | Pipeline mínimo completo (`preparar → entrenar → exportar → evaluar → publicar`) con un generador reservado como no visto, y `estado` informando las etapas terminadas; la misma imagen da la misma probabilidad con PyTorch y con ONNX |
 
 Así un error en el pipeline se detecta **en minutos, en GitHub**, y no después de horas de entrenamiento.
 

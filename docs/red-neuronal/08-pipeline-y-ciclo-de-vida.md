@@ -22,6 +22,16 @@ flowchart LR
 | 6 | **evaluar** | `modelo.onnx` y manifiesto (y el conjunto propio) | `evaluacion/<conjunto>/` con métricas, predicciones y gráficos | — |
 | 7 | **publicar** | Todo lo anterior | Ficha, `compuerta.json` y versión publicada | La compuerta rechaza |
 
+### Saltear lo ya hecho
+
+`python -m clasificador estado` informa qué etapas están terminadas. Una etapa cuenta como terminada solo si su resultado corresponde **al manifiesto actual** (misma huella), así nunca se mezclan resultados de recetas distintas. El cuaderno `03_entrenamiento_completo_colab.ipynb` lo usa para correr solo lo que falta:
+
+| Si Colab se corta durante… | Al volver a ejecutar todo… |
+|---|---|
+| obtener o preparar | Se repite la descarga: las imágenes crudas no se guardan en Drive |
+| entrenar | Se extraen de Drive los datos preparados (`preparado.tar`, guardado una vez después de preparar) y el entrenamiento sigue desde la última época |
+| exportar, evaluar o publicar | Se recupera todo lo anterior y solo se hace lo que falta |
+
 ### La carpeta de trabajo
 
 ```
@@ -90,7 +100,7 @@ flowchart LR
 | Fase | Qué se hace | Estado |
 |---|---|---|
 | **Prueba de concepto** (CA1) | Recorrer todo el ciclo con 10 000 imágenes para validar el diseño y medir tiempos | ✔ Hecha el 2026-10-30 (capítulo 11) |
-| **Datos reales** (T25 a T28) | Explorar las fuentes, armar el conjunto propio y la receta v1 con generadores no vistos | Próximo |
+| **Datos reales** (T25 a T28) | Explorar las fuentes, armar el conjunto propio y la receta v1 con generadores no vistos | Código y cuadernos listos (2026-10-30); falta correr la exploración en Colab |
 | **Entrenamiento completo** (T29 a T31) | Entrenar con la receta v1, iterar hasta AUC ≥ 0,90 y verificar la reproducibilidad | Pendiente |
 | **Condiciones reales** (T32) | Evaluar con el conjunto propio por herramienta y por variante | Pendiente |
 | **Publicación** (T33) | Publicar `1.0.0` en Hugging Face a través de la compuerta y copiar la ficha | Pendiente |

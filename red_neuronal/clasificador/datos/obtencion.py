@@ -25,18 +25,25 @@ class ErrorObtencion(Exception):
     """Una fuente no tiene suficientes imágenes para lo que se pidió."""
 
 
-def obtener_de_fuente(
-    fuente: FuenteDatos, raiz_destino: Path, cantidades: dict[int, int] | None = None
+def obtener_de_fuente(  # pylint: disable=too-many-locals
+    fuente: FuenteDatos,
+    raiz_destino: Path,
+    cantidades: dict[int, int] | None = None,
+    cuota_por_generador: int | None = None,
 ) -> list[RegistroImagen]:
     """Guarda imágenes de una fuente hasta completar la cantidad por clase.
 
     Con ``cantidades=None`` se toman todas las imágenes de la fuente (se usa
     para el conjunto propio, que se evalúa completo). Las imágenes repetidas
     dentro de la fuente (misma huella) se saltean, para que el conjunto no
-    tenga duplicados desde el origen.
+    tenga duplicados desde el origen. Con ``cuota_por_generador`` ningún
+    generador aporta más de esa cantidad de sintéticas: así las métricas por
+    generador tienen sentido y ninguno domina el entrenamiento (lección de la
+    prueba de concepto, receta v1).
     """
     todas = cantidades is None
     pendientes = Counter(cantidades or {})
+    por_generador: Counter = Counter()
     vistas: set[str] = set()
     registros = []
     for ejemplo in fuente.iterar():
@@ -44,7 +51,17 @@ def obtener_de_fuente(
             break
         if not todas and pendientes[ejemplo.clase] <= 0:
             continue
-        ruta_relativa = Path("crudo") / fuente.nombre / f"{len(registros):07d}{ejemplo.extension}"
+        if (
+            cuota_por_generador is not None
+            and ejemplo.clase == CLASE_SINTETICA
+            and por_generador[ejemplo.generador] >= cuota_por_generador
+        ):
+            continue
+        # Las carpetas locales conservan su ruta: el nombre del archivo indica
+        # la escena del conjunto propio y permite ubicar cada foto en la planilla.
+        ruta_relativa = Path("crudo") / fuente.nombre / (
+            ejemplo.nombre or f"{len(registros):07d}{ejemplo.extension}"
+        )
         destino = Path(raiz_destino) / ruta_relativa
         destino.parent.mkdir(parents=True, exist_ok=True)
         destino.write_bytes(ejemplo.contenido)
@@ -54,6 +71,8 @@ def obtener_de_fuente(
             continue
         vistas.add(huella)
         pendientes[ejemplo.clase] -= 1
+        if ejemplo.clase == CLASE_SINTETICA:
+            por_generador[ejemplo.generador] += 1
         registros.append(
             RegistroImagen(
                 huella_sha256=huella,
@@ -83,5 +102,7 @@ def obtener(
             CLASE_REAL: config_fuente.cantidad_reales,
             CLASE_SINTETICA: config_fuente.cantidad_sinteticas,
         }
-        registros += obtener_de_fuente(fuente, raiz_destino, cantidades)
+        registros += obtener_de_fuente(
+            fuente, raiz_destino, cantidades, config_fuente.cuota_por_generador
+        )
     return registros
