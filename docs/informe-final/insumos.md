@@ -174,3 +174,9 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
 - **Privacidad técnica:** la política muestra el valor concreto de cada medida (por ejemplo, bcrypt costo 12 o enlaces de 5 minutos) en lugar de frases genéricas, y separa la portada comercial (beneficios, sin proveedores) de la página técnica.
 - **Observabilidad del sello:** la página pública de estado informa si el sello en Hedera funciona, sin exponer datos sensibles. Permite comprobar en producción una integración externa sin acceso al servidor.
 - **Coherencia legal:** al activar Clarity, la política dejó de ser exacta (decía que no había cookies de seguimiento). Se corrigió con un texto provisorio y quedó como cuestión abierta (CP-37). Lección: cada integración nueva revisa la política de privacidad.
+
+## Cuarta tanda de la 034 (2026-10-31)
+
+- **Componente reutilizable de pestañas**: la organización y Mi perfil comparten `Pestanias` (patrón de pestañas de WAI-ARIA, flechas del teclado, pestaña en la dirección). Ejemplo de refactorización que reduce duplicación al aparecer el segundo uso.
+- **Priorizar lo accionable**: en administración, lo que requiere una acción (aprobar aseguradoras) va antes que los indicadores; si no hay nada que hacer, ocupa una línea.
+- **Tablas en el celular**: en lugar de desplazamiento horizontal, cada fila se apila como tarjeta con el nombre de cada dato. Se detectó al revisar todas las pantallas a 390 px (CA2).
