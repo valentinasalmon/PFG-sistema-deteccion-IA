@@ -9,7 +9,6 @@
  *
  * Realiza: RF01, RF10, RF52 (CA1); RN01; CA1 y CA2 de la funcionalidad 032.
  */
-import CampoTexto from './CampoTexto.jsx'
 import Icono from './Icono.jsx'
 
 const CAMINOS = [
@@ -63,19 +62,6 @@ export default function SelectorCamino({ valores, errores, cambiar, sinEstudio =
           )
         })}
       </fieldset>
-      {valores.camino === 'estudio' && (
-        <CampoTexto
-          etiqueta="Nombre del estudio jurídico"
-          nombre="nombre_estudio"
-          autoComplete="organization"
-          maxLength={150}
-          value={valores.nombre_estudio}
-          onChange={cambiar}
-          error={errores.nombre_estudio}
-          ayuda="Vas a ser su Referente. Después invitás a tu equipo."
-          required
-        />
-      )}
       <p id="ayuda-camino" className="campo__ayuda">
         El estudio y la aseguradora pagan su plan al final del registro. El perfil personal no paga y no
         puede cambiarse después.

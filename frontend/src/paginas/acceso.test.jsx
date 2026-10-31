@@ -167,13 +167,12 @@ describe('registro por pasos', () => {
     await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
   }
 
-  /** Completa los pasos 1 a 3 y deja el formulario en el paso 4. */
-  async function llegarAlPaso4(usuario, { perfil = 'Abogado o abogada', institucion } = {}) {
+  /** Completa el perfil y los datos (con la institución) y deja el formulario en la cuenta. */
+  async function llegarALaCuenta(usuario, { perfil = 'Abogado o abogada', institucion } = {}) {
     await usuario.click(await screen.findByLabelText(new RegExp(perfil)))
     await siguiente(usuario)
     await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
     await usuario.type(screen.getByLabelText('Apellido'), 'López')
-    await siguiente(usuario)
     if (institucion) await usuario.type(screen.getByLabelText(institucion.etiqueta, { exact: false }), institucion.valor)
     await siguiente(usuario)
   }
@@ -184,10 +183,10 @@ describe('registro por pasos', () => {
     await usuario.click(screen.getByRole('checkbox'))
   }
 
-  it('empieza en el paso 1 de 4 con la elección del perfil y su aclaración (CA1)', async () => {
+  it('empieza en el paso 1 de 3 con la elección del perfil y su aclaración (CA1)', async () => {
     simularApi()
     renderizarEn('/registro')
-    expect(await screen.findByText('Paso 1 de 4')).toBeInTheDocument()
+    expect(await screen.findByText('Paso 1 de 3')).toBeInTheDocument()
     const grupo = screen.getByRole('group', { name: '¿Cómo vas a usar la plataforma?' })
     expect(grupo).toHaveAccessibleDescription(/no puede cambiarse/)
     expect(screen.getByRole('radio', { name: /Abogado o abogada independiente/ })).toBeInTheDocument()
@@ -199,9 +198,9 @@ describe('registro por pasos', () => {
   it('no avanza sin elegir un perfil (CA2)', async () => {
     simularApi()
     const { usuario } = renderizarEn('/registro')
-    await screen.findByText('Paso 1 de 4')
+    await screen.findByText('Paso 1 de 3')
     await siguiente(usuario)
-    expect(screen.getByText('Paso 1 de 4')).toBeInTheDocument()
+    expect(screen.getByText('Paso 1 de 3')).toBeInTheDocument()
     expect(screen.getByRole('alert')).toHaveTextContent('Revisá los datos marcados.')
     expect(screen.getByRole('group')).toHaveAccessibleDescription(/Elegí cómo vas a usar la plataforma/)
   })
@@ -220,7 +219,7 @@ describe('registro por pasos', () => {
     await usuario.click(await screen.findByLabelText(/Abogado o abogada/))
     await siguiente(usuario)
     await siguiente(usuario)
-    expect(screen.getByText('Paso 2 de 4')).toBeInTheDocument()
+    expect(screen.getByText('Paso 2 de 3')).toBeInTheDocument()
     expect(screen.getByLabelText('Nombre')).toHaveAttribute('aria-invalid', 'true')
     expect(screen.getByLabelText('Apellido')).toHaveAttribute('aria-invalid', 'true')
     expect(screen.getByText('Ingresá tu nombre.')).toBeInTheDocument()
@@ -232,19 +231,18 @@ describe('registro por pasos', () => {
     expect(screen.getByLabelText('Apellido')).toHaveAttribute('aria-invalid', 'true')
   })
 
-  it('pide el colegio a los abogados y permite avanzar sin completarlo (CA4)', async () => {
+  it('pide el colegio a los abogados junto con sus datos y permite avanzar sin completarlo (CA4)', async () => {
     simularApi()
     const { usuario } = renderizarEn('/registro')
     await usuario.click(await screen.findByLabelText(/Abogado o abogada/))
     await siguiente(usuario)
+    expect(screen.getByRole('heading', { name: 'Tus datos' })).toBeInTheDocument()
+    expect(screen.getByLabelText(/Colegio de abogados/)).toBeInTheDocument()
+    expect(screen.queryByLabelText(/Empresa/)).not.toBeInTheDocument()
     await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
     await usuario.type(screen.getByLabelText('Apellido'), 'López')
     await siguiente(usuario)
-    expect(screen.getByRole('heading', { name: 'Tu colegio de abogados' })).toBeInTheDocument()
-    expect(screen.getByLabelText(/Colegio de abogados/)).toBeInTheDocument()
-    expect(screen.queryByLabelText(/Empresa/)).not.toBeInTheDocument()
-    await siguiente(usuario)
-    expect(screen.getByText('Paso 4 de 4')).toBeInTheDocument()
+    expect(screen.getByText('Paso 3 de 3')).toBeInTheDocument()
   })
 
   it('pide elegir la aseguradora del catálogo de la SSN (CA2 de la 021)', async () => {
@@ -254,8 +252,7 @@ describe('registro por pasos', () => {
     await siguiente(usuario)
     await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
     await usuario.type(screen.getByLabelText('Apellido'), 'López')
-    await siguiente(usuario)
-    expect(screen.getByRole('heading', { name: 'Tu aseguradora' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Vos y tu aseguradora' })).toBeInTheDocument()
     expect(screen.queryByLabelText(/Colegio/)).not.toBeInTheDocument()
 
     await siguiente(usuario)
@@ -278,18 +275,16 @@ describe('registro por pasos', () => {
   it('al volver atrás conserva los datos cargados (CA5)', async () => {
     simularApi()
     const { usuario } = renderizarEn('/registro')
-    await llegarAlPaso4(usuario, { institucion: { etiqueta: 'Colegio', valor: 'CPACF' } })
+    await llegarALaCuenta(usuario, { institucion: { etiqueta: 'Colegio', valor: 'CPACF' } })
     await usuario.type(screen.getByLabelText('Correo electrónico'), 'ana@ejemplo.com')
 
     await usuario.click(screen.getByRole('button', { name: 'Atrás' }))
     expect(screen.getByLabelText(/Colegio de abogados/)).toHaveValue('CPACF')
-    await usuario.click(screen.getByRole('button', { name: 'Atrás' }))
     expect(screen.getByLabelText('Nombre')).toHaveValue('Ana')
     expect(screen.getByLabelText('Apellido')).toHaveValue('López')
     await usuario.click(screen.getByRole('button', { name: 'Atrás' }))
     expect(screen.getByLabelText(/Abogado o abogada/)).toBeChecked()
 
-    await siguiente(usuario)
     await siguiente(usuario)
     await siguiente(usuario)
     expect(screen.getByLabelText('Correo electrónico')).toHaveValue('ana@ejemplo.com')
@@ -302,7 +297,6 @@ describe('registro por pasos', () => {
     await siguiente(usuario)
     await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
     await usuario.type(screen.getByLabelText('Apellido'), 'López')
-    await siguiente(usuario)
     await usuario.type(await screen.findByLabelText('Buscá tu aseguradora'), 'gali')
     await usuario.click(screen.getByRole('radio', { name: /SEGUROS GALICIA/ }))
     await usuario.clear(screen.getByLabelText('Buscá tu aseguradora'))
@@ -331,10 +325,9 @@ describe('registro por pasos', () => {
   it('no envía el colegio si el perfil cambió a Aseguradora (CA6)', async () => {
     const { solicitudes } = simularApi({ ...RESPUESTA_REGISTRO_CON_PAGO, ...CATALOGO, ...PLANES, ...COBRO })
     const { usuario } = renderizarEn('/registro')
-    await llegarAlPaso4(usuario, { institucion: { etiqueta: 'Colegio', valor: 'CPACF' } })
-    for (let i = 0; i < 3; i += 1) await usuario.click(screen.getByRole('button', { name: 'Atrás' }))
+    await llegarALaCuenta(usuario, { institucion: { etiqueta: 'Colegio', valor: 'CPACF' } })
+    for (let i = 0; i < 2; i += 1) await usuario.click(screen.getByRole('button', { name: 'Atrás' }))
     await usuario.click(screen.getByLabelText(/^Aseguradora/))
-    await siguiente(usuario)
     await siguiente(usuario)
     await usuario.type(await screen.findByLabelText('Buscá tu aseguradora'), 'surco')
     await usuario.click(screen.getByRole('radio', { name: /EL SURCO/ }))
@@ -356,12 +349,10 @@ describe('registro por pasos', () => {
     await usuario.click(await screen.findByLabelText(/^Aseguradora/))
     await siguiente(usuario)
     await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
-    await usuario.type(screen.getByLabelText('Apellido'), 'López')
-    await siguiente(usuario)
     expect(await screen.findByText('Ocurrió un error inesperado.')).toBeInTheDocument()
   })
 
-  it('muestra junto a cada campo del paso 4 los errores del backend (CA6, RF01 CA2 y CA4)', async () => {
+  it('muestra junto a cada campo de la cuenta los errores del backend (CA6, RF01 CA2 y CA4)', async () => {
     simularApi({
       'POST /api/cuentas/registro': {
         estado: 400,
@@ -376,13 +367,13 @@ describe('registro por pasos', () => {
       },
     })
     const { usuario } = renderizarEn('/registro')
-    await llegarAlPaso4(usuario)
+    await llegarALaCuenta(usuario)
     await usuario.type(screen.getByLabelText('Correo electrónico'), 'ana@ejemplo.com')
     await usuario.type(screen.getByLabelText('Contraseña'), 'Password123')
     await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Revisá los datos marcados.')
-    expect(screen.getByText('Paso 4 de 4')).toBeInTheDocument()
+    expect(screen.getByText('Paso 3 de 3')).toBeInTheDocument()
     expect(screen.getByText(/demasiado común/)).toBeInTheDocument()
     expect(screen.getByLabelText('Contraseña')).toHaveAttribute('aria-invalid', 'true')
     expect(screen.getByRole('checkbox')).toHaveAttribute('aria-invalid', 'true')
@@ -400,26 +391,26 @@ describe('registro por pasos', () => {
       },
     })
     const { usuario } = renderizarEn('/registro')
-    await llegarAlPaso4(usuario)
+    await llegarALaCuenta(usuario)
     await completarCuenta(usuario)
     await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
 
-    expect(await screen.findByText('Paso 2 de 4')).toBeInTheDocument()
+    expect(await screen.findByText('Paso 2 de 3')).toBeInTheDocument()
     expect(screen.getByLabelText('Apellido')).toHaveAttribute('aria-invalid', 'true')
     expect(screen.getByText('El apellido es demasiado largo.')).toBeInTheDocument()
     expect(screen.getByRole('alert')).toHaveTextContent('Revisá los datos marcados.')
   })
 
-  it('un error general del backend deja el formulario en el paso 4', async () => {
+  it('un error general del backend deja el formulario en la cuenta', async () => {
     simularApi({
       'POST /api/cuentas/registro': { estado: 500, cuerpo: { codigo: 'error_interno', mensaje: 'Ocurrió un error.' } },
     })
     const { usuario } = renderizarEn('/registro')
-    await llegarAlPaso4(usuario)
+    await llegarALaCuenta(usuario)
     await completarCuenta(usuario)
     await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('Ocurrió un error.')
-    expect(screen.getByText('Paso 4 de 4')).toBeInTheDocument()
+    expect(screen.getByText('Paso 3 de 3')).toBeInTheDocument()
   })
 
   it('al cambiar de paso, el foco pasa al título del paso nuevo (CA8)', async () => {
@@ -439,13 +430,13 @@ describe('registro por pasos', () => {
     await siguiente(usuario)
     await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
     await usuario.type(screen.getByLabelText('Apellido'), 'López{Enter}')
-    expect(screen.getByText('Paso 3 de 4')).toBeInTheDocument()
+    expect(screen.getByText('Paso 3 de 3')).toBeInTheDocument()
   })
 
   it('marca las reglas de la contraseña a medida que se cumplen (RF01 CA4)', async () => {
     simularApi()
     const { usuario } = renderizarEn('/registro')
-    await llegarAlPaso4(usuario)
+    await llegarALaCuenta(usuario)
     await usuario.type(screen.getByLabelText('Contraseña'), 'abc')
     expect(screen.getByText(/Al menos una letra/).closest('li')).toHaveClass('reglas__item--cumplida')
     expect(screen.getByText(/Al menos un número/).closest('li')).not.toHaveClass('reglas__item--cumplida')
@@ -492,21 +483,18 @@ describe('registro con pago del plan (032)', () => {
     const { solicitudes } = simularApi({ ...RESPUESTA_REGISTRO_CON_PAGO, ...PLANES, ...cobroQueSeAcredita() })
     const { usuario } = renderizarEn('/registro?tipo=estudio&plan=profesional')
 
-    expect(await screen.findByRole('radio', { name: /Abogado con estudio jurídico/ })).toBeChecked()
-    expect(screen.getByText('Paso 1 de 6')).toBeInTheDocument()
+    // Lo elegido en la portada no se vuelve a preguntar: datos, cuenta y pago.
+    expect(await screen.findByText('Estudio jurídico · Plan Profesional')).toBeInTheDocument()
+    expect(screen.getByText('Paso 1 de 3')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Vos y tu estudio' })).toBeInTheDocument()
+    expect(screen.queryByRole('radio', { name: /Abogado con estudio jurídico/ })).not.toBeInTheDocument()
     await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
     expect(screen.getByText('Escribí el nombre de tu estudio jurídico.')).toBeInTheDocument()
     await usuario.type(screen.getByLabelText('Nombre del estudio jurídico'), 'Estudio Salmón')
-    await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
     await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
     await usuario.type(screen.getByLabelText('Apellido'), 'López')
     await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
-    await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
-
-    expect(screen.getByRole('heading', { name: 'Elegí el plan de Estudio Salmón' })).toBeInTheDocument()
-    expect(await screen.findByRole('radio', { name: /Organización Profesional/ })).toBeChecked()
-    expect(screen.getAllByText('A confirmar')).toHaveLength(2)
-    await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
+    expect(screen.getByText('Paso 2 de 3')).toBeInTheDocument()
     await usuario.type(screen.getByLabelText('Correo electrónico'), 'ana@ejemplo.com')
     await usuario.type(screen.getByLabelText('Contraseña'), 'Segura12345')
     await usuario.click(screen.getByRole('checkbox'))
@@ -529,12 +517,10 @@ describe('registro con pago del plan (032)', () => {
       'POST /api/cuentas/registro': { estado: 201, cuerpo: { mensaje: 'Te enviamos un correo.', pago: null } },
     })
     const { usuario } = renderizarEn('/registro?tipo=independiente&plan=oro')
-    expect(await screen.findByRole('radio', { name: /Abogado o abogada independiente/ })).toBeChecked()
-    expect(screen.getByText('Paso 1 de 4')).toBeInTheDocument()
-    await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
+    expect(await screen.findByText('Abogado o abogada independiente')).toBeInTheDocument()
+    expect(screen.getByText('Paso 1 de 2')).toBeInTheDocument()
     await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
     await usuario.type(screen.getByLabelText('Apellido'), 'López')
-    await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
     await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
     await usuario.type(screen.getByLabelText('Correo electrónico'), 'ana@ejemplo.com')
     await usuario.type(screen.getByLabelText('Contraseña'), 'Segura12345')
@@ -544,6 +530,16 @@ describe('registro con pago del plan (032)', () => {
     const enviado = solicitudes.find((s) => s.ruta === '/api/cuentas/registro').cuerpo
     expect(enviado).not.toHaveProperty('plan')
     expect(enviado).not.toHaveProperty('nombre_estudio')
+  })
+
+  it('lo elegido en la portada se puede cambiar y vuelven los pasos del perfil y del plan', async () => {
+    simularApi({ ...PLANES })
+    const { usuario } = renderizarEn('/registro?tipo=aseguradora&plan=basico')
+    expect(await screen.findByText('Paso 1 de 3')).toBeInTheDocument()
+    await usuario.click(screen.getByRole('button', { name: 'Cambiar' }))
+    expect(screen.getByText('Paso 1 de 5')).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: /^Aseguradora/ })).toBeChecked()
+    expect(screen.queryByRole('button', { name: 'Cambiar' })).not.toBeInTheDocument()
   })
 
   it('la página del enlace de pago muestra el resultado de la aseguradora (CA4)', async () => {
