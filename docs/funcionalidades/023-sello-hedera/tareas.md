@@ -10,3 +10,4 @@
 - [x] Pruebas unitarias y de frontend.
 - [x] Guía de activación en `docs/guias/despliegue-aws.md`.
 - [ ] Prueba real en *testnet* (autora): crear el tema, cargar la clave en SSM, aplicar Terraform, desplegar y cargar una imagen.
+- [x] Estado del sello en `/estado` (2026-10-31): modo, red, si hay sellos fallidos o demorados (más de 30 minutos sin confirmar) y la fecha del último confirmado, sin cuenta, tema ni huellas. Sirve para hacer la prueba real sin entrar al servidor.
