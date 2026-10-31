@@ -8,6 +8,10 @@
  * entrar con el código del PDF (o su QR) o solo con el archivo. También
  * muestra con qué versión de la plataforma se hizo el análisis (029).
  *
+ *
+ * Desde la cuarta tanda de la 034 la acción principal es elegir o soltar el
+ * PDF en una zona de carga; el código queda como opción secundaria abajo.
+ *
  * Realiza: RF55 (CA3), RF56 (CA2).
  */
 import { useEffect, useId, useState } from 'react'
@@ -15,6 +19,7 @@ import { useNavigate, useParams } from 'react-router'
 import { verificarInforme } from '../api/informes.js'
 import Aviso from '../componentes/Aviso.jsx'
 import Cargando from '../componentes/Cargando.jsx'
+import Icono from '../componentes/Icono.jsx'
 import { formatearFecha } from '../utilidades/fechas.js'
 import { codigoLegible, huellaDeArchivo } from '../utilidades/verificacion.js'
 
@@ -76,6 +81,7 @@ export default function PaginaVerificarInforme() {
   const [codigo, setCodigo] = useState(codigoDeLaRuta ?? '')
   const [informe, setInforme] = useState(null)
   const [estado, setEstado] = useState({ cargando: Boolean(codigoDeLaRuta), error: null, resultado: null })
+  const [arrastrando, setArrastrando] = useState(false)
 
   useEffect(() => {
     if (!codigoDeLaRuta) return
@@ -100,6 +106,17 @@ export default function PaginaVerificarInforme() {
   async function comprobar(evento) {
     const archivo = evento.target.files?.[0]
     evento.target.value = ''
+    await comprobarArchivo(archivo)
+  }
+
+  /** También se puede soltar el PDF sobre la zona de carga (034, cuarta tanda). */
+  async function soltar(evento) {
+    evento.preventDefault()
+    setArrastrando(false)
+    await comprobarArchivo(evento.dataTransfer.files?.[0])
+  }
+
+  async function comprobarArchivo(archivo) {
     if (!archivo) return
     setEstado({ cargando: true, error: null, resultado: null })
     try {
@@ -132,39 +149,58 @@ export default function PaginaVerificarInforme() {
         hace en tu navegador.
       </p>
 
-      {!codigoDeLaRuta && (
-        <form className="formulario-en-linea" onSubmit={buscarCodigo}>
-          <label htmlFor="codigo-verificacion">Código del informe (opcional)</label>
-          <input
-            id="codigo-verificacion"
-            value={codigo}
-            onChange={(evento) => setCodigo(evento.target.value)}
-            placeholder="ABCD-EFGH-JKMN"
-            autoComplete="off"
-          />
-          <button type="submit" className="boton boton--secundario">
-            Buscar
-          </button>
-        </form>
-      )}
-
       {codigoDeLaRuta && <p className="nota">Código: {codigoLegible(codigoDeLaRuta.toUpperCase())}</p>}
       {estado.error && <Aviso tipo="error">{estado.error}</Aviso>}
       {informe && <DatosDelInforme informe={informe} />}
 
       {!estado.error && (
-        <div className="verificar-informe__archivo">
+        <div
+          className={`zona-pdf${arrastrando ? ' zona-pdf--arrastrando' : ''}`}
+          onDragOver={(evento) => {
+            evento.preventDefault()
+            setArrastrando(true)
+          }}
+          onDragLeave={() => setArrastrando(false)}
+          onDrop={soltar}
+        >
           <input
             id={idArchivo}
             type="file"
             accept="application/pdf,.pdf"
             className="solo-lectores"
             onChange={comprobar}
+            aria-describedby="ayuda-pdf"
           />
+          <span className="zona-pdf__icono" aria-hidden="true">
+            <Icono nombre="documento" tamanio={26} />
+          </span>
           <label htmlFor={idArchivo} className="boton">
             Elegir el PDF para comprobarlo
           </label>
+          <p id="ayuda-pdf" className="nota">
+            O soltalo acá. Se calcula su huella en tu navegador y se compara con la registrada.
+          </p>
         </div>
+      )}
+
+      {!codigoDeLaRuta && (
+        <form className="buscar-codigo" onSubmit={buscarCodigo}>
+          <label htmlFor="codigo-verificacion">Código del informe (opcional)</label>
+          <div className="buscar-codigo__fila">
+            <input
+              id="codigo-verificacion"
+              className="campo__control"
+              value={codigo}
+              onChange={(evento) => setCodigo(evento.target.value)}
+              placeholder="ABCD-EFGH-JKMN"
+              autoComplete="off"
+            />
+            <button type="submit" className="boton boton--secundario">
+              Buscar
+            </button>
+          </div>
+          <p className="nota">Está en la sección «Verificación de este informe», junto al código QR.</p>
+        </form>
       )}
 
       <div aria-live="polite">

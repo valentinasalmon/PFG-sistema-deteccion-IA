@@ -11,6 +11,9 @@
  * 3 meses, el año o desde el inicio) o con fechas a pedido; los indicadores
  * tienen todos su detalle y los listados usan las pestañas comunes.
  *
+ * Desde la cuarta tanda de la 034, las aseguradoras pendientes van primero,
+ * con su cantidad en el título; si no hay ninguna, queda una sola línea.
+ *
  * Realiza: RF21, RF22; RN38; CA7 a CA9 de la funcionalidad 021.
  */
 import { useCallback, useState } from 'react'
@@ -26,6 +29,7 @@ import BotonConfirmar from '../componentes/BotonConfirmar.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
+import Icono from '../componentes/Icono.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 import { NOMBRES_DE_PLAN } from '../utilidades/planes.js'
@@ -101,62 +105,71 @@ function Pendientes() {
   if (cargando) return <Cargando texto="Cargando las aseguradoras pendientes…" />
   if (error) return <Aviso tipo="error">{error.message}</Aviso>
 
+  // Sin pendientes, una sola línea: lo que hay que hacer va primero y no ocupa lugar si no hay nada (034).
+  if (datos.length === 0) {
+    return (
+      <div className="pendientes-al-dia" role="status">
+        {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
+        <Icono nombre="verificado" tamanio={20} />
+        <span>No hay aseguradoras esperando aprobación.</span>
+      </div>
+    )
+  }
+
   return (
-    <section className="seccion" aria-labelledby="titulo-pendientes">
-      <h2 id="titulo-pendientes">Aseguradoras pendientes de aprobación</h2>
+    <section className="seccion seccion--atencion" aria-labelledby="titulo-pendientes">
+      <h2 id="titulo-pendientes">
+        Aseguradoras pendientes de aprobación <span className="contador-titulo">{datos.length}</span>
+      </h2>
       <p className="nota">
         Antes de aprobar, comprobá que la persona trabaje en la aseguradora (por ejemplo, con el dominio de su
         correo o comunicándote con la empresa).
       </p>
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
-      {datos.length === 0 ? (
-        <p className="nota">No hay aseguradoras pendientes.</p>
-      ) : (
-        <ul className="lista-tarjetas">
-          {datos.map((aseguradora) => (
-            <li key={aseguradora.id} className="tarjeta-item">
-              <div className="tarjeta-item__principal">
-                <span className="tarjeta-item__titulo">{aseguradora.nombre}</span>
-                <span className="tarjeta-item__detalle">
-                  CUIT {aseguradora.cuit} · Registrada el {formatearFecha(aseguradora.creada_en)}
-                </span>
-                <span className="tarjeta-item__detalle">
-                  Por {aseguradora.referente.nombre} ({aseguradora.referente.correo})
-                  {!aseguradora.referente.verificado && ' · correo sin verificar'}
-                </span>
-                <span className="tarjeta-item__detalle">
-                  <Etiqueta tipo="destacada">Pago acreditado</Etiqueta> Plan{' '}
-                  {NOMBRES_DE_PLAN[aseguradora.plan] ?? aseguradora.plan}. Si la rechazás, el pago se
-                  devuelve.
-                </span>
+      <ul className="lista-tarjetas">
+        {datos.map((aseguradora) => (
+          <li key={aseguradora.id} className="tarjeta-item">
+            <div className="tarjeta-item__principal">
+              <span className="tarjeta-item__titulo">{aseguradora.nombre}</span>
+              <span className="tarjeta-item__detalle">
+                CUIT {aseguradora.cuit} · Registrada el {formatearFecha(aseguradora.creada_en)}
+              </span>
+              <span className="tarjeta-item__detalle">
+                Por {aseguradora.referente.nombre} ({aseguradora.referente.correo})
+                {!aseguradora.referente.verificado && ' · correo sin verificar'}
+              </span>
+              <span className="tarjeta-item__detalle">
+                <Etiqueta tipo="destacada">Pago acreditado</Etiqueta> Plan{' '}
+                {NOMBRES_DE_PLAN[aseguradora.plan] ?? aseguradora.plan}. Si la rechazás, el pago se
+                devuelve.
+              </span>
+            </div>
+            {rechazando === aseguradora.id ? (
+              <FormularioRechazo aseguradora={aseguradora} alTerminar={terminar} />
+            ) : (
+              <div className="acciones-en-linea">
+                <BotonConfirmar
+                  texto="Aprobar"
+                  pregunta={`¿Aprobar ${aseguradora.nombre}?`}
+                  textoConfirmar="Aprobar"
+                  onConfirmar={() => aprobar(aseguradora)}
+                />
+                <button
+                  type="button"
+                  className="boton boton--secundario-peligro boton--chico"
+                  onClick={() => {
+                    setAviso(null)
+                    setRechazando(aseguradora.id)
+                  }}
+                  aria-label={`Rechazar ${aseguradora.nombre}`}
+                >
+                  Rechazar
+                </button>
               </div>
-              {rechazando === aseguradora.id ? (
-                <FormularioRechazo aseguradora={aseguradora} alTerminar={terminar} />
-              ) : (
-                <div className="acciones-en-linea">
-                  <BotonConfirmar
-                    texto="Aprobar"
-                    pregunta={`¿Aprobar ${aseguradora.nombre}?`}
-                    textoConfirmar="Aprobar"
-                    onConfirmar={() => aprobar(aseguradora)}
-                  />
-                  <button
-                    type="button"
-                    className="boton boton--secundario-peligro boton--chico"
-                    onClick={() => {
-                      setAviso(null)
-                      setRechazando(aseguradora.id)
-                    }}
-                    aria-label={`Rechazar ${aseguradora.nombre}`}
-                  >
-                    Rechazar
-                  </button>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+            )}
+          </li>
+        ))}
+      </ul>
     </section>
   )
 }
@@ -434,7 +447,7 @@ function Listados() {
       {error && <Aviso tipo="error">{error.message}</Aviso>}
       {datos && (
         <div className="tabla-contenedor">
-          <table className="tabla">
+          <table className="tabla tabla--apilable">
             <thead>
               {recurso === 'usuarios' ? (
                 <tr>
@@ -469,19 +482,21 @@ function Listados() {
                         <strong>{u.nombre}</strong>
                         {u.rol === 'administrador' && <span className="nota"> · Administrador</span>}
                       </td>
-                      <td>{u.correo}</td>
-                      <td>{NOMBRES[u.perfil] ?? u.perfil}</td>
-                      <td>{u.estado}</td>
-                      <td>{formatearFecha(u.creado_en)}</td>
+                      <td data-etiqueta="Correo">{u.correo}</td>
+                      <td data-etiqueta="Perfil">{NOMBRES[u.perfil] ?? u.perfil}</td>
+                      <td data-etiqueta="Estado">{u.estado}</td>
+                      <td data-etiqueta="Alta">{formatearFecha(u.creado_en)}</td>
                     </tr>
                   ))
                 : filas.map((o) => (
                     <tr key={o.id}>
-                      <td>{o.nombre}</td>
-                      <td>{NOMBRES[o.tipo] ?? o.tipo}</td>
-                      <td>{o.plan}</td>
-                      <td>{o.miembros}</td>
-                      <td>{o.estado === 'pendiente' ? 'Pendiente' : 'Activa'}</td>
+                      <td>
+                        <strong>{o.nombre}</strong>
+                      </td>
+                      <td data-etiqueta="Tipo">{NOMBRES[o.tipo] ?? o.tipo}</td>
+                      <td data-etiqueta="Plan">{o.plan}</td>
+                      <td data-etiqueta="Miembros">{o.miembros}</td>
+                      <td data-etiqueta="Estado">{o.estado === 'pendiente' ? 'Pendiente' : 'Activa'}</td>
                     </tr>
                   ))}
             </tbody>
@@ -523,12 +538,12 @@ export default function PaginaAdministracion() {
         <div>
           <h1>Administración</h1>
           <p className="encabezado-pagina__bajada">
-            Cómo crece la plataforma, qué aseguradoras esperan aprobación y quiénes la usan.
+            Qué aseguradoras esperan aprobación, cómo crece la plataforma y quiénes la usan.
           </p>
         </div>
       </div>
-      <Tablero />
       <Pendientes />
+      <Tablero />
       <Listados />
     </>
   )

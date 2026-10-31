@@ -369,7 +369,7 @@ describe('pantalla de la organización como Referente', () => {
 
   it('el Referente con otros miembros no puede abandonar (CA19)', async () => {
     apiDeOrganizacion()
-    renderizarEn('/organizaciones/3')
+    renderizarEn('/organizaciones/3?seccion=ajustes')
     expect(await screen.findByText(/primero designá a otro miembro como Referente/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Abandonar la organización' })).toBeDisabled()
   })
@@ -386,7 +386,7 @@ describe('pantalla de la organización como Referente', () => {
         'GET /api/invitaciones': { cuerpo: { invitaciones: [] } },
       },
     })
-    const { usuario } = renderizarEn('/organizaciones/3')
+    const { usuario } = renderizarEn('/organizaciones/3?seccion=ajustes')
     expect(await screen.findByText(/Sos el único miembro/)).toBeInTheDocument()
     await usuario.click(screen.getByRole('button', { name: 'Abandonar la organización' }))
     await usuario.click(screen.getByRole('button', { name: 'Abandonar' }))
@@ -402,7 +402,7 @@ describe('pantalla de la organización como Referente', () => {
         'GET /api/invitaciones': { cuerpo: { invitaciones: [] } },
       },
     })
-    const { usuario } = renderizarEn('/organizaciones/3')
+    const { usuario } = renderizarEn('/organizaciones/3?seccion=ajustes')
     // El formulario de confirmación aparece al elegir «Eliminar…» (028).
     await usuario.click(await screen.findByRole('button', { name: 'Eliminar…' }))
     const boton = screen.getByRole('button', { name: 'Eliminar la organización' })
@@ -423,7 +423,7 @@ describe('pantalla de la organización como Referente', () => {
         'POST /api/organizaciones/3/abandono': { estado: 500, cuerpo: { mensaje: 'Ocurrió un error inesperado.' } },
       },
     })
-    const { usuario } = renderizarEn('/organizaciones/3')
+    const { usuario } = renderizarEn('/organizaciones/3?seccion=ajustes')
     await usuario.click(await screen.findByRole('button', { name: 'Abandonar la organización' }))
     await usuario.click(screen.getByRole('button', { name: 'Abandonar' }))
     expect(await screen.findByText('Ocurrió un error inesperado.')).toBeInTheDocument()
@@ -433,11 +433,12 @@ describe('pantalla de la organización como Referente', () => {
 describe('pantalla de la organización como Miembro', () => {
   it('ve los datos y los miembros, sin acciones de Referente (CA22)', async () => {
     apiDeOrganizacion({ organizacion: { ...ORGANIZACION, mi_rol: 'miembro' } })
-    renderizarEn('/organizaciones/3')
+    const { usuario } = renderizarEn('/organizaciones/3')
     expect(await screen.findByText('Sos miembro')).toBeInTheDocument()
     expect(screen.getByText('11 5555-0000')).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Invitar miembros' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Editar el cargo/ })).not.toBeInTheDocument()
+    await usuario.click(screen.getByRole('tab', { name: 'Ajustes' }))
     expect(screen.queryByRole('button', { name: /Eliminar/ })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Abandonar la organización' })).toBeEnabled()
   })
@@ -582,6 +583,7 @@ describe('plan y pago del cambio de plan (funcionalidades 014 y 032)', () => {
       },
     })
     const { usuario } = renderizarEn('/organizaciones/3')
+    await usuario.click(await screen.findByRole('tab', { name: 'Plan' }))
 
     expect(await screen.findByRole('meter', { name: 'Análisis de este mes' })).toHaveAttribute('aria-valuenow', '7')
     await usuario.click(screen.getByRole('button', { name: 'Cambiar de plan' }))
@@ -604,8 +606,10 @@ describe('plan y pago del cambio de plan (funcionalidades 014 y 032)', () => {
     })
     const { usuario } = renderizarEn('/organizaciones/3')
 
-    expect(await screen.findByText('Falta el pago del plan.')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Miembros' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Invitar miembros' })).not.toBeInTheDocument()
+    await usuario.click(screen.getByRole('tab', { name: 'Plan' }))
+    expect(await screen.findByText('Falta el pago del plan.')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Cambiar de plan' })).not.toBeInTheDocument()
     await usuario.click(screen.getByRole('button', { name: 'Retomar el pago' }))
     expect(await screen.findByRole('heading', { name: 'Pagá el plan por transferencia' })).toBeInTheDocument()
@@ -622,10 +626,13 @@ describe('plan y pago del cambio de plan (funcionalidades 014 y 032)', () => {
         },
       },
     })
-    renderizarEn('/organizaciones/3')
+    const { usuario } = renderizarEn('/organizaciones/3')
 
     expect(await screen.findByText(/Los lugares del plan están ocupados/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Enviar invitación' })).toBeDisabled()
+    // El enlace lleva a la pestaña Plan, que sugiere uno con más lugares.
+    await usuario.click(screen.getByRole('link', { name: 'cambiá de plan' }))
+    expect(screen.getByRole('tab', { name: 'Plan' })).toHaveAttribute('aria-selected', 'true')
     expect(await screen.findByRole('button', { name: 'pasá a un plan con más lugares' })).toBeInTheDocument()
   })
 })

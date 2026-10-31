@@ -19,6 +19,14 @@
   background:
     linear-gradient(var(--a-bosque), var(--a-bosque)) top / 100% 15rem no-repeat,
     var(--fondo);
+
+  /* Que ningún contenido (un botón que no corta su texto) ensanche la página. */
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.zona-pdf .boton {
+  max-width: 100%;
+  white-space: normal;
 }
 
 /* La franja: grilla y brillo como el encabezado de la portada. */
@@ -301,4 +309,68 @@
 
 .pagina-legal h1 + .nota {
   text-align: center;
+}
+
+/* --- Verificar un informe: zona del PDF y búsqueda por código --- */
+.zona-pdf {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+  padding: 1.75rem 1.25rem;
+  border: 2px dashed var(--linea-control);
+  border-radius: 20px;
+  background: var(--fondo);
+  text-align: center;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
+}
+
+.zona-pdf--arrastrando,
+.zona-pdf:has(:focus-visible) {
+  border-color: #3e6110;
+  background: #eef5dc;
+}
+
+.zona-pdf__icono {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: #0f1f17;
+  color: #a4cb3e;
+}
+
+.zona-pdf .nota {
+  margin: 0;
+  max-width: 30ch;
+}
+
+.buscar-codigo {
+  display: grid;
+  gap: 0.4rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--linea);
+}
+
+.buscar-codigo label {
+  font-weight: 700;
+}
+
+.buscar-codigo__fila {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.buscar-codigo__fila .campo__control {
+  flex: 1;
+  min-width: 0;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  letter-spacing: 0.05em;
+}
+
+.buscar-codigo .nota {
+  margin: 0;
 }
