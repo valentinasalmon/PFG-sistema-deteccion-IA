@@ -39,3 +39,7 @@
 - **Insumos del informe:** relevamiento completo de fuentes con la decisión y el motivo de cada una.
 - **Trello:** tarjeta de la 010 con las casillas de T24, T26 y T29 marcadas, T32 sin WhatsApp, descripción y comentario de actualización; tarjeta nueva para que la autora corra el cuaderno 02.
 
+
+## 2026-11-02: autos sin repetir en la lista maestra
+
+La autora notó que en la lista maestra se repetían los modelos de auto (12 modelos para 32 prompts) y solo cambiaba el daño: así varias imágenes muestran casi el mismo auto y aportan poco. Se cambió el auto de los prompts 13 a 32 por 20 modelos nuevos, de modo que cada auto aparece una sola vez. Los prompts 1 a 12 quedaron iguales para no tirar lo ya generado; de la prioridad A hay que rehacer el 17, 18, 19, 20, 25, 26, 27 y 28.
