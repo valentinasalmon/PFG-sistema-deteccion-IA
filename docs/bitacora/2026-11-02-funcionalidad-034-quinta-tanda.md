@@ -20,6 +20,14 @@ Pedido de la autora sobre la portada pública (`frontend/src/paginas/PaginaPorta
 - ESLint sin errores y 261 pruebas de Vitest en verde. La prueba de la portada ahora verifica que lo quitado no aparece.
 - Capturas a 1440 px y a 390 px sin desbordes horizontales (`docs/funcionalidades/034-pulido-ux/capturas/quinta-tanda-*.jpg`).
 
+## Revisión en todos los anchos (pedido de la autora)
+
+Se recorrió la portada a 320, 360, 390, 430, 768 y 1024 px buscando desplazamiento horizontal y elementos fuera de la pantalla: no hay ninguno (solo los textos ocultos para lectores de pantalla, que están fuera a propósito).
+
+- **Corregido en tableta (hasta 1088 px):** los tres planes quedaban en columnas tan angostas que «A confirmar» se partía en dos renglones y el texto de «Crear cuenta gratis» tocaba el borde del botón. Ahora va una tarjeta por fila, centrada, con un ancho máximo de 34rem.
+- «por mes» ya no se separa en dos renglones (`white-space: nowrap`).
+- Capturas nuevas a 320 y 768 px en `capturas/quinta-tanda-portada-320px.jpg` y `-768px.jpg`.
+
 ## Pendiente
 
 - Que la autora la revise y abra el Pull Request de `funcionalidad/034-quinta-tanda` hacia `desarrollo`.

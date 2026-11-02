@@ -583,6 +583,7 @@
 
 .portada-plan__precio small {
   color: var(--tinta-2);
+  white-space: nowrap;
   font: 600 0.9rem var(--fuente-texto);
   letter-spacing: 0;
 }
@@ -777,6 +778,14 @@
 
   .portada-cab--izquierda {
     position: static;
+  }
+
+  /* En tableta tres columnas quedan angostas: una tarjeta por fila, centrada. */
+  .portada-planes__grilla {
+    grid-template-columns: minmax(0, 1fr);
+    justify-self: center;
+    width: 100%;
+    max-width: 34rem;
   }
 }
 
