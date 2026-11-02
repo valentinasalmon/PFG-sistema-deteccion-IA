@@ -1,4 +1,6 @@
 """Pruebas del repositorio de salud contra la base de datos de pruebas."""
+from datetime import datetime
+
 from sqlalchemy.exc import OperationalError
 
 from app.extensiones import db
@@ -20,3 +22,10 @@ def test_base_de_datos_caida(aplicacion, monkeypatch):
     with aplicacion.app_context():
         monkeypatch.setattr(db.session, "execute", consulta_que_falla)
         assert RepositorioSalud().verificar_conexion() is False
+
+
+def test_resumen_de_sellos_sin_datos(aplicacion):
+    """Sin imágenes, informes ni versiones selladas, todo da cero y sin último sello."""
+    with aplicacion.app_context():
+        resumen = RepositorioSalud().resumen_sellos(datetime(2026, 10, 30))
+    assert resumen == {"fallidos": 0, "demorados": 0, "ultimo": None}

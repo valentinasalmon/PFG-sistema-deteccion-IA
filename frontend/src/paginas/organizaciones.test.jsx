@@ -478,10 +478,9 @@ describe('enlace de invitación', () => {
     await usuario.type(screen.getByLabelText('Nombre'), 'Carla')
     await usuario.type(screen.getByLabelText('Apellido'), 'Gómez')
     await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
-    await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
     expect(screen.getByLabelText('Correo electrónico')).toHaveValue('carla@ejemplo.com')
     expect(screen.getByLabelText('Correo electrónico')).toHaveAttribute('readonly')
-    expect(screen.getByText('Paso 4 de 4')).toBeInTheDocument()
+    expect(screen.getByText('Paso 3 de 3')).toBeInTheDocument()
   })
 
   it('iniciar sesión vuelve a la invitación', async () => {

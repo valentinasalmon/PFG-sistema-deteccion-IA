@@ -10,4 +10,6 @@
 - [x] T08 — Portada con ilustraciones y animaciones (primera versión: ilustraciones propias y «Cómo funciona»).
 - [x] T09 — Ctrl K y comparador.
 - [x] T10 — Clarity configurable (activarlo depende de CP-37).
-- [ ] T11 — Pruebas, capturas, bitácora, insumos y Trello.
+- [x] T12 — Tercera tanda (2026-10-31): portada nueva con la composición aprobada (encabezado oscuro centrado, captura real con datos de ejemplo, cuatro miradas, para quién, tres pasos, planes y cierre).
+- [x] T13 — Registro más corto (2 a 3 pasos), acceso con la estética de la portada y Política de Privacidad técnica (pilares y detalle de cada medida).
+- [ ] T11 — Pruebas, capturas, bitácora, insumos y Trello (hecho para la tercera tanda; queda abierta hasta cerrar T06 y T07).

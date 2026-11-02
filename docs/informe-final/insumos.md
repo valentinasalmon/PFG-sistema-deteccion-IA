@@ -166,3 +166,11 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
 - La autora busca «evidentIA» en la base de marcas del INPI. Resultado: «EVIDENTIA» está concedida a un tercero en las clases 9 y 42 (denominativa, vence en 2036), y «EVIDENTIA ESTUDIO PERICIAL», del mismo sector, en la clase 42 (mixta). La denominación no puede registrarse en las clases del servicio (CP-36).
 - Para el Capítulo VIII: la búsqueda de antecedentes cumple su función, porque detecta el conflicto antes de invertir en la marca. Es también una lección aprendida: verificar la disponibilidad del nombre antes de construir la identidad visual.
 
+
+## Tercera tanda de la 034: portada, registro y privacidad (2026-10-31)
+
+- **Iteración de diseño con la autora:** tres rondas de mockups (v1, v2 y v3 con dos direcciones), rechazos explícitos («muy feo», «el registro sigue muy mal») y una composición final armada con partes de cada dirección. Para el capítulo de metodología: el diseño se validó con prototipos antes de programarlo, y las capturas reales del sistema reemplazaron las ilustraciones porque transmitían más confianza.
+- **Registro:** pasar de 4-6 pasos a 2-3 juntando los datos personales y la institución, y no volver a preguntar lo que la persona ya eligió en la portada. Es un ejemplo de reducción de fricción medible (cantidad de pasos).
+- **Privacidad técnica:** la política muestra el valor concreto de cada medida (por ejemplo, bcrypt costo 12 o enlaces de 5 minutos) en lugar de frases genéricas, y separa la portada comercial (beneficios, sin proveedores) de la página técnica.
+- **Observabilidad del sello:** la página pública de estado informa si el sello en Hedera funciona, sin exponer datos sensibles. Permite comprobar en producción una integración externa sin acceso al servidor.
+- **Coherencia legal:** al activar Clarity, la política dejó de ser exacta (decía que no había cookies de seguimiento). Se corrigió con un texto provisorio y quedó como cuestión abierta (CP-37). Lección: cada integración nueva revisa la política de privacidad.

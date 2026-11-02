@@ -1,22 +1,25 @@
 /**
  * Pantalla de registro de una cuenta nueva, guiada por pasos.
  *
- * Desde la funcionalidad 032 hay tres caminos:
+ * Desde la funcionalidad 032 hay tres caminos: abogado independiente, abogado
+ * con estudio jurídico y aseguradora. Desde la tercera tanda de la 034 el
+ * registro es más corto (pedido de la autora: «el registro sigue muy mal»):
  *
- * - Abogado independiente (4 pasos): cómo vas a usarla, tus datos, colegio de
- *   abogados (opcional) y tu cuenta.
- * - Abogado con estudio jurídico (6 pasos): además del nombre del estudio en
- *   el primer paso, el plan antes de la cuenta y el pago al final.
- * - Aseguradora (6 pasos): la aseguradora del catálogo de la SSN, el plan, la
- *   cuenta y el pago; después la aprueba el Administrador.
+ * - «Tus datos» junta el nombre, el apellido y la institución (el colegio,
+ *   opcional, o la aseguradora del catálogo) y, para el estudio, su nombre.
+ * - Si se llega desde la portada con el camino o el plan ya elegidos, esos
+ *   pasos no se muestran: un resumen arriba los indica y permite cambiarlos.
+ *
+ * Así, el independiente que llega desde la portada completa 2 pasos (tus
+ * datos y tu cuenta) y el estudio o la aseguradora 3 (más el pago). Sin
+ * nada elegido, se suman el camino y, si corresponde, el plan.
  *
  * El paso de la cuenta pide el correo, la contraseña y la aceptación expresa
- * de los Términos de Uso y de la Política de Privacidad. Los pasos se ven con
- * su nombre en el panel de la izquierda y la tarjeta es más ancha.
+ * de los Términos de Uso y de la Política de Privacidad.
  *
  * Registro con invitación (``?invitacion=<token>``): el correo viene fijado.
- * Si invita una aseguradora, el perfil también, y solo quedan los pasos 2 y
- * 4; al verificar el correo, la persona queda dentro de la aseguradora.
+ * Si invita una aseguradora, el perfil también, y solo quedan tus datos y tu
+ * cuenta; al verificar el correo, la persona queda dentro de la aseguradora.
  *
  * Cada paso se valida antes de avanzar y los datos se conservan al volver.
  * El backend valida de forma definitiva al crear la cuenta: si rechaza un
@@ -42,7 +45,6 @@ import Cargando from '../componentes/Cargando.jsx'
 import FormularioReenvio from '../componentes/FormularioReenvio.jsx'
 import IndicadorPasos from '../componentes/IndicadorPasos.jsx'
 import PanelPago from '../componentes/PanelPago.jsx'
-import PanelPasos from '../componentes/PanelPasos.jsx'
 import PasoInstitucion from '../componentes/PasoInstitucion.jsx'
 import ReglasContrasenia from '../componentes/ReglasContrasenia.jsx'
 import ResultadoPago from '../componentes/ResultadoPago.jsx'
@@ -50,16 +52,27 @@ import SelectorCamino from '../componentes/SelectorCamino.jsx'
 import SelectorPlan from '../componentes/SelectorPlan.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useFormulario } from '../hooks/useFormulario.js'
+import { NOMBRES_DE_PLAN } from '../utilidades/planes.js'
 import { caminoConPago, perfilDelCamino } from '../utilidades/registro.js'
 
-const PASOS_INDEPENDIENTE = ['perfil', 'datos', 'institucion', 'cuenta']
-const PASOS_CON_PAGO = ['perfil', 'datos', 'institucion', 'plan', 'cuenta', 'pago']
-const PASOS_EMPLEADO = ['datos', 'cuenta']
+const NOMBRES_DE_CAMINO = {
+  independiente: 'Abogado o abogada independiente',
+  estudio: 'Estudio jurídico',
+  aseguradora: 'Aseguradora',
+}
 
-/** Pasos según el camino elegido; mientras no hay camino, los del independiente. */
-function pasosDelCamino(camino, esEmpleado) {
-  if (esEmpleado) return PASOS_EMPLEADO
-  return caminoConPago(camino) ? PASOS_CON_PAGO : PASOS_INDEPENDIENTE
+/**
+ * Pasos según el camino y lo que ya viene elegido desde la portada.
+ * Mientras no hay camino, se cuentan los del independiente.
+ */
+function pasosDelCamino({ camino, esEmpleado, caminoFijado, planFijado }) {
+  if (esEmpleado) return ['datos', 'cuenta']
+  const pasos = caminoFijado ? [] : ['perfil']
+  pasos.push('datos')
+  if (caminoConPago(camino) && !planFijado) pasos.push('plan')
+  pasos.push('cuenta')
+  if (caminoConPago(camino)) pasos.push('pago')
+  return pasos
 }
 
 const VALORES_INICIALES = {
@@ -79,13 +92,13 @@ const VALORES_INICIALES = {
 const PASO_DE_CADA_CAMPO = {
   perfil: 'perfil',
   camino: 'perfil',
-  nombre_estudio: 'perfil',
+  nombre_estudio: 'datos',
   plan: 'plan',
   nombre: 'datos',
   apellido: 'datos',
-  colegio: 'institucion',
-  empresa: 'institucion',
-  id_aseguradora: 'institucion',
+  colegio: 'datos',
+  empresa: 'datos',
+  id_aseguradora: 'datos',
   correo: 'cuenta',
   contrasenia: 'cuenta',
   acepta_terminos: 'cuenta',
@@ -110,30 +123,32 @@ function armarSolicitud(
  * Valida en el navegador los datos obligatorios del paso, para no avanzar
  * con datos faltantes. Devuelve el mensaje de error de cada campo.
  */
-function validarPaso(paso, valores) {
+function validarPaso(paso, valores, esEmpleado) {
   const errores = {}
   if (paso === 'perfil' && !valores.camino) {
     errores.camino = 'Elegí cómo vas a usar la plataforma.'
   }
-  if (paso === 'perfil' && valores.camino === 'estudio' && !valores.nombre_estudio.trim()) {
-    errores.nombre_estudio = 'Escribí el nombre de tu estudio jurídico.'
-  }
   if (paso === 'datos') {
+    if (valores.camino === 'estudio' && !valores.nombre_estudio.trim()) {
+      errores.nombre_estudio = 'Escribí el nombre de tu estudio jurídico.'
+    }
     if (!valores.nombre.trim()) errores.nombre = 'Ingresá tu nombre.'
     if (!valores.apellido.trim()) errores.apellido = 'Ingresá tu apellido.'
-  }
-  if (paso === 'institucion' && valores.camino === 'aseguradora' && !valores.id_aseguradora) {
-    errores.id_aseguradora = 'Elegí tu aseguradora del listado.'
+    if (valores.camino === 'aseguradora' && !valores.id_aseguradora && !esEmpleado) {
+      errores.id_aseguradora = 'Elegí tu aseguradora del listado.'
+    }
   }
   return errores
 }
 
-/** Título de cada paso; el de la institución depende del perfil elegido. */
-function tituloDelPaso(paso, valores) {
+/** Título de cada paso; el de los datos depende del camino elegido. */
+function tituloDelPaso(paso, valores, esEmpleado) {
   if (paso === 'perfil') return '¿Cómo vas a usar la plataforma?'
-  if (paso === 'datos') return 'Tus datos'
-  if (paso === 'institucion') {
-    return perfilDelCamino(valores.camino) === 'aseguradora' ? 'Tu aseguradora' : 'Tu colegio de abogados'
+  if (paso === 'datos') {
+    if (esEmpleado) return 'Tus datos'
+    if (valores.camino === 'estudio') return 'Vos y tu estudio'
+    if (valores.camino === 'aseguradora') return 'Vos y tu aseguradora'
+    return 'Tus datos'
   }
   if (paso === 'plan') {
     return valores.camino === 'estudio'
@@ -181,7 +196,10 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
       camino: caminoInicial,
       plan: PLANES_DESDE_LA_LANDING.has(planPedido) ? planPedido : VALORES_INICIALES.plan,
     })
-  const pasos = pasosDelCamino(valores.camino, esEmpleado)
+  // Lo que llega elegido desde la portada no se vuelve a preguntar.
+  const [caminoFijado, setCaminoFijado] = useState(Boolean(caminoInicial) && !esEmpleado)
+  const [planFijado, setPlanFijado] = useState(PLANES_DESDE_LA_LANDING.has(planPedido))
+  const pasos = pasosDelCamino({ camino: valores.camino, esEmpleado, caminoFijado, planFijado })
   const [indice, setIndice] = useState(0)
   const [mensaje, setMensaje] = useState(null)
   const [tokenPago, setTokenPago] = useState(null)
@@ -202,7 +220,7 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
 
   function avanzar(evento) {
     evento.preventDefault()
-    const erroresDelPaso = validarPaso(paso, valores)
+    const erroresDelPaso = validarPaso(paso, valores, esEmpleado)
     marcarErrores(erroresDelPaso)
     if (Object.keys(erroresDelPaso).length === 0) setIndice(indice + 1)
   }
@@ -210,6 +228,14 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
   function volver() {
     marcarErrores({})
     setIndice(indice - 1)
+  }
+
+  /** Vuelve a mostrar el paso del camino o del plan que venía elegido. */
+  function cambiarEleccion() {
+    marcarErrores({})
+    setCaminoFijado(false)
+    setPlanFijado(false)
+    setIndice(0)
   }
 
   async function crearCuenta(evento) {
@@ -242,7 +268,6 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
   if (cobroAcreditado) {
     return (
       <div className="registro-ancho">
-        <PanelPasos pasos={pasos} actual={pasos.length} />
         <ResultadoPago cobro={cobroAcreditado}>
           <p>Para entrar, primero confirmá tu correo con el enlace que te enviamos.</p>
           {avisoDeCorreo}
@@ -257,7 +282,6 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
   if (tokenPago) {
     return (
       <div className="registro-ancho">
-        <PanelPasos pasos={pasos} actual={indice} />
         <IndicadorPasos actual={indice + 1} total={pasos.length} />
         <PanelPago token={tokenPago} alAcreditar={setCobroAcreditado} />
       </div>
@@ -294,17 +318,30 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
 
   return (
     <div className="registro-ancho">
-      {!esEmpleado && <PanelPasos pasos={pasos} actual={indice} />}
       <h1>Crear una cuenta</h1>
       {invitacion && (
         <Aviso tipo="info">
           Te sumás a {invitacion.organizacion.nombre} con la invitación de {invitacion.invitante}.
         </Aviso>
       )}
+      {caminoFijado && (
+        <div className="registro-eleccion">
+          <span>
+            <small>Estás creando</small>
+            <strong>
+              {NOMBRES_DE_CAMINO[valores.camino]}
+              {caminoConPago(valores.camino) && planFijado && ` · Plan ${NOMBRES_DE_PLAN[valores.plan]}`}
+            </strong>
+          </span>
+          <button type="button" className="boton-enlace" onClick={cambiarEleccion}>
+            Cambiar
+          </button>
+        </div>
+      )}
       {indice === 0 && <BotonGoogle invitacion={token} />}
       <IndicadorPasos actual={indice + 1} total={pasos.length} />
       <h2 id="titulo-paso" ref={refTitulo} tabIndex={-1} className="pasos__titulo">
-        {tituloDelPaso(paso, valores)}
+        {tituloDelPaso(paso, valores, esEmpleado)}
       </h2>
       {error && <Aviso tipo="error">{error.message}</Aviso>}
 
@@ -322,7 +359,21 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
 
         {paso === 'datos' && (
           <>
-            <CampoTexto
+            {valores.camino === 'estudio' && !token && (
+              <CampoTexto
+                etiqueta="Nombre del estudio jurídico"
+                nombre="nombre_estudio"
+                autoComplete="organization"
+                maxLength={150}
+                value={valores.nombre_estudio}
+                onChange={cambiar}
+                error={errores.nombre_estudio}
+                ayuda="Vas a ser su Referente. Después invitás a tu equipo."
+                required
+              />
+            )}
+            <div className="campos-en-fila">
+              <CampoTexto
               etiqueta="Nombre"
               nombre="nombre"
               autoComplete="given-name"
@@ -340,16 +391,16 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
               error={errores.apellido}
               required
             />
+            </div>
+            {!esEmpleado && (
+              <PasoInstitucion
+                valores={{ ...valores, perfil: perfilDelCamino(valores.camino) }}
+                errores={errores}
+                cambiar={cambiar}
+                setValores={setValores}
+              />
+            )}
           </>
-        )}
-
-        {paso === 'institucion' && (
-          <PasoInstitucion
-            valores={{ ...valores, perfil: perfilDelCamino(valores.camino) }}
-            errores={errores}
-            cambiar={cambiar}
-            setValores={setValores}
-          />
         )}
 
         {paso === 'cuenta' && (

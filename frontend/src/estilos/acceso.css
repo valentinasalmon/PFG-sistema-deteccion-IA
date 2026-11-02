@@ -1,0 +1,304 @@
+/*
+ * Pantallas de acceso con la estética de la portada (funcionalidad 034,
+ * tercera tanda): registro, inicio de sesión, pago, legales y demás páginas
+ * públicas que usan DisposicionAcceso.
+ *
+ * Arriba, una franja verde bosque con la grilla y el logo; la tarjeta blanca
+ * se monta sobre la franja. Las acciones son píldoras lima, los campos tienen
+ * 52 px de alto (fáciles de tocar en el celular) y el avance de los pasos es
+ * lima. Se carga después de global.css y solo aplica dentro de
+ * ``.acceso--completo`` (con dos clases, para ganarle a global.css).
+ *
+ * Realiza: RNF10.
+ */
+.acceso.acceso--completo {
+  --a-lima: #a4cb3e;
+  --a-lima-suave: #eef5dc;
+  --a-bosque: #0f1f17;
+
+  background:
+    linear-gradient(var(--a-bosque), var(--a-bosque)) top / 100% 15rem no-repeat,
+    var(--fondo);
+}
+
+/* La franja: grilla y brillo como el encabezado de la portada. */
+.acceso.acceso--completo::before {
+  height: 15rem;
+  inset: 0 0 auto;
+  background-image:
+    radial-gradient(ellipse at 50% 0, #1e3b2b 0, transparent 65%),
+    linear-gradient(#ffffff08 1px, transparent 1px),
+    linear-gradient(90deg, #ffffff08 1px, transparent 1px);
+  background-size:
+    auto,
+    48px 48px,
+    48px 48px;
+  mask-image: none;
+}
+
+.acceso.acceso--completo .acceso__cabecera {
+  align-items: center;
+  padding: 1rem clamp(1rem, 4vw, 3rem);
+}
+
+.acceso__logo img {
+  height: 28px;
+  width: auto;
+}
+
+.acceso.acceso--completo .acceso__volver {
+  color: #c4d3c9;
+}
+
+.acceso.acceso--completo .acceso__volver:hover {
+  color: #fff;
+}
+
+.acceso.acceso--completo .acceso__formulario {
+  place-items: start center;
+  padding: 1.5rem 1rem 2.5rem;
+}
+
+.acceso.acceso--completo .tarjeta-acceso {
+  width: 100%;
+  max-width: 28rem;
+  padding: 2.25rem 2.25rem 2rem;
+  border: 0;
+  border-radius: 28px;
+  box-shadow: 0 30px 60px -30px rgb(15 31 23 / 45%);
+}
+
+.acceso.acceso--completo:has(.registro-ancho) .tarjeta-acceso {
+  max-width: 40rem;
+}
+
+.acceso.acceso--completo .tarjeta-acceso h1 {
+  font-size: clamp(1.6rem, 3vw, 2rem);
+  letter-spacing: -0.03em;
+}
+
+/* --- Campos más grandes y redondeados --- */
+.acceso.acceso--completo .campo__control {
+  min-height: 52px;
+  border-radius: 14px;
+  font-size: 1rem;
+}
+
+.acceso.acceso--completo .campo__control:focus {
+  border-color: var(--a-bosque);
+  box-shadow: 0 0 0 3px rgb(164 203 62 / 45%);
+}
+
+.campos-en-fila {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 0.9rem;
+}
+
+/* --- Botones como las píldoras de la portada --- */
+.acceso.acceso--completo .boton {
+  min-height: 52px;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  box-shadow: none;
+  font-weight: 800;
+}
+
+.acceso.acceso--completo .boton:not(.boton--secundario, .boton--fantasma, .boton-enlace, .boton-google) {
+  border-color: var(--a-lima);
+  background: var(--a-lima);
+  color: var(--a-bosque);
+}
+
+.acceso.acceso--completo .boton:not(.boton--secundario, .boton--fantasma, .boton-enlace, .boton-google):hover {
+  border-color: #b3d653;
+  background: #b3d653;
+}
+
+.acceso.acceso--completo .boton--secundario {
+  border-color: var(--a-bosque);
+  background: transparent;
+  color: var(--a-bosque);
+}
+
+.acceso.acceso--completo .boton:focus-visible {
+  outline: 3px solid var(--a-bosque);
+  outline-offset: 3px;
+}
+
+/* --- Pasos del registro --- */
+.acceso.acceso--completo .indicador-pasos__barra {
+  height: 6px;
+  border-radius: 999px;
+}
+
+.acceso.acceso--completo .indicador-pasos__avance {
+  border-radius: 999px;
+  background: var(--a-lima);
+}
+
+.acceso.acceso--completo .camino--elegido {
+  border-color: var(--a-bosque);
+  background: var(--a-lima-suave);
+}
+
+.acceso.acceso--completo .camino__icono {
+  background: var(--a-bosque);
+  color: var(--a-lima);
+}
+
+/* Lo que llegó elegido desde la portada, con la opción de cambiarlo. */
+.registro-eleccion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.25rem 0 1rem;
+  padding: 0.75rem 0.75rem 0.75rem 1.1rem;
+  border-radius: 16px;
+  background: var(--a-lima-suave, #eef5dc);
+}
+
+.registro-eleccion small {
+  display: block;
+  color: var(--tinta-2);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.registro-eleccion strong {
+  font-family: var(--fuente-titulos);
+}
+
+.registro-eleccion .boton-enlace {
+  padding: 0 0.75rem;
+  font-weight: 700;
+}
+
+/* --- Pie sobre el fondo claro --- */
+.acceso.acceso--completo .pie {
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+@media (width <= 48rem) {
+  .acceso.acceso--completo {
+    background:
+      linear-gradient(var(--a-bosque), var(--a-bosque)) top / 100% 9rem no-repeat,
+      var(--fondo);
+  }
+
+  .acceso.acceso--completo::before {
+    height: 9rem;
+  }
+
+  .acceso.acceso--completo .acceso__formulario {
+    place-items: start stretch;
+    padding: 0.5rem 0.75rem 1.5rem;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso {
+    padding: 1.6rem 1.15rem 1.4rem;
+    border-radius: 22px;
+    box-shadow: 0 20px 40px -28px rgb(15 31 23 / 45%);
+  }
+
+  .acceso__volver span,
+  .acceso.acceso--completo .acceso__volver {
+    font-size: 0.85rem;
+  }
+
+  .campos-en-fila {
+    grid-template-columns: 1fr;
+  }
+
+  .acceso.acceso--completo .pasos__acciones .boton {
+    flex: 1 1 0;
+  }
+}
+
+/* --- Privacidad y seguridad: página ancha, pilares y medidas técnicas --- */
+.acceso.acceso--completo:has(.pagina-legal) .tarjeta-acceso {
+  max-width: 56rem;
+}
+
+.pagina-legal__bajada {
+  margin-top: 0.5rem;
+  color: var(--tinta-2);
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.pilares {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin: 1.75rem 0 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.pilares li {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1.25rem 1.35rem;
+  border-radius: 20px;
+  background: var(--fondo);
+}
+
+.pilares li:nth-child(2n) {
+  background: #eef5dc;
+}
+
+.pilares li:last-child {
+  background: #0f1f17;
+  color: #d3dfd7;
+}
+
+.pilares strong {
+  font-family: var(--fuente-titulos);
+  font-size: 1.1rem;
+}
+
+.pilares li:last-child strong {
+  color: #a4cb3e;
+}
+
+.medidas {
+  display: grid;
+  margin: 0.75rem 0 1rem;
+  border-top: 1px solid var(--linea);
+}
+
+.medidas > div {
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr);
+  gap: 0.25rem 1.5rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--linea);
+}
+
+.medidas dt {
+  font-weight: 800;
+}
+
+.medidas dd {
+  margin: 0;
+  color: var(--tinta-2);
+}
+
+@media (width <= 48rem) {
+  .pilares {
+    grid-template-columns: 1fr;
+  }
+
+  .medidas > div {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pagina-legal h1 + .nota {
+  text-align: center;
+}

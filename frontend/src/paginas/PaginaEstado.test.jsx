@@ -28,6 +28,31 @@ describe('PaginaEstado', () => {
     expect(screen.getByText('Base de datos')).toBeInTheDocument()
   })
 
+  it('muestra el estado del sello en Hedera y el último confirmado', async () => {
+    simularRespuesta(200, {
+      estado: 'ok',
+      componentes: { api: 'ok' },
+      entorno: 'produccion',
+      version: '1.0.0',
+      sello: { modo: 'hedera', red: 'testnet', estado: 'ok', ultimo: '2026-10-30T12:00:00' },
+    })
+    render(<PaginaEstado />)
+    expect(await screen.findByText('Sello de tiempo · Hedera (testnet)')).toBeInTheDocument()
+    expect(screen.getByText(/último confirmado el/)).toBeInTheDocument()
+  })
+
+  it('avisa si hay sellos que no se pudieron registrar', async () => {
+    simularRespuesta(200, {
+      estado: 'ok',
+      componentes: { api: 'ok' },
+      entorno: 'produccion',
+      version: '1.0.0',
+      sello: { modo: 'hedera', red: 'mainnet', estado: 'con_fallas', ultimo: null },
+    })
+    render(<PaginaEstado />)
+    expect(await screen.findByText(/Con fallas/)).toBeInTheDocument()
+  })
+
   it('indica qué servicio no responde (CA4)', async () => {
     simularRespuesta(503, {
       estado: 'degradado',
