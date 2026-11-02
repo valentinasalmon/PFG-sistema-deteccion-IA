@@ -180,3 +180,9 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
 - **Componente reutilizable de pestañas**: la organización y Mi perfil comparten `Pestanias` (patrón de pestañas de WAI-ARIA, flechas del teclado, pestaña en la dirección). Ejemplo de refactorización que reduce duplicación al aparecer el segundo uso.
 - **Priorizar lo accionable**: en administración, lo que requiere una acción (aprobar aseguradoras) va antes que los indicadores; si no hay nada que hacer, ocupa una línea.
 - **Tablas en el celular**: en lugar de desplazamiento horizontal, cada fila se apila como tarjeta con el nombre de cada dato. Se detectó al revisar todas las pantallas a 390 px (CA2).
+
+## Hedera y Cresium: estado real al 2026-11-02
+
+- **Hedera**: la integración está completa (SDK oficial, confirmación en el *mirror node*, reintentos cada 15 minutos, huella de cada versión desplegada), pero se valida recién con la prueba de la autora en *testnet*. Para el informe: distinguir «implementado y probado con dobles de prueba» de «probado contra la red real».
+- **Cresium**: tiene API de cobros con CVU por pedido y avisos firmados. El diseño con proveedor intercambiable (ADR-0020) deja el cobro real como un agregado acotado; depende de los precios (CP-38) y de la cuenta. Riesgo principal del cobro por transferencia: avisos falsificados, que se mitigan con la firma HMAC, la comprobación del monto y la conciliación de respaldo.
+- **CP-20**: una huella SHA-256 simple de un correo no lo anonimiza (se revierte probando correos conocidos); la minimización correcta sería una huella con clave secreta (HMAC). Buen ejemplo para la sección de privacidad.
