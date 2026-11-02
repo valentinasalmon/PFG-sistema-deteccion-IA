@@ -35,10 +35,10 @@ La autora pidió un sistema limpio, sin fricciones, orientado a la usuaria princ
 ## Criterios de aceptación
 
 - [ ] **CA1**: Toda pantalla tiene una acción principal visible y una forma de volver o seguir, en computadora y en celular.
-- [ ] **CA2**: Ninguna pantalla se desborda ni recorta contenido a 390 px de ancho.
+- [x] **CA2**: Ninguna pantalla se desborda ni recorta contenido a 390 px de ancho.
 - [ ] **CA3**: Los avisos flotantes aparecen arriba, se cierran con X y se van solos; los diálogos aparecen centrados y se cierran con X, Esc o clic afuera.
 - [ ] **CA4**: En el caso, Imágenes, Análisis e Informe se ven como un flujo vertical con el estado de cada paso.
-- [ ] **CA5**: Acceso y registro se muestran a pantalla completa, con la tarjeta centrada y solo el logo con el nombre.
+- [x] **CA5**: Acceso y registro se muestran a pantalla completa, con la tarjeta centrada y solo el logo con el nombre.
 - [ ] **CA6**: Los resultados siguen diciendo que son indicios y no veredictos (RN27) y el pie del sistema lo recuerda en una línea.
 - [x] **CA7**: Ctrl K abre el buscador desde cualquier pantalla interna; Esc lo cierra.
 - [x] **CA8**: Clarity se carga solo con el identificador configurado y con enmascarado estricto.

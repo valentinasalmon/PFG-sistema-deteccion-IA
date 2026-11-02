@@ -38,7 +38,7 @@ describe('PaginaEstado', () => {
     })
     render(<PaginaEstado />)
     expect(await screen.findByText('Sello de tiempo · Hedera (testnet)')).toBeInTheDocument()
-    expect(screen.getByText(/último confirmado el/)).toBeInTheDocument()
+    expect(screen.getByText(/Último confirmado el/)).toBeInTheDocument()
   })
 
   it('avisa si hay sellos que no se pudieron registrar', async () => {

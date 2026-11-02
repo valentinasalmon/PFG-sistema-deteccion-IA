@@ -43,15 +43,14 @@ function EstadoSello({ sello }) {
   return (
     <li>
       <span>Sello de tiempo{modo ? ` · ${modo}` : ''}</span>
-      <strong>
-        {ESTADOS_SELLO[sello.estado] ?? sello.estado}
+      <span className="estado-sello">
+        <strong>{ESTADOS_SELLO[sello.estado] ?? sello.estado}</strong>
         {sello.ultimo && (
           <small className="nota">
-            {' '}
-            · último confirmado el {new Date(`${sello.ultimo}Z`).toLocaleString('es-AR')}
+            Último confirmado el {new Date(`${sello.ultimo}Z`).toLocaleString('es-AR')}
           </small>
         )}
-      </strong>
+      </span>
     </li>
   )
 }

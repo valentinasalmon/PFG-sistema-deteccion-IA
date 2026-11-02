@@ -21,7 +21,7 @@
  * CA1, CA5 a CA10 de la 019.
  */
 import { useState } from 'react'
-import { Link, useLocation, useSearchParams } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import {
   actualizarPerfil,
   cambiarContrasenia,
@@ -33,10 +33,12 @@ import {
 import Aviso from '../componentes/Aviso.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
 import Icono from '../componentes/Icono.jsx'
+import Pestanias from '../componentes/Pestanias.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import ReglasContrasenia from '../componentes/ReglasContrasenia.jsx'
 import SeccionPlan from '../componentes/SeccionPlan.jsx'
 import { useFormulario } from '../hooks/useFormulario.js'
+import { usePestaniaElegida } from '../hooks/usePestaniaElegida.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 
@@ -478,25 +480,10 @@ function TarjetaDeCuenta() {
 export default function PaginaPerfil() {
   const { usuario } = useSesion()
   const { state } = useLocation()
-  const [parametros, setParametros] = useSearchParams()
   const sinEquipo =
     usuario.perfil === 'abogado' && usuario.rol !== 'administrador' && !usuario.en_organizacion
   const pestanias = pestaniasPara(usuario)
-  const pedida = parametros.get('seccion')
-  const actual = pestanias.some((p) => p.id === pedida) ? pedida : 'datos'
-
-  function elegir(id) {
-    setParametros(id === 'datos' ? {} : { seccion: id }, { replace: true })
-  }
-
-  /** Flechas izquierda y derecha entre pestañas (patrón de pestañas de WAI-ARIA). */
-  function alPresionar(evento, indice) {
-    const paso = { ArrowRight: 1, ArrowLeft: -1 }[evento.key]
-    if (!paso) return
-    const siguiente = pestanias[(indice + paso + pestanias.length) % pestanias.length]
-    elegir(siguiente.id)
-    document.getElementById(`pestania-${siguiente.id}`)?.focus()
-  }
+  const [actual, elegir] = usePestaniaElegida(pestanias)
 
   return (
     <>
@@ -508,30 +495,7 @@ export default function PaginaPerfil() {
       </div>
       {state?.mensaje && <Aviso tipo="exito">{state.mensaje}</Aviso>}
       <TarjetaDeCuenta />
-      <div className="pestanias" role="tablist" aria-label="Secciones del perfil">
-        {pestanias.map(({ id, texto }, indice) => (
-          <button
-            key={id}
-            id={`pestania-${id}`}
-            type="button"
-            role="tab"
-            className="pestanias__pestania"
-            aria-selected={actual === id}
-            aria-controls={`panel-${id}`}
-            tabIndex={actual === id ? 0 : -1}
-            onClick={() => elegir(id)}
-            onKeyDown={(evento) => alPresionar(evento, indice)}
-          >
-            {texto}
-          </button>
-        ))}
-      </div>
-      <div
-        id={`panel-${actual}`}
-        role="tabpanel"
-        aria-labelledby={`pestania-${actual}`}
-        className="pestanias__panel"
-      >
+      <Pestanias etiqueta="Secciones del perfil" pestanias={pestanias} actual={actual} alElegir={elegir}>
         {actual === 'datos' && (
           <>
             <SeccionDatos />
@@ -551,7 +515,7 @@ export default function PaginaPerfil() {
             <SeccionEliminar />
           </>
         )}
-      </div>
+      </Pestanias>
     </>
   )
 }
