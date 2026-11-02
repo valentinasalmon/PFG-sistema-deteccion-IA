@@ -9,10 +9,12 @@ IP) para que la auditoría lo registre sin que los servicios conozcan Flask.
 from app.repositorios.catalogo_aseguradoras import CatalogoAseguradoras
 from app.analisis.registro import crear_capas
 from app.integraciones.google import crear_cliente_google
+from app.integraciones.pagos import crear_proveedor_pagos
 from app.integraciones.sello_tiempo import crear_sellador, crear_tema_hedera
 from app.repositorios.repositorio_analisis import RepositorioAnalisis
 from app.repositorios.repositorio_auditoria import RepositorioAuditoria
 from app.repositorios.repositorio_casos import RepositorioCasos
+from app.repositorios.repositorio_cobros import RepositorioCobros
 from app.repositorios.repositorio_enlaces_carga import RepositorioEnlacesCarga
 from app.repositorios.repositorio_estadisticas import RepositorioEstadisticas
 from app.repositorios.repositorio_imagenes import RepositorioImagenes
@@ -30,6 +32,7 @@ from app.servicios.servicio_datos_personales import ServicioDatosPersonales
 from app.servicios.servicio_imagenes import ArchivosDeCasos, ServicioImagenes
 from app.servicios.servicio_informes import ServicioInformes
 from app.servicios.servicio_organizaciones import ServicioOrganizaciones
+from app.servicios.servicio_pagos import ServicioPagos
 from app.servicios.servicio_panel import ServicioPanel
 from app.servicios.servicio_perfil import ServicioPerfil
 from app.servicios.servicio_planes import ServicioPlanes
@@ -105,12 +108,21 @@ def _archivos(almacenamiento):
     )
 
 
+def crear_servicio_pagos(configuracion, origen=None):
+    """Cobro del plan por transferencia, hoy simulado con la forma de Cresium (032)."""
+    return ServicioPagos(
+        RepositorioCobros(), crear_proveedor_pagos(configuracion), configuracion,
+        crear_servicio_auditoria(origen),
+    )
+
+
 def crear_servicio_organizaciones(configuracion, enviador, origen=None, almacenamiento=None):
     """Servicio de organizaciones, invitaciones y membresías."""
     return ServicioOrganizaciones(
         RepositorioOrganizaciones(), RepositorioUsuarios(), _correos(configuracion, enviador),
         GestorTokens(configuracion["SECRET_KEY"]), configuracion,
         crear_servicio_auditoria(origen), RepositorioCasos(), _archivos(almacenamiento),
+        crear_servicio_pagos(configuracion, origen),
     )
 
 

@@ -7,9 +7,13 @@
  * el espacio quedan siempre a la vista; las fechas del hecho se despliegan en
  * "Más filtros". Las filas tienen columnas fijas y el número no se corta (028).
  *
+ * Desde la funcionalidad 034 los filtros se aplican al instante (la búsqueda,
+ * medio segundo después de dejar de escribir), sin botón «Buscar», y la lista
+ * vacía ofrece quitar los filtros o crear un caso.
+ *
  * Realiza: RF26, RF33 (CA2); CA5, CA6 y CA18 de la funcionalidad 005; RNF10.
  */
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 import FilaCaso from '../componentes/FilaCaso.jsx'
 import { listarCasos, responderTransferencia, transferenciasPendientes } from '../api/casos.js'
@@ -18,7 +22,9 @@ import Aviso from '../componentes/Aviso.jsx'
 import CampoSeleccion from '../componentes/CampoSeleccion.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
+import EstadoVacio from '../componentes/EstadoVacio.jsx'
 import Icono from '../componentes/Icono.jsx'
+import { IlustracionCarpeta } from '../componentes/Ilustraciones.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { OPCIONES_ESTADO, OPCIONES_TIPO } from '../utilidades/casos.js'
@@ -26,6 +32,11 @@ import { textosDelRubro } from '../utilidades/lenguaje.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 
 const CAMPOS_FILTRO = ['busqueda', 'estado', 'tipo', 'espacio', 'desde', 'hasta']
+
+/** Milisegundos sin escribir antes de buscar. */
+const ESPERA_BUSQUEDA = 400
+
+const FILTROS_VACIOS = Object.fromEntries(CAMPOS_FILTRO.map((campo) => [campo, '']))
 
 function Transferencias({ transferencias, alResponder }) {
   const navegar = useNavigate()
@@ -84,24 +95,42 @@ function Transferencias({ transferencias, alResponder }) {
   )
 }
 
-function Filtros({ filtros, espacios, alAplicar, etiquetaReferencia }) {
+function Filtros({ filtros, clave, espacios, alAplicar, etiquetaReferencia }) {
   const [valores, setValores] = useState(filtros)
+  const [clavePrevia, setClavePrevia] = useState(clave)
+  const temporizador = useRef(null)
   const hayFiltros = CAMPOS_FILTRO.some((campo) => filtros[campo])
+
+  // Si la dirección cambia desde afuera (menú, paginación), se toman sus filtros.
+  if (clave !== clavePrevia) {
+    setClavePrevia(clave)
+    setValores(filtros)
+  }
+
+  useEffect(() => () => clearTimeout(temporizador.current), [])
 
   function cambiar(evento) {
     const { name, value } = evento.target
-    setValores((anteriores) => ({ ...anteriores, [name]: value }))
+    const nuevos = { ...valores, [name]: value }
+    setValores(nuevos)
+    clearTimeout(temporizador.current)
+    if (name === 'busqueda') {
+      temporizador.current = setTimeout(() => alAplicar(nuevos), ESPERA_BUSQUEDA)
+    } else {
+      alAplicar(nuevos)
+    }
   }
 
   function aplicar(evento) {
     evento.preventDefault()
+    clearTimeout(temporizador.current)
     alAplicar(valores)
   }
 
   function limpiar() {
-    const vacios = Object.fromEntries(CAMPOS_FILTRO.map((campo) => [campo, '']))
-    setValores(vacios)
-    alAplicar(vacios)
+    clearTimeout(temporizador.current)
+    setValores(FILTROS_VACIOS)
+    alAplicar(FILTROS_VACIOS)
   }
 
   const avanzados = Boolean(filtros.desde || filtros.hasta)
@@ -138,10 +167,6 @@ function Filtros({ filtros, espacios, alAplicar, etiquetaReferencia }) {
           onChange={cambiar}
           opciones={[{ valor: '', texto: 'Todos' }, ...espacios]}
         />
-        <button type="submit" className="boton filtros__buscar">
-          <Icono nombre="buscar" tamanio={18} />
-          Buscar
-        </button>
       </div>
       <details className="filtros__mas" open={avanzados}>
         <summary>Más filtros</summary>
@@ -156,6 +181,31 @@ function Filtros({ filtros, espacios, alAplicar, etiquetaReferencia }) {
         </button>
       )}
     </form>
+  )
+}
+
+/** Lista sin resultados: dice por qué y ofrece cómo seguir. */
+function ListaVacia({ filtros, conFiltros, alQuitar }) {
+  let titulo = 'Todavía no tenés casos.'
+  if (conFiltros) {
+    titulo = filtros.busqueda ? `Ningún caso coincide con «${filtros.busqueda}».` : 'No hay casos con esos filtros.'
+  }
+  return (
+    <EstadoVacio
+      Ilustracion={IlustracionCarpeta}
+      titulo={titulo}
+      texto={conFiltros ? 'Probá con el número del caso o quitá los filtros.' : 'Creá el primero y cargá sus fotos.'}
+    >
+      {conFiltros && (
+        <button type="button" className="boton boton--secundario" onClick={alQuitar}>
+          Quitar los filtros
+        </button>
+      )}
+      <Link to="/casos/nuevo" className="boton">
+        <Icono nombre="mas" tamanio={18} />
+        Nuevo caso
+      </Link>
+    </EstadoVacio>
   )
 }
 
@@ -210,8 +260,8 @@ export default function PaginaCasos() {
       <section className="seccion seccion--filtros" aria-labelledby="titulo-buscar">
         <h2 id="titulo-buscar" className="solo-lectores">Buscar</h2>
         <Filtros
-          key={clave}
           filtros={filtros}
+          clave={clave}
           espacios={espacios}
           alAplicar={aplicarFiltros}
           etiquetaReferencia={textosDelRubro(usuario.perfil).etiquetaReferencia}
@@ -225,18 +275,7 @@ export default function PaginaCasos() {
         {cargando && <Cargando texto="Buscando casos…" />}
         {error && <Aviso tipo="error">{error.message}</Aviso>}
         {datos && datos.casos.length === 0 && (
-          <div className="estado-vacio">
-            <div className="visor estado-vacio__visor">
-              <Icono nombre={clave ? 'buscar' : 'casos'} tamanio={28} />
-            </div>
-            <p>{clave ? 'No hay casos con esos filtros.' : 'Todavía no tenés casos. Creá el primero.'}</p>
-            {!clave && (
-              <Link to="/casos/nuevo" className="boton">
-                <Icono nombre="mas" tamanio={18} />
-                Nuevo caso
-              </Link>
-            )}
-          </div>
+          <ListaVacia filtros={filtros} conFiltros={Boolean(clave)} alQuitar={() => aplicarFiltros(FILTROS_VACIOS)} />
         )}
         {datos && datos.casos.length > 0 && (
           <ul className="lista-casos">

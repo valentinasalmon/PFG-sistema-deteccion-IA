@@ -21,6 +21,8 @@ import { Link, useParams } from 'react-router'
 import { cargarConEnlace, consultarEnlaceCarga } from '../api/cargaCelular.js'
 import Aviso from '../componentes/Aviso.jsx'
 import Cargando from '../componentes/Cargando.jsx'
+import EstadoVacio from '../componentes/EstadoVacio.jsx'
+import { IlustracionRoto } from '../componentes/Ilustraciones.jsx'
 import Icono from '../componentes/Icono.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { formatearTamanio } from '../utilidades/archivos.js'
@@ -137,15 +139,21 @@ function ResultadosDeSubida({ subiendo, resultados, titulo }) {
 
 function CargaDesdeMiCelular({ token, datos, recargar }) {
   const { subiendo, resultados, subir } = useSubida(token, datos, recargar)
-  const deshabilitado = Boolean(subiendo) || datos.restantes <= 0
+  const sinLugar = datos.restantes <= 0
+  const deshabilitado = Boolean(subiendo) || sinLugar
   return (
     <div className="carga-movil">
       <h1>Subir fotos al caso {datos.numero}</h1>
       <p className="nota">
         Las fotos se suben tal cual, sin modificarlas, y aparecen en la computadora donde está abierto el
-        caso. Este enlace vence a las {horaLocal(datos.vence_en)} y permite {datos.restantes} foto
-        {datos.restantes === 1 ? '' : 's'} más.
+        caso. Podés elegir varias a la vez. Este enlace vence a las {horaLocal(datos.vence_en)}.
       </p>
+      {sinLugar && (
+        <Aviso tipo="info">
+          El caso llegó al límite de imágenes de su plan. Para subir más, hay que liberar lugar o cambiar de
+          plan desde la computadora.
+        </Aviso>
+      )}
       <BotonesDeFoto deshabilitado={deshabilitado} alElegir={subir} />
       <p className="nota">
         Sacar la foto en el momento conserva más datos, como la ubicación. Al elegirla de la galería, algunos
@@ -237,8 +245,11 @@ export default function PaginaCargaCelular() {
   if (error) {
     return (
       <>
-        <h1>Subir fotos</h1>
-        <Aviso tipo="error">{error.message}</Aviso>
+        <EstadoVacio Ilustracion={IlustracionRoto} titulo="No se puede usar este enlace" texto={error.message} encabezado>
+          <Link to="/" className="boton boton--secundario">
+            Ir a evidentIA
+          </Link>
+        </EstadoVacio>
       </>
     )
   }

@@ -14,6 +14,9 @@ GET    /api/organizaciones/<id>/invitaciones                    Pendientes (Refe
 POST   /api/organizaciones/<id>/invitaciones                    Invitar (RF12, Referente)
 POST   /api/organizaciones/<id>/invitaciones/<id_inv>/reenvio   Reenviar (RF12 CA4)
 DELETE /api/organizaciones/<id>/invitaciones/<id_inv>           Cancelar (RF12 CA4)
+GET    /api/organizaciones/<id>/plan                            Plan y consumo (RF20)
+POST   /api/organizaciones/<id>/plan                            Pedir otro plan, con pago (032)
+POST   /api/organizaciones/<id>/cobro                           Retomar el pago pendiente (032)
 """
 from flask import Blueprint, current_app, jsonify, request
 from flask_login import login_required
@@ -65,13 +68,16 @@ def listar():
 @organizaciones_bp.post("")
 @login_required
 def crear():
-    """Crea una organización con el usuario como Referente (RF10)."""
+    """Crea un estudio con el usuario como Referente y su cobro (RF10, 032)."""
     solicitud = validar(SolicitudOrganizacion, _cuerpo())
     servicio = _servicio()
     usuario = usuario_actual()
-    organizacion = servicio.crear(usuario, solicitud.model_dump())
+    organizacion, token = servicio.crear(usuario, solicitud.model_dump())
     _, membresia = servicio.obtener(organizacion.id, usuario)
-    return jsonify({"organizacion": organizacion_a_dict(organizacion, membresia, servicio)}), 201
+    return jsonify({
+        "organizacion": organizacion_a_dict(organizacion, membresia, servicio),
+        "pago": {"token": token},
+    }), 201
 
 
 @organizaciones_bp.get("/<int:id_organizacion>")
@@ -226,11 +232,18 @@ def plan(id_organizacion):
 @organizaciones_bp.post("/<int:id_organizacion>/plan")
 @login_required
 def cambiar_plan(id_organizacion):
-    """Cambia el plan después del pago simulado (RF20 CA2). Solo el Referente."""
+    """Pide otro plan: devuelve el enlace de pago; rige al acreditarse (RF20 CA2, 032)."""
     solicitud = validar(SolicitudCambioPlan, request.get_json(silent=True))
-    servicio = _planes()
-    organizacion = servicio.cambiar_plan(id_organizacion, usuario_actual(), solicitud.plan)
+    token = _planes().cambiar_plan(id_organizacion, usuario_actual(), solicitud.plan)
     return jsonify({
-        "plan": servicio.plan_de_organizacion(organizacion.id, usuario_actual()),
-        "mensaje": "Listo: el plan nuevo ya está activo. El pago fue simulado; no se cobró nada.",
-    })
+        "pago": {"token": token},
+        "mensaje": "Pagá el plan nuevo: rige en cuanto se acredite la transferencia.",
+    }), 201
+
+
+@organizaciones_bp.post("/<int:id_organizacion>/cobro")
+@login_required
+def retomar_pago(id_organizacion):
+    """Enlace de pago nuevo para una organización con el pago pendiente (032). Referente."""
+    _, token = _servicio().retomar_pago(id_organizacion, usuario_actual())
+    return jsonify({"pago": {"token": token}}), 201

@@ -14,13 +14,18 @@ el catálogo de la SSN, quedan pendientes hasta que el Administrador las
 aprueba, y las cuentas con perfil Aseguradora que se quedan sin aseguradora
 se desactivan.
 
+Desde la funcionalidad 032, toda organización nueva elige su plan y espera el
+pago (estado «pago pendiente»): el estudio queda activo al acreditarse y la
+aseguradora pasa a esperar la aprobación. Mientras no esté activa no se puede
+invitar ni crear casos en ella.
+
 Realiza: RF10 a RF18 (sin las reglas de casos, que agrega la 005); RN06,
 RN07, RN08, RN10, RN11, RN15, RN36 a RN40; RNF06.
 """
 from app.modelos.organizacion import (
     INVITACION_ACEPTADA,
     ORGANIZACION_ACTIVA,
-    ORGANIZACION_PENDIENTE,
+    ORGANIZACION_PAGO_PENDIENTE,
     TIPO_ASEGURADORA,
     TIPO_ESTUDIO_JURIDICO,
     INVITACION_CANCELADA,
@@ -58,7 +63,7 @@ class ServicioOrganizaciones:
 
     def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self, repositorio, usuarios, correos, tokens, configuracion, registro, casos=None,
-        archivos=None,
+        archivos=None, pagos=None,
     ):
         """
         Args:
@@ -69,7 +74,9 @@ class ServicioOrganizaciones:
                 organización las reglas de salida y eliminación (funcionalidad 005).
             archivos: ``ArchivosDeCasos``, que borra las imágenes de los casos
                 que se eliminan con la organización (RN21, funcionalidad 006).
+            pagos: ``ServicioPagos``, que cobra el plan (funcionalidad 032).
         """
+        self.pagos = pagos
         self.casos = casos
         self.archivos = archivos
         self.repositorio = repositorio
@@ -138,12 +145,20 @@ class ServicioOrganizaciones:
         """Membresías del usuario, con su organización (RN06)."""
         return self.repositorio.membresias_de_usuario(usuario.id)
 
-    def crear(self, usuario, datos):
-        """Crea la organización con el plan inicial y el creador como Referente (RF10).
+    def crear(self, usuario, datos, confirmar=True):
+        """Crea un estudio jurídico con el creador como Referente y su cobro (RF10, 032).
+
+        El estudio queda con «pago pendiente» hasta que se acredita el pago del
+        plan elegido.
 
         Args:
-            datos: diccionario con ``nombre``, ``tipo`` y, opcionales,
-                ``correo_contacto`` y ``telefono``.
+            datos: diccionario con ``nombre``, ``tipo``, ``plan`` (Básico si
+                falta) y, opcionales, ``correo_contacto`` y ``telefono``.
+            confirmar: False cuando se crea dentro del registro de la cuenta,
+                que confirma todo junto.
+
+        Returns:
+            ``(organizacion, token)``: el token del enlace de pago solo existe acá.
         """
         if usuario.perfil != PERFIL_ABOGADO:
             raise AccesoDenegado(
@@ -153,20 +168,47 @@ class ServicioOrganizaciones:
         if datos["tipo"] != TIPO_ESTUDIO_JURIDICO:
             mensaje = "Solo podés crear organizaciones del tipo Estudio Jurídico."
             raise ErrorValidacion(mensaje, {"tipo": mensaje})
+        plan = datos.get("plan") or self.configuracion["PLAN_INICIAL_ORGANIZACION"]
+        self.pagos.exigir_plan(plan)
         organizacion = Organizacion(
             nombre=datos["nombre"], tipo=datos["tipo"],
             correo_contacto=datos.get("correo_contacto") or None,
             telefono=datos.get("telefono") or None,
-            plan=self.configuracion["PLAN_INICIAL_ORGANIZACION"],
+            plan=plan, estado=ORGANIZACION_PAGO_PENDIENTE,
         )
         organizacion.membresias.append(Membresia(id_usuario=usuario.id, rol=ROL_REFERENTE))
         self.repositorio.preparar(organizacion)
         self._auditar(
             auditoria.ORGANIZACION_CREACION, auditoria.EXITOSO, usuario, organizacion,
-            {"nombre": organizacion.nombre, "tipo": organizacion.tipo, "plan": organizacion.plan},
+            {"nombre": organizacion.nombre, "tipo": organizacion.tipo, "plan": organizacion.plan,
+             "estado": organizacion.estado},
+        )
+        _, token = self.pagos.crear_cobro(plan, organizacion=organizacion, usuario=usuario)
+        if confirmar:
+            self.repositorio.confirmar()
+        return organizacion, token
+
+    def retomar_pago(self, id_organizacion, usuario):
+        """Genera un enlace de pago nuevo para una organización con el pago pendiente.
+
+        Solo el Referente. Sirve si se cerró la pantalla de pago (CA7 de la 032).
+
+        Returns:
+            ``(organizacion, token)``.
+
+        Raises:
+            ConflictoDatos: si la organización no tiene el pago pendiente.
+        """
+        organizacion = self._como_referente(
+            id_organizacion, usuario, auditoria.ORGANIZACION_COBRO
+        )
+        if not organizacion.pago_pendiente:
+            raise ConflictoDatos("La organización no tiene pagos pendientes.", codigo="sin_pago")
+        _, token = self.pagos.crear_cobro(
+            organizacion.plan, organizacion=organizacion, usuario=usuario
         )
         self.repositorio.confirmar()
-        return organizacion
+        return organizacion, token
 
     def obtener(self, id_organizacion, usuario):
         """Devuelve ``(organizacion, membresia)`` si el usuario es miembro."""
@@ -488,6 +530,15 @@ class ServicioOrganizaciones:
         correo = correo.strip().lower()
         ahora = ahora_utc()
         detalle = {"correo": correo}
+        if organizacion.pago_pendiente:
+            self._rechazar(
+                ConflictoDatos(
+                    "Falta acreditar el pago del plan. Vas a poder invitar a tu equipo "
+                    "cuando se acredite.",
+                    codigo="pago_pendiente",
+                ),
+                accion, usuario, organizacion, "pago_pendiente", detalle,
+            )
         if organizacion.pendiente:
             self._rechazar(
                 ConflictoDatos(
@@ -728,19 +779,25 @@ class ServicioOrganizaciones:
                 mensaje, {"id_aseguradora": mensaje}, codigo="aseguradora_registrada"
             )
 
-    def crear_aseguradora(self, usuario, aseguradora):
+    def crear_aseguradora(self, usuario, aseguradora, plan=None):
         """Crea la organización de una aseguradora del catálogo con el usuario como Referente.
 
-        Queda pendiente de aprobación (RN38). No confirma: se guarda junto con
-        el registro de la cuenta.
+        Primero espera el pago del plan (032) y después la aprobación del
+        Administrador (RN38). No confirma: se guarda junto con el registro de
+        la cuenta.
+
+        Returns:
+            ``(organizacion, token)``: el token del enlace de pago.
 
         Raises:
             ConflictoDatos: si esa aseguradora ya está registrada (RN37).
         """
         self.exigir_aseguradora_libre(aseguradora)
+        plan = plan or self.configuracion["PLAN_INICIAL_ORGANIZACION"]
+        self.pagos.exigir_plan(plan)
         organizacion = Organizacion(
             nombre=aseguradora.denominacion, tipo=TIPO_ASEGURADORA, cuit=aseguradora.cuit,
-            plan=self.configuracion["PLAN_INICIAL_ORGANIZACION"], estado=ORGANIZACION_PENDIENTE,
+            plan=plan, estado=ORGANIZACION_PAGO_PENDIENTE,
         )
         organizacion.membresias.append(Membresia(id_usuario=usuario.id, rol=ROL_REFERENTE))
         self.repositorio.preparar(organizacion)
@@ -749,7 +806,8 @@ class ServicioOrganizaciones:
             {"nombre": organizacion.nombre, "tipo": organizacion.tipo, "cuit": organizacion.cuit,
              "plan": organizacion.plan, "estado": organizacion.estado, "origen": "registro"},
         )
-        return organizacion
+        _, token = self.pagos.crear_cobro(plan, organizacion=organizacion, usuario=usuario)
+        return organizacion, token
 
     def _exigir_administrador(self, usuario):
         if usuario.rol != ROL_ADMINISTRADOR:
@@ -798,5 +856,7 @@ class ServicioOrganizaciones:
             auditoria.ORGANIZACION_RECHAZO, auditoria.EXITOSO, usuario, organizacion,
             {"cuit": organizacion.cuit, "motivo": motivo},
         )
+        # Lo pagado se devuelve (simulado) antes de eliminarla (CA6 de la 032).
+        self.pagos.devolver_cobros(organizacion, usuario)
         self._eliminar(organizacion, usuario, avisar=False, motivo="rechazo")
         self.correos.enviar_aviso_aseguradora_rechazada(referente, nombre, motivo)

@@ -19,7 +19,12 @@ from PIL import Image
 from app.extensiones import db
 from app.modelos.imagen import Imagen
 from app.servicios import servicio_imagenes
-from pruebas.conftest import CONTRASENIA_VALIDA, crear_estudio, entradas_auditoria
+from pruebas.conftest import (
+    CONTRASENIA_VALIDA,
+    crear_estudio,
+    crear_estudio_pagado,
+    entradas_auditoria,
+)
 
 CASO = {
     "espacio": "personal", "tipo": "automovilistico", "fecha_hecho": "2026-09-01",
@@ -346,9 +351,7 @@ def test_eliminar_la_organizacion_borra_las_imagenes_de_sus_casos(aplicacion, an
 
 def test_eliminar_la_cuenta_borra_las_imagenes_de_sus_organizaciones(aplicacion, ana):
     """CA10: la baja elimina la organización de un solo miembro con sus archivos."""
-    id_org = ana.post(
-        "/api/organizaciones", json={"nombre": "Estudio Solo", "tipo": "estudio_juridico"}
-    ).get_json()["organizacion"]["id"]
+    id_org = crear_estudio_pagado(ana, "Estudio Solo")
     caso = _crear_caso(ana, espacio=str(id_org))
     _cargar(ana, caso["id"], imagen_de_prueba())
 

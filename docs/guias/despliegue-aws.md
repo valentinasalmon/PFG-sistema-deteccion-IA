@@ -235,6 +235,13 @@ El cliente se crea con tu cuenta de Google en https://console.cloud.google.com. 
    **Crear**. Google muestra el **ID de cliente** y el **secreto**: dejá la ventana abierta.
    Si Google rechaza la dirección `sslip.io`, probá solo en local hasta comprar el dominio (CP-30). Con el dominio, agregás `https://tu-dominio/api/google/retorno`.
 5. **En local**: en `backend/.env` agregá `GOOGLE_ID_CLIENTE=...` y `GOOGLE_SECRETO_CLIENTE=...` y reiniciá `flask run`. El archivo `.env` no se sube.
+   - Para comprobarlo: `curl -s http://localhost:5000/api/google/estado` tiene que responder `{"habilitado": true}`.
+   - Si responde `false`, revisá que las dos claves tengan valor sin mostrarlas:
+     ```bash
+     python -c "from dotenv import dotenv_values; v=dotenv_values('.env'); print({k: len(v.get(k) or '') for k in ('GOOGLE_ID_CLIENTE','GOOGLE_SECRETO_CLIENTE')})"
+     ```
+     El ID tiene unos 72 caracteres y el secreto, unos 35.
+   - Si las dos tienen valor y sigue en `false`, quedó abierto un backend viejo que arrancó antes de cargar las claves: el modo de depuración se reinicia cuando cambia el código, no cuando cambia el `.env`. Cerralo con `pkill -f "flask --app wsgi run"`, comprobá que `ss -ltnp | grep 5000` no muestre nada y volvé a arrancarlo.
 6. **En producción**:
    - Guardá el secreto cifrado en SSM (pegalo y apretá Enter; no se ve nada):
      ```bash
@@ -249,6 +256,16 @@ El cliente se crea con tu cuenta de Google en https://console.cloud.google.com. 
    - Con un correo sin cuenta, pide completar el rubro y entra.
    - La segunda vez entra directo.
    - Con tu correo de administradora, se vincula a tu cuenta existente.
+
+## Microsoft Clarity (funcionalidades 031 y 034)
+
+Clarity graba cómo se usa la plataforma (mapas de calor y recorridos) para que la autora detecte fricciones antes del lanzamiento. Es una herramienta de la autora: los usuarios no ven nada.
+
+- **Está instalado** con el proyecto `z5vsmarsef` (constante `ID_PROYECTO` de `frontend/src/utilidades/clarity.js`). Se carga solo en la compilación de producción, la que se despliega en AWS; en desarrollo y en las pruebas, no.
+- **Todo el contenido queda enmascarado:** la plataforma marca la página entera con `data-clarity-mask`. Clarity ve los clics y el recorrido, pero no textos, datos de casos ni fotos. Además, en el panel de Clarity conviene elegir **Settings → Masking → Strict**.
+- **La cabecera de seguridad (CSP)** de Nginx permite solo los dominios de Clarity. Se instala sola en cada despliegue.
+- **Ver los datos:** en [clarity.microsoft.com](https://clarity.microsoft.com), proyecto evidentIA. Las primeras sesiones aparecen a las pocas horas del despliegue.
+- **Apagarlo:** cambiar `ID_PROYECTO` por `''` y desplegar.
 
 ## Cuando compres el dominio
 

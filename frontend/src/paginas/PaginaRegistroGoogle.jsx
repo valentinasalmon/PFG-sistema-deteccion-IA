@@ -10,51 +10,67 @@
  * Si llegó desde la invitación de una aseguradora, el perfil ya está
  * fijado y solo quedan sus datos y los Términos.
  *
+ * Desde la funcionalidad 032 ofrece los mismos tres caminos que el registro
+ * común: el estudio jurídico y la aseguradora eligen el plan y, al crear la
+ * cuenta, pasan a la página de pago.
+ *
  * Realiza: RF52 (CA1); RN01, RN02, RN36.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { completarRegistroGoogle, obtenerRegistroGoogle } from '../api/google.js'
 import { consultarInvitacion } from '../api/organizaciones.js'
+import { listarPlanes } from '../api/pagos.js'
 import AceptacionTerminos from '../componentes/AceptacionTerminos.jsx'
 import Aviso from '../componentes/Aviso.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import IndicadorPasos from '../componentes/IndicadorPasos.jsx'
 import PasoInstitucion from '../componentes/PasoInstitucion.jsx'
-import SelectorPerfil from '../componentes/SelectorPerfil.jsx'
+import SelectorCamino from '../componentes/SelectorCamino.jsx'
+import SelectorPlan from '../componentes/SelectorPlan.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useFormulario } from '../hooks/useFormulario.js'
 import { useSesion } from '../hooks/useSesion.js'
+import { caminoConPago, perfilDelCamino } from '../utilidades/registro.js'
 
-const PASOS_COMUNES = ['perfil', 'datos', 'institucion', 'terminos']
+// Desde la tercera tanda de la 034, los datos, la institución y el estudio van en un solo paso.
+const PASOS_INDEPENDIENTE = ['perfil', 'datos', 'terminos']
+const PASOS_CON_PAGO = ['perfil', 'datos', 'plan', 'terminos']
 const PASOS_EMPLEADO = ['datos', 'terminos']
 
 const PASO_DE_CADA_CAMPO = {
   perfil: 'perfil',
+  camino: 'perfil',
+  nombre_estudio: 'datos',
+  plan: 'plan',
   nombre: 'datos',
   apellido: 'datos',
-  colegio: 'institucion',
-  empresa: 'institucion',
-  id_aseguradora: 'institucion',
+  colegio: 'datos',
+  empresa: 'datos',
+  id_aseguradora: 'datos',
   acepta_terminos: 'terminos',
 }
 
 const TITULOS = {
   perfil: '¿Cómo vas a usar la plataforma?',
   datos: 'Tus datos',
+  plan: 'Elegí el plan',
   terminos: 'Últimos detalles',
 }
 
-function validarPaso(paso, valores) {
+function validarPaso(paso, valores, esEmpleado) {
   const errores = {}
-  if (paso === 'perfil' && !valores.perfil) errores.perfil = 'Elegí cómo vas a usar la plataforma.'
+  if (paso === 'perfil' && !valores.camino) errores.camino = 'Elegí cómo vas a usar la plataforma.'
   if (paso === 'datos') {
+    if (valores.camino === 'estudio' && !valores.nombre_estudio.trim()) {
+      errores.nombre_estudio = 'Escribí el nombre de tu estudio jurídico.'
+    }
     if (!valores.nombre.trim()) errores.nombre = 'Ingresá tu nombre.'
     if (!valores.apellido.trim()) errores.apellido = 'Ingresá tu apellido.'
-  }
-  if (paso === 'institucion' && valores.perfil === 'aseguradora' && !valores.id_aseguradora) {
-    errores.id_aseguradora = 'Elegí tu aseguradora del listado.'
+    if (valores.camino === 'aseguradora' && !valores.id_aseguradora && !esEmpleado) {
+      errores.id_aseguradora = 'Elegí tu aseguradora del listado.'
+    }
   }
   if (paso === 'terminos' && !valores.acepta_terminos) {
     errores.acepta_terminos = 'Tenés que aceptar los Términos de Uso y la Política de Privacidad.'
@@ -63,27 +79,46 @@ function validarPaso(paso, valores) {
 }
 
 /** Cuerpo de la solicitud, con solo los datos que corresponden al perfil. */
-function armarSolicitud({ colegio, id_aseguradora: idAseguradora, ...datos }, invitacion) {
-  const solicitud = { ...datos }
+function armarSolicitud(
+  { camino, colegio, id_aseguradora: idAseguradora, nombre_estudio: nombreEstudio, plan, ...datos },
+  invitacion,
+) {
+  const solicitud = { ...datos, perfil: perfilDelCamino(camino) }
   if (invitacion) solicitud.token_invitacion = invitacion
-  if (datos.perfil === 'abogado' && colegio.trim()) solicitud.colegio = colegio
-  if (datos.perfil === 'aseguradora' && !invitacion) solicitud.id_aseguradora = idAseguradora
+  if (solicitud.perfil === 'abogado' && colegio.trim()) solicitud.colegio = colegio
+  if (solicitud.perfil === 'aseguradora' && !invitacion) solicitud.id_aseguradora = idAseguradora
+  if (camino === 'estudio' && !invitacion) solicitud.nombre_estudio = nombreEstudio.trim()
+  if (caminoConPago(camino) && !invitacion) solicitud.plan = plan
   return solicitud
+}
+
+function PasoPlan({ valor, cambiar, error }) {
+  const { datos, error: errorPlanes, cargando } = useDatos(listarPlanes)
+  if (cargando) return <Cargando texto="Cargando los planes…" />
+  if (errorPlanes) return <Aviso tipo="error">{errorPlanes.message}</Aviso>
+  return <SelectorPlan planes={datos.planes} valor={valor} onChange={cambiar} error={error} />
 }
 
 function FormularioGoogle({ pendiente, invitacion }) {
   const { recargarUsuario } = useSesion()
+  const navegar = useNavigate()
   const esEmpleado = invitacion?.organizacion.tipo === 'aseguradora'
-  const pasos = esEmpleado ? PASOS_EMPLEADO : PASOS_COMUNES
   const { valores, setValores, errores, error, enviando, cambiar, enviar, marcarErrores } =
     useFormulario({
       nombre: pendiente.nombre ?? '',
       apellido: pendiente.apellido ?? '',
-      perfil: esEmpleado ? 'aseguradora' : '',
+      camino: esEmpleado ? 'aseguradora' : '',
+      nombre_estudio: '',
+      plan: 'basico',
       colegio: '',
       id_aseguradora: null,
       acepta_terminos: false,
     })
+  const pasos = esEmpleado
+    ? PASOS_EMPLEADO
+    : caminoConPago(valores.camino)
+      ? PASOS_CON_PAGO
+      : PASOS_INDEPENDIENTE
   const [indice, setIndice] = useState(0)
   const refTitulo = useRef(null)
   const primeraVez = useRef(true)
@@ -100,7 +135,7 @@ function FormularioGoogle({ pendiente, invitacion }) {
 
   async function manejarEnvio(evento) {
     evento.preventDefault()
-    const erroresDelPaso = validarPaso(paso, valores)
+    const erroresDelPaso = validarPaso(paso, valores, esEmpleado)
     marcarErrores(erroresDelPaso)
     if (Object.keys(erroresDelPaso).length > 0) return
     if (!esUltimoPaso) {
@@ -111,6 +146,8 @@ function FormularioGoogle({ pendiente, invitacion }) {
       completarRegistroGoogle(armarSolicitud(datos, pendiente.invitacion)),
     )
     if (resultado.ok) {
+      // El estudio o la aseguradora pagan su plan antes de seguir (032).
+      if (resultado.datos.pago) navegar(`/pago/${resultado.datos.pago.token}`)
       // Con la sesión iniciada, la guarda de las pantallas de acceso lleva al inicio.
       await recargarUsuario()
       return
@@ -122,11 +159,11 @@ function FormularioGoogle({ pendiente, invitacion }) {
   }
 
   const titulo =
-    paso === 'institucion'
-      ? valores.perfil === 'abogado'
-        ? 'Tu colegio de abogados'
-        : 'Tu aseguradora'
-      : TITULOS[paso]
+    paso === 'datos' && !esEmpleado && valores.camino === 'estudio'
+      ? 'Vos y tu estudio'
+      : paso === 'datos' && !esEmpleado && valores.camino === 'aseguradora'
+        ? 'Vos y tu aseguradora'
+        : TITULOS[paso]
 
   return (
     <>
@@ -150,11 +187,31 @@ function FormularioGoogle({ pendiente, invitacion }) {
 
       <form onSubmit={manejarEnvio} className="formulario" noValidate>
         {paso === 'perfil' && (
-          <SelectorPerfil valor={valores.perfil} onChange={cambiar} error={errores.perfil} />
+          <SelectorCamino
+            valores={valores}
+            errores={errores}
+            cambiar={cambiar}
+            sinEstudio={Boolean(pendiente.invitacion)}
+          />
         )}
+        {paso === 'plan' && <PasoPlan valor={valores.plan} cambiar={cambiar} error={errores.plan} />}
         {paso === 'datos' && (
           <>
-            <CampoTexto
+            {valores.camino === 'estudio' && (
+              <CampoTexto
+                etiqueta="Nombre del estudio jurídico"
+                nombre="nombre_estudio"
+                autoComplete="organization"
+                maxLength={150}
+                value={valores.nombre_estudio}
+                onChange={cambiar}
+                error={errores.nombre_estudio}
+                ayuda="Vas a ser su Referente. Después invitás a tu equipo."
+                required
+              />
+            )}
+            <div className="campos-en-fila">
+              <CampoTexto
               etiqueta="Nombre"
               nombre="nombre"
               autoComplete="given-name"
@@ -172,15 +229,16 @@ function FormularioGoogle({ pendiente, invitacion }) {
               error={errores.apellido}
               required
             />
+            </div>
+            {!esEmpleado && (
+              <PasoInstitucion
+                valores={{ ...valores, perfil: perfilDelCamino(valores.camino) }}
+                errores={errores}
+                cambiar={cambiar}
+                setValores={setValores}
+              />
+            )}
           </>
-        )}
-        {paso === 'institucion' && (
-          <PasoInstitucion
-            valores={valores}
-            errores={errores}
-            cambiar={cambiar}
-            setValores={setValores}
-          />
         )}
         {paso === 'terminos' && (
           <AceptacionTerminos

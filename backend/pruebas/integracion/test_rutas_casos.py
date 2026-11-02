@@ -12,7 +12,13 @@ import pytest
 
 from app.extensiones import db
 from app.modelos.caso import Caso
-from pruebas.conftest import CONTRASENIA_VALIDA, datos_registro, entradas_auditoria, extraer_token
+from pruebas.conftest import (
+    CONTRASENIA_VALIDA,
+    crear_estudio_pagado,
+    datos_registro,
+    entradas_auditoria,
+    extraer_token,
+)
 
 CASO = {
     "espacio": "personal", "tipo": "automovilistico", "fecha_hecho": "2026-09-01",
@@ -49,9 +55,7 @@ def _sumar(referente, miembro, id_org, correo):
 @pytest.fixture
 def estudio(ana, beto, carla):
     """Estudio de Ana con Beto y Carla como miembros; devuelve su id."""
-    id_org = ana.post(
-        "/api/organizaciones", json={"nombre": "Estudio Pérez", "tipo": "estudio_juridico"}
-    ).get_json()["organizacion"]["id"]
+    id_org = crear_estudio_pagado(ana)
     _sumar(ana, beto, id_org, "beto@ejemplo.com")
     _sumar(ana, carla, id_org, "carla@ejemplo.com")
     return id_org

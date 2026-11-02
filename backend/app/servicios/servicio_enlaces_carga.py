@@ -7,8 +7,12 @@ galería o de la cámara, sin iniciar sesión. El enlace:
 - vence a los ``VIGENCIA`` minutos y se puede cancelar;
 - solo permite cargar imágenes en ese caso, nunca verlas, bajarlas ni borrarlas;
 - carga a nombre de quien lo generó, con sus permisos vigentes y con las
-  mismas validaciones, huella y sello de tiempo que la carga normal;
-- admite como máximo ``MAXIMO_CARGAS`` fotos.
+  mismas validaciones, huella y sello de tiempo que la carga normal.
+
+El enlace por QR (celular) no limita la cantidad de fotos: el único límite es
+el de imágenes por caso del plan (RN15), igual que en la carga desde la
+computadora. El enlace para la persona afectada, que es público y dura días,
+admite además como máximo ``MAXIMO_CARGAS`` fotos, como resguardo.
 
 El token es aleatorio (192 bits) y en la base solo se guarda su huella SHA-256.
 
@@ -203,7 +207,7 @@ class ServicioEnlacesCarga:
         datos = {
             "tipo": enlace.tipo,
             "vence_en": enlace.vence_en.isoformat(timespec="seconds"),
-            "restantes": MAXIMO_CARGAS - enlace.cargas,
+            "restantes": self._restantes(enlace),
         }
         if enlace.tipo == TIPO_CELULAR:
             return {**datos, "numero": enlace.caso.numero}
@@ -215,6 +219,16 @@ class ServicioEnlacesCarga:
             "declaracion": DECLARACION,
             "declaracion_aceptada": enlace.declaracion_aceptada_en is not None,
         }
+
+    def _restantes(self, enlace):
+        """Fotos que todavía admite el enlace.
+
+        Es el lugar libre del plan; para la persona afectada, además, el tope del enlace.
+        """
+        lugar = self.imagenes.lugar_disponible(enlace.caso)
+        if enlace.tipo == TIPO_PERSONA_AFECTADA:
+            return min(lugar, max(0, MAXIMO_CARGAS - enlace.cargas))
+        return lugar
 
     def _registrar_declaracion(self, enlace):
         """La primera vez que la persona afectada acepta la declaración, queda registrada."""
@@ -236,7 +250,8 @@ class ServicioEnlacesCarga:
         Raises:
             NoEncontrado: si el enlace no existe, venció o se canceló.
             ErrorValidacion: si falta aceptar la declaración.
-            ConflictoDatos: si ya se cargó el máximo de fotos con este enlace.
+            ConflictoDatos: si la persona afectada ya cargó el máximo de fotos con
+                este enlace, o si el caso llegó al límite de imágenes del plan (RN15).
         """
         enlace = self._vigente(token)
         es_persona_afectada = enlace.tipo == TIPO_PERSONA_AFECTADA
@@ -246,11 +261,10 @@ class ServicioEnlacesCarga:
                 {"declaracion": "Aceptá la declaración para continuar."},
                 codigo="declaracion_requerida",
             )
-        if enlace.cargas >= MAXIMO_CARGAS:
+        if es_persona_afectada and enlace.cargas >= MAXIMO_CARGAS:
             raise ConflictoDatos(
                 f"Ya se cargaron {MAXIMO_CARGAS} fotos con este enlace. "
-                + ("Pedile uno nuevo a quien te lo mandó." if es_persona_afectada
-                   else "Generá uno nuevo desde la computadora."),
+                "Pedile uno nuevo a quien te lo mandó.",
                 codigo="enlace_agotado",
             )
         if es_persona_afectada:

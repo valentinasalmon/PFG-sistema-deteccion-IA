@@ -43,3 +43,11 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-28 | [Revisión y refuerzo de la seguridad (030)](2026-10-28-funcionalidad-030-seguridad.md) |
 | 2026-10-28 | [Mejoras de interfaz (028): auditoría, frames y primera tanda](2026-10-28-funcionalidad-028-interfaz.md) |
 | 2026-10-28 | [Funcionalidad 010: la red neuronal pasa a Google Colab](2026-10-28-red-neuronal-en-colab.md) |
+| 2026-10-29 | [Interfaz (028), tercera tanda, y propuesta del pago en el registro (032)](2026-10-29-funcionalidad-028-tercera-tanda.md) |
+| 2026-10-29 | [Funcionalidad 032: pago del plan en el registro](2026-10-29-funcionalidad-032-pago-en-el-registro.md) |
+| 2026-10-29 | [Funcionalidad 033: portada pública con los planes](2026-10-29-funcionalidad-033-portada.md) |
+| 2026-10-29 | [Funcionalidad 034: pulido de UX/UI, primera tanda](2026-10-29-funcionalidad-034-pulido-ux.md) |
+| 2026-10-30 | [Funcionalidad 010: primera corrida en Colab](2026-10-30-red-neuronal-primera-corrida-en-colab.md) |
+| 2026-10-30 | [Funcionalidad 010: prueba de concepto de la red neuronal](2026-10-30-prueba-de-concepto-red-neuronal.md) |
+| 2026-10-30 | [Funcionalidad 010: documentación, plan de entrenamientos y búsqueda de datos](2026-10-30-datos-y-plan-de-entrenamientos.md) |
+| 2026-10-30 | [Funcionalidad 010: exploración de datos, receta v1 y cuaderno de entrenamiento completo](2026-10-30-red-neuronal-exploracion-y-receta-v1.md) |

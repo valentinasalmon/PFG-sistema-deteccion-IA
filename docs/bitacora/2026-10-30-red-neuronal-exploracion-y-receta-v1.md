@@ -33,7 +33,7 @@
 
 ## Segunda parte: decisiones de la autora sobre el alcance
 
-- **Viviendas fuera** (CP-33 resuelta): se quitaron de CA12 de la especificación.
+- **Viviendas fuera** (CP-38 resuelta; se había numerado CP-33, que ya era la de Clarity): se quitaron de CA12 de la especificación.
 - **Sin versión de WhatsApp**: la persona afectada sube sus fotos desde el enlace de carga, así que llegan como original, captura o generadas con IA. El conjunto propio queda con dos versiones (original y captura). Se actualizaron la especificación (CA12), los capítulos 1, 2, 4, 5, 6, 11 y 12 de `docs/red-neuronal/`, el glosario, el protocolo, la guía y la tarea T32. El código sigue admitiendo la variante `whatsapp` (no estorba y permite volver a medirla).
 - **Guía:** sección nueva para aceptar las condiciones de cada conjunto en Hugging Face (con el permiso que necesita un token de grano fino) y abrir y correr el cuaderno 02 en Colab.
 - **Insumos del informe:** relevamiento completo de fuentes con la decisión y el motivo de cada una.

@@ -249,15 +249,23 @@ function TarjetaImagen({
           </label>
         )}
         <span className="tarjeta-item__detalle">
-          {imagen.formato} · {imagen.ancho} × {imagen.alto} px · {formatearTamanio(imagen.tamanio)}
+          {imagen.formato} · {formatearTamanio(imagen.tamanio)}
         </span>
-        <span className="tarjeta-item__detalle">
-          Cargada el {formatearFecha(imagen.cargada_en)} por {imagen.cargada_por}
-        </span>
-        <span className="huella" title="Huella SHA-256">
-          SHA-256: {imagen.huella}
-        </span>
-        <SelloDeTiempo sello={imagen.sello} />
+        {/* Los datos técnicos, la huella y el sello quedan plegados: la tarjeta
+            entra de a dos en el celular sin perder información (028). */}
+        <details className="tarjeta-imagen__mas">
+          <summary>Huella, sello y datos</summary>
+          <span className="tarjeta-item__detalle">
+            {imagen.ancho} × {imagen.alto} px
+          </span>
+          <span className="tarjeta-item__detalle">
+            Cargada el {formatearFecha(imagen.cargada_en)} por {imagen.cargada_por}
+          </span>
+          <span className="huella" title="Huella SHA-256">
+            SHA-256: {imagen.huella}
+          </span>
+          <SelloDeTiempo sello={imagen.sello} />
+        </details>
         <div className="acciones-en-linea">
           <button
             type="button"
