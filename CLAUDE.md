@@ -2,6 +2,8 @@
 
 Este archivo forma parte del **arnés** del proyecto: define cómo debe trabajar cualquier agente de IA (Claude Code u otro) dentro de este repositorio. Las reglas de aquí tienen prioridad sobre los hábitos por defecto del agente.
 
+El arnés completo (guías, sensores, memoria y persona en el circuito) está descripto en [docs/arnes/README.md](docs/arnes/README.md). Algunas reglas de este archivo **se hacen cumplir solas** con los ganchos de `.claude/hooks/` (configurados en `.claude/settings.json`): si un gancho bloquea una acción, no se busca otra forma de hacerla; se respeta el motivo.
+
 ## Antes de hacer cualquier cosa
 
 1. Leer [docs/constitucion.md](docs/constitucion.md): principios no negociables.
@@ -26,7 +28,8 @@ Este archivo forma parte del **arnés** del proyecto: define cómo debe trabajar
 - **Nunca** emitir veredictos en textos de análisis: solo indicios y recomendación de consultar a un profesional (RN27).
 - **Interfaz**: toda pantalla, correo o documento nuevo sigue la [guía de identidad visual](docs/guias/identidad-visual.md).
 - **Resultados**: toda salida de análisis respeta [ADR-0017](docs/arquitectura/decisiones/0017-marco-normativo-y-supervision-humana.md): descargo de IA, persona en el circuito y umbrales publicados.
-- **Nunca** subir secretos, archivos `.env`, imágenes de casos reales ni modelos entrenados al repositorio.
+- **Nunca** subir secretos, archivos `.env`, imágenes de casos reales ni modelos entrenados al repositorio. El gancho `proteger_secretos.py` bloquea leer, editar o usar en un comando `.env`, `terraform.tfvars`, `backend.hcl` y el estado de Terraform.
+- **Integraciones externas** (Hedera, Cresium, Google, AWS y las que vengan): no se dan por terminadas con las pruebas automáticas solas. Se prueban contra el servicio real (o la autora lo hace, con una guía) y su estado se ve en la página `/estado` cuando corresponde.
 
 ## Calidad mínima antes de dar algo por terminado
 
@@ -43,9 +46,12 @@ npm run lint && npm run test
 
 ## Documentación obligatoria al cerrar una etapa
 
+El comando `/cerrar-etapa` recorre estos pasos en orden.
+
 - Agregar una entrada en [docs/bitacora/](docs/bitacora/) con lo realizado, las decisiones y lo pendiente.
 - Si se tomó una decisión de arquitectura, registrarla como ADR en [docs/arquitectura/decisiones/](docs/arquitectura/decisiones/).
 - Agregar a [docs/informe-final/insumos.md](docs/informe-final/insumos.md) todo hallazgo, investigación, problema o decisión que deba quedar en el informe final del proyecto (pedido de la autora, 2026-10-25). Las investigaciones van completas en [docs/investigacion/](docs/investigacion/).
+- Si se cambió una regla, un comando, un gancho o un control del arnés, registrarlo con su motivo en [docs/arnes/registro-de-cambios.md](docs/arnes/registro-de-cambios.md).
 - **Actualizar el tablero de Trello sin esperar a que se pida** (pedido de la autora, 2026-10-29): al terminar cualquier trabajo, mover las tarjetas afectadas y agregar las que falten, siguiendo [docs/guias/tablero-trello.md](docs/guias/tablero-trello.md).
 
 ## Comandos del flujo guiado por especificaciones
@@ -54,4 +60,5 @@ npm run lint && npm run test
 |---|---|
 | `/especificar <descripción>` | Crea `docs/funcionalidades/NNN-nombre/especificacion.md` |
 | `/planificar [NNN]` | Crea el `plan.md` técnico de la funcionalidad |
-| `/tareas [NNN]` | Crea el `tareas.md` con los pasos ejecutables |
+| `/tareas [NNN]` | Crea el `tareas.md` con los pasos ejecutables y los implementa |
+| `/cerrar-etapa` | Calidad, bitácora, seguimiento, decisiones, insumos, registro del arnés y Trello |

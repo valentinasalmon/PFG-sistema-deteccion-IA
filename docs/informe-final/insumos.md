@@ -195,3 +195,21 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
 
 - El sello de tiempo en Hedera *testnet* funciona en producción: la página pública `/estado` lo informa con la fecha del último sello confirmado por el *mirror node*. Sirve como evidencia para el informe (captura de `/estado` y de un mensaje en HashScan).
 - Lección de operación: las guías con bloques de código se copian enteras; para tareas de la autora con secretos conviene ofrecer primero la consola web.
+
+## Arnés para el trabajo asistido por IA (036, 2026-11-02)
+
+- **Qué es**: el sistema que rodea al agente de IA para que trabaje de forma confiable. Tiene cinco partes:
+  - **guías**: `CLAUDE.md`, constitución, especificación, comandos y skills;
+  - **sensores**: ganchos, pre-commit, import-linter, integración continua y `/estado`;
+  - **memoria**: bitácora, ADR, cuestiones abiertas, Trello e insumos;
+  - **persona en el circuito**: la autora revisa, integra, decide y carga los secretos;
+  - **mejora continua**: el registro de cambios.
+  - Detalle en `docs/arnes/README.md`.
+- **Hallazgo**: varias reglas importantes eran solo texto (no tocar secretos) y los comandos del flujo quedaron desactualizados dos semanas después de cambiar el reparto del trabajo. **Un arnés sin sensores depende de la memoria del modelo**; la funcionalidad 036 convirtió la regla de secretos en un gancho que bloquea, y en la primera prueba bloqueó un comando del propio agente.
+- **Evolución**: el registro de cambios muestra 19 cambios del arnés entre el 2026-10-08 y el 2026-11-02, cada uno motivado por un problema real. Por ejemplo:
+  - el reparto del trabajo se reescribió;
+  - Trello pasó a actualizarse sin pedirlo;
+  - la red neuronal se documenta aparte;
+  - las integraciones externas se prueban contra el servicio real.
+- **Números del proceso**: 282 commits, 238 con co-autoría de IA (84 %), 67 Pull Requests integrados, 30 especificaciones, 48 entradas de bitácora, 18 ADR y 724 pruebas automáticas.
+- **Episodio para el informe y la exposición**: al commitear la 036, el gancho de secretos bloqueó un commit del propio agente (falso positivo: el mensaje nombraba un archivo secreto). El agente intentó corregir el gancho y Claude Code se lo impidió por ser auto-modificación de un control. La corrección quedó como propuesta para la autora. Muestra que el arnés protege sus propios controles y que la última palabra es humana.
