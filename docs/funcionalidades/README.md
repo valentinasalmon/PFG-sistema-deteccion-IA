@@ -48,7 +48,7 @@ implementación siguiendo tareas.md, con pruebas
 | 020 | Registro guiado por pasos | 2 | RF01 (interfaz), RNF10 | Completado |
 | 021 | Organizaciones de aseguradoras | 3 | RF01, RF10, RF12 – RF17 (ajustes), RN36 – RN40 | Completado |
 | 022 | [Rediseño de la interfaz y del informe PDF](022-rediseno-interfaz/especificacion.md) | 9 | RNF10, RF44 | Completado |
-| 023 | [Sello de tiempo en Hedera (reemplaza a la 016)](023-sello-hedera/especificacion.md) | 10 | RF37 | Completado (falta la prueba real en *testnet*) |
+| 023 | [Sello de tiempo en Hedera (reemplaza a la 016)](023-sello-hedera/especificacion.md) | 10 | RF37 | Completado y probado en *testnet* en producción (2026-11-02); falta pasar a *mainnet* antes de la defensa |
 | 024 | [Carga de imágenes desde el celular (web móvil, QR y HEIC)](024-carga-desde-celular/especificacion.md) | 10 | RF53 | Completado: HEIC y QR hacia la galería del celular (falta la prueba en un celular real) |
 | 025 | [Informe por rubro, breve y autosuficiente](025-informe-por-rubro/especificacion.md) | 10 | RF44, RF54 | Completado |
 | 026 | [Informe inalterable: huella en Hedera y verificación pública](026-informe-verificable/especificacion.md) | 10 | RF55 | Completado (firma digital opcional) |

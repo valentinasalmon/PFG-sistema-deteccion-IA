@@ -190,3 +190,8 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
 - **Hedera**: la integración está completa (SDK oficial, confirmación en el *mirror node*, reintentos cada 15 minutos, huella de cada versión desplegada), pero se valida recién con la prueba de la autora en *testnet*. Para el informe: distinguir «implementado y probado con dobles de prueba» de «probado contra la red real».
 - **Cresium**: tiene API de cobros con CVU por pedido y avisos firmados. El diseño con proveedor intercambiable (ADR-0020) deja el cobro real como un agregado acotado; depende de los precios (CP-38) y de la cuenta. Riesgo principal del cobro por transferencia: avisos falsificados, que se mitigan con la firma HMAC, la comprobación del monto y la conciliación de respaldo.
 - **CP-20**: una huella SHA-256 simple de un correo no lo anonimiza (se revierte probando correos conocidos); la minimización correcta sería una huella con clave secreta (HMAC). Buen ejemplo para la sección de privacidad.
+
+## Hedera probado en producción (2026-11-02)
+
+- El sello de tiempo en Hedera *testnet* funciona en producción: la página pública `/estado` lo informa con la fecha del último sello confirmado por el *mirror node*. Sirve como evidencia para el informe (captura de `/estado` y de un mensaje en HashScan).
+- Lección de operación: las guías con bloques de código se copian enteras; para tareas de la autora con secretos conviene ofrecer primero la consola web.
