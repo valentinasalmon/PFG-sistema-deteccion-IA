@@ -1,6 +1,6 @@
-# Pide y confirma los sellos de tiempo pendientes cada 15 minutos (funcionalidad 016).
+# Pide y confirma los sellos de tiempo pendientes cada 15 minutos (funcionalidades 016 y 023).
 [Unit]
-Description=Sellos de tiempo de la plataforma en Blockchain Federal Argentina
+Description=Sellos de tiempo de la plataforma en Hedera
 
 [Timer]
 OnCalendar=*:0/15
