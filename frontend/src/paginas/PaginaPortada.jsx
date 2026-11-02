@@ -3,8 +3,12 @@
  *
  * Reemplaza el diseño de la 033 por la composición que aprobó la autora:
  * encabezado oscuro con la pregunta centrada y el sistema real debajo, las
- * cuatro miradas sobre cada foto, para quién es, los tres pasos, los planes
- * y el cierre. Habla de beneficios para el cliente: no nombra proveedores ni
+ * cuatro miradas sobre cada foto, los tres pasos, los planes y el cierre.
+ * En la quinta tanda (2026-11-02) la autora pidió una portada más limpia:
+ * sin los beneficios ni los globos del encabezado, sin la sección «para
+ * quién», sin el sello de Ctrl K ni las letras gigantes, sin el ojo del
+ * cierre, las miradas en filas con el título a la izquierda y los planes
+ * alineados. Habla de beneficios para el cliente: no nombra proveedores ni
  * detalles internos de la infraestructura.
  *
  * Los límites de los planes salen del sistema y el precio vacío se muestra
@@ -26,14 +30,6 @@ import '../estilos/portada.css'
 
 /** Trazos de los íconos propios de la portada (24×24, línea). */
 const TRAZOS = {
-  candado: (
-    <>
-      <rect x="5" y="10" width="14" height="10" rx="2" />
-      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-    </>
-  ),
-  tilde: <path d="M5 12l5 5 9-10" />,
-  escudo: <path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z" />,
   documento: (
     <>
       <rect x="5" y="3" width="14" height="18" rx="2" />
@@ -68,12 +64,6 @@ function Trazo({ nombre }) {
   )
 }
 
-const BENEFICIOS = [
-  { icono: 'candado', titulo: 'Informe sellado', texto: 'Nadie puede alterarlo' },
-  { icono: 'tilde', titulo: 'Verificable', texto: 'Con un código, por cualquiera' },
-  { icono: 'escudo', titulo: 'Confidencial', texto: 'Solo lo ve tu equipo' },
-]
-
 const MIRADAS = [
   {
     icono: 'documento',
@@ -98,33 +88,6 @@ const MIRADAS = [
     codigo: 'RED NEURONAL',
     titulo: 'Imagen con IA',
     texto: 'Qué tan probable es que la haya creado una IA.',
-  },
-]
-
-const SEGMENTOS = [
-  {
-    titulo: 'Para abogados y estudios',
-    puntos: [
-      'Revisá las fotos antes de presentarlas.',
-      'Trabajá en equipo con permisos por caso.',
-      'Gratis para uso personal.',
-    ],
-    enlace: '/registro?tipo=independiente',
-    accion: 'Crear mi cuenta de abogado',
-    marca: 'legal',
-    variante: 'lima',
-  },
-  {
-    titulo: 'Para aseguradoras',
-    puntos: [
-      'Detectá fotos alteradas en los reclamos.',
-      'Pedí las fotos con un enlace al celular.',
-      'Equipo y planes según tu volumen.',
-    ],
-    enlace: '/registro?tipo=aseguradora',
-    accion: 'Registrar mi aseguradora',
-    marca: 'seguros',
-    variante: 'oscura',
   },
 ]
 
@@ -266,9 +229,6 @@ export default function PaginaPortada() {
             <a href="#como-funciona">Cómo funciona</a>
           </li>
           <li>
-            <a href="#para-quien">Para quién</a>
-          </li>
-          <li>
             <a href="#planes">Planes</a>
           </li>
           <li>
@@ -323,19 +283,6 @@ export default function PaginaPortada() {
               Ver cómo funciona
             </a>
           </div>
-          <ul className="portada-beneficios">
-            {BENEFICIOS.map((beneficio) => (
-              <li key={beneficio.titulo}>
-                <span className="portada-beneficios__icono">
-                  <Trazo nombre={beneficio.icono} />
-                </span>
-                <span>
-                  <b>{beneficio.titulo}</b>
-                  <span>{beneficio.texto}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
           <div className="portada-escena">
             <div className="portada-pantalla">
               <div className="portada-pantalla__barra" aria-hidden="true">
@@ -351,30 +298,11 @@ export default function PaginaPortada() {
                 alt="Pantalla de inicio de evidentIA con el caso para retomar, los casos por estado y la actividad reciente (datos de ejemplo)"
               />
             </div>
-            <div className="portada-flota portada-flota--1" aria-hidden="true">
-              <span className="portada-flota__marca">
-                <i>✓</i>
-                <span>
-                  <small>Seguí donde lo dejaste</small>
-                  <b>Análisis listo</b>
-                </span>
-              </span>
-            </div>
-            <div className="portada-flota portada-flota--2" aria-hidden="true">
-              <small>Niveles de error</small>
-              <b>Moderados en el lateral</b>
-              <span className="portada-flota__nivel">Revisar</span>
-            </div>
-            <div className="portada-flota portada-flota--3" aria-hidden="true">
-              <small>Informe</small>
-              <b>Sellado y verificable</b>
-              <small className="portada-mono">QDDS-WT95-UU2J</small>
-            </div>
           </div>
         </header>
 
         <section id="como-funciona" className="portada-miradas" aria-labelledby="titulo-miradas">
-          <div className="portada-cab" data-aparecer>
+          <div className="portada-cab portada-cab--izquierda" data-aparecer>
             <span className="portada-etq">Qué miramos</span>
             <h2 id="titulo-miradas">Cuatro miradas sobre cada foto</h2>
             <p>Cada una busca algo distinto. Juntas te dicen qué revisar antes de presentar la prueba.</p>
@@ -385,44 +313,17 @@ export default function PaginaPortada() {
                 <span className="portada-mirada__icono">
                   <Trazo nombre={mirada.icono} />
                 </span>
-                <code>{mirada.codigo}</code>
-                <h3>{mirada.titulo}</h3>
-                <p>{mirada.texto}</p>
+                <span className="portada-mirada__texto">
+                  <code>{mirada.codigo}</code>
+                  <h3>{mirada.titulo}</h3>
+                  <p>{mirada.texto}</p>
+                </span>
               </li>
             ))}
           </ul>
         </section>
 
-        <section id="para-quien" className="portada-quien" aria-label="Para quién es">
-          {SEGMENTOS.map((segmento, indice) => (
-            <Link
-              key={segmento.titulo}
-              to={segmento.enlace}
-              className={`portada-tarjeta portada-tarjeta--${segmento.variante}`}
-              data-aparecer
-              style={{ '--orden': indice }}
-            >
-              <span className="portada-tarjeta__ir" aria-hidden="true">
-                ↗
-              </span>
-              <h2>{segmento.titulo}</h2>
-              <ul>
-                {segmento.puntos.map((punto) => (
-                  <li key={punto}>{punto}</li>
-                ))}
-              </ul>
-              <span className="portada-oculto">{segmento.accion}</span>
-              <span className="portada-tarjeta__marca" aria-hidden="true">
-                {segmento.marca}
-              </span>
-            </Link>
-          ))}
-        </section>
-
         <section className="portada-pasos" aria-labelledby="titulo-pasos">
-          <span className="portada-pasos__gigante" aria-hidden="true">
-            evidencia · verificable · evidencia · verificable ·
-          </span>
           <div className="portada-pasos__texto" data-aparecer>
             <span className="portada-etq">Cómo funciona</span>
             <h2 id="titulo-pasos">Empezá en tres pasos</h2>
@@ -446,16 +347,12 @@ export default function PaginaPortada() {
               loading="lazy"
               alt="Buscador de evidentIA: escribiendo parte de una dirección aparecen los casos que coinciden"
             />
-            <span className="portada-pasos__sello">Encontrás todo con Ctrl K</span>
           </div>
         </section>
 
         <SeccionPlanes />
 
         <section className="portada-cierre" aria-labelledby="titulo-cierre">
-          <span className="portada-cierre__ojo" aria-hidden="true">
-            <img src="/portada/ojo.jpg" alt="" loading="lazy" />
-          </span>
           <div>
             <h2 id="titulo-cierre">Tu próxima prueba, revisada antes de presentarla.</h2>
             <p>Empezá gratis. Sin tarjeta.</p>

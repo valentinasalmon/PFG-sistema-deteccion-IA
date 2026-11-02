@@ -12,4 +12,5 @@
 - [x] T10 — Clarity configurable (activarlo depende de CP-37).
 - [x] T12 — Tercera tanda (2026-10-31): portada nueva con la composición aprobada (encabezado oscuro centrado, captura real con datos de ejemplo, cuatro miradas, para quién, tres pasos, planes y cierre).
 - [x] T13 — Registro más corto (2 a 3 pasos), acceso con la estética de la portada y Política de Privacidad técnica (pilares y detalle de cada medida).
+- [x] T14 — Quinta tanda (2026-11-02): portada más limpia. Sin los beneficios ni los tres globos del encabezado, sin la sección «para quién» (y su enlace en el menú), sin el sello de Ctrl K ni las letras gigantes de los pasos, sin el ojo del cierre; las cuatro miradas en filas con el título a la izquierda, los planes alineados (el destacado ya no sube) y los enlaces del pie a la derecha. Capturas en `capturas/quinta-tanda-*.jpg`.
 - [x] T11 — Pruebas, capturas, bitácora, insumos y Trello.
