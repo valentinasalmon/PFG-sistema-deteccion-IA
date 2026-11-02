@@ -34,20 +34,21 @@ import { useFormulario } from '../hooks/useFormulario.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { caminoConPago, perfilDelCamino } from '../utilidades/registro.js'
 
-const PASOS_INDEPENDIENTE = ['perfil', 'datos', 'institucion', 'terminos']
-const PASOS_CON_PAGO = ['perfil', 'datos', 'institucion', 'plan', 'terminos']
+// Desde la tercera tanda de la 034, los datos, la institución y el estudio van en un solo paso.
+const PASOS_INDEPENDIENTE = ['perfil', 'datos', 'terminos']
+const PASOS_CON_PAGO = ['perfil', 'datos', 'plan', 'terminos']
 const PASOS_EMPLEADO = ['datos', 'terminos']
 
 const PASO_DE_CADA_CAMPO = {
   perfil: 'perfil',
   camino: 'perfil',
-  nombre_estudio: 'perfil',
+  nombre_estudio: 'datos',
   plan: 'plan',
   nombre: 'datos',
   apellido: 'datos',
-  colegio: 'institucion',
-  empresa: 'institucion',
-  id_aseguradora: 'institucion',
+  colegio: 'datos',
+  empresa: 'datos',
+  id_aseguradora: 'datos',
   acepta_terminos: 'terminos',
 }
 
@@ -58,18 +59,18 @@ const TITULOS = {
   terminos: 'Últimos detalles',
 }
 
-function validarPaso(paso, valores) {
+function validarPaso(paso, valores, esEmpleado) {
   const errores = {}
   if (paso === 'perfil' && !valores.camino) errores.camino = 'Elegí cómo vas a usar la plataforma.'
-  if (paso === 'perfil' && valores.camino === 'estudio' && !valores.nombre_estudio.trim()) {
-    errores.nombre_estudio = 'Escribí el nombre de tu estudio jurídico.'
-  }
   if (paso === 'datos') {
+    if (valores.camino === 'estudio' && !valores.nombre_estudio.trim()) {
+      errores.nombre_estudio = 'Escribí el nombre de tu estudio jurídico.'
+    }
     if (!valores.nombre.trim()) errores.nombre = 'Ingresá tu nombre.'
     if (!valores.apellido.trim()) errores.apellido = 'Ingresá tu apellido.'
-  }
-  if (paso === 'institucion' && valores.camino === 'aseguradora' && !valores.id_aseguradora) {
-    errores.id_aseguradora = 'Elegí tu aseguradora del listado.'
+    if (valores.camino === 'aseguradora' && !valores.id_aseguradora && !esEmpleado) {
+      errores.id_aseguradora = 'Elegí tu aseguradora del listado.'
+    }
   }
   if (paso === 'terminos' && !valores.acepta_terminos) {
     errores.acepta_terminos = 'Tenés que aceptar los Términos de Uso y la Política de Privacidad.'
@@ -134,7 +135,7 @@ function FormularioGoogle({ pendiente, invitacion }) {
 
   async function manejarEnvio(evento) {
     evento.preventDefault()
-    const erroresDelPaso = validarPaso(paso, valores)
+    const erroresDelPaso = validarPaso(paso, valores, esEmpleado)
     marcarErrores(erroresDelPaso)
     if (Object.keys(erroresDelPaso).length > 0) return
     if (!esUltimoPaso) {
@@ -158,11 +159,11 @@ function FormularioGoogle({ pendiente, invitacion }) {
   }
 
   const titulo =
-    paso === 'institucion'
-      ? perfilDelCamino(valores.camino) === 'aseguradora'
-        ? 'Tu aseguradora'
-        : 'Tu colegio de abogados'
-      : TITULOS[paso]
+    paso === 'datos' && !esEmpleado && valores.camino === 'estudio'
+      ? 'Vos y tu estudio'
+      : paso === 'datos' && !esEmpleado && valores.camino === 'aseguradora'
+        ? 'Vos y tu aseguradora'
+        : TITULOS[paso]
 
   return (
     <>
@@ -196,7 +197,21 @@ function FormularioGoogle({ pendiente, invitacion }) {
         {paso === 'plan' && <PasoPlan valor={valores.plan} cambiar={cambiar} error={errores.plan} />}
         {paso === 'datos' && (
           <>
-            <CampoTexto
+            {valores.camino === 'estudio' && (
+              <CampoTexto
+                etiqueta="Nombre del estudio jurídico"
+                nombre="nombre_estudio"
+                autoComplete="organization"
+                maxLength={150}
+                value={valores.nombre_estudio}
+                onChange={cambiar}
+                error={errores.nombre_estudio}
+                ayuda="Vas a ser su Referente. Después invitás a tu equipo."
+                required
+              />
+            )}
+            <div className="campos-en-fila">
+              <CampoTexto
               etiqueta="Nombre"
               nombre="nombre"
               autoComplete="given-name"
@@ -214,15 +229,16 @@ function FormularioGoogle({ pendiente, invitacion }) {
               error={errores.apellido}
               required
             />
+            </div>
+            {!esEmpleado && (
+              <PasoInstitucion
+                valores={{ ...valores, perfil: perfilDelCamino(valores.camino) }}
+                errores={errores}
+                cambiar={cambiar}
+                setValores={setValores}
+              />
+            )}
           </>
-        )}
-        {paso === 'institucion' && (
-          <PasoInstitucion
-            valores={{ ...valores, perfil: perfilDelCamino(valores.camino) }}
-            errores={errores}
-            cambiar={cambiar}
-            setValores={setValores}
-          />
         )}
         {paso === 'terminos' && (
           <AceptacionTerminos

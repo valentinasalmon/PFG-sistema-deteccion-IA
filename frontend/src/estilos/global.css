@@ -5580,3 +5580,89 @@ h1.estado-vacio__titulo {
     justify-content: center;
   }
 }
+
+/* --- Administración: pendientes primero (034, cuarta tanda) --- */
+.pendientes-al-dia {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radio);
+  background: var(--exito-fondo);
+  color: var(--exito);
+  font-weight: 600;
+}
+
+.seccion--atencion {
+  border-color: var(--lima);
+  box-shadow: 0 0 0 3px rgb(164 203 62 / 25%);
+}
+
+.contador-titulo {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  margin-left: 0.4rem;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: var(--bosque);
+  color: var(--lima);
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+/* --- Estado del sistema: el sello con su fecha abajo (034) --- */
+.lista-componentes li {
+  gap: 1rem;
+}
+
+.estado-sello {
+  display: grid;
+  justify-items: end;
+  text-align: right;
+}
+
+.estado-sello .nota {
+  margin: 0;
+}
+
+/*
+ * Tablas apilables (034, cuarta tanda): en el celular cada fila es una
+ * tarjeta y cada dato lleva su nombre al lado, en lugar de cortar columnas.
+ */
+@media (width <= 48rem) {
+  .tabla--apilable thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .tabla--apilable,
+  .tabla--apilable tbody,
+  .tabla--apilable tr,
+  .tabla--apilable td {
+    display: block;
+    width: 100%;
+  }
+
+  .tabla--apilable tr {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--linea-suave);
+  }
+
+  .tabla--apilable td {
+    padding: 0.15rem 0;
+    border: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .tabla--apilable td[data-etiqueta]::before {
+    content: attr(data-etiqueta) ': ';
+    color: var(--tinta-2);
+    font-size: 0.85rem;
+  }
+}
