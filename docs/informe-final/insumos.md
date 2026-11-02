@@ -185,3 +185,8 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
 
 - La autora simplificó la portada: menos elementos decorativos (globos, sellos, letras de fondo, ojo) y menos secciones (sin «para quién»), con las cuatro capas del análisis presentadas como una lista vertical junto a su título. Para el informe: iteración de diseño guiada por la revisión de la autora, de una portada «cargada» a una más directa.
 
+## Hedera y Cresium: estado real al 2026-11-02
+
+- **Hedera**: la integración está completa (SDK oficial, confirmación en el *mirror node*, reintentos cada 15 minutos, huella de cada versión desplegada), pero se valida recién con la prueba de la autora en *testnet*. Para el informe: distinguir «implementado y probado con dobles de prueba» de «probado contra la red real».
+- **Cresium**: tiene API de cobros con CVU por pedido y avisos firmados. El diseño con proveedor intercambiable (ADR-0020) deja el cobro real como un agregado acotado; depende de los precios (CP-38) y de la cuenta. Riesgo principal del cobro por transferencia: avisos falsificados, que se mitigan con la firma HMAC, la comprobación del monto y la conciliación de respaldo.
+- **CP-20**: una huella SHA-256 simple de un correo no lo anonimiza (se revierte probando correos conocidos); la minimización correcta sería una huella con clave secreta (HMAC). Buen ejemplo para la sección de privacidad.

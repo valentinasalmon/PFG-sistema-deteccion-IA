@@ -212,6 +212,11 @@ La cuenta de Hedera se crea en https://portal.hedera.com con clave **ED25519**. 
    Después: `terraform plan` (tiene que crear 3 parámetros y cambiar SELLO_TIEMPO) y `terraform apply`.
 4. **Desplegar** (PR de `desarrollo` a `main`). El despliegue regenera el `.env` del servidor con los datos de Hedera.
 5. **Probar**: cargar una imagen en un caso. En unos segundos (o en la próxima pasada del temporizador, cada 15 minutos) tiene que aparecer "Registrada en Hedera" con el enlace "Verificar en HashScan".
+6. **Comprobar en la página de estado**: abrir `/estado`. Tiene que decir «Sello de tiempo · Hedera (testnet): Funciona» y la fecha del último sello confirmado.
+   - «Desactivado»: falta `sello_tiempo = "hedera"` en `terraform.tfvars`, o no se volvió a desplegar después del `terraform apply`.
+   - «Con demoras»: hay sellos enviados que no se confirman en 30 minutos. Revisar en el servidor `journalctl -u plataforma-sellos` (cuenta sin saldo, clave equivocada o tema de otra red).
+   - «Con fallas»: algún sello agotó los reintentos. Mismo diagnóstico; la imagen sigue teniendo su huella, solo le falta el sello.
+7. **Ver el sello en HashScan**: el enlace «Verificar en HashScan» del caso o del informe abre el mensaje en el explorador público de Hedera, con la huella y la fecha de consenso.
 
 **Pasar a la red real (*mainnet*)**: crear una cuenta de *mainnet* con HBAR, repetir los pasos 1 a 3 con `--red mainnet` y la cuenta nueva, y desplegar. Los sellos de *testnet* no se migran (CP-26).
 

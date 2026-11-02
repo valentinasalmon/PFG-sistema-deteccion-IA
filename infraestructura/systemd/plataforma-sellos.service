@@ -1,6 +1,6 @@
-# Sello de tiempo de las imágenes en Blockchain Federal Argentina (funcionalidad 016, RF37).
+# Sello de tiempo de las imágenes, los informes y las versiones en Hedera (funcionalidades 016 y 023, RF37).
 [Unit]
-Description=evidentIA - sellos de tiempo en BFA
+Description=evidentIA - sellos de tiempo en Hedera
 After=network.target postgresql.service redis-server.service
 
 [Service]

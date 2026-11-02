@@ -1,4 +1,4 @@
-# Lo que falta para llegar al 100 % (al 2026-10-27)
+# Lo que falta para llegar al 100 % (al 2026-11-02)
 
 Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm), que es la referencia de seguimiento desde el 2026-10-26 y que el agente actualiza solo desde el 2026-10-29 ([convenciones](tablero-trello.md)) (ver la [bitácora](../bitacora/2026-10-26-reorganizacion-del-tablero.md)). Las tareas nuevas se cargan primero allá. La entrega es antes del 2026-11-19 (CP-16). La prioridad es una propuesta:
 
@@ -11,9 +11,14 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 | Prioridad | Tarea | Depende de | Quién |
 |---|---|---|---|
 | P1 | **Red neuronal (010 y 012)**: terminar el entrenamiento, exportar a ONNX y conectarla como capa 4 probabilística | Modelo de la autora; conjunto de datos y desempeño mínimo (CP-07) | Autora entrena, agente integra |
-| P1 | **Mejoras de interfaz (028)**: página de carga desde el celular, pantalla del caso, coherencia general | Lista de ajustes de la autora | Agente |
+| ✓ | Mejoras de interfaz (028 y 034): implementadas en cuatro tandas; falta la revisión final de la autora | Revisión | Autora |
+| P1 | **Revisión de la 034 pantalla por pantalla** (CA1, CA3, CA4, CA6, CA9) | PR de la tercera y la cuarta tanda | Autora revisa, agente corrige |
+| P2 | **Cobro real con Cresium**: proveedor, aviso firmado y conciliación (ver `docs/investigacion/2026-11-02-integracion-cresium.md`) | Precios (CP-38) y cuenta de Cresium con entorno de pruebas | Autora abre la cuenta, agente integra |
+| P2 | **Verificación de identidad con Identik (035)** para las aseguradoras | Definir el flujo, el costo y los datos biométricos (CP-35) | Autora define, agente especifica |
+| P1 | **Quitar Clarity antes de la versión final** (CP-37): sacar el script, la excepción de la CSP y el apartado de la política de privacidad | Fin de las pruebas | Agente |
 | P2 | **Inicio de sesión con Google (027)**: implementado; falta crear el cliente OAuth y probarlo | La autora crea el cliente en Google Cloud (guía en `despliegue-aws.md`) | Autora |
-| P2 | **Probar la 029 en producción**: que la verificación de un informe nuevo muestre la versión | Próximo despliegue | Autora |
+| P1 | **Probar Hedera en *testnet* (023 y 029)**: crear el tema, cargar la clave, desplegar y comprobar en `/estado` | Próximo despliegue | Autora, con la guía de `despliegue-aws.md` |
+| P2 | **Definir los precios** con el análisis de costos (CP-38) | Análisis de costos | Autora |
 | P3 | Código de carga de 6 dígitos y "compartir desde la galería" (Web Share Target en Android, Atajo de Apple en iPhone) | — | Agente |
 | P3 | Firma digital del PDF (CP-27) | Certificado | Agente |
 | P3 | Importar fotos desde un enlace de Drive o Dropbox de un tercero (con declaración de autorización, Ley 25.326) | Decisión de alcance | Autora decide |
