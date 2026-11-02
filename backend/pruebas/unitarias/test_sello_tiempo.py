@@ -14,6 +14,7 @@ import pytest
 
 from app.integraciones import sello_tiempo
 from app.integraciones.sello_tiempo import (
+    Confirmacion,
     SelladorHedera,
     SelladorSimulado,
     SelloNoDisponible,
@@ -175,6 +176,64 @@ def test_desactivado_no_hace_nada():
     servicio = ServicioSellos(Repositorio([imagen]), None, None)
     assert servicio.intentar(imagen) is None
     assert servicio.procesar() == {"sellados": 0, "en_curso": 0}
+
+
+class MirrorLento:  # pylint: disable=too-few-public-methods
+    """Publica al instante y el mirror node confirma recién en la n-ésima consulta."""
+
+    simulado = False
+
+    def __init__(self, confirma_en):
+        self.consultas = 0
+        self.confirma_en = confirma_en
+
+    def sellar(self, huella):
+        """Devuelve un recibo como el de Hedera."""
+        return f"testnet:0.0.2002/{len(huella)}"
+
+    def verificar(self, huella, recibo):  # pylint: disable=unused-argument
+        """None hasta la consulta indicada; después, la confirmación."""
+        self.consultas += 1
+        if self.consultas < self.confirma_en:
+            return None
+        return Confirmacion(referencia="Hedera testnet · tema 0.0.2002 · mensaje 7",
+                            fecha=datetime(2026, 11, 2, 12, 0))
+
+
+def _servicio_con(sellador, imagenes):
+    registro = SimpleNamespace(registrar=lambda *a, **k: None)
+    return ServicioSellos(Repositorio(imagenes), sellador, registro)
+
+
+def test_antes_del_informe_espera_la_confirmacion_del_mirror():
+    """El PDF no debe decir «Pendiente»: se espera a que el mirror node confirme (023)."""
+    imagen = _imagen()
+    esperas = []
+    servicio = _servicio_con(MirrorLento(confirma_en=3), [imagen])
+    servicio.confirmar_antes_de_informar([imagen, None], dormir=esperas.append)
+    assert imagen.sello_estado == "sellado"
+    assert imagen.sello_referencia.startswith("Hedera testnet")
+    assert esperas == [3, 3]
+
+
+def test_antes_del_informe_no_espera_de_mas():
+    """Si Hedera no confirma, se corta a la espera máxima y el informe sale igual."""
+    imagen = _imagen()
+    esperas = []
+    servicio = _servicio_con(MirrorLento(confirma_en=999), [imagen])
+    servicio.confirmar_antes_de_informar([imagen], espera_maxima=9, pausa=3, dormir=esperas.append)
+    assert imagen.sello_estado == "enviado"
+    assert sum(esperas) == 9
+
+
+def test_antes_del_informe_sin_sellador_o_ya_sellada():
+    """Desactivado o ya sellada: no consulta ni espera."""
+    esperas = []
+    sellada = _imagen("sellado")
+    _servicio_con(None, [sellada]).confirmar_antes_de_informar([sellada], dormir=esperas.append)
+    lento = MirrorLento(confirma_en=1)
+    _servicio_con(lento, [sellada]).confirmar_antes_de_informar([sellada], dormir=esperas.append)
+    assert esperas == [] and lento.consultas == 0
 
 
 def test_fecha_de_consenso_invalida_usa_la_actual():

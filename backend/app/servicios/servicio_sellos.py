@@ -10,6 +10,7 @@ cada pasada de la tarea programada; después de ``MAXIMO_INTENTOS`` queda
 Realiza: RF37 (CA1 a CA3); RNF20 (CA1).
 """
 import logging
+import time
 
 from app.integraciones.sello_tiempo import SelloNoDisponible
 from app.servicios import auditoria
@@ -96,6 +97,41 @@ class ServicioSellos:
             registro_log.warning("Sello de la imagen %s no disponible: %s", imagen.id, falla)
         self.repositorio.confirmar()
         return imagen.sello_estado
+
+    def confirmar_antes_de_informar(self, imagenes, espera_maxima=15, pausa=3, dormir=time.sleep):
+        """Intenta dejar sellados los sellos de las imágenes antes de armar su informe.
+
+        Al cargar una foto se publica su huella en Hedera, pero el *mirror node*
+        tarda unos segundos en tenerla; si el informe se arma antes, el PDF dice
+        «Pendiente de confirmación en Hedera» y queda así para siempre, porque
+        el PDF no cambia. Por eso, antes de generarlo, se pide o se confirma el
+        sello de cada imagen y, si alguno sigue enviado, se espera un poco y se
+        vuelve a consultar. Nunca lanza ni espera más de ``espera_maxima``
+        segundos: si Hedera no confirma a tiempo, el informe sale igual con el
+        sello pendiente y la tarea periódica lo completa en el sistema.
+
+        Corre en el trabajador de análisis, no en un pedido de la persona.
+
+        Realiza: RF37 (CA2), RF44.
+        """
+        if not self.activo:
+            return
+        pendientes = [i for i in imagenes if i is not None
+                      and i.sello_estado not in (SELLO_SELLADO, SELLO_FALLIDO)]
+        esperado = 0
+        while pendientes:
+            for imagen in pendientes:
+                try:
+                    self.intentar(imagen)
+                except Exception:  # pylint: disable=broad-exception-caught
+                    registro_log.exception(
+                        "No se pudo confirmar el sello de la imagen %s", imagen.id
+                    )
+            pendientes = [i for i in pendientes if i.sello_estado == SELLO_ENVIADO]
+            if not pendientes or esperado >= espera_maxima:
+                return
+            dormir(pausa)
+            esperado += pausa
 
     def procesar(self):
         """Tarea programada: avanza todos los sellos pendientes o enviados.
