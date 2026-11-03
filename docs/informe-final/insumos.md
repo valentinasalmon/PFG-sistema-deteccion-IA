@@ -246,3 +246,8 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Gobernanza de datos:** antes de usar un conjunto se verifica en su revisión exacta, sin bajarlo entero; lo que no tiene licencia verificable queda excluido y anotado.
 - **Herramienta de generación más probable en casos reales:** Meta AI, porque está dentro de WhatsApp, Instagram y Facebook. Se genera desde la web para tener el archivo original.
 
+## Exploración de datos sin agotar la memoria (2026-11-03)
+
+- La primera ejecución de la exploración en Colab terminó con el código -9: el proceso se quedó sin memoria al bajar un bloque completo de imágenes solo para mirar 24. Medido con un Parquet de prueba, pyarrow lee el bloque entero de la columna aunque se pidan pocas filas.
+- Solución: consultar primero el tamaño del bloque en los metadatos del Parquet (unos KB) y omitir la muestra si es grande, guardar los resultados después de cada conjunto y correr cada conjunto en un proceso aparte. Para el informe: ejemplo de diseño robusto ante límites del entorno de ejecución y de diagnóstico a partir del cuaderno guardado.
+

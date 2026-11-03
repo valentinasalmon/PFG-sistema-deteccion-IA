@@ -214,3 +214,27 @@ def test_los_candidatos_del_repositorio_son_validos():
 
     ruta = Path(__file__).parents[2] / "configuracion" / "candidatos_v1.yaml"
     assert len(cargar_candidatos(ruta).candidatos) >= 5
+
+
+def test_no_baja_bloques_de_imagenes_enormes():
+    """Si el bloque de imágenes pesa demasiado, se omite la muestra y se avisa."""
+    inspector = _InspectorSimulado()
+    inspector.tamanio_bloque_imagenes = lambda *_: 3_000_000_000
+    inspector.leer_imagenes = lambda *_: pytest.fail("no debía bajar imágenes")
+    informe = explorar_candidato(inspector, _candidato(), 10, 4, semilla=0)
+    assert informe.incluido and informe.por_clase == {"real": 6, "sintetica": 9}
+    assert informe.muestra_imagenes == {}
+    assert "3.0 GB" in informe.avisos[0]
+    assert "aviso" in tabla_markdown([informe])
+
+
+def test_explorar_de_a_un_candidato_suma_los_resultados(tmp_path):
+    """Con ``solo`` se explora un candidato y se conservan los anteriores."""
+    lista = ListaCandidatos(candidatos=[_candidato(), _candidato(nombre="otro", conjunto="b/c")])
+    explorar(lista, tmp_path, inspector=_InspectorSimulado(), solo=["simulado"])
+    informes = explorar(lista, tmp_path, inspector=_InspectorSimulado(), solo=["otro"])
+    assert [i.conjunto for i in informes] == ["alguien/conjunto", "b/c"]
+    datos = json.loads((tmp_path / "exploracion.json").read_text(encoding="utf-8"))
+    assert len(datos) == 2
+    with pytest.raises(ErrorConfiguracion, match="candidato desconocido"):
+        explorar(lista, tmp_path, inspector=_InspectorSimulado(), solo=["no_existe"])

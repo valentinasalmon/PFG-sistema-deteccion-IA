@@ -52,7 +52,7 @@ red_neuronal/
 │   ├── 01_prueba_de_concepto_colab.ipynb   Prueba de concepto en Colab (hecha)
 │   ├── 02_exploracion_datos_colab.ipynb    Exploración de candidatos y propuesta de receta (T25, T27)
 │   └── 03_entrenamiento_completo_colab.ipynb   Entrenamiento completo que saltea lo ya hecho (T28 a T33)
-├── pruebas/                   203 pruebas automáticas (sin GPU ni descargas)
+├── pruebas/                   206 pruebas automáticas (sin GPU ni descargas)
 ├── informes/                  Fichas de cada versión publicada (en Git)
 ├── datos/                     Vacía en Git: las imágenes nunca se suben
 └── modelos/                   Vacía en Git: los modelos nunca se suben

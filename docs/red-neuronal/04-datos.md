@@ -31,8 +31,8 @@ Antes de usar un conjunto se lo explora con `python -m clasificador explorar` (c
 1. pide a Hugging Face la **revisión exacta** y la **licencia de la ficha** en esa revisión. Si la licencia falta o es «other», el conjunto queda **excluido** y anotado, salvo que se haya verificado a mano en el artículo (campo `licencia_verificada_a_mano`) (CA2);
 2. lee el **esquema** y confirma las columnas que espera la receta;
 3. lee solo las **columnas livianas** (clase y generador) de una muestra de archivos al azar, sin bajar imágenes, y cuenta por clase y por generador;
-4. baja **un solo grupo de filas** de algunos archivos y mide formato, tamaño y **calidad JPEG** (estimada con la tabla de cuantización) de cada clase, para ver si hay sesgo de formato;
-5. deja `exploracion.json` y una tabla `exploracion.md` con la decisión de cada candidato;
+4. baja **un solo grupo de filas** de algunos archivos y mide formato, tamaño y **calidad JPEG** (estimada con la tabla de cuantización) de cada clase, para ver si hay sesgo de formato. Antes mira en los metadatos cuánto pesa ese bloque: si pasa de 256 MB, omite la muestra de ese archivo y lo anota como aviso (pyarrow baja el bloque entero aunque se pidan pocas filas, y la primera corrida agotó la memoria de Colab);
+5. deja `exploracion.json` y una tabla `exploracion.md` con la decisión de cada candidato. Los guarda después de **cada** candidato, y el cuaderno corre cada uno en su propio proceso (`--solo <nombre>`): si uno se corta, los demás siguen;
 6. propone el bloque de la receta: revisión fija, archivos, generadores con más imágenes y cuota por generador.
 
 ### La receta v1 (T27, provisoria)

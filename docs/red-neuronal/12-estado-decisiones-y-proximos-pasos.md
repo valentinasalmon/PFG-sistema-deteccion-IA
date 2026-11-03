@@ -4,7 +4,7 @@
 
 | Parte | Estado |
 |---|---|
-| Paquete `clasificador` (las siete etapas, inferencia, registro, compuerta, ficha, MLflow, exploración y estado) | ✔ Hecho, con 203 pruebas |
+| Paquete `clasificador` (las siete etapas, inferencia, registro, compuerta, ficha, MLflow, exploración y estado) | ✔ Hecho, con 206 pruebas |
 | Integración continua (`red_neuronal.yml`) | ✔ Hecha |
 | Cuaderno de Colab | ✔ Hecho y corregido con la primera corrida |
 | Prueba de concepto (CA1, T24) | ✔ Hecha: AUC 0,985, ≈ 11 min en T4 |

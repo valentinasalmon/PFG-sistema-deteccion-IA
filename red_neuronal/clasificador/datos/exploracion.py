@@ -28,7 +28,7 @@ import os
 import random
 from abc import ABC, abstractmethod
 from collections import Counter
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 from typing import Literal
 
@@ -52,6 +52,10 @@ _SUMA_TABLA_ESTANDAR = sum((
 ))
 
 MARGEN_ARCHIVOS = 1.3  # se eligen archivos con un 30 % más de lo pedido
+_BUFER_LECTURA = 8 * 1024 * 1024  # 8 MB por lectura desde Hugging Face
+# Un bloque de imágenes más grande que esto no se baja para la muestra: pyarrow
+# lee el bloque entero aunque se pidan pocas filas, y en Colab agota la memoria.
+LIMITE_BLOQUE_IMAGENES = 256 * 1024 * 1024
 
 
 class Candidato(_Esquema):
@@ -134,6 +138,17 @@ class InspectorConjuntos(ABC):
         Sin columnas, devuelve una fila vacía por cada fila del archivo.
         """
 
+    def tamanio_bloque_imagenes(
+        self, conjunto: str, revision: str, archivo: str, columna: str
+    ) -> int:
+        """Bytes comprimidos de la columna de imagen en el primer grupo de filas.
+
+        Devuelve 0 si no se sabe. Sirve para no bajar un bloque enorme solo
+        para mirar unas pocas imágenes de muestra.
+        """
+        del conjunto, revision, archivo, columna
+        return 0
+
     @abstractmethod
     def leer_imagenes(
         self, conjunto: str, revision: str, archivo: str, columnas: list[str], cantidad: int
@@ -178,7 +193,9 @@ class InspectorHuggingFace(InspectorConjuntos):
         import pyarrow.parquet as pq
 
         abierto = self._sistema.open(f"datasets/{conjunto}@{revision}/{archivo}", "rb")
-        return abierto, pq.ParquetFile(abierto)
+        # Sin pre_buffer y con un búfer chico, pyarrow lee las páginas a medida
+        # que las necesita, en lugar de traer de una vez columnas enteras.
+        return abierto, pq.ParquetFile(abierto, pre_buffer=False, buffer_size=_BUFER_LECTURA)
 
     def columnas(self, conjunto: str, revision: str, archivo: str) -> list[str]:
         """Lee solo el esquema, que está al final del archivo."""
@@ -196,13 +213,33 @@ class InspectorHuggingFace(InspectorConjuntos):
                 return [{} for _ in range(parquet.metadata.num_rows)]
             return parquet.read(columns=columnas).to_pylist()
 
+    def tamanio_bloque_imagenes(
+        self, conjunto: str, revision: str, archivo: str, columna: str
+    ) -> int:
+        """Lee el tamaño del bloque en los metadatos del Parquet, sin bajarlo."""
+        abierto, parquet = self._abrir(conjunto, revision, archivo)
+        with abierto:
+            grupo = parquet.metadata.row_group(0)
+            for indice in range(grupo.num_columns):
+                columna_parquet = grupo.column(indice)
+                if columna_parquet.path_in_schema.split(".")[0] == columna:
+                    return columna_parquet.total_compressed_size
+        return 0
+
     def leer_imagenes(
         self, conjunto: str, revision: str, archivo: str, columnas: list[str], cantidad: int
     ) -> list[dict]:
-        """Lee el primer grupo de filas: baja imágenes de un solo bloque."""
+        """Lee solo las primeras ``cantidad`` filas del archivo.
+
+        pyarrow lee el grupo de filas completo aunque se pidan pocas filas:
+        quien llama verifica antes su tamaño con ``tamanio_bloque_imagenes``
+        (la primera exploración agotó la memoria de Colab, código -9).
+        """
         abierto, parquet = self._abrir(conjunto, revision, archivo)
         with abierto:
-            return parquet.read_row_group(0, columns=columnas).slice(0, cantidad).to_pylist()
+            lotes = parquet.iter_batches(batch_size=cantidad, columns=columnas, row_groups=[0])
+            lote = next(lotes, None)
+            return lote.to_pylist() if lote is not None else []
 
 
 def estimar_calidad_jpeg(imagen: Image.Image) -> int | None:
@@ -259,6 +296,7 @@ class InformeConjunto:  # pylint: disable=too-many-instance-attributes
     por_clase: dict[str, int] = field(default_factory=dict)
     por_generador: dict[str, int] = field(default_factory=dict)
     muestra_imagenes: dict[str, list[dict]] = field(default_factory=dict)
+    avisos: list[str] = field(default_factory=list)
 
     def resumen_formatos(self) -> dict[str, dict]:
         """Formatos, tamaño mediano y calidad JPEG mediana por clase."""
@@ -272,6 +310,11 @@ class InformeConjunto:  # pylint: disable=too-many-instance-attributes
                 "calidad_jpeg_mediana": calidades[len(calidades) // 2] if calidades else None,
             }
         return resumen
+
+
+def _avisar(paso: str) -> None:
+    """Muestra el paso en curso: si Colab corta el proceso, se sabe dónde."""
+    print(f"   - {paso}", flush=True)
 
 
 def _clase_de(fila: dict, candidato: Candidato) -> str:
@@ -312,6 +355,15 @@ def _explorar_archivos(  # pylint: disable=too-many-locals
     for archivo in archivos:
         if all(len(lista) >= cantidad_imagenes for lista in muestra.values()):
             break
+        tamanio = inspector.tamanio_bloque_imagenes(
+            candidato.conjunto, informe.revision_exacta, archivo, candidato.columna_imagen
+        )
+        if tamanio > LIMITE_BLOQUE_IMAGENES:
+            informe.avisos.append(
+                f"muestra de imágenes omitida en {archivo}: el bloque pesa "
+                f"{tamanio / 1e9:.1f} GB"
+            )
+            continue
         filas = inspector.leer_imagenes(
             candidato.conjunto, informe.revision_exacta, archivo,
             [c for c in (candidato.columna_imagen, candidato.columna_clase) if c],
@@ -332,6 +384,7 @@ def explorar_candidato(
 ) -> InformeConjunto:
     """Explora un candidato y decide si queda incluido o excluido (CA2)."""
     informe = InformeConjunto(candidato.nombre, candidato.conjunto, candidato.uso)
+    _avisar("ficha, revisión y licencia")
     try:
         info = inspector.informacion(candidato.conjunto, candidato.revision)
     except ErrorInspeccion as error:
@@ -372,6 +425,7 @@ def explorar_candidato(
         elegidos = sorted(
             random.Random(semilla).sample(parquets, min(cantidad_archivos, len(parquets)))
         )
+        _avisar(f"conteos y muestra en {len(elegidos)} de {len(parquets)} archivos")
         _explorar_archivos(inspector, candidato, informe, elegidos, cantidad_imagenes)
     except Exception as error:  # pylint: disable=broad-exception-caught
         informe.motivos_exclusion.append(f"no se pudo leer: {type(error).__name__}: {error}")
@@ -445,6 +499,8 @@ def tabla_markdown(informes: list[InformeConjunto]) -> str:
         decision = "incluido" if informe.incluido else "excluido: " + "; ".join(
             informe.motivos_exclusion
         )
+        if informe.avisos:
+            decision += f" (aviso: {len(informe.avisos)} muestra(s) de imágenes omitida(s))"
         condiciones = "sí" if informe.requiere_aceptar_condiciones else "no"
         lineas.append(
             f"| {informe.conjunto} | {informe.uso} | `{informe.revision_exacta[:10] or '—'}` "
@@ -456,12 +512,27 @@ def tabla_markdown(informes: list[InformeConjunto]) -> str:
 
 
 def explorar(
-    lista: ListaCandidatos, salida: Path, inspector: InspectorConjuntos | None = None
+    lista: ListaCandidatos, salida: Path, inspector: InspectorConjuntos | None = None,
+    solo: list[str] | None = None,
 ) -> list[InformeConjunto]:
-    """Explora todos los candidatos y escribe ``exploracion.json`` y ``.md``."""
+    """Explora todos los candidatos y escribe ``exploracion.json`` y ``.md``.
+
+    Los resultados se reescriben después de cada candidato: si el proceso se
+    corta (por ejemplo, por falta de memoria en Colab), lo explorado hasta
+    ese momento queda guardado. Con ``solo`` se exploran únicamente esos
+    candidatos (por nombre) y se suman a los resultados que ya había: así el
+    cuaderno corre cada candidato en su propio proceso.
+    """
     inspector = inspector or InspectorHuggingFace()
-    informes = []
-    for candidato in lista.candidatos:
+    salida = Path(salida)
+    salida.mkdir(parents=True, exist_ok=True)
+    elegidos = [c for c in lista.candidatos if not solo or c.nombre in solo]
+    if solo and len(elegidos) != len(set(solo)):
+        conocidos = sorted(c.nombre for c in lista.candidatos)
+        raise ErrorConfiguracion(f"candidato desconocido en {solo}; los válidos son {conocidos}")
+    nuevos = {c.conjunto for c in elegidos}
+    informes = [i for i in _leer_resultados(salida) if solo and i.conjunto not in nuevos]
+    for candidato in elegidos:
         print(f"Explorando {candidato.conjunto}...", flush=True)
         informes.append(
             explorar_candidato(
@@ -469,8 +540,26 @@ def explorar(
                 lista.imagenes_por_conjunto, lista.semilla,
             )
         )
-    salida = Path(salida)
-    salida.mkdir(parents=True, exist_ok=True)
+        _escribir_resultados(informes, salida)
+        estado = "incluido" if informes[-1].incluido else "excluido"
+        print(f"   {estado}; resultados guardados en {salida}", flush=True)
+    return informes
+
+
+def _leer_resultados(salida: Path) -> list[InformeConjunto]:
+    """Lee los resultados que ya había en la carpeta, si los hay."""
+    ruta = salida / "exploracion.json"
+    if not ruta.is_file():
+        return []
+    campos = {campo.name for campo in fields(InformeConjunto)}
+    return [
+        InformeConjunto(**{k: v for k, v in dato.items() if k in campos})
+        for dato in json.loads(ruta.read_text(encoding="utf-8"))
+    ]
+
+
+def _escribir_resultados(informes: list[InformeConjunto], salida: Path) -> None:
+    """Guarda ``exploracion.json`` y la tabla ``exploracion.md``."""
     (salida / "exploracion.json").write_text(
         json.dumps(
             [{**asdict(i), "resumen_formatos": i.resumen_formatos()} for i in informes],
@@ -479,4 +568,3 @@ def explorar(
         encoding="utf-8",
     )
     (salida / "exploracion.md").write_text(tabla_markdown(informes), encoding="utf-8")
-    return informes

@@ -28,7 +28,7 @@ El flujo de GitHub Actions corre en **Python 3.12** (la versión del backend) y 
 2. `pylint` sobre el código;
 3. `pytest` con **cobertura mínima del 80 %**.
 
-Las 203 pruebas verifican que **el código hace lo que debe**, con imágenes generadas en memoria:
+Las 206 pruebas verifican que **el código hace lo que debe**, con imágenes generadas en memoria:
 
 | Tipo | Qué verifica |
 |---|---|
@@ -38,7 +38,7 @@ Las 203 pruebas verifican que **el código hace lo que debe**, con imágenes gen
 | Métricas | Con casos armados a mano, AUC = 1 con separación perfecta y 0,5 con predicciones constantes; la agrupación por generador es correcta |
 | Exportación | El ONNX coincide con PyTorch y lleva sus metadatos |
 | Compuerta | Rechaza cada incumplimiento e informa todos los motivos juntos |
-| Exploración | Con un inspector simulado: licencia no verificable excluida, columnas faltantes, conjuntos sin Parquet, conteos por clase y generador, calidad JPEG estimada y propuesta de receta válida |
+| Exploración | Con un inspector simulado: bloques de imágenes demasiado grandes omitidos, exploración de a un candidato que suma resultados, licencia no verificable excluida, columnas faltantes, conjuntos sin Parquet, conteos por clase y generador, calidad JPEG estimada y propuesta de receta válida |
 | Integración | Pipeline mínimo completo (`preparar → entrenar → exportar → evaluar → publicar`) con un generador reservado como no visto, y `estado` informando las etapas terminadas; la misma imagen da la misma probabilidad con PyTorch y con ONNX |
 
 Así un error en el pipeline se detecta **en minutos, en GitHub**, y no después de horas de entrenamiento.

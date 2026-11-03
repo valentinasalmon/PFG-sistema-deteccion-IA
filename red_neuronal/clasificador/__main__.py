@@ -154,6 +154,10 @@ def construir_analizador() -> argparse.ArgumentParser:
     )
     explorar.add_argument("--candidatos", required=True, type=Path, help="archivo YAML")
     explorar.add_argument("--salida", required=True, type=Path, help="carpeta de resultados")
+    explorar.add_argument(
+        "--solo", action="append", default=None, metavar="NOMBRE",
+        help="explorar solo este candidato (se puede repetir); suma a los resultados previos",
+    )
     return analizador
 
 
@@ -165,7 +169,9 @@ def ejecutar(argumentos: argparse.Namespace) -> object:
     if etapa == "explorar":
         from clasificador.datos.exploracion import cargar_candidatos, explorar
 
-        informes = explorar(cargar_candidatos(argumentos.candidatos), argumentos.salida)
+        informes = explorar(
+            cargar_candidatos(argumentos.candidatos), argumentos.salida, solo=argumentos.solo
+        )
         return {informe.conjunto: informe.incluido for informe in informes}
     from clasificador import pipeline
 

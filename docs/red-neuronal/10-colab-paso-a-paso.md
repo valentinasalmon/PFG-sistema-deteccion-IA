@@ -107,6 +107,7 @@ En los dos casos se usa el mismo paquete y la misma configuración. Lo que cambi
 | «Entorno de ejecución desconectado» | Inactividad | Ver «Si Colab corta la sesión» |
 | No hay GPU disponible | Demanda alta en Colab | Probar más tarde u otra GPU |
 | Una etapa falla | El motivo está en las líneas justo arriba del `RuntimeError` | Copiar esas líneas al chat |
+| `código -9` en una etapa o en la exploración | Colab cortó el proceso por falta de memoria | Pasar la salida al chat. La exploración ya corre cada conjunto por separado y no baja bloques de imágenes de más de 256 MB |
 
 ## Qué pasar al terminar
 
