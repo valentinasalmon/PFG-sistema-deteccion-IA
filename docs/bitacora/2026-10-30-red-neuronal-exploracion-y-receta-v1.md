@@ -43,3 +43,10 @@
 ## 2026-11-02: autos sin repetir en la lista maestra
 
 La autora notó que en la lista maestra se repetían los modelos de auto (12 modelos para 32 prompts) y solo cambiaba el daño: así varias imágenes muestran casi el mismo auto y aportan poco. Se cambió el auto de los prompts 13 a 32 por 20 modelos nuevos, de modo que cada auto aparece una sola vez. Los prompts 1 a 12 quedaron iguales para no tirar lo ya generado; de la prioridad A hay que rehacer el 17, 18, 19, 20, 25, 26, 27 y 28.
+
+## 2026-11-03: revisión del avance de la autora en Drive
+
+- Conjunto propio: el prompt 1 está hecho en ChatGPT, Gemini y Copilot, con original y captura. Las carpetas se crearon en mayúsculas (`SINTETICA/GEMINI/ORIGINAL`) y en la raíz de Mi unidad.
+- Se hizo que la fuente de carpeta local lea las carpetas sin distinguir mayúsculas de minúsculas, con su prueba: así no hace falta renombrarlas.
+- Pendiente de la autora: mover `SINTETICA` y `REAL` dentro de `evidentia/conjunto-propio/` y renombrar las capturas `001-choque-01.png` a `01-choque-001.png` (primero la escena, después el número).
+- La carpeta `evidentia/exploracion/` está vacía: el cuaderno 02 se abrió, pero la exploración no llegó a escribir resultados.

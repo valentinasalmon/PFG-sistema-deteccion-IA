@@ -206,7 +206,12 @@ class FuenteCarpetaLocal(FuenteDatos):
             if not ruta.is_file() or ruta.suffix.lower() not in EXTENSIONES_IMAGEN:
                 continue
             partes = ruta.relative_to(raiz).parts
-            if len(partes) != 4 or partes[0] not in _NOMBRES_CLASE or partes[2] not in VARIANTES:
+            # Las carpetas se comparan en minúsculas: en Drive es fácil
+            # crearlas como «SINTETICA/GEMINI/ORIGINAL» y eso no debe frenar
+            # la evaluación. El nombre del archivo se conserva tal cual.
+            carpetas = [parte.lower() for parte in partes[:3]]
+            valida = len(partes) == 4 and carpetas[0] in _NOMBRES_CLASE and carpetas[2] in VARIANTES
+            if not valida:
                 raise ErrorFuente(
                     f"la imagen {ruta} no respeta la estructura <clase>/<generador>/<variante>/"
                 )
@@ -214,10 +219,10 @@ class FuenteCarpetaLocal(FuenteDatos):
             yield EjemploCrudo(
                 contenido=contenido,
                 extension=_extension_de(contenido),
-                clase=_NOMBRES_CLASE[partes[0]],
-                generador=partes[1],
-                variante=partes[2],
-                nombre="/".join(partes),
+                clase=_NOMBRES_CLASE[carpetas[0]],
+                generador=carpetas[1],
+                variante=carpetas[2],
+                nombre="/".join([*carpetas, partes[3]]),
             )
 
 

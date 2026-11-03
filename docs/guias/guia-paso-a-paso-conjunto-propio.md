@@ -23,7 +23,7 @@ No hace falta terminar todo: **con la prioridad A de dos herramientas** ya se pu
 
 ## 2. Las carpetas
 
-Crear esta estructura en **Google Drive** (en la web: **+ Nuevo → Carpeta**). Los nombres van **exactamente así**: en minúsculas, sin tildes, sin espacios. El pipeline lee `<clase>/<herramienta o fuente>/<variante>/<archivo>`; si una carpeta tiene otro nombre, la evaluación se detiene con un error.
+Crear esta estructura en **Google Drive** (en la web: **+ Nuevo → Carpeta**), **dentro de `evidentia/conjunto-propio/`**. Los nombres van así: sin tildes y sin espacios. Mayúsculas o minúsculas da igual (`SINTETICA/GEMINI/ORIGINAL` también sirve, desde el 2026-11-03). El pipeline lee `<clase>/<herramienta o fuente>/<variante>/<archivo>`; si una carpeta tiene otro nombre, la evaluación se detiene con un error.
 
 ```
 Mi unidad/
@@ -57,6 +57,7 @@ Mi unidad/
 <escena>-<número>.<extensión>        por ejemplo:  01-choque-007.png
 ```
 
+- **Primero la escena y después el número**: `01-choque-001`, no `001-choque-01`. Si el nombre no sigue ese orden, la imagen no se cuenta en su escena.
 - El **número** es el **N.° de prompt** de la lista maestra, con tres cifras. Así, `05-lesion-041.png` es el prompt 41 en **todas** las herramientas: la misma escena generada por ChatGPT, Gemini, Copilot y Meta AI, cada una en su carpeta. Eso permite comparar las herramientas con el mismo contenido.
 - La extensión es **la que trae el archivo al descargarlo** (`.png`, `.jpg`, `.webp`). No convertir.
 - Las dos versiones llevan **el mismo nombre**, cada una en su carpeta (`original/01-choque-007.png`, `captura/01-choque-007.png`). La extensión puede cambiar entre versiones: está bien.

@@ -59,7 +59,7 @@ Lo arma la autora siguiendo el [protocolo del conjunto propio](../guias/protocol
 - Herramientas gratuitas: ChatGPT, Gemini (suscripción), Copilot, Meta AI, Grok y otras.
 - **Cómo se genera:** la [guía paso a paso](../guias/guia-paso-a-paso-conjunto-propio.md) tiene una **lista maestra de 90 prompts numerados** (el mismo prompt en todas las herramientas, para comparar con el mismo contenido), versiones v1, v2 (suave, si la herramienta se niega) y v3 (más realista), 20 ediciones de fotos reales, la lista de fotos reales que saca la autora y cómo buscar conjuntos nuevos.
 - **Fotos reales de conjuntos públicos:** CarDD (autos dañados), SCIN (fotos de piel sacadas por las propias personas, con el tono de piel etiquetado) y MOCS (obras), en `real/cardd/`, `real/scin/` y `real/obras/`. Ver la investigación.
-- Se guarda en una carpeta **privada** de Google Drive (`evidentia/conjunto-propio/`), con la estructura `<clase>/<generador>/<variante>/`.
+- Se guarda en una carpeta **privada** de Google Drive (`evidentia/conjunto-propio/`), con la estructura `<clase>/<generador>/<variante>/`. Las carpetas se leen sin distinguir mayúsculas de minúsculas (`SINTETICA/GEMINI/ORIGINAL` = `sintetica/gemini/original`).
 - **Nunca** se usa para entrenar ni se sube al repositorio: solo para evaluar (CA12, CA13).
 - Se evalúa **sin normalizar**, tal como llega, porque lo que se quiere medir es justamente el efecto de las capturas.
 

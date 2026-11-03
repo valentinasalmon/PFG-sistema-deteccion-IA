@@ -247,3 +247,13 @@ def test_obtener_respeta_la_cuota_por_generador(tmp_path):
     fuente = FuenteHuggingFace(_config_hf(), semilla=0, cargador=lambda _: filas)
     registros = obtener_de_fuente(fuente, tmp_path, {0: 0, 1: 2}, cuota_por_generador=1)
     assert sorted(r.generador for r in registros) == ["flux", "sdxl"]
+
+
+def test_carpeta_local_acepta_mayusculas(tmp_path):
+    """«SINTETICA/GEMINI/ORIGINAL» se lee igual que en minúsculas."""
+    carpeta = tmp_path / "SINTETICA" / "GEMINI" / "ORIGINAL"
+    carpeta.mkdir(parents=True)
+    (carpeta / "01-choque-001.png").write_bytes(_bytes_imagen((10, 20, 30)))
+    ejemplo = next(FuenteCarpetaLocal(_config_local(tmp_path)).iterar())
+    assert (ejemplo.clase, ejemplo.generador, ejemplo.variante) == (1, "gemini", "original")
+    assert ejemplo.nombre == "sintetica/gemini/original/01-choque-001.png"
