@@ -17,7 +17,7 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 | P2 | **Verificación de identidad con Identik (035)** para las aseguradoras | Definir el flujo, el costo y los datos biométricos (CP-35) | Autora define, agente especifica |
 | P1 | **Quitar Clarity antes de la versión final** (CP-37): sacar el script, la excepción de la CSP y el apartado de la política de privacidad | Fin de las pruebas | Agente |
 | P2 | **Inicio de sesión con Google (027)**: implementado; falta crear el cliente OAuth y probarlo | La autora crea el cliente en Google Cloud (guía en `despliegue-aws.md`) | Autora |
-| P1 | **Probar Hedera en *testnet* (023 y 029)**: crear el tema, cargar la clave, desplegar y comprobar en `/estado` | Próximo despliegue | Autora, con la guía de `despliegue-aws.md` |
+| ✓ | Hedera en *testnet* funcionando en producción (2026-11-02); falta comprobar la versión en un informe nuevo (029) | — | Autora |
 | P2 | **Definir los precios** con el análisis de costos (CP-38) | Análisis de costos | Autora |
 | P3 | Código de carga de 6 dígitos y "compartir desde la galería" (Web Share Target en Android, Atajo de Apple en iPhone) | — | Agente |
 | P3 | Firma digital del PDF (CP-27) | Certificado | Agente |

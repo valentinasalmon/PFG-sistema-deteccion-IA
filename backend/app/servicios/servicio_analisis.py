@@ -271,6 +271,8 @@ class ServicioAnalisis:
         """
         analisis.capa_actual = "Informe PDF"
         self._avanzar(analisis)
+        # Antes del PDF: que el sello de cada foto ya figure confirmado (023).
+        self.ejecucion["informes"].confirmar_sellos_de_imagenes(analisis)
         try:
             self.ejecucion["informes"].generar(analisis)
             return True

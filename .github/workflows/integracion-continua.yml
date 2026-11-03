@@ -40,6 +40,9 @@ jobs:
         run: pylint app pruebas wsgi.py
       - name: Pruebas, arquitectura y cobertura mínima del 80 %
         run: pytest
+      - name: Ganchos del arnés para el agente de IA (036)
+        working-directory: .
+        run: python -m unittest discover -s .claude/hooks -p "pruebas_*.py"
 
   frontend:
     name: Frontend (análisis, pruebas y compilación)

@@ -196,7 +196,7 @@ La cuenta de Hedera se crea en https://portal.hedera.com con clave **ED25519**. 
    flask --app wsgi sellos crear-tema --red testnet
    ```
    Pide el Account ID y la clave privada; esta última no se muestra mientras se escribe. Responde `Tema creado en testnet: 0.0.…`.
-2. **Guardar la clave privada cifrada en SSM** (no queda en el historial de la terminal):
+2. **Guardar la clave privada cifrada en SSM**. Lo más simple es la consola web: AWS → región Europa (Irlanda) → *Parameter Store* → crear o editar `/deteccion-imagenes/produccion/HEDERA_CLAVE`, tipo **SecureString**, y pegar la clave privada en *Valor*. Por terminal (no queda en el historial; se copia solo la línea del comando, sin las marcas de código):
    ```bash
    read -rs CLAVE && aws ssm put-parameter --name /deteccion-imagenes/produccion/HEDERA_CLAVE \
      --type SecureString --value "$CLAVE" --overwrite --region eu-west-1 && unset CLAVE
