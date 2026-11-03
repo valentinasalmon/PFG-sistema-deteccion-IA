@@ -105,7 +105,10 @@ def registro_pendiente():
 def completar_registro():
     """Crea la cuenta con perfil, institución y Términos aceptados, e inicia sesión."""
     solicitud = validar(SolicitudRegistroGoogle, request.get_json(silent=True))
-    usuario = _servicio().completar_registro(session.get(CLAVE_REGISTRO), solicitud)
+    usuario, token = _servicio().completar_registro(session.get(CLAVE_REGISTRO), solicitud)
     session.pop(CLAVE_REGISTRO, None)
     iniciar_sesion(usuario)
-    return jsonify({"usuario": usuario_a_dict(usuario), "csrf": generate_csrf()}), 201
+    return jsonify({
+        "usuario": usuario_a_dict(usuario), "csrf": generate_csrf(),
+        "pago": {"token": token} if token else None,
+    }), 201

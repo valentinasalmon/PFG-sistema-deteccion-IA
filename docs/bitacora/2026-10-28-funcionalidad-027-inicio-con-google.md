@@ -29,3 +29,9 @@
 - La autora crea el cliente OAuth en Google Cloud y lo carga en local y en SSM (guía en `despliegue-aws.md`).
 - Probar si Google acepta la dirección `sslip.io`. Si no, se prueba en local hasta comprar el dominio (CP-30).
 - Desvincular Google desde el perfil: trabajo futuro.
+
+## Prueba en local (2026-10-26)
+
+- La autora creó el proyecto y el cliente OAuth en Google Cloud (modo de prueba) y probó el ingreso en local: funciona.
+- Problema encontrado: el botón no aparecía aunque las claves estaban en `.env`. Seguía respondiendo un backend que había arrancado antes de cargarlas: el modo de depuración de Flask se reinicia cuando cambia el código, no cuando cambia el `.env`. Se agregó a la guía cómo comprobarlo sin mostrar el secreto.
+- Falta probarlo en producción (T11).

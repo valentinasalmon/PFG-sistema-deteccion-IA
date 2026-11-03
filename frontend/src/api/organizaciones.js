@@ -13,10 +13,12 @@ export async function listarOrganizaciones() {
   return organizaciones
 }
 
-/** Crea una organización; el usuario queda como Referente (RF10). */
-export async function crearOrganizacion(datos) {
-  const { organizacion } = await solicitar('POST', '/api/organizaciones', datos)
-  return organizacion
+/**
+ * Crea un estudio jurídico con su plan; el usuario queda como Referente (RF10).
+ * Devuelve la organización y el enlace de pago del plan (032).
+ */
+export function crearOrganizacion(datos) {
+  return solicitar('POST', '/api/organizaciones', datos)
 }
 
 /** Datos de una organización, su plan y el rol del usuario. */
@@ -110,7 +112,12 @@ export async function obtenerPlan(idOrganizacion) {
   return plan
 }
 
-/** Aplica otro plan después del pago simulado (RF20 CA2). */
+/** Pide otro plan: devuelve el enlace de pago; el plan rige al acreditarse (RF20 CA2, 032). */
 export function cambiarPlan(idOrganizacion, plan) {
   return solicitar('POST', `/api/organizaciones/${idOrganizacion}/plan`, { plan })
+}
+
+/** Enlace de pago nuevo para una organización con el pago pendiente (032). */
+export function retomarPago(idOrganizacion) {
+  return solicitar('POST', `/api/organizaciones/${idOrganizacion}/cobro`)
 }

@@ -6,12 +6,18 @@ ruta -> servicio -> repositorio / integración.
 Realiza: CA2 y CA3 de la funcionalidad 001; RNF15.
 """
 from dataclasses import dataclass, field
+from datetime import timedelta
 
 from app.integraciones.cliente_redis import ClienteRedis
 from app.repositorios.repositorio_salud import RepositorioSalud
+from app.utilidades.tiempo import ahora_utc
 
 ESTADO_OK = "ok"
 ESTADO_ERROR = "error"
+
+# Un sello que no se confirma en este tiempo se informa como demorado: el
+# trabajo periódico lo reintenta cada pocos minutos (funcionalidad 023).
+DEMORA_DEL_SELLO = timedelta(minutes=30)
 
 
 @dataclass
@@ -68,3 +74,46 @@ def crear_servicio_salud(url_redis):
             "redis": ClienteRedis(url_redis).verificar_conexion,
         }
     )
+
+
+def resumen_del_sello(modo, red, repositorio=None, ahora=None):
+    """Resume si el sello en Hedera está funcionando, para la página pública de estado.
+
+    No afecta a ``saludable``: si Hedera no responde, la plataforma sigue
+    analizando y reintenta el sello después (RF37 CA3). Nunca expone la
+    cuenta, el tema ni las huellas: solo el modo, la red y si hay fallas.
+
+    Args:
+        modo: valor de ``SELLO_TIEMPO`` (hedera, simulado o desactivado).
+        red: red de Hedera configurada (testnet o mainnet).
+        repositorio: repositorio con ``resumen_sellos``; por defecto, el real.
+        ahora: fecha de referencia (para las pruebas).
+
+    Returns:
+        Diccionario con ``modo``, ``red`` (solo con Hedera), ``estado``
+        (ok, con_demoras, con_fallas o desactivado) y ``ultimo`` (ISO o None).
+
+    Realiza: RF37, RNF15; tarea pendiente de comprobación de la 023.
+    """
+    if modo not in ("hedera", "simulado"):
+        return {"modo": "desactivado", "estado": "desactivado", "ultimo": None}
+    repositorio = repositorio or RepositorioSalud()
+    try:
+        datos = repositorio.resumen_sellos((ahora or ahora_utc()) - DEMORA_DEL_SELLO)
+    except Exception:  # pylint: disable=broad-exception-caught
+        # El resumen nunca debe tirar abajo la ruta de salud.
+        return {"modo": modo, "estado": ESTADO_ERROR, "ultimo": None}
+    if datos["fallidos"]:
+        estado = "con_fallas"
+    elif datos["demorados"]:
+        estado = "con_demoras"
+    else:
+        estado = ESTADO_OK
+    resumen = {
+        "modo": modo,
+        "estado": estado,
+        "ultimo": datos["ultimo"].isoformat() if datos["ultimo"] else None,
+    }
+    if modo == "hedera":
+        resumen["red"] = red
+    return resumen

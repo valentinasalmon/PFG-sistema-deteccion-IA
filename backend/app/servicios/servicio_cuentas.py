@@ -14,6 +14,7 @@ RF52 (CA1, CA2) de la 027.
 """
 import secrets
 
+from app.modelos.organizacion import TIPO_ASEGURADORA, TIPO_ESTUDIO_JURIDICO
 from app.modelos.usuario import (
     PERFIL_ABOGADO,
     PERFIL_ASEGURADORA,
@@ -82,6 +83,45 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
         solicitud.empresa = aseguradora.denominacion
         return invitacion, aseguradora
 
+    def _organizacion_a_pagar(self, solicitud, invitacion, aseguradora):
+        """Qué organización se registra con la cuenta y paga su plan (032).
+
+        Returns:
+            ``(nombre, tipo, plan)`` del estudio o la aseguradora, o None si es
+            un abogado independiente o alguien que se suma por invitación.
+
+        Raises:
+            ErrorValidacion: si falta el nombre del estudio o el plan no existe.
+        """
+        if aseguradora is not None:
+            plan = solicitud.plan or self.configuracion["PLAN_INICIAL_ORGANIZACION"]
+            return aseguradora.denominacion, TIPO_ASEGURADORA, plan
+        if solicitud.perfil != PERFIL_ABOGADO or invitacion is not None:
+            return None
+        nombre = (solicitud.nombre_estudio or "").strip()
+        if not nombre:
+            return None
+        return nombre, TIPO_ESTUDIO_JURIDICO, (
+            solicitud.plan or self.configuracion["PLAN_INICIAL_ORGANIZACION"]
+        )
+
+    def _crear_organizacion_pagada(self, usuario, aseguradora, organizacion):
+        """Crea el estudio o la aseguradora de la cuenta nueva con su cobro; no confirma.
+
+        Returns:
+            El token del enlace de pago, o None si no hay organización.
+        """
+        if organizacion is None:
+            return None
+        nombre, tipo, plan = organizacion
+        if tipo == TIPO_ASEGURADORA:
+            _, token = self.organizaciones.crear_aseguradora(usuario, aseguradora, plan)
+        else:
+            _, token = self.organizaciones.crear(
+                usuario, {"nombre": nombre, "tipo": tipo, "plan": plan}, confirmar=False
+            )
+        return token
+
     def registrar(self, solicitud):
         """Crea una cuenta pendiente de verificación y envía el correo de verificación.
 
@@ -90,11 +130,21 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
         titular. En todos los casos la respuesta al visitante es la misma,
         pero la auditoría registra el intento (CA7 de la 003).
 
+        Desde la funcionalidad 032, el estudio jurídico o la aseguradora se crean
+        con su plan y quedan esperando el pago. Si el correo ya existe, igual se
+        crea un cobro (sin organización), para que la respuesta no cambie.
+
         Args:
             solicitud: ``SolicitudRegistro`` ya validada.
+
+        Returns:
+            El token del enlace de pago, o None si no hay nada que pagar.
         """
         contrasenias.validar_politica(solicitud.contrasenia)
-        _, aseguradora = self._origen_aseguradora(solicitud)
+        invitacion, aseguradora = self._origen_aseguradora(solicitud)
+        organizacion = self._organizacion_a_pagar(solicitud, invitacion, aseguradora)
+        if organizacion is not None:
+            self.organizaciones.pagos.exigir_plan(organizacion[2])
         existente = self.repositorio.obtener_por_correo(solicitud.correo)
         if existente is not None:
             self.registro.registrar(
@@ -106,7 +156,11 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
                 self.correos.enviar_aviso_registro_existente(existente)
             else:
                 self._enviar_verificacion(existente)
-            return
+            if organizacion is None:
+                return None
+            return self.organizaciones.pagos.crear_cobro_sin_organizacion(
+                organizacion[2], organizacion[0], organizacion[1]
+            )
 
         usuario = Usuario(
             nombre=solicitud.nombre,
@@ -126,10 +180,10 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
             auditoria.CUENTA_REGISTRO, auditoria.EXITOSO, usuario=usuario, recurso=usuario,
             detalle={"perfil": usuario.perfil, "version_terminos": usuario.version_terminos},
         )
-        if aseguradora is not None:
-            self.organizaciones.crear_aseguradora(usuario, aseguradora)
+        token = self._crear_organizacion_pagada(usuario, aseguradora, organizacion)
         self.repositorio.guardar(usuario)
         self._enviar_verificacion(usuario)
+        return token
 
     def _hash_inutilizable(self):
         """Hash de una contraseña aleatoria que nadie conoce.
@@ -157,7 +211,10 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
             ErrorValidacion: si el correo ya tiene una cuenta o falta la aseguradora.
         """
         solicitud = solicitud.model_copy(update={"correo": identidad["correo"]})
-        _, aseguradora = self._origen_aseguradora(solicitud)
+        invitacion, aseguradora = self._origen_aseguradora(solicitud)
+        organizacion = self._organizacion_a_pagar(solicitud, invitacion, aseguradora)
+        if organizacion is not None:
+            self.organizaciones.pagos.exigir_plan(organizacion[2])
         if self.repositorio.obtener_por_correo(solicitud.correo) is not None:
             raise ErrorValidacion(
                 "Ya existe una cuenta con ese correo. Volvé a ingresar con Google.",
@@ -185,15 +242,14 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
                 "metodo": "google",
             },
         )
-        if aseguradora is not None:
-            self.organizaciones.crear_aseguradora(usuario, aseguradora)
+        token = self._crear_organizacion_pagada(usuario, aseguradora, organizacion)
         incorporaciones = (
             self.organizaciones.incorporar_al_verificar(usuario) if self.organizaciones else []
         )
         self.repositorio.guardar(usuario)
         if incorporaciones:
             self.organizaciones.avisar_incorporaciones(incorporaciones)
-        return usuario
+        return usuario, token
 
     def vincular_google(self, usuario, sub):
         """Vincula la cuenta de Google a una cuenta existente con el mismo correo (RF52 CA2).
@@ -387,7 +443,11 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
         usuario.rol = ROL_ADMINISTRADOR if administradora else ROL_USUARIO
         self.repositorio.guardar(usuario)
         if not self.organizaciones.listar(usuario):
-            self.organizaciones.crear(usuario, {"nombre": estudio, "tipo": "estudio_juridico"})
+            _, token = self.organizaciones.crear(
+                usuario, {"nombre": estudio, "tipo": "estudio_juridico"}
+            )
+            # La cuenta de prueba no pasa por la pantalla de pago: se acredita en el momento.
+            self.organizaciones.pagos.simular_acreditacion(token)
         return usuario
 
     def promover_administrador(self, correo):

@@ -19,9 +19,11 @@ ROL_MIEMBRO = "miembro"
 ROLES_ORGANIZACION = (ROL_REFERENTE, ROL_MIEMBRO)
 
 # Estado de la organización: las aseguradoras esperan la aprobación del Administrador (RN38).
+# Desde la funcionalidad 032, toda organización nueva espera primero el pago de su plan.
+ORGANIZACION_PAGO_PENDIENTE = "pago_pendiente"
 ORGANIZACION_PENDIENTE = "pendiente"
 ORGANIZACION_ACTIVA = "activa"
-ESTADOS_ORGANIZACION = (ORGANIZACION_PENDIENTE, ORGANIZACION_ACTIVA)
+ESTADOS_ORGANIZACION = (ORGANIZACION_PAGO_PENDIENTE, ORGANIZACION_PENDIENTE, ORGANIZACION_ACTIVA)
 
 INVITACION_PENDIENTE = "pendiente"
 INVITACION_ACEPTADA = "aceptada"
@@ -78,6 +80,16 @@ class Organizacion(db.Model):  # pylint: disable=too-few-public-methods
     def pendiente(self):
         """True si espera la aprobación del Administrador (RN38)."""
         return self.estado == ORGANIZACION_PENDIENTE
+
+    @property
+    def pago_pendiente(self):
+        """True si espera la acreditación del pago de su plan (032)."""
+        return self.estado == ORGANIZACION_PAGO_PENDIENTE
+
+    @property
+    def activa(self):
+        """True si ya se puede usar: pagada y, si es aseguradora, aprobada."""
+        return self.estado == ORGANIZACION_ACTIVA
 
 
 class Membresia(db.Model):  # pylint: disable=too-few-public-methods

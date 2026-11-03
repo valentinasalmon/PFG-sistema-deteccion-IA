@@ -156,6 +156,23 @@ class ServicioInformes:
         self.sellar(informe)
         return informe
 
+    def confirmar_sellos_de_imagenes(self, analisis):
+        """Antes de armar el PDF, deja confirmados los sellos de sus imágenes (023).
+
+        Así el informe muestra la fecha y la referencia de Hedera en lugar de
+        «Pendiente de confirmación». Nunca impide generar el informe.
+        """
+        if self.sellos is None:
+            return
+        try:
+            self.sellos.confirmar_antes_de_informar(
+                [getattr(incluida, "imagen", None) for incluida in analisis.imagenes]
+            )
+        except Exception:  # pylint: disable=broad-exception-caught
+            registro_log.exception(
+                "No se pudieron confirmar los sellos del análisis %s", analisis.id
+            )
+
     def sellar(self, informe):
         """Primer intento de sellar la huella del PDF; si falla, lo retoma la tarea (RF55 CA1).
 

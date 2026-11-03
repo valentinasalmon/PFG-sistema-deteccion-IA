@@ -4,8 +4,9 @@
  * - Pantallas de acceso (solo sin sesión): inicio de sesión, registro y
  *   recuperación de la contraseña.
  * - Pantallas de enlaces recibidos por correo (incluida la invitación a una
- *   organización), la carga desde el celular con un QR (024) y textos
- *   legales: accesibles con o sin sesión.
+ *   organización), la carga desde el celular con un QR (024), el pago del
+ *   plan (032) y textos legales: accesibles con o sin sesión.
+ * - Portada pública (033): en ``/`` sin sesión y en ``/presentacion`` siempre.
  * - Pantallas internas: requieren sesión (CA22). Las de casos y
  *   organizaciones no son para la administradora, y el tablero de
  *   administración es solo para ella (funcionalidad 028).
@@ -16,6 +17,7 @@
 import { Route, Routes } from 'react-router'
 import { DisposicionAcceso, DisposicionInterna } from './componentes/Disposiciones.jsx'
 import {
+  RutaPortada,
   RutaProtegida,
   RutaSoloAdministracion,
   RutaSoloUsuarios,
@@ -35,7 +37,9 @@ import PaginaNuevaOrganizacion from './paginas/PaginaNuevaOrganizacion.jsx'
 import PaginaNuevoCaso from './paginas/PaginaNuevoCaso.jsx'
 import PaginaOrganizacion from './paginas/PaginaOrganizacion.jsx'
 import PaginaOrganizaciones from './paginas/PaginaOrganizaciones.jsx'
+import PaginaPago from './paginas/PaginaPago.jsx'
 import PaginaPerfil from './paginas/PaginaPerfil.jsx'
+import PaginaPortada from './paginas/PaginaPortada.jsx'
 import PaginaPrivacidad from './paginas/PaginaPrivacidad.jsx'
 import PaginaRecuperarContrasenia from './paginas/PaginaRecuperarContrasenia.jsx'
 import PaginaRegistro from './paginas/PaginaRegistro.jsx'
@@ -48,6 +52,8 @@ import PaginaVerificarInforme from './paginas/PaginaVerificarInforme.jsx'
 export default function App() {
   return (
     <Routes>
+      <Route path="/presentacion" element={<PaginaPortada />} />
+
       <Route element={<DisposicionAcceso />}>
         <Route element={<RutaSoloVisitantes />}>
           <Route path="/iniciar-sesion" element={<PaginaIniciarSesion />} />
@@ -60,6 +66,7 @@ export default function App() {
         <Route path="/confirmar-correo" element={<PaginaConfirmarCorreo />} />
         <Route path="/invitaciones/responder" element={<PaginaInvitacion />} />
         <Route path="/cargar/:token" element={<PaginaCargaCelular />} />
+        <Route path="/pago/:token" element={<PaginaPago />} />
         <Route path="/verificar" element={<PaginaVerificarInforme />} />
         <Route path="/verificar/:codigo" element={<PaginaVerificarInforme />} />
         <Route path="/terminos" element={<PaginaTerminos />} />
@@ -68,11 +75,18 @@ export default function App() {
         <Route path="*" element={<PaginaNoEncontrada />} />
       </Route>
 
+      <Route path="/" element={<RutaPortada />}>
+        <Route element={<DisposicionInterna />}>
+          <Route element={<RutaSoloUsuarios />}>
+            <Route index element={<PaginaInicio />} />
+          </Route>
+        </Route>
+      </Route>
+
       <Route element={<RutaProtegida />}>
         <Route element={<DisposicionInterna />}>
           <Route path="/perfil" element={<PaginaPerfil />} />
           <Route element={<RutaSoloUsuarios />}>
-            <Route path="/" element={<PaginaInicio />} />
             <Route path="/casos" element={<PaginaCasos />} />
             <Route path="/casos/nuevo" element={<PaginaNuevoCaso />} />
             <Route path="/casos/:id" element={<PaginaCaso />} />

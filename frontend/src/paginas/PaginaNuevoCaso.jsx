@@ -8,9 +8,13 @@
  * Al costado se muestra qué pasa después de crear el caso, para que el flujo
  * completo se entienda antes de empezar (022).
  *
+ * Desde la funcionalidad 034 el expediente y la descripción quedan a un clic
+ * («Agregar…»), para que lo obligatorio se vea primero, y el botón dice lo
+ * que pasa después: «Crear y cargar las fotos».
+ *
  * Realiza: RF23; CA1 a CA3 de la funcionalidad 005 (CU18); RNF10.
  */
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { crearCaso } from '../api/casos.js'
 import { listarOrganizaciones } from '../api/organizaciones.js'
@@ -30,6 +34,8 @@ import { hoyIso } from '../utilidades/fechas.js'
 function Formulario({ espacios }) {
   const navegar = useNavigate()
   const { usuario } = useSesion()
+  const referencia = textosDelRubro(usuario.perfil).etiquetaReferencia
+  const [masDatos, setMasDatos] = useState(false)
   const { valores, errores, error, enviando, cambiar, enviar, marcarErrores } = useFormulario({
     espacio: espacios[0].valor,
     tipo: '',
@@ -51,7 +57,7 @@ function Formulario({ espacios }) {
     }
     const resultado = await enviar((datos) => crearCaso(datos))
     if (resultado.ok) {
-      navegar(`/casos/${resultado.datos.id}`, {
+      navegar(`/casos/${resultado.datos.id}?etapa=imagenes`, {
         state: { mensaje: `Se creó el caso ${resultado.datos.numero}.` },
       })
     }
@@ -111,36 +117,46 @@ function Formulario({ espacios }) {
           required
         />
         <CampoTexto
-          etiqueta={textosDelRubro(usuario.perfil).etiquetaReferencia}
-          nombre="expediente"
-          opcional
-          value={valores.expediente}
+          etiqueta="Lugar del hecho"
+          nombre="lugar"
+          value={valores.lugar}
           onChange={cambiar}
-          error={errores.expediente}
+          error={errores.lugar}
+          required
         />
       </div>
-      <CampoTexto
-        etiqueta="Lugar del hecho"
-        nombre="lugar"
-        value={valores.lugar}
-        onChange={cambiar}
-        error={errores.lugar}
-        required
-      />
-      <CampoAreaTexto
-        etiqueta="Descripción"
-        nombre="descripcion"
-        opcional
-        value={valores.descripcion}
-        onChange={cambiar}
-        error={errores.descripcion}
-      />
+      {masDatos || errores.expediente || errores.descripcion ? (
+        <>
+          <CampoTexto
+            etiqueta={referencia}
+            nombre="expediente"
+            opcional
+            value={valores.expediente}
+            onChange={cambiar}
+            error={errores.expediente}
+          />
+          <CampoAreaTexto
+            etiqueta="Descripción"
+            nombre="descripcion"
+            opcional
+            value={valores.descripcion}
+            onChange={cambiar}
+            error={errores.descripcion}
+          />
+        </>
+      ) : (
+        <button type="button" className="boton boton--fantasma boton--chico formulario__agregar" onClick={() => setMasDatos(true)}>
+          <Icono nombre="mas" tamanio={16} />
+          Agregar {referencia.toLowerCase()} y descripción
+        </button>
+      )}
       <div className="pasos__acciones">
-        <Link to="/casos" className="boton boton--secundario">
+        <Link to="/casos" className="boton boton--fantasma">
           Cancelar
         </Link>
         <button type="submit" className="boton" disabled={enviando}>
-          {enviando ? 'Creando…' : 'Crear caso'}
+          {enviando ? 'Creando…' : 'Crear y cargar las fotos'}
+          {!enviando && <Icono nombre="derecha" tamanio={18} />}
         </button>
       </div>
     </form>
@@ -181,10 +197,6 @@ export default function PaginaNuevoCaso() {
           <aside className="seccion dos-columnas__lateral" aria-labelledby="titulo-despues">
             <h2 id="titulo-despues">Qué sigue</h2>
             <ol className="pasos-flujo">
-              <li>
-                <Icono nombre="casos" tamanio={18} />
-                <span><strong>Creás el caso</strong> con los datos del hecho.</span>
-              </li>
               <li>
                 <Icono nombre="imagen" tamanio={18} />
                 <span><strong>Cargás las imágenes.</strong> Se guarda el original y su huella SHA-256.</span>

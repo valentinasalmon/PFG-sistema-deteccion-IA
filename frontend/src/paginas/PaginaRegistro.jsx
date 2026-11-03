@@ -1,17 +1,25 @@
 /**
  * Pantalla de registro de una cuenta nueva, guiada por pasos.
  *
- * Registro común (4 pasos):
- * 1. Perfil: "Abogado o abogada" o "Registrar mi aseguradora".
- * 2. Nombre y apellido.
- * 3. Colegio de abogados (opcional) o la aseguradora del catálogo de la SSN
- *    (obligatoria).
- * 4. Correo, contraseña y aceptación expresa de los Términos de Uso y de la
- *    Política de Privacidad.
+ * Desde la funcionalidad 032 hay tres caminos: abogado independiente, abogado
+ * con estudio jurídico y aseguradora. Desde la tercera tanda de la 034 el
+ * registro es más corto (pedido de la autora: «el registro sigue muy mal»):
+ *
+ * - «Tus datos» junta el nombre, el apellido y la institución (el colegio,
+ *   opcional, o la aseguradora del catálogo) y, para el estudio, su nombre.
+ * - Si se llega desde la portada con el camino o el plan ya elegidos, esos
+ *   pasos no se muestran: un resumen arriba los indica y permite cambiarlos.
+ *
+ * Así, el independiente que llega desde la portada completa 2 pasos (tus
+ * datos y tu cuenta) y el estudio o la aseguradora 3 (más el pago). Sin
+ * nada elegido, se suman el camino y, si corresponde, el plan.
+ *
+ * El paso de la cuenta pide el correo, la contraseña y la aceptación expresa
+ * de los Términos de Uso y de la Política de Privacidad.
  *
  * Registro con invitación (``?invitacion=<token>``): el correo viene fijado.
- * Si invita una aseguradora, el perfil también, y solo quedan los pasos 2 y
- * 4; al verificar el correo, la persona queda dentro de la aseguradora.
+ * Si invita una aseguradora, el perfil también, y solo quedan tus datos y tu
+ * cuenta; al verificar el correo, la persona queda dentro de la aseguradora.
  *
  * Cada paso se valida antes de avanzar y los datos se conservan al volver.
  * El backend valida de forma definitiva al crear la cuenta: si rechaza un
@@ -27,28 +35,54 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { registrarCuenta } from '../api/cuentas.js'
 import { consultarInvitacion } from '../api/organizaciones.js'
+import { listarPlanes } from '../api/pagos.js'
 import AceptacionTerminos from '../componentes/AceptacionTerminos.jsx'
 import Aviso from '../componentes/Aviso.jsx'
 import BotonGoogle from '../componentes/BotonGoogle.jsx'
+import CampoContrasenia from '../componentes/CampoContrasenia.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import FormularioReenvio from '../componentes/FormularioReenvio.jsx'
 import IndicadorPasos from '../componentes/IndicadorPasos.jsx'
+import PanelPago from '../componentes/PanelPago.jsx'
 import PasoInstitucion from '../componentes/PasoInstitucion.jsx'
 import ReglasContrasenia from '../componentes/ReglasContrasenia.jsx'
-import SelectorPerfil from '../componentes/SelectorPerfil.jsx'
+import ResultadoPago from '../componentes/ResultadoPago.jsx'
+import SelectorCamino from '../componentes/SelectorCamino.jsx'
+import SelectorPlan from '../componentes/SelectorPlan.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useFormulario } from '../hooks/useFormulario.js'
+import { NOMBRES_DE_PLAN } from '../utilidades/planes.js'
+import { caminoConPago, perfilDelCamino } from '../utilidades/registro.js'
 
-const PASOS_COMUNES = ['perfil', 'datos', 'institucion', 'cuenta']
-const PASOS_EMPLEADO = ['datos', 'cuenta']
+const NOMBRES_DE_CAMINO = {
+  independiente: 'Abogado o abogada independiente',
+  estudio: 'Estudio jurídico',
+  aseguradora: 'Aseguradora',
+}
+
+/**
+ * Pasos según el camino y lo que ya viene elegido desde la portada.
+ * Mientras no hay camino, se cuentan los del independiente.
+ */
+function pasosDelCamino({ camino, esEmpleado, caminoFijado, planFijado }) {
+  if (esEmpleado) return ['datos', 'cuenta']
+  const pasos = caminoFijado ? [] : ['perfil']
+  pasos.push('datos')
+  if (caminoConPago(camino) && !planFijado) pasos.push('plan')
+  pasos.push('cuenta')
+  if (caminoConPago(camino)) pasos.push('pago')
+  return pasos
+}
 
 const VALORES_INICIALES = {
   nombre: '',
   apellido: '',
   correo: '',
   contrasenia: '',
-  perfil: '',
+  camino: '',
+  nombre_estudio: '',
+  plan: 'basico',
   colegio: '',
   id_aseguradora: null,
   acepta_terminos: false,
@@ -57,22 +91,31 @@ const VALORES_INICIALES = {
 /** Paso del formulario en el que se carga cada campo (CA7 de la 020). */
 const PASO_DE_CADA_CAMPO = {
   perfil: 'perfil',
+  camino: 'perfil',
+  nombre_estudio: 'datos',
+  plan: 'plan',
   nombre: 'datos',
   apellido: 'datos',
-  colegio: 'institucion',
-  empresa: 'institucion',
-  id_aseguradora: 'institucion',
+  colegio: 'datos',
+  empresa: 'datos',
+  id_aseguradora: 'datos',
   correo: 'cuenta',
   contrasenia: 'cuenta',
   acepta_terminos: 'cuenta',
 }
 
 /** Arma el cuerpo de la solicitud con solo los datos que corresponden. */
-function armarSolicitud({ colegio, id_aseguradora: idAseguradora, ...datos }, token) {
-  const solicitud = { ...datos }
+function armarSolicitud(
+  { camino, colegio, id_aseguradora: idAseguradora, nombre_estudio: nombreEstudio, plan, ...datos },
+  token,
+  esEmpleado,
+) {
+  const solicitud = { ...datos, perfil: esEmpleado ? 'aseguradora' : perfilDelCamino(camino) }
   if (token) solicitud.token_invitacion = token
-  if (datos.perfil === 'abogado' && colegio.trim()) solicitud.colegio = colegio
-  if (datos.perfil === 'aseguradora' && !token) solicitud.id_aseguradora = idAseguradora
+  if (solicitud.perfil === 'abogado' && colegio.trim()) solicitud.colegio = colegio
+  if (solicitud.perfil === 'aseguradora' && !token) solicitud.id_aseguradora = idAseguradora
+  if (camino === 'estudio' && !token) solicitud.nombre_estudio = nombreEstudio.trim()
+  if (caminoConPago(camino) && !token) solicitud.plan = plan
   return solicitud
 }
 
@@ -80,42 +123,87 @@ function armarSolicitud({ colegio, id_aseguradora: idAseguradora, ...datos }, to
  * Valida en el navegador los datos obligatorios del paso, para no avanzar
  * con datos faltantes. Devuelve el mensaje de error de cada campo.
  */
-function validarPaso(paso, valores) {
+function validarPaso(paso, valores, esEmpleado) {
   const errores = {}
-  if (paso === 'perfil' && !valores.perfil) {
-    errores.perfil = 'Elegí cómo vas a usar la plataforma.'
+  if (paso === 'perfil' && !valores.camino) {
+    errores.camino = 'Elegí cómo vas a usar la plataforma.'
   }
   if (paso === 'datos') {
+    if (valores.camino === 'estudio' && !valores.nombre_estudio.trim()) {
+      errores.nombre_estudio = 'Escribí el nombre de tu estudio jurídico.'
+    }
     if (!valores.nombre.trim()) errores.nombre = 'Ingresá tu nombre.'
     if (!valores.apellido.trim()) errores.apellido = 'Ingresá tu apellido.'
-  }
-  if (paso === 'institucion' && valores.perfil === 'aseguradora' && !valores.id_aseguradora) {
-    errores.id_aseguradora = 'Elegí tu aseguradora del listado.'
+    if (valores.camino === 'aseguradora' && !valores.id_aseguradora && !esEmpleado) {
+      errores.id_aseguradora = 'Elegí tu aseguradora del listado.'
+    }
   }
   return errores
 }
 
-/** Título de cada paso; el de la institución depende del perfil elegido. */
-function tituloDelPaso(paso, perfil) {
+/** Título de cada paso; el de los datos depende del camino elegido. */
+function tituloDelPaso(paso, valores, esEmpleado) {
   if (paso === 'perfil') return '¿Cómo vas a usar la plataforma?'
-  if (paso === 'datos') return 'Tus datos'
-  if (paso === 'institucion') {
-    return perfil === 'abogado' ? 'Tu colegio de abogados' : 'Tu aseguradora'
+  if (paso === 'datos') {
+    if (esEmpleado) return 'Tus datos'
+    if (valores.camino === 'estudio') return 'Vos y tu estudio'
+    if (valores.camino === 'aseguradora') return 'Vos y tu aseguradora'
+    return 'Tus datos'
+  }
+  if (paso === 'plan') {
+    return valores.camino === 'estudio'
+      ? `Elegí el plan de ${valores.nombre_estudio.trim() || 'tu estudio'}`
+      : 'Elegí el plan de tu aseguradora'
   }
   return 'Tu cuenta'
 }
 
-function FormularioRegistro({ invitacion, token }) {
+/** Paso del plan: Básico o Profesional, con sus límites (032, frame 10b). */
+function PasoPlan({ valor, cambiar, error }) {
+  const { datos, error: errorPlanes, cargando } = useDatos(listarPlanes)
+  if (cargando) return <Cargando texto="Cargando los planes…" />
+  if (errorPlanes) return <Aviso tipo="error">{errorPlanes.message}</Aviso>
+  return (
+    <>
+      <p className="nota">
+        El plan define cuántas personas suman al equipo y cuánto pueden analizar. Lo podés cambiar después
+        desde la organización.
+      </p>
+      <SelectorPlan planes={datos.planes} valor={valor} onChange={cambiar} error={error} />
+      <Aviso tipo="alerta">
+        <strong>Precios a confirmar.</strong> Mientras se define el cobro con Cresium, el pago es una
+        simulación: no se cobra nada.
+      </Aviso>
+    </>
+  )
+}
+
+const CAMINOS_DESDE_LA_LANDING = new Set(['independiente', 'estudio', 'aseguradora'])
+const PLANES_DESDE_LA_LANDING = new Set(['basico', 'profesional'])
+
+function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
   const esEmpleado = invitacion?.organizacion.tipo === 'aseguradora'
-  const pasos = esEmpleado ? PASOS_EMPLEADO : PASOS_COMUNES
+  // La landing puede llegar con el camino y el plan ya elegidos (?tipo=estudio&plan=profesional).
+  const caminoInicial = esEmpleado
+    ? 'aseguradora'
+    : !invitacion && CAMINOS_DESDE_LA_LANDING.has(caminoPedido)
+      ? caminoPedido
+      : ''
   const { valores, setValores, errores, error, enviando, cambiar, enviar, marcarErrores } =
     useFormulario({
       ...VALORES_INICIALES,
       correo: invitacion?.correo ?? '',
-      perfil: esEmpleado ? 'aseguradora' : '',
+      camino: caminoInicial,
+      plan: PLANES_DESDE_LA_LANDING.has(planPedido) ? planPedido : VALORES_INICIALES.plan,
     })
+  // Lo que llega elegido desde la portada no se vuelve a preguntar.
+  const [caminoFijado, setCaminoFijado] = useState(Boolean(caminoInicial) && !esEmpleado)
+  const [planFijado, setPlanFijado] = useState(PLANES_DESDE_LA_LANDING.has(planPedido))
+  const pasos = pasosDelCamino({ camino: valores.camino, esEmpleado, caminoFijado, planFijado })
   const [indice, setIndice] = useState(0)
   const [mensaje, setMensaje] = useState(null)
+  const [tokenPago, setTokenPago] = useState(null)
+  const [cobroAcreditado, setCobroAcreditado] = useState(null)
   const refTitulo = useRef(null)
   const primeraVez = useRef(true)
   const paso = pasos[indice]
@@ -132,7 +220,7 @@ function FormularioRegistro({ invitacion, token }) {
 
   function avanzar(evento) {
     evento.preventDefault()
-    const erroresDelPaso = validarPaso(paso, valores)
+    const erroresDelPaso = validarPaso(paso, valores, esEmpleado)
     marcarErrores(erroresDelPaso)
     if (Object.keys(erroresDelPaso).length === 0) setIndice(indice + 1)
   }
@@ -142,17 +230,62 @@ function FormularioRegistro({ invitacion, token }) {
     setIndice(indice - 1)
   }
 
+  /** Vuelve a mostrar el paso del camino o del plan que venía elegido. */
+  function cambiarEleccion() {
+    marcarErrores({})
+    setCaminoFijado(false)
+    setPlanFijado(false)
+    setIndice(0)
+  }
+
   async function crearCuenta(evento) {
     evento.preventDefault()
-    const resultado = await enviar((datos) => registrarCuenta(armarSolicitud(datos, token)))
+    const resultado = await enviar((datos) =>
+      registrarCuenta(armarSolicitud(datos, token, esEmpleado)),
+    )
     if (resultado.ok) {
       setMensaje(resultado.datos.mensaje)
+      // El estudio y la aseguradora siguen con el pago del plan (032).
+      if (resultado.datos.pago) {
+        setTokenPago(resultado.datos.pago.token)
+        setIndice(pasos.indexOf('pago'))
+      }
       return
     }
     const indices = Object.keys(resultado.error.errores)
       .map((campo) => pasos.indexOf(PASO_DE_CADA_CAMPO[campo]))
       .filter((posicion) => posicion >= 0)
     if (indices.length && Math.min(...indices) < indice) setIndice(Math.min(...indices))
+  }
+
+  const avisoDeCorreo = (
+    <>
+      <Aviso tipo="info">{mensaje}</Aviso>
+      <FormularioReenvio correoInicial={valores.correo} />
+    </>
+  )
+
+  if (cobroAcreditado) {
+    return (
+      <div className="registro-ancho">
+        <ResultadoPago cobro={cobroAcreditado}>
+          <p>Para entrar, primero confirmá tu correo con el enlace que te enviamos.</p>
+          {avisoDeCorreo}
+          <p className="enlaces-secundarios">
+            <Link to="/iniciar-sesion">Ir a iniciar sesión</Link>
+          </p>
+        </ResultadoPago>
+      </div>
+    )
+  }
+
+  if (tokenPago) {
+    return (
+      <div className="registro-ancho">
+        <IndicadorPasos actual={indice + 1} total={pasos.length} />
+        <PanelPago token={tokenPago} alAcreditar={setCobroAcreditado} />
+      </div>
+    )
   }
 
   if (mensaje) {
@@ -167,7 +300,7 @@ function FormularioRegistro({ invitacion, token }) {
         {esEmpleado && (
           <p>Cuando verifiques tu correo, vas a quedar dentro de {invitacion.organizacion.nombre}.</p>
         )}
-        {!invitacion && valores.perfil === 'aseguradora' && (
+        {!invitacion && valores.camino === 'aseguradora' && (
           <p>
             Después de verificar tu correo, el Administrador de la plataforma va a revisar el
             registro de la aseguradora. Te avisamos por correo cuando esté aprobada.
@@ -181,31 +314,66 @@ function FormularioRegistro({ invitacion, token }) {
     )
   }
 
-  const esUltimoPaso = indice === pasos.length - 1
+  const esPasoDeCuenta = paso === 'cuenta'
 
   return (
-    <>
+    <div className="registro-ancho">
       <h1>Crear una cuenta</h1>
       {invitacion && (
         <Aviso tipo="info">
           Te sumás a {invitacion.organizacion.nombre} con la invitación de {invitacion.invitante}.
         </Aviso>
       )}
+      {caminoFijado && (
+        <div className="registro-eleccion">
+          <span>
+            <small>Estás creando</small>
+            <strong>
+              {NOMBRES_DE_CAMINO[valores.camino]}
+              {caminoConPago(valores.camino) && planFijado && ` · Plan ${NOMBRES_DE_PLAN[valores.plan]}`}
+            </strong>
+          </span>
+          <button type="button" className="boton-enlace" onClick={cambiarEleccion}>
+            Cambiar
+          </button>
+        </div>
+      )}
       {indice === 0 && <BotonGoogle invitacion={token} />}
       <IndicadorPasos actual={indice + 1} total={pasos.length} />
       <h2 id="titulo-paso" ref={refTitulo} tabIndex={-1} className="pasos__titulo">
-        {tituloDelPaso(paso, valores.perfil)}
+        {tituloDelPaso(paso, valores, esEmpleado)}
       </h2>
       {error && <Aviso tipo="error">{error.message}</Aviso>}
 
-      <form onSubmit={esUltimoPaso ? crearCuenta : avanzar} className="formulario" noValidate>
+      <form onSubmit={esPasoDeCuenta ? crearCuenta : avanzar} className="formulario" noValidate>
         {paso === 'perfil' && (
-          <SelectorPerfil valor={valores.perfil} onChange={cambiar} error={errores.perfil} />
+          <SelectorCamino
+            valores={valores}
+            errores={errores}
+            cambiar={cambiar}
+            sinEstudio={Boolean(invitacion)}
+          />
         )}
+
+        {paso === 'plan' && <PasoPlan valor={valores.plan} cambiar={cambiar} error={errores.plan} />}
 
         {paso === 'datos' && (
           <>
-            <CampoTexto
+            {valores.camino === 'estudio' && !token && (
+              <CampoTexto
+                etiqueta="Nombre del estudio jurídico"
+                nombre="nombre_estudio"
+                autoComplete="organization"
+                maxLength={150}
+                value={valores.nombre_estudio}
+                onChange={cambiar}
+                error={errores.nombre_estudio}
+                ayuda="Vas a ser su Referente. Después invitás a tu equipo."
+                required
+              />
+            )}
+            <div className="campos-en-fila">
+              <CampoTexto
               etiqueta="Nombre"
               nombre="nombre"
               autoComplete="given-name"
@@ -223,16 +391,16 @@ function FormularioRegistro({ invitacion, token }) {
               error={errores.apellido}
               required
             />
+            </div>
+            {!esEmpleado && (
+              <PasoInstitucion
+                valores={{ ...valores, perfil: perfilDelCamino(valores.camino) }}
+                errores={errores}
+                cambiar={cambiar}
+                setValores={setValores}
+              />
+            )}
           </>
-        )}
-
-        {paso === 'institucion' && (
-          <PasoInstitucion
-            valores={valores}
-            errores={errores}
-            cambiar={cambiar}
-            setValores={setValores}
-          />
         )}
 
         {paso === 'cuenta' && (
@@ -249,15 +417,13 @@ function FormularioRegistro({ invitacion, token }) {
               ayuda={invitacion ? 'Es el correo al que llegó la invitación.' : undefined}
               required
             />
-            <CampoTexto
+            <CampoContrasenia
               etiqueta="Contraseña"
               nombre="contrasenia"
-              tipo="password"
               autoComplete="new-password"
               value={valores.contrasenia}
               onChange={cambiar}
               error={errores.contrasenia}
-              idDescripcion="reglas-contrasenia"
               required
             />
             <ReglasContrasenia contrasenia={valores.contrasenia} id="reglas-contrasenia" />
@@ -276,9 +442,13 @@ function FormularioRegistro({ invitacion, token }) {
               Atrás
             </button>
           )}
-          {esUltimoPaso ? (
+          {esPasoDeCuenta ? (
             <button type="submit" className="boton" disabled={enviando}>
-              {enviando ? 'Creando la cuenta…' : 'Crear cuenta'}
+              {enviando
+                ? 'Creando la cuenta…'
+                : caminoConPago(valores.camino) && !token
+                  ? 'Crear la cuenta e ir al pago'
+                  : 'Crear cuenta'}
             </button>
           ) : (
             <button type="submit" className="boton">
@@ -293,7 +463,7 @@ function FormularioRegistro({ invitacion, token }) {
           ¿Ya tenés cuenta? <Link to="/iniciar-sesion">Iniciá sesión</Link>
         </span>
       </p>
-    </>
+    </div>
   )
 }
 
@@ -321,5 +491,12 @@ export default function PaginaRegistro() {
       </>
     )
   }
-  return <FormularioRegistro invitacion={invitacion} token={token} />
+  return (
+    <FormularioRegistro
+      invitacion={invitacion}
+      token={token}
+      caminoPedido={parametros.get('tipo')}
+      planPedido={parametros.get('plan')}
+    />
+  )
 }

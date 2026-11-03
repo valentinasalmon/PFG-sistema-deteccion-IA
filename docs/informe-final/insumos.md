@@ -45,7 +45,7 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   Las alternativas evaluadas y descartadas (cable, AirDrop, Quick Share, iCloud, LocalSend, correo, WhatsApp, app nativa) están en la investigación.
 - **Etapa 1 implementada** (funcionalidad 024): soporte de HEIC sin convertir el original, detectado por la caja `ftyp`, y ELA con validez limitada en HEIC.
 - **El tutor aprobó el QR hacia la galería (2026-10-26). Etapa 2 implementada:**
-  - enlace de un solo uso (15 minutos, 30 fotos, solo carga en ese caso);
+  - enlace de un solo uso (15 minutos, sin tope de fotos más allá del límite del plan, solo carga en ese caso);
   - token de 192 bits, del que solo se guarda la huella;
   - QR en SVG generado en el servidor;
   - página del celular sin sesión, con galería y cámara;
@@ -132,15 +132,84 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - decisión de diseño: separar el trabajo por etapas redujo una pantalla de unos 8.800 px a una etapa por vez, sin perder información;
   - pendiente: validar con los tutores el texto de la declaración (Ley 25.326).
 
+  - tercera tanda (2026-10-29): inicio de sesión con ventajas reales y contraseña visible, y revisión completa a 390 px de ancho (celular).
+- **Pago en el registro (032, 2026-10-29):** la autora decidió cobrar el plan al registrar un estudio jurídico o una aseguradora, simulado con Cresium (fintech argentina: cobro por transferencia a un CVU con conciliación automática, comisión desde el 0,4 %; sin API pública ni entorno de pruebas). Para el informe: es una decisión de modelo de negocio que conecta el plan con los límites del sistema (miembros, análisis, almacenamiento).
+  - Implementación (ADR-0020): el proveedor de pagos es intercambiable (patrón Strategy, como el análisis y el almacenamiento); hoy un proveedor simulado genera el CVU, el alias y la referencia, y cuando haya API de Cresium se cambia solo esa pieza.
+  - Seguridad: el enlace de pago lleva un token aleatorio y la base guarda solo su huella SHA-256; un registro con un correo existente genera un cobro «señuelo» igual a uno real, para no revelar qué correos están registrados (RF01 CA3).
+  - Reglas de negocio nuevas: sin el pago acreditado no se invitan miembros ni se cargan casos de la organización; la aseguradora llega al Administrador recién pagada y, si se rechaza, el pago se devuelve; las invitaciones pendientes ocupan lugar del plan.
+  - La landing pública lleva directo al registro con el camino y el plan elegidos (`/registro?tipo=estudio&plan=profesional`).
+- **Portada pública (033, 2026-10-29):** se diseñaron dos propuestas completas (A oscura, B clara) y la autora armó la versión final combinando secciones de cada una: diseño iterativo con la dueña del producto. Para el informe: la portada comunica el problema (imágenes alteradas con IA en siniestros y juicios), la propuesta de valor y el modelo de negocio (plan personal gratuito y planes pagos para organizaciones), siempre con el descargo de que la plataforma ofrece indicios y no veredictos.
+- **Pulido de UX/UI (034, 2026-10-29):** relevamiento de las 15 rutas en computadora y celular, y mockups de 49 pantallas en tres versiones validadas por la autora antes de programar (diseño iterativo con la dueña del producto). Para el informe:
+  - principio rector: ninguna pantalla sin acción ni salida (se documentó un «mapa de salidas»);
+  - el caso pasó de pestañas a un flujo vertical continuo (imágenes → análisis → informe), que refleja el proceso real de trabajo;
+  - acceso a pantalla completa y sin el panel de marca repetido; avisos arriba y diálogos centrados con X, Esc y foco atrapado (accesibilidad, WCAG 2.1 AA);
+  - ilustraciones propias de la marca en lugar de imágenes genéricas;
+  - Microsoft Clarity quedará para que la autora revise el uso antes del lanzamiento (mapas de calor), con enmascarado estricto.
+- **Pulido de UX/UI, segunda tanda (034, 2026-10-30):** para el informe:
+  - reducción de fricción medible en pasos: la búsqueda de casos se aplica sola, sin botón; crear un caso lleva directo a cargar las fotos; «Seguí donde lo dejaste» retoma el caso activo con un clic;
+  - patrón de «paleta de comandos» (Ctrl K), habitual en herramientas profesionales, adaptado al rol;
+  - comparador deslizable de la foto con su mapa de niveles de error, para leer el indicio sin alternar imágenes (apoyo a la persona en el circuito, ADR-0017);
+  - ningún vacío ni error sin salida: componente único con ilustración, explicación y acción;
+  - Clarity solo con identificador, enmascarando toda la página; antes de activarlo, la política de privacidad debe nombrarlo (CP-37). Es un ejemplo de privacidad desde el diseño.
+
+
 ## Integraciones sugeridas, sin definir (2026-10-29)
 
-- Llegaron tres sugerencias externas para la autora; quedan como cuestiones abiertas con propuesta provisoria y van al informe como **oportunidades** (Capítulo XI) y no como funcionalidades:
-  - **Microsoft Clarity** (CP-33): mapas de calor y grabaciones para mejorar la traza de la experiencia de uso. Tensión con la privacidad: solo en páginas públicas, con enmascaramiento y consentimiento, y con la CSP abierta a sus dominios.
-  - **Pasarela de pago** (CP-34): Mercado Pago o Cresium para cobrar los planes, hoy con pago simulado (CP-01). Se integraría detrás de una interfaz intercambiable, como el sello de tiempo.
-  - **Identik** (CP-35): verificación de identidad de quien registra una aseguradora, como refuerzo de la aprobación manual. Implica datos biométricos (sensibles).
+- Llegaron tres sugerencias externas para la autora. Estado al 2026-10-30:
+  - **Microsoft Clarity** (CP-33, funcionalidad 031): la autora lo usa para revisar la experiencia de uso antes del lanzamiento; se deja configurable en la 034 (T10), con enmascaramiento estricto y la CSP abierta solo a sus dominios.
+  - **Cobro con Cresium** (CP-34): implementado como pago simulado en el registro (funcionalidad 032, ADR-0020), detrás de un proveedor intercambiable; Mercado Pago quedó descartado por ahora.
+  - **Identik** (CP-35, funcionalidad 035): verificación de identidad de quien registra una aseguradora, como refuerzo de la aprobación manual. Implica datos biométricos (sensibles); sigue pendiente.
 - Borrador de los capítulos del informe (AE2 y siguientes) redactado en el chat el 2026-10-29 a partir del documento de la autora, este archivo y la bitácora.
 
 ## Búsqueda de marca en el INPI (2026-10-29)
 
 - La autora busca «evidentIA» en la base de marcas del INPI. Resultado: «EVIDENTIA» está concedida a un tercero en las clases 9 y 42 (denominativa, vence en 2036), y «EVIDENTIA ESTUDIO PERICIAL», del mismo sector, en la clase 42 (mixta). La denominación no puede registrarse en las clases del servicio (CP-36).
 - Para el Capítulo VIII: la búsqueda de antecedentes cumple su función, porque detecta el conflicto antes de invertir en la marca. Es también una lección aprendida: verificar la disponibilidad del nombre antes de construir la identidad visual.
+
+
+## Tercera tanda de la 034: portada, registro y privacidad (2026-10-31)
+
+- **Iteración de diseño con la autora:** tres rondas de mockups (v1, v2 y v3 con dos direcciones), rechazos explícitos («muy feo», «el registro sigue muy mal») y una composición final armada con partes de cada dirección. Para el capítulo de metodología: el diseño se validó con prototipos antes de programarlo, y las capturas reales del sistema reemplazaron las ilustraciones porque transmitían más confianza.
+- **Registro:** pasar de 4-6 pasos a 2-3 juntando los datos personales y la institución, y no volver a preguntar lo que la persona ya eligió en la portada. Es un ejemplo de reducción de fricción medible (cantidad de pasos).
+- **Privacidad técnica:** la política muestra el valor concreto de cada medida (por ejemplo, bcrypt costo 12 o enlaces de 5 minutos) en lugar de frases genéricas, y separa la portada comercial (beneficios, sin proveedores) de la página técnica.
+- **Observabilidad del sello:** la página pública de estado informa si el sello en Hedera funciona, sin exponer datos sensibles. Permite comprobar en producción una integración externa sin acceso al servidor.
+- **Coherencia legal:** al activar Clarity, la política dejó de ser exacta (decía que no había cookies de seguimiento). Se corrigió con un texto provisorio y quedó como cuestión abierta (CP-37). Lección: cada integración nueva revisa la política de privacidad.
+
+## Cuarta tanda de la 034 (2026-10-31)
+
+- **Componente reutilizable de pestañas**: la organización y Mi perfil comparten `Pestanias` (patrón de pestañas de WAI-ARIA, flechas del teclado, pestaña en la dirección). Ejemplo de refactorización que reduce duplicación al aparecer el segundo uso.
+- **Priorizar lo accionable**: en administración, lo que requiere una acción (aprobar aseguradoras) va antes que los indicadores; si no hay nada que hacer, ocupa una línea.
+- **Tablas en el celular**: en lugar de desplazamiento horizontal, cada fila se apila como tarjeta con el nombre de cada dato. Se detectó al revisar todas las pantallas a 390 px (CA2).
+
+## Portada: quinta tanda (2026-11-02)
+
+- La autora simplificó la portada: menos elementos decorativos (globos, sellos, letras de fondo, ojo) y menos secciones (sin «para quién»), con las cuatro capas del análisis presentadas como una lista vertical junto a su título. Para el informe: iteración de diseño guiada por la revisión de la autora, de una portada «cargada» a una más directa.
+
+## Hedera y Cresium: estado real al 2026-11-02
+
+- **Hedera**: la integración está completa (SDK oficial, confirmación en el *mirror node*, reintentos cada 15 minutos, huella de cada versión desplegada), pero se valida recién con la prueba de la autora en *testnet*. Para el informe: distinguir «implementado y probado con dobles de prueba» de «probado contra la red real».
+- **Cresium**: tiene API de cobros con CVU por pedido y avisos firmados. El diseño con proveedor intercambiable (ADR-0020) deja el cobro real como un agregado acotado; depende de los precios (CP-38) y de la cuenta. Riesgo principal del cobro por transferencia: avisos falsificados, que se mitigan con la firma HMAC, la comprobación del monto y la conciliación de respaldo.
+- **CP-20**: una huella SHA-256 simple de un correo no lo anonimiza (se revierte probando correos conocidos); la minimización correcta sería una huella con clave secreta (HMAC). Buen ejemplo para la sección de privacidad.
+
+## Hedera probado en producción (2026-11-02)
+
+- El sello de tiempo en Hedera *testnet* funciona en producción: la página pública `/estado` lo informa con la fecha del último sello confirmado por el *mirror node*. Sirve como evidencia para el informe (captura de `/estado` y de un mensaje en HashScan).
+- Lección de operación: las guías con bloques de código se copian enteras; para tareas de la autora con secretos conviene ofrecer primero la consola web.
+
+## Arnés para el trabajo asistido por IA (036, 2026-11-02)
+
+- **Qué es**: el sistema que rodea al agente de IA para que trabaje de forma confiable. Tiene cinco partes:
+  - **guías**: `CLAUDE.md`, constitución, especificación, comandos y skills;
+  - **sensores**: ganchos, pre-commit, import-linter, integración continua y `/estado`;
+  - **memoria**: bitácora, ADR, cuestiones abiertas, Trello e insumos;
+  - **persona en el circuito**: la autora revisa, integra, decide y carga los secretos;
+  - **mejora continua**: el registro de cambios.
+  - Detalle en `docs/arnes/README.md`.
+- **Hallazgo**: varias reglas importantes eran solo texto (no tocar secretos) y los comandos del flujo quedaron desactualizados dos semanas después de cambiar el reparto del trabajo. **Un arnés sin sensores depende de la memoria del modelo**; la funcionalidad 036 convirtió la regla de secretos en un gancho que bloquea, y en la primera prueba bloqueó un comando del propio agente.
+- **Evolución**: el registro de cambios muestra 19 cambios del arnés entre el 2026-10-08 y el 2026-11-02, cada uno motivado por un problema real. Por ejemplo:
+  - el reparto del trabajo se reescribió;
+  - Trello pasó a actualizarse sin pedirlo;
+  - la red neuronal se documenta aparte;
+  - las integraciones externas se prueban contra el servicio real.
+- **Números del proceso**: 282 commits, 238 con co-autoría de IA (84 %), 67 Pull Requests integrados, 30 especificaciones, 48 entradas de bitácora, 18 ADR y 724 pruebas automáticas.
+- **Episodio para el informe y la exposición**: al commitear la 036, el gancho de secretos bloqueó un commit del propio agente (falso positivo: el mensaje nombraba un archivo secreto). El agente intentó corregir el gancho y Claude Code se lo impidió por ser auto-modificación de un control. La corrección quedó como propuesta para la autora. Muestra que el arnés protege sus propios controles y que la última palabra es humana.

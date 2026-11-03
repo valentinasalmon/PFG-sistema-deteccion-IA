@@ -134,6 +134,10 @@ class ServicioImagenes:
         """True si el permiso y el estado del caso permiten cargar y eliminar (RN19, RN20)."""
         return permiso != NIVEL_LECTURA and caso.estado in ESTADOS_CON_CARGA
 
+    def lugar_disponible(self, caso):
+        """Cuántas imágenes más admite el caso según el límite del plan (RN15)."""
+        return max(0, self.limite_de_imagenes(caso) - self.repositorio.cantidad_de_caso(caso.id))
+
     def limite_de_imagenes(self, caso):
         """Máximo de imágenes por caso según el plan del espacio (RN15, CP-02)."""
         if caso.es_personal:

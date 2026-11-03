@@ -27,6 +27,8 @@ class SolicitudOrganizacion(EsquemaBase):
     tipo: TipoOrganizacion
     correo_contacto: Optional[EmailStr] = None
     telefono: Optional[str] = Field(default=None, max_length=30)
+    # Plan que se paga al crear el estudio (funcionalidad 032); Básico si falta.
+    plan: Optional[Literal["basico", "profesional"]] = None
 
     _vacios = field_validator("correo_contacto", "telefono", mode="before")(_vacio_a_nulo)
 
@@ -148,12 +150,17 @@ class SolicitudRechazo(EsquemaBase):
 
 
 def aseguradora_pendiente_a_dict(organizacion, referente):
-    """Aseguradora pendiente tal como la ve el Administrador (CA7 de la 021)."""
+    """Aseguradora pendiente tal como la ve el Administrador (CA7 de la 021).
+
+    Incluye el plan pagado: desde la 032 solo llega al Administrador con el
+    pago acreditado.
+    """
     usuario = referente.usuario
     return {
         "id": organizacion.id,
         "nombre": organizacion.nombre,
         "cuit": organizacion.cuit,
+        "plan": organizacion.plan,
         "creada_en": _fecha(organizacion.creada_en),
         "referente": {
             "nombre": f"{usuario.nombre} {usuario.apellido}",

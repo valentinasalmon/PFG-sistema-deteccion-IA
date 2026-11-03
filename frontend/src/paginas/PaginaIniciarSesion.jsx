@@ -6,6 +6,9 @@
  * reenviar el correo (CA9). Al ingresar, la guarda RutaSoloVisitantes lleva
  * a la pantalla que se quería abrir o al inicio (CA7).
  *
+ * Desde la funcionalidad 028 (frame 9a): crear una cuenta debajo del título,
+ * Google arriba, «¿La olvidaste?» junto a la contraseña y el botón «Mostrar».
+ *
  * Ofrece "Continuar con Google" (027). Si Google no autentica a la persona,
  * el backend vuelve acá con ``?google=<código>`` y se muestra el motivo.
  *
@@ -14,6 +17,7 @@
 import { Link, useLocation, useSearchParams } from 'react-router'
 import Aviso from '../componentes/Aviso.jsx'
 import BotonGoogle from '../componentes/BotonGoogle.jsx'
+import CampoContrasenia from '../componentes/CampoContrasenia.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import FormularioReenvio from '../componentes/FormularioReenvio.jsx'
 import { useFormulario } from '../hooks/useFormulario.js'
@@ -51,6 +55,9 @@ export default function PaginaIniciarSesion() {
   return (
     <>
       <h1>Iniciar sesión</h1>
+      <p className="tarjeta-acceso__bajada">
+        ¿No tenés cuenta? <Link to="/registro">Creá una</Link>
+      </p>
       {state?.mensaje && !error && <Aviso tipo="info">{state.mensaje}</Aviso>}
       {codigoGoogle && !error && (
         <Aviso tipo="error">{MENSAJES_GOOGLE[codigoGoogle] ?? MENSAJE_GOOGLE_GENERICO}</Aviso>
@@ -70,26 +77,23 @@ export default function PaginaIniciarSesion() {
           onChange={cambiar}
           required
         />
-        <CampoTexto
+        <CampoContrasenia
           etiqueta="Contraseña"
           nombre="contrasenia"
-          tipo="password"
           autoComplete="current-password"
           value={valores.contrasenia}
           onChange={cambiar}
           required
+          enlace={
+            <Link to="/recuperar-contrasenia" className="campo__enlace">
+              ¿La olvidaste?
+            </Link>
+          }
         />
         <button type="submit" className="boton" disabled={enviando}>
           {enviando ? 'Ingresando…' : 'Ingresar'}
         </button>
       </form>
-
-      <p className="enlaces-secundarios">
-        <Link to="/recuperar-contrasenia">¿Olvidaste tu contraseña?</Link>
-        <span>
-          ¿No tenés cuenta? <Link to="/registro">Registrate</Link>
-        </span>
-      </p>
     </>
   )
 }

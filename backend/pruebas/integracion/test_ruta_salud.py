@@ -22,3 +22,11 @@ def test_salud_responde_503_si_redis_no_responde(cliente, monkeypatch):
     datos = respuesta.get_json()
     assert datos["estado"] == "degradado"
     assert datos["componentes"]["redis"] == "error"
+
+
+def test_salud_informa_el_sello_sin_datos_sensibles(cliente, monkeypatch):
+    """El estado del sello se informa sin cuenta, tema ni huellas, y no cambia el código."""
+    monkeypatch.setattr(ClienteRedis, "verificar_conexion", lambda self: True)
+    datos = cliente.get("/api/salud").get_json()
+    assert set(datos["sello"]) <= {"modo", "red", "estado", "ultimo"}
+    assert datos["sello"]["modo"] in ("hedera", "simulado", "desactivado")

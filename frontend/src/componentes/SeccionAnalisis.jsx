@@ -21,17 +21,22 @@
  * terminar, los resultados de cada imagen quedan en filas desplegables y el
  * informe se ve en la etapa siguiente.
  *
+ * Desde la funcionalidad 034 el mapa de niveles de error se compara con la
+ * foto en un comparador deslizable (``ComparadorMapa``).
+ *
  * Realiza: RF40, RF43, RF44, RF46; CA5 a CA7 y CA12 a CA14 de la funcionalidad
  * 007; CA6 de la 008; CA7 de la 009; CA4 de la 011; RNF10.
  */
 import { useCallback, useEffect, useState } from 'react'
 import { listarAnalisis, obtenerAnalisis } from '../api/analisis.js'
+import { listarImagenes } from '../api/imagenes.js'
 import { descargarInforme, regenerarInforme } from '../api/informes.js'
 import { useDatos } from '../hooks/useDatos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 import { BANDAS_DE_INDICIO, bandaDeIndicio } from '../utilidades/indicios.js'
 import Aviso from './Aviso.jsx'
 import Cargando from './Cargando.jsx'
+import ComparadorMapa from './ComparadorMapa.jsx'
 import Etiqueta from './Etiqueta.jsx'
 import Icono from './Icono.jsx'
 
@@ -178,7 +183,7 @@ function EstadoDeLaFirma({ detalle }) {
   )
 }
 
-function ResultadoDeCapa({ resultado }) {
+function ResultadoDeCapa({ resultado, imagen, original }) {
   const titulo = TITULOS_CAPA[resultado.capa] ?? resultado.capa
   if (resultado.estado === 'no_disponible') {
     return (
@@ -223,7 +228,17 @@ function ResultadoDeCapa({ resultado }) {
           ))}
         </ul>
       )}
-      {resultado.imagen && (
+      {resultado.imagen && original && (
+        <figure className="mapa-capa mapa-capa--comparador">
+          <ComparadorMapa original={original} mapa={resultado.imagen} nombre={imagen.nombre} />
+          <figcaption className="nota">
+            Las zonas claras cambiaron más al recomprimir la imagen; las regiones señaladas están
+            recuadradas en rojo. Es una señal complementaria: los bordes y los detalles marcados
+            también se ven claros sin que haya edición.
+          </figcaption>
+        </figure>
+      )}
+      {resultado.imagen && !original && (
         <figure className="mapa-capa">
           <img src={resultado.imagen} alt={`Mapa de la capa ${titulo}`} loading="lazy" />
           <figcaption className="nota">
@@ -282,7 +297,7 @@ export function ResumenDeImagen({ imagen }) {
 }
 
 /** Resultados por imagen en filas desplegables: el resumen a la vista y el detalle al abrir (028). */
-function Resultados({ analisis }) {
+function Resultados({ analisis, miniaturas }) {
   return analisis.imagenes.map((imagen, indice) => (
     <details
       key={`${imagen.id_imagen}-${imagen.huella}`}
@@ -310,7 +325,14 @@ function Resultados({ analisis }) {
           excluyó del análisis por una anomalía de integridad.
         </Aviso>
       ) : (
-        imagen.resultados.map((resultado) => <ResultadoDeCapa key={resultado.capa} resultado={resultado} />)
+        imagen.resultados.map((resultado) => (
+          <ResultadoDeCapa
+            key={resultado.capa}
+            resultado={resultado}
+            imagen={imagen}
+            original={miniaturas[imagen.id_imagen]}
+          />
+        ))
       )}
     </details>
   ))
@@ -398,6 +420,24 @@ function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar, alVerInforme })
   const cargar = useCallback(() => obtenerAnalisis(idCaso, idAnalisis), [idCaso, idAnalisis])
   const { datos: analisis, error, recargar } = useDatos(cargar)
   const enCurso = Boolean(analisis?.en_curso)
+  const finalizado = analisis?.estado === 'finalizado'
+  const [miniaturas, setMiniaturas] = useState({})
+
+  // Las vistas previas de las fotos para compararlas con su mapa (034). Si no
+  // se pueden traer, el mapa se muestra solo, como antes.
+  useEffect(() => {
+    if (!finalizado) return undefined
+    let vigente = true
+    listarImagenes(idCaso)
+      .then((respuesta) => {
+        if (!vigente) return
+        setMiniaturas(Object.fromEntries(respuesta.imagenes.map((imagen) => [imagen.id, imagen.miniatura])))
+      })
+      .catch(() => {})
+    return () => {
+      vigente = false
+    }
+  }, [idCaso, finalizado])
 
   useEffect(() => {
     if (!enCurso) return undefined
@@ -433,7 +473,7 @@ function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar, alVerInforme })
               await alTerminar()
             }}
           />
-          <Resultados analisis={analisis} />
+          <Resultados analisis={analisis} miniaturas={miniaturas} />
         </>
       )}
     </>

@@ -36,7 +36,7 @@
 ## Etapa 2: QR hacia la galería del celular (aprobada por el tutor)
 
 - **Panel "Cargar desde el celular"** en la pantalla del caso:
-  - QR de un enlace de un solo uso (15 minutos, hasta 30 fotos, solo carga en ese caso);
+  - QR de un enlace de un solo uso (15 minutos, solo carga en ese caso). A pedido de la autora no tiene tope de fotos: rige solo el límite de imágenes por caso del plan;
   - cuenta regresiva;
   - la lista de imágenes se actualiza sola mientras está abierto;
   - al cerrarlo, el enlace se cancela.

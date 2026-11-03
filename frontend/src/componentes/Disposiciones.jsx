@@ -3,9 +3,10 @@
  *
  * - DisposicionInterna: pantallas con sesión, con el menú lateral (022).
  * - DisposicionAcceso: pantallas de acceso (registro, inicio de sesión,
- *   recuperación), divididas en un panel de marca verde bosque, con el logo
- *   centrado dentro de las esquinas de visor y el eslogan, y el formulario en
- *   una tarjeta (sin tarjeta de muestra ni servicios, por pedido de la autora). En un celular el panel de marca se reduce al logo.
+ *   recuperación, enlaces y páginas públicas). Desde la 034 ocupan toda la
+ *   pantalla; desde su tercera tanda siguen la estética de la portada: una
+ *   franja verde bosque con la grilla y el logo, y la tarjeta blanca encima,
+ *   con píldoras lima y campos más grandes (estilos en acceso.css).
  *
  * Ambas incluyen el pie con los enlaces a los Términos de Uso y a la
  * Política de Privacidad.
@@ -13,7 +14,10 @@
  * Realiza: RF01 a RF07 (interfaz); RNF10 (funcionalidad 022).
  */
 import { Link, Outlet } from 'react-router'
+import { ContextoAcceso } from '../contextos/contextoAcceso.js'
 import Encabezado from './Encabezado.jsx'
+import Icono from './Icono.jsx'
+import '../estilos/acceso.css'
 
 function Pie() {
   return (
@@ -49,28 +53,30 @@ export function DisposicionInterna() {
   )
 }
 
+/**
+ * Acceso a pantalla completa (034): la franja oscura de la marca con el logo
+ * arriba y la tarjeta del formulario centrada, montada sobre la franja.
+ */
 export function DisposicionAcceso() {
   return (
-    <div className="acceso">
-      <section className="acceso__marca" aria-label="evidentIA">
-        <div className="acceso__mensaje">
-          <div className="visor acceso__visor">
-            <img src="/marca/logo-tipografia-blanca.png" alt="evidentIA" />
-            <span className="acceso__escaneo" aria-hidden="true" />
-          </div>
-          <p className="acceso__eslogan">Tu primera línea de defensa contra el fraude visual</p>
-          <p className="acceso__bajada">
-            Detectá fotos editadas o generadas con inteligencia artificial antes de que lleguen a un
-            expediente o a la liquidación de un siniestro.
-          </p>
+    <ContextoAcceso.Provider value={null}>
+      <div className="acceso acceso--completo">
+        <header className="acceso__cabecera">
+          <Link to="/" className="acceso__logo" aria-label="evidentIA, ir a la portada">
+            <img src="/marca/logo-tipografia-blanca.png" alt="" />
+          </Link>
+          <Link to="/" className="acceso__volver">
+            <Icono nombre="izquierda" tamanio={16} />
+            Volver a la portada
+          </Link>
+        </header>
+        <div className="acceso__formulario">
+          <main id="contenido" className="tarjeta-acceso">
+            <Outlet />
+          </main>
         </div>
-      </section>
-      <div className="acceso__formulario">
-        <main id="contenido" className="tarjeta-acceso">
-          <Outlet />
-        </main>
         <Pie />
       </div>
-    </div>
+    </ContextoAcceso.Provider>
   )
 }

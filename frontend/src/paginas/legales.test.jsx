@@ -34,6 +34,15 @@ describe('textos legales', () => {
     expect(screen.getByText(/se conservan hasta cinco años después de cerrarlo/)).toBeInTheDocument()
     expect(screen.getByText(/25.326/)).toBeInTheDocument()
   })
+
+  it('la Política de Privacidad detalla las medidas técnicas y la medición de uso (034)', () => {
+    render(<PaginaPrivacidad />)
+    expect(screen.getByRole('heading', { name: 'Detalle técnico' })).toBeInTheDocument()
+    expect(screen.getByText(/bcrypt \(costo 12\)/)).toBeInTheDocument()
+    expect(screen.getByText('Apoyo, no veredicto')).toBeInTheDocument()
+    expect(screen.getByText(/Microsoft Clarity/)).toBeInTheDocument()
+    expect(document.body.textContent).not.toMatch(/AWS|Amazon|Irlanda/)
+  })
 })
 
 describe('PaginaNoEncontrada', () => {

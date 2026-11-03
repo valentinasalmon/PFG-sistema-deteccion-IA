@@ -9,5 +9,5 @@
 - [x] **T07** — Frontend: botón, avisos, pantalla "Completá tu registro" y componentes compartidos del registro.
 - [x] **T08** — Pruebas del frontend (10).
 - [x] **T09** — Terraform (`google_id_cliente`), `generar_entorno.sh`, `.env.ejemplo` y guía de despliegue.
-- [ ] **T10 (autora)** — Crear el proyecto y el cliente OAuth en Google Cloud, y cargar a los usuarios de prueba (ver `docs/guias/despliegue-aws.md`).
-- [ ] **T11 (autora)** — Probar en local y en producción: registro nuevo, entrada con una cuenta existente y cancelación.
+- [x] **T10 (autora)** — Crear el proyecto y el cliente OAuth en Google Cloud, y cargar a los usuarios de prueba (ver `docs/guias/despliegue-aws.md`).
+- [ ] **T11 (autora)** — Probar en local y en producción: registro nuevo, entrada con una cuenta existente y cancelación. *En local: probado el 2026-10-26, funciona. Falta producción.*

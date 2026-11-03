@@ -16,6 +16,7 @@ from app.modelos.caso import AccesoCaso, Caso
 from app.modelos.organizacion import Invitacion, Membresia, Organizacion
 from pruebas.conftest import (
     CONTRASENIA_VALIDA,
+    crear_estudio_pagado,
     datos_registro,
     entradas_auditoria,
     extraer_token,
@@ -41,10 +42,7 @@ def beto(cuenta):
 
 
 def _organizacion(cliente, nombre):
-    respuesta = cliente.post(
-        "/api/organizaciones", json={"nombre": nombre, "tipo": "estudio_juridico"}
-    )
-    return respuesta.get_json()["organizacion"]["id"]
+    return crear_estudio_pagado(cliente, nombre)
 
 
 def _sumar(referente, miembro, id_org, correo):

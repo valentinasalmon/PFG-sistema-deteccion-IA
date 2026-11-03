@@ -6,6 +6,11 @@
  * datos, invita, gestiona invitaciones y miembros, transfiere su rol y
  * elimina la organización.
  *
+ * Desde la cuarta tanda de la 034, debajo de la cabecera hay tres pestañas
+ * (Miembros, Plan y Ajustes) en lugar de una página larga de dos columnas,
+ * que en el celular superaba los 2000 px. La elegida queda en la dirección
+ * (``?seccion=plan``).
+ *
  * Realiza: RF11 a RF18; CA3, CA8, CA14 a CA20 y CA22 de la funcionalidad 004;
  * CA6, CA13 y CA18 de la 021.
  */
@@ -28,16 +33,21 @@ import {
 import Aviso from '../componentes/Aviso.jsx'
 import BotonConfirmar from '../componentes/BotonConfirmar.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
+import Pestanias from '../componentes/Pestanias.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
 import Icono from '../componentes/Icono.jsx'
 import SeccionPlan from '../componentes/SeccionPlan.jsx'
 import { useDatos } from '../hooks/useDatos.js'
+import { usePestaniaElegida } from '../hooks/usePestaniaElegida.js'
 import { useFormulario } from '../hooks/useFormulario.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 
-const NOMBRES_PERFIL = { abogado: 'Abogado o abogada', aseguradora: 'Aseguradora' }
+const NOMBRES_PERFIL = {
+  abogado: 'Abogado o abogada',
+  aseguradora: 'Aseguradora',
+}
 
 async function cargarOrganizacion(id) {
   const organizacion = await obtenerOrganizacion(id)
@@ -156,7 +166,11 @@ function CabeceraOrganizacion({ organizacion, esReferente, alGuardar }) {
             />
           </div>
           <div className="acciones-en-linea">
-            <button type="button" className="boton boton--fantasma" onClick={() => setEditando(false)}>
+            <button
+              type="button"
+              className="boton boton--fantasma"
+              onClick={() => setEditando(false)}
+            >
               Cancelar
             </button>
             <button type="submit" className="boton" disabled={enviando}>
@@ -301,13 +315,15 @@ function SeccionMiembros({ organizacion, miembros, esReferente, idUsuario, recar
   )
 }
 
-function SeccionInvitaciones({ organizacion, invitaciones, recargar }) {
+function SeccionInvitaciones({ organizacion, invitaciones, cantidadMiembros, recargar }) {
   const { resultado, ejecutar } = useAccion(recargar)
   const { valores, setValores, errores, error, enviando, cambiar, enviar } = useFormulario({
     correo: '',
     cargo: '',
   })
   const [mensaje, setMensaje] = useState(null)
+  // Las invitaciones pendientes ocupan un lugar del plan (032, CA10).
+  const lleno = cantidadMiembros + invitaciones.length >= organizacion.plan.limite_miembros
 
   async function manejarEnvio(evento) {
     evento.preventDefault()
@@ -373,6 +389,12 @@ function SeccionInvitaciones({ organizacion, invitaciones, recargar }) {
         <h3 id="titulo-invitar">Invitar miembros</h3>
         {mensaje && <Aviso tipo="exito">{mensaje}</Aviso>}
         {error && <Aviso tipo="error">{error.message}</Aviso>}
+        {lleno && (
+          <Aviso tipo="info" flotante={false}>
+            Los lugares del plan están ocupados por miembros e invitaciones pendientes. Cancelá una
+            invitación o <Link to="?seccion=plan">cambiá de plan</Link> para sumar a alguien más.
+          </Aviso>
+        )}
         <div className="invitar__fila">
           <CampoTexto
             etiqueta="Correo electrónico"
@@ -391,7 +413,7 @@ function SeccionInvitaciones({ organizacion, invitaciones, recargar }) {
             onChange={cambiar}
             error={errores.cargo}
           />
-          <button type="submit" className="boton invitar__boton" disabled={enviando}>
+          <button type="submit" className="boton invitar__boton" disabled={enviando || lleno}>
             {enviando ? 'Enviando…' : 'Enviar invitación'}
           </button>
         </div>
@@ -451,7 +473,9 @@ function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
         </div>
         <BotonConfirmar
           texto="Abandonar la organización"
-          pregunta={unicoMiembro ? '¿Abandonar y eliminar la organización?' : '¿Abandonar la organización?'}
+          pregunta={
+            unicoMiembro ? '¿Abandonar y eliminar la organización?' : '¿Abandonar la organización?'
+          }
           textoConfirmar="Abandonar"
           peligro
           deshabilitado={esReferente && !unicoMiembro}
@@ -519,12 +543,19 @@ function SeccionSalida({ organizacion, esReferente, unicoMiembro }) {
   )
 }
 
+const PESTANIAS = [
+  { id: 'miembros', texto: 'Miembros' },
+  { id: 'plan', texto: 'Plan' },
+  { id: 'ajustes', texto: 'Ajustes' },
+]
+
 export default function PaginaOrganizacion() {
   const { id } = useParams()
   const { state } = useLocation()
   const { usuario } = useSesion()
   const cargar = useCallback(() => cargarOrganizacion(id), [id])
   const { datos, error, cargando, recargar } = useDatos(cargar)
+  const [actual, elegir] = usePestaniaElegida(PESTANIAS)
 
   if (cargando) return <Cargando texto="Cargando la organización…" />
   if (error) {
@@ -555,13 +586,12 @@ export default function PaginaOrganizacion() {
       {organizacion.estado === 'pendiente' && (
         <Aviso tipo="info">
           La aseguradora está pendiente de aprobación. El Administrador de la plataforma va a
-          revisar el registro y te avisamos por correo; mientras tanto no podés invitar a tu
-          equipo.
+          revisar el registro y te avisamos por correo; mientras tanto no podés invitar a tu equipo.
         </Aviso>
       )}
 
-      <div className="dos-columnas">
-        <div className="dos-columnas__principal">
+      <Pestanias etiqueta="Secciones de la organización" pestanias={PESTANIAS} actual={actual} alElegir={elegir}>
+        {actual === 'miembros' && (
           <SeccionMiembros
             organizacion={organizacion}
             miembros={miembros}
@@ -569,24 +599,25 @@ export default function PaginaOrganizacion() {
             idUsuario={usuario.id}
             recargar={recargar}
           >
-            {esReferente && organizacion.estado !== 'pendiente' && (
+            {esReferente && organizacion.estado === 'activa' && (
               <SeccionInvitaciones
                 organizacion={organizacion}
                 invitaciones={invitaciones}
+                cantidadMiembros={miembros.length}
                 recargar={recargar}
               />
             )}
           </SeccionMiembros>
-        </div>
-        <div className="dos-columnas__lateral">
-          <SeccionPlan idOrganizacion={organizacion.id} />
+        )}
+        {actual === 'plan' && <SeccionPlan idOrganizacion={organizacion.id} />}
+        {actual === 'ajustes' && (
           <SeccionSalida
             organizacion={organizacion}
             esReferente={esReferente}
             unicoMiembro={miembros.length === 1}
           />
-        </div>
-      </div>
+        )}
+      </Pestanias>
     </>
   )
 }

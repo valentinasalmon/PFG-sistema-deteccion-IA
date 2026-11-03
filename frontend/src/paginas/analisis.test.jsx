@@ -2,7 +2,7 @@
  * Pruebas de la selección de imágenes, el pedido de análisis, el progreso y
  * los resultados por capa (funcionalidad 007).
  */
-import { screen, within } from '@testing-library/react'
+import { fireEvent, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { CON_SESION, simularApi, USUARIO } from '../pruebas/api.js'
 import { renderizarEn } from '../pruebas/renderizar.jsx'
@@ -266,10 +266,30 @@ describe('progreso y resultados', () => {
 
     const analisis = await screen.findByRole('region', { name: 'Análisis' })
     expect(await within(analisis).findByRole('heading', { name: 'Niveles de error (ELA)' })).toBeInTheDocument()
-    expect(within(analisis).getByRole('img', { name: 'Mapa de la capa Niveles de error (ELA)' })).toHaveAttribute('src', '/api/archivos/mapa-ela')
+    // Con la vista previa de la foto, el mapa va en el comparador (034).
+    expect(await within(analisis).findByRole('img', { name: 'Mapa de niveles de error de frente.png' })).toHaveAttribute('src', '/api/archivos/mapa-ela')
     expect(within(analisis).getByText(/Es una señal complementaria/)).toBeInTheDocument()
     expect(within(analisis).getByText('Datos del análisis')).toBeInTheDocument()
-    expect(within(analisis).getAllByRole('img', { name: /Mapa de la capa/ })).toHaveLength(1)
+    expect(within(analisis).getAllByRole('img', { name: /Mapa de/ })).toHaveLength(1)
+  })
+
+  it('compara la foto con su mapa de error con un control deslizante (034)', async () => {
+    const ela = { ...RESULTADO, capa: 'ela', nivel: 45, imagen: '/api/archivos/mapa-ela', detalle: { tabla: [] } }
+    const conMiniatura = { ...IMAGENES, imagenes: [{ ...IMAGENES.imagenes[0], miniatura: '/api/archivos/mini-1' }] }
+    api({
+      imagenes: conMiniatura,
+      historial: [RESUMEN],
+      detalle: { ...DETALLE, imagenes: [{ ...DETALLE.imagenes[0], resultados: [ela] }] },
+    })
+    renderizarEn('/casos/7?etapa=analisis')
+
+    const control = await screen.findByRole('slider', { name: 'Comparar la foto con su mapa de error' })
+    expect(screen.getByRole('img', { name: 'Foto frente.png' })).toHaveAttribute('src', '/api/archivos/mini-1')
+    expect(screen.getByRole('img', { name: 'Mapa de niveles de error de frente.png' })).toHaveAttribute('src', '/api/archivos/mapa-ela')
+    expect(control).toHaveValue('50')
+    fireEvent.change(control, { target: { value: '70' } })
+    expect(control).toHaveValue('70')
+    expect(control).toHaveAttribute('aria-valuetext', '70 % de foto, 30 % de mapa')
   })
 
   it('marca como alerta una firma que no se pudo confirmar', async () => {

@@ -196,7 +196,7 @@ La cuenta de Hedera se crea en https://portal.hedera.com con clave **ED25519**. 
    flask --app wsgi sellos crear-tema --red testnet
    ```
    Pide el Account ID y la clave privada; esta última no se muestra mientras se escribe. Responde `Tema creado en testnet: 0.0.…`.
-2. **Guardar la clave privada cifrada en SSM** (no queda en el historial de la terminal):
+2. **Guardar la clave privada cifrada en SSM**. Lo más simple es la consola web: AWS → región Europa (Irlanda) → *Parameter Store* → crear o editar `/deteccion-imagenes/produccion/HEDERA_CLAVE`, tipo **SecureString**, y pegar la clave privada en *Valor*. Por terminal (no queda en el historial; se copia solo la línea del comando, sin las marcas de código):
    ```bash
    read -rs CLAVE && aws ssm put-parameter --name /deteccion-imagenes/produccion/HEDERA_CLAVE \
      --type SecureString --value "$CLAVE" --overwrite --region eu-west-1 && unset CLAVE
@@ -212,6 +212,11 @@ La cuenta de Hedera se crea en https://portal.hedera.com con clave **ED25519**. 
    Después: `terraform plan` (tiene que crear 3 parámetros y cambiar SELLO_TIEMPO) y `terraform apply`.
 4. **Desplegar** (PR de `desarrollo` a `main`). El despliegue regenera el `.env` del servidor con los datos de Hedera.
 5. **Probar**: cargar una imagen en un caso. En unos segundos (o en la próxima pasada del temporizador, cada 15 minutos) tiene que aparecer "Registrada en Hedera" con el enlace "Verificar en HashScan".
+6. **Comprobar en la página de estado**: abrir `/estado`. Tiene que decir «Sello de tiempo · Hedera (testnet): Funciona» y la fecha del último sello confirmado.
+   - «Desactivado»: falta `sello_tiempo = "hedera"` en `terraform.tfvars`, o no se volvió a desplegar después del `terraform apply`.
+   - «Con demoras»: hay sellos enviados que no se confirman en 30 minutos. Revisar en el servidor `journalctl -u plataforma-sellos` (cuenta sin saldo, clave equivocada o tema de otra red).
+   - «Con fallas»: algún sello agotó los reintentos. Mismo diagnóstico; la imagen sigue teniendo su huella, solo le falta el sello.
+7. **Ver el sello en HashScan**: el enlace «Verificar en HashScan» del caso o del informe abre el mensaje en el explorador público de Hedera, con la huella y la fecha de consenso.
 
 **Pasar a la red real (*mainnet*)**: crear una cuenta de *mainnet* con HBAR, repetir los pasos 1 a 3 con `--red mainnet` y la cuenta nueva, y desplegar. Los sellos de *testnet* no se migran (CP-26).
 
@@ -235,6 +240,13 @@ El cliente se crea con tu cuenta de Google en https://console.cloud.google.com. 
    **Crear**. Google muestra el **ID de cliente** y el **secreto**: dejá la ventana abierta.
    Si Google rechaza la dirección `sslip.io`, probá solo en local hasta comprar el dominio (CP-30). Con el dominio, agregás `https://tu-dominio/api/google/retorno`.
 5. **En local**: en `backend/.env` agregá `GOOGLE_ID_CLIENTE=...` y `GOOGLE_SECRETO_CLIENTE=...` y reiniciá `flask run`. El archivo `.env` no se sube.
+   - Para comprobarlo: `curl -s http://localhost:5000/api/google/estado` tiene que responder `{"habilitado": true}`.
+   - Si responde `false`, revisá que las dos claves tengan valor sin mostrarlas:
+     ```bash
+     python -c "from dotenv import dotenv_values; v=dotenv_values('.env'); print({k: len(v.get(k) or '') for k in ('GOOGLE_ID_CLIENTE','GOOGLE_SECRETO_CLIENTE')})"
+     ```
+     El ID tiene unos 72 caracteres y el secreto, unos 35.
+   - Si las dos tienen valor y sigue en `false`, quedó abierto un backend viejo que arrancó antes de cargar las claves: el modo de depuración se reinicia cuando cambia el código, no cuando cambia el `.env`. Cerralo con `pkill -f "flask --app wsgi run"`, comprobá que `ss -ltnp | grep 5000` no muestre nada y volvé a arrancarlo.
 6. **En producción**:
    - Guardá el secreto cifrado en SSM (pegalo y apretá Enter; no se ve nada):
      ```bash
@@ -249,6 +261,16 @@ El cliente se crea con tu cuenta de Google en https://console.cloud.google.com. 
    - Con un correo sin cuenta, pide completar el rubro y entra.
    - La segunda vez entra directo.
    - Con tu correo de administradora, se vincula a tu cuenta existente.
+
+## Microsoft Clarity (funcionalidades 031 y 034)
+
+Clarity graba cómo se usa la plataforma (mapas de calor y recorridos) para que la autora detecte fricciones antes del lanzamiento. Es una herramienta de la autora: los usuarios no ven nada.
+
+- **Está instalado** con el proyecto `z5vsmarsef` (constante `ID_PROYECTO` de `frontend/src/utilidades/clarity.js`). Se carga solo en la compilación de producción, la que se despliega en AWS; en desarrollo y en las pruebas, no.
+- **Todo el contenido queda enmascarado:** la plataforma marca la página entera con `data-clarity-mask`. Clarity ve los clics y el recorrido, pero no textos, datos de casos ni fotos. Además, en el panel de Clarity conviene elegir **Settings → Masking → Strict**.
+- **La cabecera de seguridad (CSP)** de Nginx permite solo los dominios de Clarity. Se instala sola en cada despliegue.
+- **Ver los datos:** en [clarity.microsoft.com](https://clarity.microsoft.com), proyecto evidentIA. Las primeras sesiones aparecen a las pocas horas del despliegue.
+- **Apagarlo:** cambiar `ID_PROYECTO` por `''` y desplegar.
 
 ## Cuando compres el dominio
 
