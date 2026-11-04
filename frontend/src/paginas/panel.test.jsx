@@ -71,7 +71,7 @@ describe('panel principal', () => {
 
     const enCurso = screen.getByRole('region', { name: 'Análisis en curso' })
     expect(within(enCurso).getByRole('link', { name: 'CASO-2026-000001' })).toHaveAttribute('href', '/casos/1')
-    expect(within(enCurso).getByText(/3 imagen\(es\), en proceso/)).toBeInTheDocument()
+    expect(within(enCurso).getByText(/3 imágenes, en proceso/)).toBeInTheDocument()
 
     const compartidos = screen.getByRole('region', { name: 'Compartidos con vos recientemente' })
     expect(within(compartidos).getByText(/Beto Pérez te dio permiso de lectura el 19\/10\/2026/)).toBeInTheDocument()

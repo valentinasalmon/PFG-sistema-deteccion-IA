@@ -176,7 +176,7 @@ describe('informes del caso', () => {
     expect(within(resumen).getByText('frente.jpg')).toBeInTheDocument()
     expect(within(resumen).getByText(/· 10 %/)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Informes anteriores' })).toBeInTheDocument()
-    expect(screen.getByText(/1 imagen\(es\): viejo.jpg/)).toBeInTheDocument()
+    expect(screen.getByText(/1 imagen: viejo.jpg/)).toBeInTheDocument()
   })
 
   it('sin informes, la etapa lo explica (028)', async () => {

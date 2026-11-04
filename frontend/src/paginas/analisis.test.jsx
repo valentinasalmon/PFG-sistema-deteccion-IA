@@ -348,7 +348,7 @@ describe('progreso y resultados', () => {
     const { usuario } = renderizarEn('/casos/7?etapa=analisis')
 
     const historial = await screen.findByRole('list', { name: 'Historial de análisis' })
-    await usuario.click(within(historial).getByRole('button', { name: /18\/10\/2026 · 2 imagen/ }))
+    await usuario.click(within(historial).getByRole('button', { name: /18\/10\/2026 · 2 imágenes/ }))
 
     expect(await screen.findByRole('heading', { name: 'anterior.png' })).toBeInTheDocument()
   })

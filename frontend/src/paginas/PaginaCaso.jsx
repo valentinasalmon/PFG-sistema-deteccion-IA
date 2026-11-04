@@ -38,9 +38,11 @@ import CampoAreaTexto from '../componentes/CampoAreaTexto.jsx'
 import CampoSeleccion from '../componentes/CampoSeleccion.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
+import EstadoVacio from '../componentes/EstadoVacio.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
 import EtiquetaEstado from '../componentes/EtiquetaEstado.jsx'
 import Icono from '../componentes/Icono.jsx'
+import { IlustracionCarpeta } from '../componentes/Ilustraciones.jsx'
 import SeccionAnalisis from '../componentes/SeccionAnalisis.jsx'
 import SeccionImagenes from '../componentes/SeccionImagenes.jsx'
 import SeccionInformes from '../componentes/SeccionInformes.jsx'
@@ -677,12 +679,14 @@ export default function PaginaCaso() {
   )
 
   if (cargando) return <Cargando texto="Cargando el caso…" />
+  // Sin el caso, un estado vacío con salida en lugar de un aviso suelto (037).
   if (error) {
     return (
-      <>
-        <h1>Caso</h1>
-        <Aviso tipo="error">{error.message}</Aviso>
-      </>
+      <EstadoVacio Ilustracion={IlustracionCarpeta} titulo="No pudimos abrir el caso" texto={error.message} encabezado>
+        <Link to="/casos" className="boton">
+          Volver a mis casos
+        </Link>
+      </EstadoVacio>
     )
   }
 

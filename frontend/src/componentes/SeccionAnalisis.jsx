@@ -540,7 +540,7 @@ export default function SeccionAnalisis({
                 aria-pressed={analisis.id === idElegido}
                 onClick={() => setElegido(analisis.id)}
               >
-                {formatearFecha(analisis.creado_en)} · {analisis.cantidad_imagenes} imagen(es)
+                {formatearFecha(analisis.creado_en)} · {analisis.cantidad_imagenes} {analisis.cantidad_imagenes === 1 ? 'imagen' : 'imágenes'}
               </button>{' '}
               <Etiqueta tipo={tipoDeEtiquetaDeAnalisis(analisis.estado)}>
                 {analisis.estado_nombre}

@@ -188,7 +188,7 @@ function AnalisisEnCurso({ analisis }) {
       <ul className="lista-panel">
         {analisis.map((item) => (
           <li key={item.id}>
-            <EnlaceCaso caso={item.caso} />: {item.cantidad_imagenes} imagen(es),{' '}
+            <EnlaceCaso caso={item.caso} />: {item.cantidad_imagenes} {item.cantidad_imagenes === 1 ? 'imagen' : 'imágenes'},{' '}
             {item.estado === 'en_cola' ? 'en cola' : 'en proceso'}.
           </li>
         ))}

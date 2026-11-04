@@ -5666,3 +5666,113 @@ h1.estado-vacio__titulo {
     font-size: 0.85rem;
   }
 }
+
+/*
+ * --- Ajustes del celular (funcionalidad 037) ---
+ * La revisión a 390 px encontró cosas cortadas o apretadas: la cuarta
+ * pestaña del perfil, los contadores del Inicio pegados al borde, el informe
+ * del caso con cuatro niveles de márgenes (los nombres de cada mirada en
+ * tres renglones) y el botón «Ver» de los pasos fuera de lugar. El celular
+ * tiene su propia disposición; la computadora no cambia.
+ */
+@media (width <= 48rem) {
+  /* Contadores del Inicio: grilla de dos columnas en lugar de una fila que se desliza. */
+  .contadores {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-inline: 0;
+    padding-inline: 0;
+    overflow: visible;
+  }
+
+  .contadores li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  /* Pestañas: botones en dos columnas, todos a la vista. */
+  .pestanias {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.4rem;
+    border-bottom: 0;
+    overflow: visible;
+  }
+
+  .pestanias__pestania {
+    min-height: 44px;
+    padding: 0 0.75rem;
+    border: 1px solid var(--linea);
+    border-radius: 999px;
+    margin: 0;
+    background: var(--superficie);
+    white-space: normal;
+  }
+
+  .pestanias__pestania[aria-selected='true'] {
+    border-color: var(--tinta);
+    background: var(--tinta);
+    color: #fff;
+  }
+
+  /* Flujo del caso: el contenido de cada paso usa todo el ancho. */
+  .flujo-caso__cuerpo {
+    grid-column: 1 / -1;
+    margin-top: 0.75rem;
+  }
+
+  /* Debajo del título: el resumen a la izquierda y «Ver» a la derecha, en la misma línea. */
+  .flujo-caso__resumen {
+    order: 2;
+    flex: 1 1 8rem;
+  }
+
+  .flujo-caso__cabecera .boton {
+    order: 3;
+    margin-left: auto;
+  }
+
+  .flujo-caso__cuerpo .seccion,
+  .flujo-caso__cuerpo article {
+    padding: 1rem 0.85rem;
+  }
+
+  .resumen-informe__imagen {
+    padding: 0.75rem;
+  }
+
+  .resumen-capas__item {
+    flex-wrap: wrap;
+  }
+
+  .resumen-capas__capa {
+    flex: 1 1 8rem;
+    min-width: 0;
+  }
+
+  /* Bloque del PDF: datos arriba y botón a todo el ancho. */
+  .informe-pdf {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .informe-pdf > .boton {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .seccion--filtros {
+    padding: 1rem;
+  }
+}
+
+/* Huella abreviada con botón para copiarla entera (037). */
+.huella-corta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+}
+
+.huella-corta code {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.8125rem;
+}
