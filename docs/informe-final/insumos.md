@@ -213,3 +213,11 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - las integraciones externas se prueban contra el servicio real.
 - **Números del proceso**: 282 commits, 238 con co-autoría de IA (84 %), 67 Pull Requests integrados, 30 especificaciones, 48 entradas de bitácora, 18 ADR y 724 pruebas automáticas.
 - **Episodio para el informe y la exposición**: al commitear la 036, el gancho de secretos bloqueó un commit del propio agente (falso positivo: el mensaje nombraba un archivo secreto). El agente intentó corregir el gancho y Claude Code se lo impidió por ser auto-modificación de un control. La corrección quedó como propuesta para la autora. Muestra que el arnés protege sus propios controles y que la última palabra es humana.
+
+## Verificación de identidad de aseguradoras (035, 2026-11-04)
+
+- **Qué resuelve**: antes, el Administrador solo podía comprobar a mano que quien registraba una aseguradora trabajara en ella. Con la 035, el Referente verifica su identidad (DNI + rostro con prueba de vida) y la aprobación queda bloqueada hasta que esté aprobada (RN41).
+- **Privacidad por diseño**: la plataforma guarda solo el resultado, el motivo y una referencia del proveedor; no tiene dónde guardar biometría. Los datos biométricos son sensibles (Ley 25.326) y quedan del lado del proveedor.
+- **Proveedor intercambiable**: igual que el cobro (ADR-0020), con una versión simulada que permite mostrar el flujo completo antes de tener el contrato.
+- **Identik** (proveedor argentino): ofrece redirección o iFrame y resultado por *webhook*. Precios publicados al 2026-11-04: firma electrónica desde USD 0,27 por documento (pack de 1.000) y verificación biométrica USD 0,80 por firma; firma digital $ 21.990 por documento. La verificación aparte se cotiza a medida. RENAPER requiere credencial propia del registro.
+- **Decisiones abiertas** para el informe: CP-39 (verificación aparte o dentro de la firma electrónica) y CP-40 (firmar el informe PDF o dejarlo como trabajo futuro).

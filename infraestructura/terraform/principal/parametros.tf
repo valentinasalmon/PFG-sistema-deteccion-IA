@@ -35,6 +35,9 @@ locals {
     S3_REGION        = var.region
     BUCKET_OPERACION = aws_s3_bucket.bucket["operacion"].bucket
     SELLO_TIEMPO     = var.sello_tiempo
+
+    # 035: con «simulado», la aprobación de aseguradoras exige la identidad verificada.
+    VERIFICACION_IDENTIDAD = var.verificacion_identidad
   }
   # SSM no admite valores vacíos: los datos de Hedera se crean solo cuando están completos.
   parametros_hedera = var.hedera_cuenta != "" && var.hedera_tema != "" ? {
