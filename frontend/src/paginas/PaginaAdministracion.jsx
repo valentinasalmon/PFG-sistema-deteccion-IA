@@ -31,6 +31,7 @@ import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
 import Icono from '../componentes/Icono.jsx'
 import { useDatos } from '../hooks/useDatos.js'
+import { etiquetaDeIdentidad } from '../utilidades/identidad.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 import { NOMBRES_DE_PLAN } from '../utilidades/planes.js'
 import { rangoDelPeriodo } from '../utilidades/periodos.js'
@@ -79,6 +80,18 @@ function FormularioRechazo({ aseguradora, alTerminar }) {
         </button>
       </div>
     </form>
+  )
+}
+
+/** Estado de la identidad del Referente; sin aprobar, la aseguradora no se aprueba (035, RN41). */
+function IdentidadDelReferente({ identidad }) {
+  const estado = identidad?.estado ?? 'sin_verificar'
+  const { texto, tipo } = etiquetaDeIdentidad(estado)
+  return (
+    <span className="tarjeta-item__detalle">
+      <Etiqueta tipo={tipo}>{texto}</Etiqueta>
+      {estado !== 'aprobada' && ' Se puede aprobar cuando el Referente verifique su identidad.'}
+    </span>
   )
 }
 
@@ -143,6 +156,7 @@ function Pendientes() {
                 {NOMBRES_DE_PLAN[aseguradora.plan] ?? aseguradora.plan}. Si la rechazás, el pago se
                 devuelve.
               </span>
+              {aseguradora.exigeIdentidad && <IdentidadDelReferente identidad={aseguradora.identidad} />}
             </div>
             {rechazando === aseguradora.id ? (
               <FormularioRechazo aseguradora={aseguradora} alTerminar={terminar} />
@@ -153,6 +167,7 @@ function Pendientes() {
                   pregunta={`¿Aprobar ${aseguradora.nombre}?`}
                   textoConfirmar="Aprobar"
                   onConfirmar={() => aprobar(aseguradora)}
+                  deshabilitado={aseguradora.exigeIdentidad && aseguradora.identidad?.estado !== 'aprobada'}
                 />
                 <button
                   type="button"

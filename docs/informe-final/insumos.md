@@ -295,6 +295,13 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - Limitaciones declaradas: no se detectan casi duplicados, no se filtran las reales de OpenFake que no son fotos y los temas de reales y sintéticas difieren entre conjuntos.
 - Incidente de los cuadernos (2026-11-04): al cuaderno de entrenamiento completo le faltaba la celda de instalación; las pruebas automáticas cubren el paquete, pero no los cuadernos de Colab, que solo se validaban por sintaxis. Se agregó una verificación de dependencias al inicio del cuaderno. Para el informe: límite de la integración continua y por qué el paso a paso en Colab tiene su propia comprobación.
 
+## Verificación de identidad de aseguradoras (035, 2026-11-04)
+
+- **Qué resuelve**: antes, el Administrador solo podía comprobar a mano que quien registraba una aseguradora trabajara en ella. Con la 035, el Referente verifica su identidad (DNI + rostro con prueba de vida) y la aprobación queda bloqueada hasta que esté aprobada (RN41).
+- **Privacidad por diseño**: la plataforma guarda solo el resultado, el motivo y una referencia del proveedor; no tiene dónde guardar biometría. Los datos biométricos son sensibles (Ley 25.326) y quedan del lado del proveedor.
+- **Proveedor intercambiable**: igual que el cobro (ADR-0020), con una versión simulada que permite mostrar el flujo completo antes de tener el contrato.
+- **Identik** (proveedor argentino): ofrece redirección o iFrame y resultado por *webhook*. Precios publicados al 2026-11-04: firma electrónica desde USD 0,27 por documento (pack de 1.000) y verificación biométrica USD 0,80 por firma; firma digital $ 21.990 por documento. La verificación aparte se cotiza a medida. RENAPER requiere credencial propia del registro.
+- **Decisiones abiertas** para el informe: CP-41 (verificación aparte o dentro de la firma electrónica) y CP-42 (firmar el informe PDF o dejarlo como trabajo futuro).
 
 ## Índice de calidad y usabilidad (018, 2026-11-04)
 
