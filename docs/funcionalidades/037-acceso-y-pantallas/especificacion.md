@@ -1,0 +1,27 @@
+# Especificación: 037 — Tamaños del acceso y mejoras de pantallas internas
+
+- **Rama**: `funcionalidad/037-acceso-y-pantallas`
+- **Estado**: En curso (acceso implementado; pantallas internas propuestas a la autora)
+- **Requisitos que realiza**: RNF10, RNF12
+- **Reglas de negocio aplicadas**: RN27
+- **Casos de uso**: inicio de sesión, registro y flujo del caso
+
+## Problema
+
+La autora revisó el inicio de sesión y el registro (2026-11-04). En computadora, los recuadros eran chicos y no se adaptaban a la pantalla: la tarjeta del inicio de sesión medía unos 370 px en una pantalla de 1440 px, y en el registro las opciones se cortaban en cuatro renglones. En el celular, todo quedaba apretado. También pidió revisar otras pantallas y proponer mejoras.
+
+## Alcance
+
+### Incluido
+- Inicio de sesión, registro y demás páginas de acceso: tarjeta más ancha, campos de 56 px, etiquetas y títulos más grandes y más espacio entre campos. En el celular, la tarjeta ocupa todo el ancho y llega hasta el pie.
+- Propuesta de mejoras de las pantallas internas, priorizada, para que la autora elija.
+
+### Excluido
+- Cambios de textos o de flujo del registro: la autora dijo que el resto «está relativamente bien».
+
+## Criterios de aceptación
+
+- [x] **CA1**: Dado una pantalla de 1440 px, cuando se abre el inicio de sesión, entonces la tarjeta mide 34rem (544 px) y los campos 56 px de alto.
+- [x] **CA2**: Dado el registro en computadora, cuando se elige el camino, entonces las tres opciones entran sin cortar los títulos en más de dos renglones y los campos usan todo el ancho de la tarjeta.
+- [x] **CA3**: Dado un celular de 390 px, cuando se abre el acceso, entonces la tarjeta ocupa todo el ancho, sin márgenes laterales, y llega hasta el pie sin franja gris.
+- [ ] **CA4**: Las mejoras de las pantallas internas que elija la autora.

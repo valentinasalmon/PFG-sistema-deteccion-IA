@@ -374,3 +374,88 @@
 .buscar-codigo .nota {
   margin: 0;
 }
+
+/*
+ * --- Tamaños más generosos (funcionalidad 037) ---
+ * En computadora la tarjeta del inicio de sesión medía 28rem y la del
+ * registro 40rem: quedaban chicas en una pantalla ancha y los textos de las
+ * opciones se cortaban en cuatro renglones. Se agrandan la tarjeta, los
+ * campos, las etiquetas y los espacios. En el celular la tarjeta ocupa todo
+ * el ancho, sin márgenes laterales, para que no quede apretada.
+ */
+/* Columna explícita: sin ella la tarjeta se achicaba al ancho de su contenido. */
+.acceso.acceso--completo .acceso__formulario {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.acceso.acceso--completo .tarjeta-acceso {
+  max-width: 34rem;
+  padding: 3rem 3.25rem 2.75rem;
+}
+
+.acceso.acceso--completo:has(.registro-ancho) .tarjeta-acceso {
+  max-width: 56rem;
+  padding: 3rem 3.5rem 2.75rem;
+}
+
+.acceso.acceso--completo .tarjeta-acceso h1 {
+  font-size: clamp(1.9rem, 3vw, 2.5rem);
+}
+
+.acceso.acceso--completo .formulario {
+  max-width: none;
+  gap: 1.5rem;
+}
+
+.acceso.acceso--completo .campo {
+  gap: 0.5rem;
+}
+
+.acceso.acceso--completo .campo__etiqueta {
+  font-size: 1rem;
+}
+
+.acceso.acceso--completo .campo__control {
+  min-height: 56px;
+  padding-inline: 1.1rem;
+  font-size: 1.0625rem;
+}
+
+.acceso.acceso--completo .boton {
+  min-height: 56px;
+  font-size: 1.05rem;
+}
+
+@media (width <= 48rem) {
+  /* La tarjeta llega hasta el pie: sin franja gris entre los dos. */
+  .acceso.acceso--completo {
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .acceso.acceso--completo .acceso__formulario {
+    place-items: stretch;
+    padding: 0.5rem 0 0;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso,
+  .acceso.acceso--completo:has(.registro-ancho) .tarjeta-acceso {
+    max-width: none;
+    padding: 2rem 1.25rem 2.25rem;
+    border-radius: 24px 24px 0 0;
+    box-shadow: none;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso h1 {
+    font-size: 1.75rem;
+  }
+
+  .acceso.acceso--completo .campo__control,
+  .acceso.acceso--completo .boton {
+    min-height: 54px;
+  }
+
+  .acceso.acceso--completo .pie {
+    padding-inline: 1.25rem;
+    background: var(--superficie);
+  }
+}
