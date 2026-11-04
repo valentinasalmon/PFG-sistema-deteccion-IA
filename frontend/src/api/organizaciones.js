@@ -121,3 +121,14 @@ export function cambiarPlan(idOrganizacion, plan) {
 export function retomarPago(idOrganizacion) {
   return solicitar('POST', `/api/organizaciones/${idOrganizacion}/cobro`)
 }
+
+/** Estado de la verificación de identidad del Referente de una aseguradora (035). */
+export async function obtenerIdentidad(idOrganizacion) {
+  const { identidad } = await solicitar('GET', `/api/organizaciones/${idOrganizacion}/identidad`)
+  return identidad
+}
+
+/** Inicia la verificación de identidad: devuelve el enlace a la página del proveedor (035). */
+export function iniciarIdentidad(idOrganizacion) {
+  return solicitar('POST', `/api/organizaciones/${idOrganizacion}/identidad`)
+}
