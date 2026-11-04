@@ -40,7 +40,7 @@ Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento com
 | 2026-10-30 | «No visto» se evalúa contra las reales de prueba | La partición solo tiene sintéticas y sin reales el AUC no se puede calcular | Capítulo 6 |
 | 2026-10-30 | Las fotos reales de escenas del sistema (CarDD, SCIN, MOCS) no se usan para entrenar | No hay sintéticas de esas escenas en el entrenamiento: el modelo aprendería el tema | Capítulo 4 |
 | 2026-10-30 | El cuaderno de entrenamiento saltea etapas terminadas con el mismo manifiesto y guarda los datos preparados en Drive | Pedido de la autora: no rehacer horas de trabajo si Colab corta | Capítulo 8 |
-| 2026-10-30 | Sin escenas de viviendas en el conjunto propio (CP-38) | Decisión de la autora: el sistema solo tiene casos automovilísticos y laborales | Especificación, CA12 |
+| 2026-10-30 | Sin escenas de viviendas en el conjunto propio (CP-39) | Decisión de la autora: el sistema solo tiene casos automovilísticos y laborales | Especificación, CA12 |
 | 2026-10-30 | Sin la versión de WhatsApp en el conjunto propio: solo original y captura | Decisión de la autora: las fotos las sube la persona afectada desde el enlace de carga, como original, captura o generada | Capítulo 4 |
 | 2026-11-04 | La familia de Google (Imagen 4, Imagen 3, Nano Banana 2) como generadores no vistos | Es lo que usa Gemini; está en OpenFake y permite la demostración de reentrenamiento planificada | Capítulo 4 |
 | 2026-11-04 | Búfer de mezcla por fuente y borrado de las imágenes crudas después de preparar | Las reales de OpenFake pesan ~4 MB: memoria y disco de Colab | Capítulos 4 y 8 |

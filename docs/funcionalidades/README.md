@@ -48,7 +48,7 @@ implementación siguiendo tareas.md, con pruebas
 | 020 | Registro guiado por pasos | 2 | RF01 (interfaz), RNF10 | Completado |
 | 021 | Organizaciones de aseguradoras | 3 | RF01, RF10, RF12 – RF17 (ajustes), RN36 – RN40 | Completado |
 | 022 | [Rediseño de la interfaz y del informe PDF](022-rediseno-interfaz/especificacion.md) | 9 | RNF10, RF44 | Completado |
-| 023 | [Sello de tiempo en Hedera (reemplaza a la 016)](023-sello-hedera/especificacion.md) | 10 | RF37 | Completado (falta la prueba real en *testnet*) |
+| 023 | [Sello de tiempo en Hedera (reemplaza a la 016)](023-sello-hedera/especificacion.md) | 10 | RF37 | Completado y probado en *testnet* en producción (2026-11-02); falta pasar a *mainnet* antes de la defensa |
 | 024 | [Carga de imágenes desde el celular (web móvil, QR y HEIC)](024-carga-desde-celular/especificacion.md) | 10 | RF53 | Completado: HEIC y QR hacia la galería del celular (falta la prueba en un celular real) |
 | 025 | [Informe por rubro, breve y autosuficiente](025-informe-por-rubro/especificacion.md) | 10 | RF44, RF54 | Completado |
 | 026 | [Informe inalterable: huella en Hedera y verificación pública](026-informe-verificable/especificacion.md) | 10 | RF55 | Completado (firma digital opcional) |
@@ -61,5 +61,6 @@ implementación siguiendo tareas.md, con pruebas
 | 033 | [Portada pública con los planes](033-portada/especificacion.md) | 10 | RF19, RF20, RNF10 | Implementada (primera versión; se puede seguir enriqueciendo el diseño) |
 | 034 | [Pulido de UX/UI de todo el sistema](034-pulido-ux/especificacion.md) | 10 | RNF10 | Implementada en cuatro tandas (la tercera y la cuarta, en revisión); falta la revisión final con la autora (CA1, CA3, CA4, CA6, CA9) |
 | 035 | Verificación de identidad de aseguradoras con Identik (CP-35) | 10 | RN36, RF01 | Pendiente: sin especificar |
+| 036 | [Arnés para el trabajo asistido por IA](036-arnes/especificacion.md) | 10 | RNF02, RNF17, RNF19 | Implementada (ganchos, `/cerrar-etapa`, mapa y registro del arnés, ADR-0021) |
 
 Las fases, los hitos y el ciclo de trabajo están en [docs/guias/hoja-de-ruta.md](../guias/hoja-de-ruta.md).

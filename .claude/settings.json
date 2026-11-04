@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Edit|Write|NotebookEdit|Grep|Glob|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/proteger_secretos.py\"",
+            "timeout": 10,
+            "statusMessage": "Arnés: revisando que no se toquen secretos"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/revisar_estilo.py\"",
+            "timeout": 90,
+            "statusMessage": "Arnés: revisando el estilo del archivo editado"
+          }
+        ]
+      }
+    ]
+  }
+}

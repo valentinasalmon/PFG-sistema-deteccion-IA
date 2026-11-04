@@ -10,7 +10,9 @@ Las carpetas vacías contienen un archivo `.gitkeep`, que solo existe para que G
 |---|---|
 | `README.md` | Presentación del proyecto |
 | `CLAUDE.md` | Reglas del arnés para agentes de IA |
-| `.claude/commands/` | Comandos del flujo guiado por especificaciones (`/especificar`, `/planificar`, `/tareas`) |
+| `.claude/commands/` | Comandos del flujo guiado por especificaciones (`/especificar`, `/planificar`, `/tareas`, `/cerrar-etapa`) |
+| `.claude/settings.json`, `.claude/hooks/` | Ganchos del arnés: protección de secretos y revisión de estilo, con sus pruebas (036) |
+| `docs/arnes/` | Mapa del arnés y registro de sus cambios |
 | `.claude/skills/`, `.agents/` | Skills instalados para el asistente de IA |
 | `.github/workflows/` | Integración continua en GitHub Actions |
 | `skills-lock.json` | Registro de los skills instalados |

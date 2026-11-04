@@ -32,3 +32,4 @@ Un ADR (*Architecture Decision Record*) documenta una decisión de arquitectura 
 | [0018](0018-sello-de-tiempo-en-hedera.md) | Sello de tiempo en Hedera en lugar de Blockchain Federal Argentina | Aceptada |
 | [0019](0019-inicio-de-sesion-con-google.md) | Inicio de sesión con Google por OpenID Connect del lado del servidor | Aceptada |
 | [0020](0020-cobro-del-plan-con-proveedor-intercambiable.md) | Cobro del plan por transferencia, con un proveedor de pagos intercambiable | Aceptada |
+| [0021](0021-arnes-para-el-trabajo-asistido-por-ia.md) | Arnés para el trabajo asistido por IA, con reglas que se hacen cumplir solas | Aceptada |
