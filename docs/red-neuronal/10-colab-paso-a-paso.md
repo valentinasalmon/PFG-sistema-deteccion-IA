@@ -109,7 +109,7 @@ En los dos casos se usa el mismo paquete y la misma configuración. Lo que cambi
 | «Entorno de ejecución desconectado» | Inactividad | Ver «Si Colab corta la sesión» |
 | No hay GPU disponible | Demanda alta en Colab | Probar más tarde u otra GPU |
 | Una etapa falla | El motivo está en las líneas justo arriba del `RuntimeError` | Copiar esas líneas al chat |
-| `ModuleNotFoundError: No module named 'onnxruntime'` en la sección 5 del cuaderno 03 | Colab no ve las bibliotecas instaladas después de abrir el cuaderno | Corregido el 2026-11-04: el cuaderno consulta el estado con un comando aparte. Con una copia vieja: ejecutar `import importlib; importlib.invalidate_caches()` o reiniciar la sesión y **Ejecutar todas** |
+| `ModuleNotFoundError: No module named 'onnxruntime'` u `'onnx'` en la sección 5 del cuaderno 03 | Al cuaderno 03 le faltaba la celda que instala el paquete | Corregido el 2026-11-04: la sección 2 instala el paquete y verifica en un proceso aparte que estén todas las bibliotecas; si falta alguna, se detiene ahí con el motivo. Bajar el cuaderno de nuevo |
 | `código -9` en una etapa o en la exploración | Colab cortó el proceso por falta de memoria | Pasar la salida al chat. La exploración ya corre cada conjunto por separado y no baja bloques de imágenes de más de 256 MB |
 
 ## Qué pasar al terminar
