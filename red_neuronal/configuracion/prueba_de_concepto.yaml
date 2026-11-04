@@ -1,0 +1,52 @@
+# Configuración de la prueba de concepto (funcionalidad 010, CA1).
+#
+# Objetivo: recorrer el pipeline completo con pocas imágenes para validar el
+# diseño y medir tiempos. No se exige umbral de desempeño.
+#
+# Columnas confirmadas en Kaggle el 2026-10-19 con el esquema del conjunto:
+# image_data (bytes), label (1 = sintética), model_name, nsfw_flag, subset,
+# real_source, architecture.
+nombre: prueba_de_concepto
+semilla: 42
+directorio_trabajo: /kaggle/working/trabajo
+
+datos:
+  fuentes:
+    - nombre: community_forensics
+      tipo: hugging_face
+      conjunto: OwensLab/CommunityForensics-Small
+      revision: main            # se fija a un commit concreto en la receta v1
+      division: train
+      columna_imagen: image_data
+      columna_clase: label
+      valores_sinteticos: ["1"]
+      columna_generador: model_name
+      excluir:
+        nsfw_flag: ["True"]   # contenido explícito: no se usa
+      cantidad_reales: 5000
+      cantidad_sinteticas: 5000
+      licencia: "Investigación no comercial (a verificar en T25)"
+  generadores_reservados: []
+  proporciones:
+    entrenamiento: 0.8
+    validacion: 0.1
+    prueba: 0.1
+  calidad_jpeg: [75, 95]
+  lado_menor: [256, 512]
+
+entrenamiento:
+  arquitectura: efficientnet_b0
+  preentrenado: true
+  epocas: 3
+  tamanio_lote: 64
+  tasa_aprendizaje: 0.0003
+  paciencia: 2
+  trabajadores_carga: 2
+  precision_mixta: true
+
+exportacion:
+  opset: 18
+  tolerancia: 0.001
+
+compuerta:
+  auc_minimo: 0.90

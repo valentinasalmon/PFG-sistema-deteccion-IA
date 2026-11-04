@@ -32,6 +32,8 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-19 | [Funcionalidad 007: motor de análisis y capa de metadatos](2026-10-19-funcionalidad-007-motor-de-analisis.md) |
 | 2026-10-19 | [Funcionalidad 008: informe PDF e historial (hito v0.1)](2026-10-19-funcionalidad-008-informe-pdf.md) |
 | 2026-10-19 | [Funcionalidad 009: capa de credenciales de contenido (C2PA)](2026-10-19-funcionalidad-009-capa-c2pa.md) |
+| 2026-10-19 | [Funcionalidad 010: especificación y plan de la red neuronal](2026-10-19-especificacion-red-neuronal.md) |
+| 2026-10-19 | [Funcionalidad 010: pipeline del clasificador implementado](2026-10-19-funcionalidad-010-pipeline.md) |
 | 2026-10-19 | [Decisiones de alcance y entrega](2026-10-19-decisiones-de-alcance-y-entrega.md) |
 | 2026-10-19 | [Funcionalidad 017: infraestructura y despliegue en AWS (código)](2026-10-19-funcionalidad-017-infraestructura.md) |
 | 2026-10-20 | [Funcionalidad 011: capa 3, niveles de error (ELA)](2026-10-20-funcionalidad-011-capa-ela.md) |
@@ -40,7 +42,12 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-28 | [Integración continua en verde e inicio con Google (027)](2026-10-28-funcionalidad-027-inicio-con-google.md) |
 | 2026-10-28 | [Revisión y refuerzo de la seguridad (030)](2026-10-28-funcionalidad-030-seguridad.md) |
 | 2026-10-28 | [Mejoras de interfaz (028): auditoría, frames y primera tanda](2026-10-28-funcionalidad-028-interfaz.md) |
+| 2026-10-28 | [Funcionalidad 010: la red neuronal pasa a Google Colab](2026-10-28-red-neuronal-en-colab.md) |
 | 2026-10-29 | [Interfaz (028), tercera tanda, y propuesta del pago en el registro (032)](2026-10-29-funcionalidad-028-tercera-tanda.md) |
 | 2026-10-29 | [Funcionalidad 032: pago del plan en el registro](2026-10-29-funcionalidad-032-pago-en-el-registro.md) |
 | 2026-10-29 | [Funcionalidad 033: portada pública con los planes](2026-10-29-funcionalidad-033-portada.md) |
 | 2026-10-29 | [Funcionalidad 034: pulido de UX/UI, primera tanda](2026-10-29-funcionalidad-034-pulido-ux.md) |
+| 2026-10-30 | [Funcionalidad 010: primera corrida en Colab](2026-10-30-red-neuronal-primera-corrida-en-colab.md) |
+| 2026-10-30 | [Funcionalidad 010: prueba de concepto de la red neuronal](2026-10-30-prueba-de-concepto-red-neuronal.md) |
+| 2026-10-30 | [Funcionalidad 010: documentación, plan de entrenamientos y búsqueda de datos](2026-10-30-datos-y-plan-de-entrenamientos.md) |
+| 2026-10-30 | [Funcionalidad 010: exploración de datos, receta v1 y cuaderno de entrenamiento completo](2026-10-30-red-neuronal-exploracion-y-receta-v1.md) |

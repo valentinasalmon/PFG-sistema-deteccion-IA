@@ -63,11 +63,15 @@ Las carpetas vacías contienen un archivo `.gitkeep`, que solo existe para que G
 
 | Ruta | Contenido |
 |---|---|
-| `cuadernos/` | Cuadernos de Jupyter de exploración y entrenamiento (Colab o Kaggle). |
-| `scripts/` | Scripts reproducibles: preparación de datos, entrenamiento, evaluación y exportación a ONNX. |
+| `pyproject.toml` | Paquete instalable: dependencias base (inferencia) y extra `[entrenamiento]`; configuración de calidad. |
+| `clasificador/` | Paquete de Python con un módulo por etapa del pipeline (datos, modelo, entrenamiento, evaluación, exportación, inferencia, seguimiento, registro) y línea de comandos `python -m clasificador <etapa>`. Ver [ADR-0014](decisiones/0014-ciclo-de-vida-y-mlops-del-clasificador.md). |
+| `clasificador/inferencia/` | Contrato de entrada del modelo y predictor ONNX, sin PyTorch. Lo reutiliza el backend. Ver [ADR-0015](decisiones/0015-arquitectura-y-contrato-de-inferencia-del-clasificador.md). |
+| `configuracion/` | Recetas de datos y configuraciones de entrenamiento en YAML, versionadas. |
+| `cuadernos/` | Cuadernos de Jupyter que orquestan el pipeline en Kaggle. No contienen lógica. |
+| `pruebas/` | Pruebas del paquete con imágenes generadas en memoria, sin GPU. |
 | `datos/` | Conjuntos de datos. **Ignorado por Git**. |
 | `modelos/` | Pesos entrenados y modelos exportados. **Ignorado por Git**. |
-| `informes/` | Métricas, matrices de confusión y curvas ROC de cada versión del modelo. |
+| `informes/` | Ficha de cada versión del modelo (`<version>/ficha.md`) con métricas, matrices de confusión y curvas ROC. |
 
 ## `infraestructura/`
 
