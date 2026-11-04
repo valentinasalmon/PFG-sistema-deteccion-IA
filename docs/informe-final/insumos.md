@@ -302,3 +302,10 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Proveedor intercambiable**: igual que el cobro (ADR-0020), con una versión simulada que permite mostrar el flujo completo antes de tener el contrato.
 - **Identik** (proveedor argentino): ofrece redirección o iFrame y resultado por *webhook*. Precios publicados al 2026-11-04: firma electrónica desde USD 0,27 por documento (pack de 1.000) y verificación biométrica USD 0,80 por firma; firma digital $ 21.990 por documento. La verificación aparte se cotiza a medida. RENAPER requiere credencial propia del registro.
 - **Decisiones abiertas** para el informe: CP-41 (verificación aparte o dentro de la firma electrónica) y CP-42 (firmar el informe PDF o dejarlo como trabajo futuro).
+
+## Índice de calidad y usabilidad (018, 2026-11-04)
+
+- **Fórmula del QI** (propuesta para CP-04): QI = 0,20·Cb + 0,15·Cf + 0,15·E + 0,10·K + 0,10·D + 0,30·U. Los componentes son la cobertura del backend y del frontend, pylint, la complejidad ciclomática acotada, el código sin duplicar y el SUS. Se mide con `backend/herramientas/indice_calidad.py`.
+- **Medición provisoria**: 0,977 sin SUS. Valores: backend 97,5 %, frontend 92,4 %, pylint 10, ninguna función con complejidad mayor a 10, 0,1 % de duplicación.
+- **Hallazgo metodológico**: un índice dominado por métricas de código que ya están al máximo puede ocultar una mala usabilidad (con estos valores, alcanzaría un SUS de 23). Conviene informar el SUS y la tasa de éxito aparte, con sus propios objetivos.
+- **Prueba de usabilidad**: protocolo con 8 tareas del flujo principal, SUS en español (Brooke, 1996) y al menos 5 participantes del dominio (Nielsen y Landauer, 1993). Resultados pendientes.
