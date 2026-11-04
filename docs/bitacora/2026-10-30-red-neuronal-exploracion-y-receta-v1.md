@@ -52,3 +52,13 @@ La autora notó que en la lista maestra se repetían los modelos de auto (12 mod
 - La carpeta `evidentia/exploracion/` está vacía. La copia del cuaderno 02 guardada en Drive muestra por qué: la exploración arrancó con Community Forensics y a los 62 s terminó con el **código -9** (Colab mató el proceso por falta de memoria).
 - **Causa:** para describir 24 imágenes de muestra se leía el primer grupo de filas con `read_row_group`, y pyarrow baja el bloque entero de la columna de imágenes. Se comprobó con un Parquet de prueba de 300 MB: tanto `read_row_group` como `iter_batches` leen los 300 MB aunque se pidan 24 filas.
 - **Corrección:** antes de bajar la muestra se lee en los metadatos el tamaño del bloque (66 KB de lectura para saberlo) y, si pasa de 256 MB, se omite y se anota como aviso; los conteos por clase y generador siguen, porque leen solo columnas livianas (66 KB en la misma prueba). Además los resultados se guardan después de cada candidato y el cuaderno corre cada candidato en su propio proceso (`--solo`), así un corte no se lleva a los demás. 206 pruebas, pylint 10/10.
+
+## 2026-11-04: exploración ejecutada y receta v1 completa
+
+- La autora volvió a correr el cuaderno 02 con la corrección: terminó en 25 minutos, cada conjunto en su proceso. Community Forensics y OpenFake quedaron incluidos; Treasure, MLLM-Generated, ShareGPT-4o y CarDD no están en Parquet; Semi-Truths no declara una licencia verificable; ConstructionSite espera la aprobación del acceso. Detalle en el capítulo 4.
+- **La propuesta automática no alcanzaba:** pedía 50 generadores con 400 imágenes cada uno, pero en los archivos elegidos solo 6 generadores pasan de 160 imágenes. La descarga se habría cortado con «la fuente se agotó». Se rehízo a mano: sin lista de generadores, con cuota por generador, y con cantidades calculadas sobre lo disponible.
+- **Hallazgos para el informe:** cada archivo de Community Forensics tiene una sola clase y un bloque de hasta 4,1 GB; las reales de OpenFake son fotos de hasta 8 192 px y ~4 MB, contra ~880 px de las sintéticas (sesgo de tamaño y formato que la normalización neutraliza).
+- **Decisiones (del agente):** la familia de Google (Imagen 4, Imagen 3, Nano Banana 2) como no vista, porque es lo que usa Gemini y sostiene la demostración de reentrenamiento; búfer de mezcla configurable por fuente (300 en OpenFake) para no agotar la RAM; el cuaderno 03 borra las imágenes crudas después de preparar y pide RAM amplia.
+- 207 pruebas en verde.
+- Pendiente: Pull Request de la rama, cuaderno 03 (entrenamiento completo), muestra de CarDD para el conjunto propio, pedir de nuevo el acceso a ConstructionSite.
+

@@ -251,3 +251,11 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - La primera ejecución de la exploración en Colab terminó con el código -9: el proceso se quedó sin memoria al bajar un bloque completo de imágenes solo para mirar 24. Medido con un Parquet de prueba, pyarrow lee el bloque entero de la columna aunque se pidan pocas filas.
 - Solución: consultar primero el tamaño del bloque en los metadatos del Parquet (unos KB) y omitir la muestra si es grande, guardar los resultados después de cada conjunto y correr cada conjunto en un proceso aparte. Para el informe: ejemplo de diseño robusto ante límites del entorno de ejecución y de diagnóstico a partir del cuaderno guardado.
 
+## Resultado de la exploración y receta v1 (2026-11-04)
+
+- De ocho conjuntos candidatos, dos quedaron para entrenar (Community Forensics y OpenFake). Los demás quedaron fuera por formato (carpetas de imágenes o `.tar` en lugar de Parquet), por licencia no verificable (Semi-Truths, CA2) o por acceso pendiente (ConstructionSite). Tabla completa en `docs/red-neuronal/04-datos.md`.
+- **Sesgo de tamaño y formato medido:** en OpenFake las fotos reales tienen un lado menor mediano de 3 349 px (JPEG, calidad 95) y las sintéticas de unos 880 px (PNG, JPEG, WebP). En Community Forensics, las sintéticas son PNG de 512 × 512. Es la evidencia concreta de por qué hace falta la normalización anti-atajos.
+- **Generadores no vistos:** la familia de Google (Imagen 4, Imagen 3, Nano Banana 2), que usa Gemini. Permite medir la generalización a una herramienta comercial y demostrar el reentrenamiento (1.0.0 → 1.1.0).
+- **Lección de ingeniería de datos:** una propuesta automática de receta no garantiza que los datos alcancen; se verificó la disponibilidad real por generador antes de fijar cantidades. Y los límites del entorno (RAM y disco de Colab) obligaron a decisiones concretas: búfer de mezcla por fuente y borrado de las imágenes crudas una vez preparadas.
+- Receta v1: 19 000 reales y 19 000 sintéticas, 290 generadores en total.
+

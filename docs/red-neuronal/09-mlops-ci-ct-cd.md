@@ -28,7 +28,7 @@ El flujo de GitHub Actions corre en **Python 3.12** (la versión del backend) y 
 2. `pylint` sobre el código;
 3. `pytest` con **cobertura mínima del 80 %**.
 
-Las 206 pruebas verifican que **el código hace lo que debe**, con imágenes generadas en memoria:
+Las 207 pruebas verifican que **el código hace lo que debe**, con imágenes generadas en memoria:
 
 | Tipo | Qué verifica |
 |---|---|

@@ -229,5 +229,5 @@ class FuenteCarpetaLocal(FuenteDatos):
 def crear_fuente(configuracion: ConfiguracionFuente, semilla: int) -> FuenteDatos:
     """Fábrica: crea la fuente que corresponde al tipo configurado."""
     if configuracion.tipo == "hugging_face":
-        return FuenteHuggingFace(configuracion, semilla)
+        return FuenteHuggingFace(configuracion, semilla, tamanio_bufer=configuracion.bufer_mezcla)
     return FuenteCarpetaLocal(configuracion)

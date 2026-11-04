@@ -4,15 +4,15 @@
 
 | Parte | Estado |
 |---|---|
-| Paquete `clasificador` (las siete etapas, inferencia, registro, compuerta, ficha, MLflow, exploración y estado) | ✔ Hecho, con 206 pruebas |
+| Paquete `clasificador` (las siete etapas, inferencia, registro, compuerta, ficha, MLflow, exploración y estado) | ✔ Hecho, con 207 pruebas |
 | Integración continua (`red_neuronal.yml`) | ✔ Hecha |
 | Cuaderno de Colab | ✔ Hecho y corregido con la primera corrida |
 | Prueba de concepto (CA1, T24) | ✔ Hecha: AUC 0,985, ≈ 11 min en T4 |
 | Investigación de conjuntos de datos | ✔ Hecha el 2026-10-30 (falta verificar licencias en Colab con el cuaderno de exploración) |
-| Exploración de datos y licencias (T25) | Código y cuaderno `02` listos; falta correrlo en Colab |
+| Exploración de datos y licencias (T25) | ✔ Hecha el 2026-11-04: Community Forensics y OpenFake incluidos; el resto, fuera de la v1 (capítulo 4) |
 | Protocolo del conjunto propio (T26) | ✔ Hecho: [docs/guias/protocolo-conjunto-propio.md](../guias/protocolo-conjunto-propio.md) |
 | Armado del conjunto propio (E04) | Pendiente (autora), con la [guía paso a paso](../guias/guia-paso-a-paso-conjunto-propio.md) y su lista de 90 prompts |
-| Receta v1 (T27) | Provisoria en `configuracion/v1.yaml`; se completa con la salida de la exploración |
+| Receta v1 (T27) | ✔ `configuracion/v1.yaml`: 19 000 reales y 19 000 sintéticas, la familia de Google como no vista |
 | Datos en Drive (T28) | Pendiente: el cuaderno `03` los guarda solo |
 | Cuaderno de entrenamiento completo en Colab que saltee las etapas ya hechas (T29) | ✔ Hecho: `03_entrenamiento_completo_colab.ipynb` |
 | Entrenamiento completo, reproducibilidad y condiciones reales (T30 a T32) | Pendiente |
@@ -42,6 +42,8 @@ Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento com
 | 2026-10-30 | El cuaderno de entrenamiento saltea etapas terminadas con el mismo manifiesto y guarda los datos preparados en Drive | Pedido de la autora: no rehacer horas de trabajo si Colab corta | Capítulo 8 |
 | 2026-10-30 | Sin escenas de viviendas en el conjunto propio (CP-38) | Decisión de la autora: el sistema solo tiene casos automovilísticos y laborales | Especificación, CA12 |
 | 2026-10-30 | Sin la versión de WhatsApp en el conjunto propio: solo original y captura | Decisión de la autora: las fotos las sube la persona afectada desde el enlace de carga, como original, captura o generada | Capítulo 4 |
+| 2026-11-04 | La familia de Google (Imagen 4, Imagen 3, Nano Banana 2) como generadores no vistos | Es lo que usa Gemini; está en OpenFake y permite la demostración de reentrenamiento planificada | Capítulo 4 |
+| 2026-11-04 | Búfer de mezcla por fuente y borrado de las imágenes crudas después de preparar | Las reales de OpenFake pesan ~4 MB: memoria y disco de Colab | Capítulos 4 y 8 |
 | 2026-10-30 | Plan de entrenamientos: 2 obligatorios (completo y repetición), 1 o 2 de ajuste y 1 o 2 de la demostración de reentrenamiento | Explicado a la autora | Capítulo 8 |
 
 ## Riesgos y cómo se mitigan
@@ -59,10 +61,10 @@ Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento com
 
 ## Próximos pasos, en orden
 
-1. **Correr el cuaderno 02** (autora, en CPU): pasar al chat la tabla de licencias, los generadores y la propuesta de receta.
-2. **Completar la receta v1** (agente) con la revisión, los archivos y los generadores que devuelva la exploración.
-3. **Conjunto propio** (autora): prioridad A de la lista maestra en dos herramientas, con sus tres versiones. El agente prepara la copia de las fotos reales de CarDD, SCIN y MOCS a Drive.
+1. **Pull Request** de `funcionalidad/010-red-neuronal` hacia `desarrollo` (autora).
+2. **Cuaderno 03 en Colab** (autora, GPU T4 o L4 con RAM amplia): obtener, validar, preparar y entrenar con la receta v1. Lleva unas 2 a 3 horas; si se corta, se vuelve a ejecutar y sigue desde donde quedó.
+3. **Conjunto propio** (autora): prioridad A en dos o tres herramientas, original y captura. El agente prepara la copia de una muestra de CarDD a Drive.
 4. **E03. Repositorio de modelos** en Hugging Face (autora).
-5. **Cuaderno 03:** entrenamiento completo, repetición para reproducibilidad y evaluación en condiciones reales (corre la autora, analiza y documenta el agente).
-6. **Publicación de `1.0.0`** y demostración de reentrenamiento (`1.1.0`).
+5. **Repetición** para la reproducibilidad, **evaluación en condiciones reales** y publicación de `1.0.0`.
+6. **Demostración de reentrenamiento:** sumar la familia de Google (y, si se puede leer, MLLM-Generated) y publicar `1.1.0`.
 7. **Funcionalidad 012:** integrar el modelo en el análisis y el informe.

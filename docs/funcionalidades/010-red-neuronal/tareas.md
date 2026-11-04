@@ -145,7 +145,7 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
 
 ## Fase K — Datos reales
 
-- [ ] **T25** — Cuaderno de exploración de datos: muestra de cada fuente, conteos por generador, formato, tamaño y compresión, ejemplos visuales, y verificación de disponibilidad, licencia y revisión de cada conjunto. *Código, pruebas y cuaderno hechos el 2026-10-30 (`clasificador/datos/exploracion.py`, `python -m clasificador explorar`, `configuracion/candidatos_v1.yaml`); falta ejecutarlo en Colab.*
+- [x] **T25** — Cuaderno de exploración de datos: muestra de cada fuente, conteos por generador, formato, tamaño y compresión, ejemplos visuales, y verificación de disponibilidad, licencia y revisión de cada conjunto. *Hecho: código y cuaderno el 2026-10-30; ejecutado por la autora en Colab el 2026-11-04 (la primera corrida se quedó sin memoria y se corrigió). Resultados en el capítulo 4 de `docs/red-neuronal/`.*
   - Archivos: `red_neuronal/cuadernos/02_exploracion_datos_colab.ipynb` (el número 01 ya lo usa la prueba de concepto)
   - Verificación: el cuaderno ejecutado muestra la tabla de fuentes con su licencia; las fuentes no disponibles o sin licencia verificable quedan excluidas y anotadas.
   - Commit: `funcionalidad(clasificador): agregar cuaderno de exploracion de datos`
@@ -153,7 +153,7 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
   - Archivos: `docs/guias/protocolo-conjunto-propio.md`
   - Verificación: la autora puede seguirlo sin preguntas (E04).
   - Commit: `documentacion(guias): agregar protocolo del conjunto propio`
-- [ ] **T27** — Receta de datos versión 1 a partir de la exploración: fuentes, revisiones fijas, cantidades por generador y clase, generadores reservados como no vistos y semilla. Para Community Forensics, muestreo **por archivos** elegidos al azar de cada clase (ver la bitácora del 2026-10-19). *Provisoria el 2026-10-30: el esquema admite `archivos`, `generadores_incluidos`, `cuota_por_generador` y `clase_fija`; falta completarla con la salida de T25.*
+- [x] **T27** — Receta de datos versión 1 a partir de la exploración: fuentes, revisiones fijas, cantidades por generador y clase, generadores reservados como no vistos y semilla. Para Community Forensics, muestreo **por archivos** elegidos al azar de cada clase (ver la bitácora del 2026-10-19). *Completada el 2026-11-04 con la salida de T25: 19 000 reales y 19 000 sintéticas de Community Forensics y OpenFake, la familia de Google como no vista.*
   - Archivos: `red_neuronal/configuracion/v1.yaml` (un solo archivo, como la prueba de concepto: el esquema reúne datos y entrenamiento)
   - Verificación: `python -m clasificador validar` sobre una muestra pequeña de la receta pasa.
   - Commit: `funcionalidad(clasificador): agregar receta de datos v1`

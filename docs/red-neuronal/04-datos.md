@@ -11,7 +11,7 @@ Se descargan de **Hugging Face**, una plataforma pública de conjuntos de datos 
 | Conjunto | Qué tiene | Estado |
 |---|---|---|
 | **Community Forensics (*Small*)** | Fotos reales y generadas por **cientos de generadores** (Stable Diffusion y sus ajustes finos, GAN, DeepFloyd, GLIDE, etc.) | En uso desde la prueba de concepto |
-| OpenFake | Imágenes de generadores comerciales recientes | En la receta v1 provisoria (`configuracion/v1.yaml`); a confirmar con la exploración |
+| OpenFake | Imágenes de generadores comerciales recientes | En la receta v1 (`configuracion/v1.yaml`), con la familia de Google como no vista |
 | MS COCOAI | Fotos de COCO y sus versiones generadas | Previsto para la receta v1 |
 | ShareGPT-4o-Image | Imágenes generadas con GPT-4o | Previsto para la receta v1 si se verifica la licencia |
 
@@ -35,20 +35,41 @@ Antes de usar un conjunto se lo explora con `python -m clasificador explorar` (c
 5. deja `exploracion.json` y una tabla `exploracion.md` con la decisión de cada candidato. Los guarda después de **cada** candidato, y el cuaderno corre cada uno en su propio proceso (`--solo <nombre>`): si uno se corta, los demás siguen;
 6. propone el bloque de la receta: revisión fija, archivos, generadores con más imágenes y cuota por generador.
 
-### La receta v1 (T27, provisoria)
+### Resultado de la exploración (2026-11-04)
 
-`configuracion/v1.yaml` aplica lo aprendido en la prueba de concepto:
+La autora corrió el cuaderno 02 en Colab (25 minutos, en CPU). Resultados guardados en `MyDrive/evidentia/exploracion/`:
 
-| Decisión | Cómo |
+| Conjunto | Revisión | Licencia | Qué tiene (12 archivos explorados) | Decisión |
+|---|---|---|---|---|
+| Community Forensics *Small* | `6c539a5` | CC BY-NC-SA 4.0 | 17 952 reales y 17 954 sintéticas de **216 generadores**: 6 grandes (GigaGAN 2 992, VQDiffusion 2 072, LFM 1 645, StyleGAN-XL 1 347, StyleGAN2 761, ProjectedGAN 159) y unos 210 ajustes finos de Stable Diffusion con ~46 cada uno. **Cada archivo tiene una sola clase y un único bloque de 0,3 a 4,1 GB.** Reales: JPEG de 640 px con calidad 75 | Entrenamiento |
+| OpenFake | `3247b94` | CC BY-NC 4.0 | 24 063 reales y 23 817 sintéticas de **74 generadores**, comerciales incluidos: GPT Image 1 (873), DALL·E 3 (666), Midjourney 6 (1 045), Ideogram 3 (550), FLUX 1.1 Pro (620), Imagen 4 (280), Grok, Seedream, Nano Banana 2 (36). Cada archivo mezcla las dos clases | Entrenamiento y no vistos |
+| Treasure | `99a2cc5` | CC BY-NC 4.0, con condiciones | ~100 000 PNG sueltos, sin Parquet | Fuera de la v1 |
+| MLLM-Generated | `651a325` | **Apache 2.0** | ~45 000 imágenes sueltas (GPT Image 2, Nano Banana 2) | Fuera de la v1; candidato a no vistos de la 1.1.0 (habría que leer carpetas de imágenes) |
+| ShareGPT-4o-Image | `f9bcb94` | Apache 2.0 | 20 archivos `.tar` | Fuera de la v1 |
+| Semi-Truths | `6c95f94` | «cc» sin variante | Archivos `.bz2` | Excluido: licencia no verificable (CA2) |
+| CarDD | `56900bd` | Investigación no comercial (verificada a mano) | 2 816 JPG sueltos | Para el conjunto propio (se copia una muestra), no para entrenar |
+| ConstructionSite (MOCS) | `ca3d9b8` | CC BY-NC 4.0, con condiciones | 3 Parquet | Acceso pendiente de aprobación (error 403) |
+
+**Sesgos de formato confirmados** (para el informe): en OpenFake las reales son JPEG de calidad 95 y muy grandes (lado menor mediano **3 349 px**, hasta 8 192), mientras que las sintéticas son PNG, JPEG y WebP de unos **880 px**. En Community Forensics las sintéticas son PNG de 512 × 512 y las reales JPEG de 640 px. Sin la normalización anti-atajos, el modelo podría separar las clases solo por el tamaño o el formato.
+
+### La receta v1 (T27)
+
+`configuracion/v1.yaml`, completada con la exploración:
+
+| Fuente | Archivos | Reales | Sintéticas | Cuota por generador | Búfer de mezcla |
+|---|---|---|---|---|---|
+| Community Forensics | 4 de reales y 6 de sintéticas (se evita el de 4,1 GB) | 9 000 | 9 000 (de ~11 600 disponibles) | 500 | 1 000 |
+| OpenFake | Los 12 explorados | 10 000 | 10 000 (de ~16 400 disponibles) | 700 | 300 |
+
+| Decisión | Por qué |
 |---|---|
-| Menos generadores, más imágenes por cada uno | `generadores_incluidos` y `cuota_por_generador` |
-| Muestreo por archivos (en Parquet, leer una imagen baja la columna de imágenes de todo el archivo) | `archivos`, propuestos por la exploración |
-| Revisión fija de cada conjunto | `revision` con el commit que informa la exploración |
-| Un generador comercial reservado como no visto | Una fuente aparte con solo ese generador y `generadores_reservados`; la fuente principal lo excluye para no desbalancear el entrenamiento |
-| Más épocas | 15, con paciencia 3 |
-| Fotos reales de escenas del sistema **fuera** del entrenamiento | CarDD, SCIN y MOCS van al conjunto propio. En el entrenamiento no hay sintéticas de autos dañados ni de lesiones: si se sumaran solo reales, el modelo aprendería «auto dañado = real» |
+| **Generadores no vistos: la familia de Google** (Imagen 4, Imagen 3 y Nano Banana 2, que es lo que usa Gemini) | Es una herramienta comercial que usaría quien falsifica una prueba. Queda fuera del entrenamiento para medir cuánto le cuesta al modelo y es la base de la demostración de reentrenamiento (1.1.0). Son ~170 imágenes; el desbalance que dejan en el entrenamiento (~0,5 %) está dentro de la tolerancia |
+| Cuotas por generador | Que GigaGAN o SD 3.5 no dominen el entrenamiento |
+| Búfer de mezcla chico en OpenFake | Al leer, la mezcla guarda filas en memoria: 10 000 fotos de 4 MB agotarían la RAM. Campo nuevo `bufer_mezcla` |
+| Las imágenes crudas se borran después de preparar | Las reales de OpenFake ocupan decenas de GB sin normalizar; lo preparado queda respaldado en Drive |
+| Fotos reales de escenas del sistema **fuera** del entrenamiento | CarDD, SCIN y obras van al conjunto propio. En el entrenamiento no hay sintéticas de autos dañados ni de lesiones: el modelo aprendería «auto dañado = real» |
 
-Unas 70 000 imágenes en total. Los valores marcados «a confirmar» (nombres de columnas y de generadores de OpenFake) se completan con la salida de la exploración.
+Total: **19 000 reales y 19 000 sintéticas**, unas 3,8 veces la prueba de concepto. 15 épocas con paciencia 3.
 
 ### Conjunto propio (para evaluar en condiciones reales)
 

@@ -66,6 +66,13 @@ class ConfiguracionFuente(_Esquema):
         default_factory=list,
         description="Si no está vacía, solo se toman sintéticas de estos generadores.",
     )
+    bufer_mezcla: int = Field(
+        default=10_000, ge=1,
+        description=(
+            "Filas que se guardan en memoria para mezclar al leer. Con fotos "
+            "pesadas (p. ej. reales de 4 MB) hay que bajarlo para no agotar la RAM."
+        ),
+    )
     cuota_por_generador: int | None = Field(
         default=None, ge=1,
         description="Máximo de sintéticas de un mismo generador, para que ninguno domine.",

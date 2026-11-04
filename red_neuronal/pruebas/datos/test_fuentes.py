@@ -257,3 +257,9 @@ def test_carpeta_local_acepta_mayusculas(tmp_path):
     ejemplo = next(FuenteCarpetaLocal(_config_local(tmp_path)).iterar())
     assert (ejemplo.clase, ejemplo.generador, ejemplo.variante) == (1, "gemini", "original")
     assert ejemplo.nombre == "sintetica/gemini/original/01-choque-001.png"
+
+
+def test_la_fabrica_usa_el_bufer_de_mezcla_configurado():
+    """Cada fuente puede pedir un búfer de mezcla más chico."""
+    fuente = crear_fuente(_config_hf(bufer_mezcla=300), semilla=0)
+    assert fuente.tamanio_bufer == 300
