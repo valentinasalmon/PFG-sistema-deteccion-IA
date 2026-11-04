@@ -205,6 +205,12 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
         )
         # Cuenta, clave y tema de Hedera: solo por variables de entorno (SSM en producción),
         # nunca en el repositorio.
+        # Verificación de identidad del Referente de una aseguradora (035, CP-35):
+        # simulado | desactivado (identik cuando esté su API). Simulada en desarrollo;
+        # en pruebas y en producción, desactivada salvo que se configure.
+        self.VERIFICACION_IDENTIDAD = os.getenv(
+            "VERIFICACION_IDENTIDAD", "simulado" if self.NOMBRE == "desarrollo" else "desactivado"
+        )
         self.HEDERA_RED = os.getenv("HEDERA_RED", "testnet")
         self.HEDERA_CUENTA = os.getenv("HEDERA_CUENTA", "")
         self.HEDERA_CLAVE = os.getenv("HEDERA_CLAVE", "")

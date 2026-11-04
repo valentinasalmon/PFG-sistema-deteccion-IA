@@ -9,6 +9,7 @@ IP) para que la auditoría lo registre sin que los servicios conozcan Flask.
 from app.repositorios.catalogo_aseguradoras import CatalogoAseguradoras
 from app.analisis.registro import crear_capas
 from app.integraciones.google import crear_cliente_google
+from app.integraciones.identidad import crear_proveedor_identidad
 from app.integraciones.pagos import crear_proveedor_pagos
 from app.integraciones.sello_tiempo import crear_sellador, crear_tema_hedera
 from app.repositorios.repositorio_analisis import RepositorioAnalisis
@@ -21,6 +22,7 @@ from app.repositorios.repositorio_imagenes import RepositorioImagenes
 from app.repositorios.repositorio_informes import RepositorioInformes
 from app.repositorios.repositorio_organizaciones import RepositorioOrganizaciones
 from app.repositorios.repositorio_usuarios import RepositorioUsuarios
+from app.repositorios.repositorio_verificaciones import RepositorioVerificaciones
 from app.repositorios.repositorio_versiones import RepositorioVersiones
 from app.servicios.auditoria import ServicioAuditoria
 from app.servicios.servicio_administracion import ServicioAdministracion
@@ -29,6 +31,7 @@ from app.servicios.servicio_casos import ServicioCasos, TareasDeRetencion
 from app.servicios.servicio_correos import ServicioCorreos
 from app.servicios.servicio_cuentas import ServicioCuentas
 from app.servicios.servicio_datos_personales import ServicioDatosPersonales
+from app.servicios.servicio_identidad import ServicioIdentidad
 from app.servicios.servicio_imagenes import ArchivosDeCasos, ServicioImagenes
 from app.servicios.servicio_informes import ServicioInformes
 from app.servicios.servicio_organizaciones import ServicioOrganizaciones
@@ -123,6 +126,15 @@ def crear_servicio_organizaciones(configuracion, enviador, origen=None, almacena
         GestorTokens(configuracion["SECRET_KEY"]), configuracion,
         crear_servicio_auditoria(origen), RepositorioCasos(), _archivos(almacenamiento),
         crear_servicio_pagos(configuracion, origen),
+        identidad=crear_servicio_identidad(configuracion, origen),
+    )
+
+
+def crear_servicio_identidad(configuracion, origen=None):
+    """Verificación de identidad del Referente de una aseguradora (035): hoy simulada."""
+    return ServicioIdentidad(
+        RepositorioVerificaciones(), RepositorioOrganizaciones(),
+        crear_proveedor_identidad(configuracion), crear_servicio_auditoria(origen),
     )
 
 
