@@ -9,6 +9,6 @@
 - [x] T07 — Frontend: sección del Referente, página `/identidad/:token` y «Aprobar» bloqueado en Administración.
 - [x] T08 — Pruebas del frontend (12, `paginas/identidad.test.jsx`).
 - [x] T09 — Terraform (`verificacion_identidad`) y `generar_entorno.sh`.
-- [x] T10 — RN41, CP-35, CP-39, CP-40, bitácora, insumos y Trello.
-- [ ] T11 — Conectar Identik en el sandbox (llamada a su API y aviso firmado), después de la reunión técnica y de resolver CP-39.
+- [x] T10 — RN41, CP-35, CP-41, CP-42, bitácora, insumos y Trello.
+- [ ] T11 — Conectar Identik en el sandbox (llamada a su API y aviso firmado), después de la reunión técnica y de resolver CP-41.
 - [ ] T12 — Prueba contra el servicio real y estado de Identik en `/estado`.

@@ -21,6 +21,6 @@
 
 ## Pendiente
 
-- Revisar con el tutor CP-39 (con qué servicio de Identik) y CP-40 (firma del informe).
+- Revisar con el tutor CP-41 (con qué servicio de Identik) y CP-42 (firma del informe).
 - Reunión técnica con Identik: firma de los webhooks, reintentos, datos que conservan (Ley 25.326).
 - Conectar el sandbox (T11) y probar contra el servicio real (T12). El token de API lo genera y lo carga la autora en AWS; nunca pasa por el chat ni el repositorio.

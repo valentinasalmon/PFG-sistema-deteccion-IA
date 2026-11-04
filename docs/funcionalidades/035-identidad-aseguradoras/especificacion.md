@@ -1,7 +1,7 @@
 # Especificación: 035 — Verificación de identidad del Referente de una aseguradora
 
 - **Rama**: `funcionalidad/035-identidad-aseguradoras`
-- **Estado**: Implementada con proveedor simulado (falta conectar Identik: CP-35, CP-39)
+- **Estado**: Implementada con proveedor simulado (falta conectar Identik: CP-35, CP-41)
 - **Requisitos que realiza**: RF01, RF12 (aprobación de aseguradoras), RNF08 (datos personales)
 - **Reglas de negocio aplicadas**: RN36 a RN40 (aprobación de aseguradoras); RN41 (nueva)
 - **Casos de uso**: registro y aprobación de una aseguradora (021)

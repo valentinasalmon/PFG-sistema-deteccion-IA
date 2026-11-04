@@ -1,0 +1,82 @@
+# Conjuntos candidatos para la receta de datos v1 (tarea T25).
+#
+# Lo lee `python -m clasificador explorar` (cuaderno 02_exploracion_datos_colab).
+# Para cada uno se verifica en Hugging Face, en la revisión exacta:
+# disponibilidad, licencia de la ficha, columnas, conteos por clase y por
+# generador, y formato de unas imágenes de muestra. Un candidato sin licencia
+# verificable queda excluido (CA2), salvo que se haya verificado a mano en el
+# artículo o el sitio oficial y se anote en `licencia_verificada_a_mano`.
+#
+# Los nombres de columnas marcados «a confirmar» salen de la documentación y
+# se confirman con la exploración: si una falta, el informe lista las columnas
+# que sí tiene y se corrige acá.
+#
+# Investigación: docs/investigacion/2026-10-30-conjuntos-de-datos-imagenes-sinteticas.md
+
+semilla: 42
+archivos_por_conjunto: 12   # archivos Parquet que se leen (solo columnas livianas)
+imagenes_por_conjunto: 24   # imágenes de muestra por clase para medir formato y calidad
+
+candidatos:
+  # --- Entrenamiento ------------------------------------------------------------
+  - nombre: community_forensics
+    conjunto: OwensLab/CommunityForensics-Small
+    columna_imagen: image_data
+    columna_clase: label
+    valores_sinteticos: ["1"]
+    columna_generador: model_name
+    uso: entrenamiento (base, generadores abiertos)
+
+  - nombre: openfake
+    conjunto: ComplexDataLab/OpenFake
+    columna_imagen: image          # a confirmar
+    columna_clase: label           # a confirmar
+    valores_sinteticos: ["fake"]   # a confirmar
+    columna_generador: model       # a confirmar
+    uso: entrenamiento y no_visto (generadores comerciales)
+
+  # --- Generadores comerciales recientes (no vistos o prueba) --------------------
+  - nombre: treasure
+    conjunto: ThreeLiu/Treasure
+    columna_imagen: image          # a confirmar
+    columna_clase: label           # a confirmar
+    valores_sinteticos: ["1", "fake"]
+    columna_generador: generator   # a confirmar
+    uso: no_visto (GPT-image, Midjourney v7, FLUX.2)
+
+  - nombre: mllm_generadas
+    conjunto: zr-zhang/MLLM-Generated-Image-Detection-Dataset
+    columna_imagen: image          # a confirmar
+    columna_clase: label           # a confirmar
+    valores_sinteticos: ["1", "fake"]
+    columna_generador: model       # a confirmar
+    uso: no_visto (GPT Image 2, Nano Banana 2)
+
+  - nombre: sharegpt_4o
+    conjunto: FreedomIntelligence/ShareGPT-4o-Image
+    columna_imagen: image          # a confirmar
+    clase_fija: sintetica
+    uso: no_visto (GPT-4o), solo si la licencia se verifica
+
+  # --- Ediciones parciales (solo para medir, CA13) --------------------------------
+  - nombre: semi_truths
+    conjunto: semi-truths/Semi-Truths
+    columna_imagen: image          # a confirmar
+    clase_fija: sintetica
+    uso: medir ediciones parciales, sin entrenar
+
+  # --- Fotos reales de las escenas del sistema (regla de oro) ---------------------
+  - nombre: cardd
+    conjunto: harpreetsahota/CarDD
+    columna_imagen: image          # a confirmar
+    clase_fija: real
+    uso: reales de autos dañados (escenas 1 a 3)
+    licencia_verificada_a_mano: >-
+      Solo investigación no comercial; requiere aceptar las condiciones de Flickr y
+      Shutterstock (artículo CarDD, arXiv 2211.00945)
+
+  - nombre: obras_mocs
+    conjunto: LouisChen15/ConstructionSite
+    columna_imagen: image          # a confirmar
+    clase_fija: real
+    uso: reales de obras (escenas 6 y 7); imágenes tomadas de MOCS

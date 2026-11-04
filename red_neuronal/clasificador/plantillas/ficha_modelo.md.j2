@@ -1,0 +1,108 @@
+# Ficha del modelo {{ version }}
+
+> {{ leyenda }}
+
+## 1. Identificación
+
+| Campo | Valor |
+|---|---|
+| Versión | `{{ version }}` |
+| Fecha | {{ fecha }} |
+| Arquitectura | {{ configuracion.entrenamiento.arquitectura }} ({{ "preentrenada en ImageNet" if configuracion.entrenamiento.preentrenado else "sin preentrenar" }}) |
+| Huella del modelo ONNX (SHA-256) | `{{ huella_modelo }}` |
+| Configuración | `{{ configuracion.nombre }}` |
+
+## 2. Uso previsto y limitaciones
+
+**Uso previsto**: estimar la probabilidad de que una imagen sea **íntegramente sintética**, como una de las cuatro capas independientes del análisis (RF42). El resultado es un indicio, no un veredicto (RN27), y no se combina con las demás capas en un puntaje global.
+
+**Limitaciones**:
+
+- **No detecta ediciones parciales** de una fotografía real (por ejemplo, un objeto agregado con IA). Las ediciones se abordan con las capas de metadatos, C2PA y ELA.
+- **Su desempeño disminuye frente a generadores no vistos** durante el entrenamiento. Ver la sección 6.
+- La recompresión por aplicaciones de mensajería y las capturas de pantalla pueden reducir su desempeño. Ver la sección 6.
+- Los conjuntos de entrenamiento tienen licencias de uso para investigación. Ver la sección 3.
+
+## 3. Datos
+
+**Huella del manifiesto**: `{{ huella_manifiesto }}` · **Semilla**: {{ configuracion.semilla }}
+
+| Fuente | Conjunto | Revisión | Reales | Sintéticas | Licencia |
+|---|---|---|---|---|---|
+{% for fuente in configuracion.datos.fuentes -%}
+| {{ fuente.nombre }} | {{ fuente.conjunto or fuente.ruta }} | {{ fuente.revision if fuente.tipo == "hugging_face" else "—" }} | {{ fuente.cantidad_reales }} | {{ fuente.cantidad_sinteticas }} | {{ fuente.licencia }} |
+{% endfor %}
+
+**Partición** (entrenamiento / validación / prueba): {{ configuracion.datos.proporciones.entrenamiento }} / {{ configuracion.datos.proporciones.validacion }} / {{ configuracion.datos.proporciones.prueba }}, estratificada por clase y generador.
+
+**Generadores reservados como no vistos**: {{ configuracion.datos.generadores_reservados | join(", ") if configuracion.datos.generadores_reservados else "ninguno" }}.
+
+**Normalización anti-atajos**: JPEG con calidad entre {{ configuracion.datos.calidad_jpeg[0] }} y {{ configuracion.datos.calidad_jpeg[1] }}; lado menor entre {{ configuracion.datos.lado_menor[0] }} y {{ configuracion.datos.lado_menor[1] }} px, igual para ambas clases.
+
+| Partición | Imágenes |
+|---|---|
+{% for particion, cantidad in resumen_datos.particion.items() -%}
+| {{ particion }} | {{ cantidad }} |
+{% endfor %}
+
+## 4. Entrenamiento
+
+| Hiperparámetro | Valor |
+|---|---|
+{% for clave, valor in configuracion.entrenamiento.model_dump().items() -%}
+| {{ clave }} | {{ valor | legible }} |
+{% endfor -%}
+| Mejor época | {{ entrenamiento.epoca_mejor }} |
+| AUC de validación | {{ "%.4f" | format(entrenamiento.mejor_auc) }} |
+| Temperatura de calibración | {{ "%.4f" | format(temperatura) }} |
+
+## 5. Entorno
+
+| Componente | Versión |
+|---|---|
+{% for clave, valor in entorno.items() -%}
+| {{ clave }} | {{ valor }} |
+{% endfor %}
+
+## 6. Métricas
+
+Umbral de 0,5 usado **solo para reportar** exactitud, precisión, exhaustividad y F1.
+
+### Prueba con generadores conocidos (umbral de aceptación: AUC ≥ {{ configuracion.compuerta.auc_minimo }})
+
+{{ tabla(metricas_prueba.total) }}
+
+### Por generador (cada uno frente a todas las imágenes reales)
+
+{{ tabla_grupos(metricas_prueba.por_generador) }}
+{% if metricas_no_visto %}
+### Generadores no vistos
+
+{{ tabla_grupos(metricas_no_visto.por_generador) }}
+{% endif %}
+{% if metricas_condiciones_reales %}
+### Condiciones reales de uso (conjunto propio)
+
+Por herramienta:
+
+{{ tabla_grupos(metricas_condiciones_reales.por_generador) }}
+
+Por variante (original, WhatsApp, captura de pantalla, editada):
+
+{{ tabla_grupos(metricas_condiciones_reales.por_variante) }}
+{% endif %}
+
+## 7. Exportación
+
+| Campo | Valor |
+|---|---|
+| Diferencia máxima ONNX frente a PyTorch | {{ "%.2e" | format(exportacion.diferencia_maxima) }} |
+| Latencia en CPU por imagen (5 recortes) | {{ "%.1f" | format(exportacion.latencia_ms_por_imagen) }} ms |
+| Recorte de entrada | {{ tamanio_recorte }} px |
+
+## 8. Reproducción
+
+| Campo | Valor |
+|---|---|
+| Commit del código | `{{ commit }}` |
+| Ejecución de MLflow | `{{ id_ejecucion }}` |

@@ -35,7 +35,7 @@ implementación siguiendo tareas.md, con pruebas
 | 007 | Motor de análisis y capa 1 (metadatos) | 4 | RF38, RF39, RF43, RF46 | Completado |
 | 008 | Informe PDF e historial | 4 | RF44, RF45 | Completado |
 | 009 | Capa 2 (C2PA) | 5 | RF40 | Completado |
-| 010 | Red neuronal: entrenamiento y exportación (pista paralela) | 2 – 5 | RNF24 | Pendiente |
+| 010 | [Red neuronal: ciclo de vida, entrenamiento y exportación](010-red-neuronal/especificacion.md) (pista paralela) | 2 – 5 | RNF24 | En curso |
 | 011 | [Capa 3 (ELA)](011-capa-ela/especificacion.md) | 5 | RF41 | Completado |
 | 012 | Capa 4 (ONNX) | 5 | RF42 | Pendiente |
 | 013 | [Notificaciones y panel principal](013-panel-y-notificaciones/especificacion.md) | 6 | RF47, RF48 | Completado |
@@ -60,7 +60,7 @@ implementación siguiendo tareas.md, con pruebas
 | 032 | [Pago del plan en el registro](032-pago-en-el-registro/especificacion.md) | 10 | RF10, RF19, RF20 | Implementada (cobro simulado con Cresium; precios a confirmar) |
 | 033 | [Portada pública con los planes](033-portada/especificacion.md) | 10 | RF19, RF20, RNF10 | Implementada (primera versión; se puede seguir enriqueciendo el diseño) |
 | 034 | [Pulido de UX/UI de todo el sistema](034-pulido-ux/especificacion.md) | 10 | RNF10 | Implementada en cuatro tandas (la tercera y la cuarta, en revisión); falta la revisión final con la autora (CA1, CA3, CA4, CA6, CA9) |
-| 035 | [Verificación de identidad de aseguradoras](035-identidad-aseguradoras/especificacion.md) | 10 | RN36, RN41, RF01 | Implementada con proveedor simulado; falta conectar Identik (CP-39) |
+| 035 | [Verificación de identidad de aseguradoras](035-identidad-aseguradoras/especificacion.md) | 10 | RN36, RN41, RF01 | Implementada con proveedor simulado; falta conectar Identik (CP-41) |
 | 036 | [Arnés para el trabajo asistido por IA](036-arnes/especificacion.md) | 10 | RNF02, RNF17, RNF19 | Implementada (ganchos, `/cerrar-etapa`, mapa y registro del arnés, ADR-0021) |
 
 Las fases, los hitos y el ciclo de trabajo están en [docs/guias/hoja-de-ruta.md](../guias/hoja-de-ruta.md).

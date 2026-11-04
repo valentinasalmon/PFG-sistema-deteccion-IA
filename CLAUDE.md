@@ -38,6 +38,8 @@ El arnés completo (guías, sensores, memoria y persona en el circuito) está de
 flake8 app/ && pylint app/ && pytest --cov=app --cov-fail-under=80
 # frontend
 npm run lint && npm run test
+# red neuronal (desde red_neuronal/)
+flake8 clasificador/ && pylint clasificador/ && pytest --cov=clasificador --cov-fail-under=80
 ```
 
 ## Commits
@@ -47,6 +49,8 @@ npm run lint && npm run test
 ## Documentación obligatoria al cerrar una etapa
 
 El comando `/cerrar-etapa` recorre estos pasos en orden.
+
+- **Red neuronal** (pedido de la autora, 2026-10-30): todo cambio en la red neuronal (código de `red_neuronal/`, configuración, datos, cuadernos, entrenamientos, resultados o decisiones) actualiza en el mismo commit el capítulo que corresponde de [docs/red-neuronal/](docs/red-neuronal/README.md). Cada corrida de entrenamiento se registra en su capítulo 11. Esa carpeta tiene que alcanzar por sí sola para entender la red de punta a punta.
 
 - Agregar una entrada en [docs/bitacora/](docs/bitacora/) con lo realizado, las decisiones y lo pendiente.
 - Si se tomó una decisión de arquitectura, registrarla como ADR en [docs/arquitectura/decisiones/](docs/arquitectura/decisiones/).
