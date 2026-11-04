@@ -58,6 +58,8 @@ ORGANIZACION_RECHAZO = "organizacion.rechazo"
 ORGANIZACION_CAMBIO_PLAN = "organizacion.cambio_plan"  # funcionalidad 014, pago simulado
 # Cobro del plan por transferencia: creación, acreditación y devolución (funcionalidad 032).
 ORGANIZACION_COBRO = "organizacion.cobro"
+# Verificación de identidad del Referente de una aseguradora: inicio y resultado (035).
+ORGANIZACION_IDENTIDAD = "organizacion.identidad"
 CUENTA_DESACTIVACION = "cuenta.desactivacion"
 CUENTA_REACTIVACION = "cuenta.reactivacion"
 CUENTA_PROMOCION_ADMINISTRADOR = "cuenta.promocion_administrador"

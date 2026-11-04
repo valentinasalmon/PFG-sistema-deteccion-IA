@@ -1,6 +1,6 @@
 """Rutas del Administrador de la plataforma (funcionalidad 021).
 
-GET  /api/administracion/aseguradoras-pendientes                 Aseguradoras por aprobar
+GET  /api/administracion/aseguradoras-pendientes                 Aseguradoras por aprobar (035)
 POST /api/administracion/organizaciones/<id>/aprobacion          Aprobar (RN38)
 POST /api/administracion/organizaciones/<id>/rechazo             Rechazar con motivo (RN38)
 GET  /api/administracion/tablero?desde=&hasta=                   Indicadores (RF21, 014)
@@ -19,7 +19,11 @@ from app.esquemas.administracion import (
 from app.esquemas.organizaciones import SolicitudRechazo, aseguradora_pendiente_a_dict
 from app.seguridad.autenticacion import usuario_actual
 from app.seguridad.origen import origen_de_la_solicitud
-from app.servicios.fabrica import crear_servicio_administracion, crear_servicio_organizaciones
+from app.servicios.fabrica import (
+    crear_servicio_administracion,
+    crear_servicio_identidad,
+    crear_servicio_organizaciones,
+)
 
 administracion_bp = Blueprint("administracion", __name__, url_prefix="/api/administracion")
 
@@ -33,11 +37,17 @@ def _servicio():
 @administracion_bp.get("/aseguradoras-pendientes")
 @login_required
 def aseguradoras_pendientes():
-    """Aseguradoras que esperan aprobación, con su Referente (CA7 de la 021)."""
+    """Aseguradoras que esperan aprobación, con su Referente y su identidad (021, 035)."""
     pendientes = _servicio().pendientes_de_aprobacion(usuario_actual())
-    return jsonify(
-        {"aseguradoras": [aseguradora_pendiente_a_dict(o, r) for o, r in pendientes]}
-    )
+    identidad = crear_servicio_identidad(current_app.config, origen_de_la_solicitud())
+    estados = identidad.estados_de([o.id for o, _ in pendientes])
+    return jsonify({
+        "verificacion_identidad": identidad.activa,
+        "aseguradoras": [
+            {**aseguradora_pendiente_a_dict(o, r), "identidad": estados[o.id]}
+            for o, r in pendientes
+        ],
+    })
 
 
 @administracion_bp.post("/organizaciones/<int:id_organizacion>/aprobacion")

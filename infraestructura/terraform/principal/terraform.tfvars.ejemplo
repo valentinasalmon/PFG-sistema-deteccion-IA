@@ -16,3 +16,7 @@ sello_tiempo  = "desactivado"
 # hedera_red    = "testnet"
 # hedera_cuenta = "0.0.XXXXXXX"
 # hedera_tema   = "0.0.XXXXXXX"
+
+# Verificación de identidad del Referente de una aseguradora (funcionalidad 035).
+# Con "simulado", la aprobación exige la identidad verificada en la página simulada.
+# verificacion_identidad = "desactivado"

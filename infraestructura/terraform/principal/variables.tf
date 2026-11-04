@@ -87,6 +87,17 @@ variable "sello_tiempo" {
   }
 }
 
+variable "verificacion_identidad" {
+  description = "Verificación de identidad del Referente de una aseguradora (035): desactivado o simulado hasta conectar Identik (CP-35)."
+  type        = string
+  default     = "desactivado"
+
+  validation {
+    condition     = contains(["desactivado", "simulado"], var.verificacion_identidad)
+    error_message = "La verificación de identidad es desactivado o simulado."
+  }
+}
+
 variable "hedera_red" {
   description = "Red de Hedera: testnet para desarrollar, mainnet para la defensa (CP-26)."
   type        = string
