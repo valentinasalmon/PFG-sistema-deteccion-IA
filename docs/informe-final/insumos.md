@@ -287,3 +287,10 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
   - las integraciones externas se prueban contra el servicio real.
 - **Números del proceso**: 282 commits, 238 con co-autoría de IA (84 %), 67 Pull Requests integrados, 30 especificaciones, 48 entradas de bitácora, 18 ADR y 724 pruebas automáticas.
 - **Episodio para el informe y la exposición**: al commitear la 036, el gancho de secretos bloqueó un commit del propio agente (falso positivo: el mensaje nombraba un archivo secreto). El agente intentó corregir el gancho y Claude Code se lo impidió por ser auto-modificación de un control. La corrección quedó como propuesta para la autora. Muestra que el arnés protege sus propios controles y que la última palabra es humana.
+
+## Depuración de los datos de entrenamiento (2026-11-04)
+
+- No se usan los conjuntos completos: se toma una muestra de archivos con revisión fija y se depura en cada etapa (tabla en `docs/red-neuronal/04-datos.md`).
+- Se agregaron dos filtros contra atajos: **excluir los generadores que no hacen fotos** (anime, historieta, pixel art, logos, maquetas, fractales: 66 en total), porque las reales son fotos y el modelo aprendería «ilustración = IA»; y **descartar las imágenes de menos de 256 px sin agrandar nunca** al normalizar, porque la interpolación deja marcas propias.
+- Limitaciones declaradas: no se detectan casi duplicados, no se filtran las reales de OpenFake que no son fotos y los temas de reales y sintéticas difieren entre conjuntos.
+

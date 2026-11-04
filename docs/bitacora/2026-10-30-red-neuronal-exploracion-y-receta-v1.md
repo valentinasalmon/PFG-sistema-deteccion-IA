@@ -62,3 +62,9 @@ La autora notó que en la lista maestra se repetían los modelos de auto (12 mod
 - 207 pruebas en verde.
 - Pendiente: Pull Request de la rama, cuaderno 03 (entrenamiento completo), muestra de CarDD para el conjunto propio, pedir de nuevo el acceso a ConstructionSite.
 
+## 2026-11-04 (tarde): depuración de los datos y arreglos del cuaderno 03
+
+- A pregunta de la autora («¿usamos los conjuntos completos?»): no, se usa una muestra, pero la depuración tenía dos huecos. Se agregó: excluir por nombre los generadores que no hacen fotos (56 de Community Forensics y 10 de OpenFake) y descartar las imágenes de menos de 256 px, además de no agrandar nunca al normalizar. La receta quedó en 17 500 reales y 17 500 sintéticas. 209 pruebas, pylint 10/10.
+- El cuaderno 03 falló en la sección 5 con `No module named 'onnxruntime'`: Colab no ve las bibliotecas instaladas después de abrir el cuaderno. Ahora consulta el estado de las etapas con un comando aparte, sin importar el paquete. Además, si la configuración cambió pero todavía no hay etapas hechas, la pisa en lugar de detenerse.
+- El conjunto propio está en la carpeta del proyecto compartida por el tutor (`PFG 2026 - Valentina/RED NEURONAL`). El cuaderno 03 lo busca ahí. Se registró CP-40 sobre dónde guardar las fotos reales de personas.
+

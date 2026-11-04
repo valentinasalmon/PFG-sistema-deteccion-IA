@@ -108,3 +108,13 @@ def test_normalizar_compone_la_transparencia_sobre_blanco(tmp_path):
     with Image.open(destino) as imagen:
         assert imagen.mode == "RGB"
         assert min(imagen.getpixel((112, 112))) > 240
+
+
+def test_normalizar_no_agranda_las_imagenes_chicas(tmp_path):
+    """Una imagen más chica que el lado pedido conserva su tamaño."""
+    origen = tmp_path / "chica.png"
+    Image.new("RGB", (300, 260), (10, 20, 30)).save(origen)
+    destino = tmp_path / "salida.jpg"
+    normalizar_imagen(origen, destino, lado_menor=512, calidad_jpeg=90)
+    with Image.open(destino) as imagen:
+        assert imagen.size == (300, 260)

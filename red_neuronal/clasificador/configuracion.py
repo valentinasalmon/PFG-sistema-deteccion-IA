@@ -136,6 +136,13 @@ class ConfiguracionDatos(_Esquema):
     calidad_jpeg: tuple[int, int] = (75, 95)
     lado_menor: tuple[int, int] = (256, 512)
     desbalance_tolerado: float = Field(default=0.05, ge=0, lt=1)
+    lado_menor_minimo: int = Field(
+        default=0, ge=0,
+        description=(
+            "Se descartan al obtener las imágenes con el lado menor por debajo de "
+            "este valor: agrandarlas dejaría marcas de interpolación solo en algunas."
+        ),
+    )
 
     @model_validator(mode="after")
     def _validar_rangos(self) -> "ConfiguracionDatos":

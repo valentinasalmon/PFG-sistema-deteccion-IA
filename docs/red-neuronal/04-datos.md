@@ -58,7 +58,7 @@ La autora corrió el cuaderno 02 en Colab (25 minutos, en CPU). Resultados guard
 
 | Fuente | Archivos | Reales | Sintéticas | Cuota por generador | Búfer de mezcla |
 |---|---|---|---|---|---|
-| Community Forensics | 4 de reales y 6 de sintéticas (se evita el de 4,1 GB) | 9 000 | 9 000 (de ~11 600 disponibles) | 500 | 1 000 |
+| Community Forensics | 4 de reales y 6 de sintéticas (se evita el de 4,1 GB) | 7 500 | 7 500 (de ~9 100 disponibles sin los que no son fotos) | 500 | 1 000 |
 | OpenFake | Los 12 explorados | 10 000 | 10 000 (de ~16 400 disponibles) | 700 | 300 |
 
 | Decisión | Por qué |
@@ -69,7 +69,24 @@ La autora corrió el cuaderno 02 en Colab (25 minutos, en CPU). Resultados guard
 | Las imágenes crudas se borran después de preparar | Las reales de OpenFake ocupan decenas de GB sin normalizar; lo preparado queda respaldado en Drive |
 | Fotos reales de escenas del sistema **fuera** del entrenamiento | CarDD, SCIN y obras van al conjunto propio. En el entrenamiento no hay sintéticas de autos dañados ni de lesiones: el modelo aprendería «auto dañado = real» |
 
-Total: **19 000 reales y 19 000 sintéticas**, unas 3,8 veces la prueba de concepto. 15 épocas con paciencia 3.
+### Depuración de los datos
+
+No se usan los conjuntos completos: se toma una muestra y se depura en cada etapa.
+
+| Paso | Qué se descarta o se controla | Dónde |
+|---|---|---|
+| Selección | Solo los archivos explorados (10 de 186 en Community Forensics, 12 de 643 en OpenFake), con su revisión fija | Receta |
+| Contenido explícito | Las filas marcadas `nsfw_flag` en Community Forensics | Receta (`excluir`) |
+| **Generadores que no hacen fotos** (agregado el 2026-11-04) | 56 de Community Forensics (anime, historieta, pixel art, 3D caricaturesco, logos, maquetas web, fractales, patrones) y 10 de OpenFake (anime, estilo Ghibli y un modelo de prueba que genera ruido), elegidos por su nombre. Las reales son fotos: con ilustraciones del lado sintético, el modelo aprendería «ilustración = IA» | Receta (`excluir`) |
+| Dominio de un generador | Cuota máxima por generador | Receta |
+| **Imágenes chicas** (agregado el 2026-11-04) | Las de menos de 256 px de lado menor se descartan al obtener (`lado_menor_minimo`), y la normalización **nunca agranda**: la interpolación deja marcas propias que serían un atajo | Obtener y preparar |
+| Duplicados exactos | Misma huella SHA-256 dentro de cada fuente; la validación revisa todo el conjunto | Obtener y validar |
+| Corruptas, fugas y desbalance | La validación detiene el pipeline | Validar y preparar |
+| Formato y tamaño | Todo a JPEG con calidad y lado menor al azar, igual para las dos clases | Preparar |
+
+**Lo que no se depura (limitaciones para el informe):** casi duplicados (la misma foto recortada o recomprimida), reales de OpenFake que no son fotos (capturas o ilustraciones que circulan en internet) y la diferencia de temas entre las reales y las sintéticas de cada conjunto. Se mitigan en parte con la evaluación por generador y en condiciones reales.
+
+Total: **17 500 reales y 17 500 sintéticas**, unas 3,5 veces la prueba de concepto. 15 épocas con paciencia 3.
 
 ### Conjunto propio (para evaluar en condiciones reales)
 
