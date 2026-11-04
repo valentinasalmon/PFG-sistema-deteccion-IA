@@ -295,3 +295,10 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - Limitaciones declaradas: no se detectan casi duplicados, no se filtran las reales de OpenFake que no son fotos y los temas de reales y sintéticas difieren entre conjuntos.
 - Incidente de los cuadernos (2026-11-04): al cuaderno de entrenamiento completo le faltaba la celda de instalación; las pruebas automáticas cubren el paquete, pero no los cuadernos de Colab, que solo se validaban por sintaxis. Se agregó una verificación de dependencias al inicio del cuaderno. Para el informe: límite de la integración continua y por qué el paso a paso en Colab tiene su propia comprobación.
 
+
+## Índice de calidad y usabilidad (018, 2026-11-04)
+
+- **Fórmula del QI** (propuesta para CP-04): QI = 0,20·Cb + 0,15·Cf + 0,15·E + 0,10·K + 0,10·D + 0,30·U. Los componentes son la cobertura del backend y del frontend, pylint, la complejidad ciclomática acotada, el código sin duplicar y el SUS. Se mide con `backend/herramientas/indice_calidad.py`.
+- **Medición provisoria**: 0,977 sin SUS. Valores: backend 97,5 %, frontend 92,4 %, pylint 10, ninguna función con complejidad mayor a 10, 0,1 % de duplicación.
+- **Hallazgo metodológico**: un índice dominado por métricas de código que ya están al máximo puede ocultar una mala usabilidad (con estos valores, alcanzaría un SUS de 23). Conviene informar el SUS y la tasa de éxito aparte, con sus propios objetivos.
+- **Prueba de usabilidad**: protocolo con 8 tareas del flujo principal, SUS en español (Brooke, 1996) y al menos 5 participantes del dominio (Nielsen y Landauer, 1993). Resultados pendientes.
