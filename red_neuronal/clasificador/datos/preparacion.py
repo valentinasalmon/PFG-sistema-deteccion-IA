@@ -44,11 +44,14 @@ def normalizar_imagen(
     """Convierte una imagen a RGB, la redimensiona y la guarda como JPEG.
 
     La conversión a RGB es la misma que usa la inferencia (ADR-0015): la
-    transparencia se compone sobre fondo blanco.
+    transparencia se compone sobre fondo blanco. Nunca se agranda: una imagen
+    más chica que el lado pedido conserva su tamaño, porque la interpolación
+    deja marcas propias que el modelo podría aprender como atajo.
     """
     with Image.open(origen) as abierta:
         imagen = convertir_a_rgb(abierta)
         ancho, alto = imagen.size
+        lado_menor = min(lado_menor, ancho, alto)
         escala = lado_menor / min(ancho, alto)
         nuevo_tamanio = (max(1, round(ancho * escala)), max(1, round(alto * escala)))
         imagen = imagen.resize(nuevo_tamanio, Image.Resampling.LANCZOS)

@@ -35,6 +35,8 @@ Descargarlos de la carpeta `red_neuronal/cuadernos/` de la rama `funcionalidad/0
 
 **Antes del 02:** con la misma cuenta del `HF_TOKEN`, aceptar las condiciones de los conjuntos que lo piden (OpenFake, Community Forensics, CarDD, ConstructionSite). Si el token es de grano fino, necesita el permiso de lectura de conjuntos con condiciones. Si no, aparecen como no disponibles. Los pasos completos, con los enlaces de cada conjunto y cómo abrir el cuaderno (bajarlo y subirlo, o abrirlo desde GitHub), están en la sección 11 de la [guía paso a paso](../guias/guia-paso-a-paso-conjunto-propio.md#11-aceptar-las-condiciones-en-hugging-face-y-correr-el-cuaderno-de-exploración).
 
+**El conjunto propio** de la autora está en `5TO AÑOO/SEGUNDO CUATRIMESTRE/PROYECTO FINAL DE GRADO LAPER/PFG 2026 - Valentina/RED NEURONAL/` (carpeta compartida por el tutor, a la que se llega por un acceso directo). El cuaderno 03 la busca solo en esa ruta y en las alternativas de `UBICACIONES_CONJUNTO_PROPIO`, y muestra cuál encontró.
+
 **Antes del 03:** la receta `configuracion/v1.yaml` tiene que estar completada con lo que devolvió el 02. Para publicar en Hugging Face (T33), el `HF_TOKEN` tiene que ser de tipo **Write** y existir el repositorio privado (E03); en el cuaderno, `PUBLICAR_EN_HUGGING_FACE = True`.
 
 ## Correrlo
@@ -107,6 +109,7 @@ En los dos casos se usa el mismo paquete y la misma configuración. Lo que cambi
 | «Entorno de ejecución desconectado» | Inactividad | Ver «Si Colab corta la sesión» |
 | No hay GPU disponible | Demanda alta en Colab | Probar más tarde u otra GPU |
 | Una etapa falla | El motivo está en las líneas justo arriba del `RuntimeError` | Copiar esas líneas al chat |
+| `ModuleNotFoundError: No module named 'onnxruntime'` en la sección 5 del cuaderno 03 | Colab no ve las bibliotecas instaladas después de abrir el cuaderno | Corregido el 2026-11-04: el cuaderno consulta el estado con un comando aparte. Con una copia vieja: ejecutar `import importlib; importlib.invalidate_caches()` o reiniciar la sesión y **Ejecutar todas** |
 | `código -9` en una etapa o en la exploración | Colab cortó el proceso por falta de memoria | Pasar la salida al chat. La exploración ya corre cada conjunto por separado y no baja bloques de imágenes de más de 256 MB |
 
 ## Qué pasar al terminar

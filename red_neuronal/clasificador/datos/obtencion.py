@@ -8,8 +8,11 @@ poder auditar qué se descargó exactamente.
 Realiza: CA2 y CA3 de la funcionalidad 010.
 """
 
+import io
 from collections import Counter
 from pathlib import Path
+
+from PIL import Image, UnidentifiedImageError
 
 from clasificador.configuracion import ConfiguracionDatos
 from clasificador.datos.fuentes import FuenteDatos, crear_fuente
@@ -21,6 +24,15 @@ from clasificador.datos.manifiesto import (
 )
 
 
+def _lado_menor(contenido: bytes) -> int:
+    """Lado menor de la imagen, leyendo solo su encabezado (0 si no se lee)."""
+    try:
+        with Image.open(io.BytesIO(contenido)) as imagen:
+            return min(imagen.size)
+    except (UnidentifiedImageError, OSError):
+        return 0
+
+
 class ErrorObtencion(Exception):
     """Una fuente no tiene suficientes imágenes para lo que se pidió."""
 
@@ -30,6 +42,7 @@ def obtener_de_fuente(  # pylint: disable=too-many-locals
     raiz_destino: Path,
     cantidades: dict[int, int] | None = None,
     cuota_por_generador: int | None = None,
+    lado_menor_minimo: int = 0,
 ) -> list[RegistroImagen]:
     """Guarda imágenes de una fuente hasta completar la cantidad por clase.
 
@@ -39,7 +52,8 @@ def obtener_de_fuente(  # pylint: disable=too-many-locals
     tenga duplicados desde el origen. Con ``cuota_por_generador`` ningún
     generador aporta más de esa cantidad de sintéticas: así las métricas por
     generador tienen sentido y ninguno domina el entrenamiento (lección de la
-    prueba de concepto, receta v1).
+    prueba de concepto, receta v1). Con ``lado_menor_minimo`` se saltean las
+    imágenes demasiado chicas (depuración de la receta v1).
     """
     todas = cantidades is None
     pendientes = Counter(cantidades or {})
@@ -56,6 +70,8 @@ def obtener_de_fuente(  # pylint: disable=too-many-locals
             and ejemplo.clase == CLASE_SINTETICA
             and por_generador[ejemplo.generador] >= cuota_por_generador
         ):
+            continue
+        if lado_menor_minimo and _lado_menor(ejemplo.contenido) < lado_menor_minimo:
             continue
         # Las carpetas locales conservan su ruta: el nombre del archivo indica
         # la escena del conjunto propio y permite ubicar cada foto en la planilla.
@@ -103,6 +119,7 @@ def obtener(
             CLASE_SINTETICA: config_fuente.cantidad_sinteticas,
         }
         registros += obtener_de_fuente(
-            fuente, raiz_destino, cantidades, config_fuente.cuota_por_generador
+            fuente, raiz_destino, cantidades, config_fuente.cuota_por_generador,
+            configuracion.lado_menor_minimo,
         )
     return registros

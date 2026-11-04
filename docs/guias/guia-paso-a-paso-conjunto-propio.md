@@ -23,7 +23,7 @@ No hace falta terminar todo: **con la prioridad A de dos herramientas** ya se pu
 
 ## 2. Las carpetas
 
-Crear esta estructura en **Google Drive** (en la web: **+ Nuevo → Carpeta**), **dentro de `evidentia/conjunto-propio/`**. Los nombres van así: sin tildes y sin espacios. Mayúsculas o minúsculas da igual (`SINTETICA/GEMINI/ORIGINAL` también sirve, desde el 2026-11-03). El pipeline lee `<clase>/<herramienta o fuente>/<variante>/<archivo>`; si una carpeta tiene otro nombre, la evaluación se detiene con un error.
+Crear esta estructura en **Google Drive** (en la web: **+ Nuevo → Carpeta**). La autora la tiene en `PFG 2026 - Valentina/RED NEURONAL/` (con `SINTETICA` y `REAL` adentro); el cuaderno 03 la encuentra ahí o en `evidentia/conjunto-propio/`. Ver la cuestión abierta CP-40 sobre dónde guardar las fotos reales de personas. Los nombres van así: sin tildes y sin espacios. Mayúsculas o minúsculas da igual (`SINTETICA/GEMINI/ORIGINAL` también sirve, desde el 2026-11-03). El pipeline lee `<clase>/<herramienta o fuente>/<variante>/<archivo>`; si una carpeta tiene otro nombre, la evaluación se detiene con un error.
 
 ```
 Mi unidad/

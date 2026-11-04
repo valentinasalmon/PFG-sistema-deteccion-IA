@@ -263,3 +263,17 @@ def test_la_fabrica_usa_el_bufer_de_mezcla_configurado():
     """Cada fuente puede pedir un búfer de mezcla más chico."""
     fuente = crear_fuente(_config_hf(bufer_mezcla=300), semilla=0)
     assert fuente.tamanio_bufer == 300
+
+
+def test_obtener_descarta_imagenes_demasiado_chicas(tmp_path):
+    """Con un lado menor mínimo, las imágenes chicas no se guardan."""
+    filas = _filas()
+    filas[0]["imagen"] = {"bytes": _bytes_imagen((1, 1, 1))}  # 32 × 32
+    grande = io.BytesIO()
+    Image.new("RGB", (300, 260), (9, 9, 9)).save(grande, format="PNG")
+    filas[2]["imagen"] = {"bytes": grande.getvalue()}
+    fuente = FuenteHuggingFace(_config_hf(), semilla=0, cargador=lambda _: filas)
+    registros = obtener_de_fuente(fuente, tmp_path, {0: 1, 1: 0}, lado_menor_minimo=256)
+    assert len(registros) == 1
+    with Image.open(tmp_path / registros[0].ruta_relativa) as imagen:
+        assert min(imagen.size) == 260
