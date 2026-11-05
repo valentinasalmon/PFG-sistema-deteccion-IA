@@ -39,12 +39,13 @@ export default function Encabezado() {
   const cerrarMenu = () => setAbierto(false)
 
   return (
-    <header className={`lateral ${abierto ? 'lateral--abierto' : ''}`}>
+    <header className={`lateral ${esAdministradora ? 'lateral--admin' : ''} ${abierto ? 'lateral--abierto' : ''}`}>
       <div className="lateral__marca">
         <Link to={esAdministradora ? '/administracion' : '/'} className="lateral__logo" onClick={cerrarMenu}>
           <img src="/marca/logo-tipografia-blanca.png" alt="evidentIA, ir al inicio" />
         </Link>
-        <span className="lateral__servicio">{rubro.servicio}</span>
+        {/* 037: la administración se distingue a simple vista de una cuenta de trabajo. */}
+        <span className="lateral__servicio">{esAdministradora ? 'Admin' : rubro.servicio}</span>
         <button
           type="button"
           className="lateral__alternar"

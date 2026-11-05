@@ -5986,3 +5986,27 @@ h1.estado-vacio__titulo {
   background: transparent;
   box-shadow: none;
 }
+
+/*
+ * --- Administración (037) ---
+ * El Administrador de la plataforma no trabaja con casos: su menú es grafito
+ * con el acento lima y la píldora dice «Admin», para que nunca se confunda con
+ * una cuenta de abogado o de aseguradora.
+ */
+.lateral.lateral--admin {
+  border-right-color: #1d2228;
+  background:
+    radial-gradient(ellipse at 50% 0, #2c333c 0, transparent 60%),
+    #15191e;
+}
+
+.lateral--admin .lateral__servicio {
+  background: var(--lima);
+  color: #15191e;
+}
+
+@media (width <= 60rem) {
+  .lateral.lateral--admin {
+    border-bottom-color: #15191e;
+  }
+}

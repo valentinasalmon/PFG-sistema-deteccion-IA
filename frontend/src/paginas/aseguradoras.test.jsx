@@ -347,3 +347,13 @@ describe('tablero del Administrador (funcionalidad 014)', () => {
     expect(screen.getByRole('tab', { name: 'Cuentas' })).toHaveAttribute('aria-selected', 'true')
   })
 })
+
+describe('Administrador diferenciado (037)', () => {
+  it('su menú dice «Admin» y no muestra el rubro de una cuenta de trabajo', async () => {
+    simularApi({ ...CON_SESION_ADMINISTRADOR, 'GET /api/administracion/aseguradoras-pendientes': { cuerpo: { aseguradoras: [] } } })
+    renderizarEn('/administracion')
+    expect(await screen.findByText('Admin')).toBeInTheDocument()
+    expect(screen.queryByText('Legal')).not.toBeInTheDocument()
+    expect(document.querySelector('.lateral--admin')).not.toBeNull()
+  })
+})
