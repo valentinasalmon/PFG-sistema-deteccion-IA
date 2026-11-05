@@ -5148,8 +5148,8 @@ a.flujo-caso__titulo:focus-visible {
 }
 
 .contador--cerrado .contador__icono {
-  background: var(--bosque);
-  color: var(--lima);
+  background: var(--fondo);
+  color: var(--tinta-2);
 }
 
 .retomar {

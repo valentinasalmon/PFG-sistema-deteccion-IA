@@ -17,8 +17,10 @@ export default function PaginaTerminos() {
       <h2>1. Qué ofrece la plataforma</h2>
       <p>
         La plataforma realiza una evaluación preliminar de imágenes aportadas como prueba en
-        siniestros automovilísticos y laborales. Cada imagen se analiza con cuatro técnicas
-        independientes y el resultado se entrega en un informe explicativo.
+        siniestros automovilísticos y laborales. Cada imagen se analiza con tres técnicas
+        independientes (metadatos, credenciales de contenido y niveles de error); una cuarta, con
+        una red neuronal que estima si la imagen fue generada con IA, se suma próximamente. El
+        resultado se entrega en un informe explicativo.
       </p>
 
       <h2>2. Los resultados son indicios, no veredictos</h2>
