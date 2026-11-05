@@ -6468,3 +6468,8 @@ h1.estado-vacio__titulo {
     width: auto;
   }
 }
+
+/* 037: una sola opción de plan no se estira a todo el ancho. */
+.selector-plan {
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 26rem));
+}
