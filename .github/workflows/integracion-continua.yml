@@ -43,6 +43,9 @@ jobs:
       - name: Ganchos del arnés para el agente de IA (036)
         working-directory: .
         run: python -m unittest discover -s .claude/hooks -p "pruebas_*.py"
+      - name: Documentación del arnés al día (038)
+        working-directory: .
+        run: python .claude/hooks/verificar_arnes.py
 
   frontend:
     name: Frontend (análisis, pruebas y compilación)
