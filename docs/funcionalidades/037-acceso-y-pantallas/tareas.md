@@ -16,9 +16,9 @@
 ## Falta
 
 - [x] T11 — Análisis en pantalla: un solo descargo arriba y los datos técnicos plegados (decisión 2).
-- [ ] T12 — Pantalla del caso reorganizada para que no haya tantas tarjetas.
-- [ ] T13 — Login más completo en computadora y con el inicio con Google visible.
-- [ ] T14 — Registro: opciones más espaciadas, manteniendo la elección con el punto.
+- [x] T12 — Pantalla del caso reorganizada para que no haya tantas tarjetas.
+- [x] T13 — Login más completo en computadora y con el inicio con Google visible.
+- [x] T14 — Registro: opciones más espaciadas, manteniendo la elección con el punto.
 - [ ] T15 — Celular: revisar lo que queda flotando o fuera de lugar.
 - [ ] T16 — Resto de las pantallas con el diseño nuevo (organización, perfil, administración, verificar, estado, pago).
 - [ ] T17 — Presentación nueva con el antes y el después, y revisión de todo lo que falta del proyecto.

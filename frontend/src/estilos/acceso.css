@@ -459,3 +459,107 @@
     background: var(--superficie);
   }
 }
+
+/* --- Inicio de sesión en dos columnas en computadora (037) --- */
+.acceso.acceso--completo:has(.inicio-dividido) .tarjeta-acceso {
+  max-width: 60rem;
+  padding: 0;
+  overflow: hidden;
+}
+
+.inicio-dividido {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+}
+
+.inicio-dividido__panel {
+  display: grid;
+  align-content: center;
+  gap: 1.1rem;
+  padding: 3rem 2.75rem;
+  background:
+    radial-gradient(ellipse at 20% 0, #1e3b2b 0, transparent 70%),
+    var(--a-bosque);
+  color: #c4d3c9;
+}
+
+.inicio-dividido__eti {
+  margin: 0;
+  color: var(--a-lima);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.inicio-dividido__tesis {
+  margin: 0;
+  color: #fff;
+  font-family: var(--fuente-titulos);
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.inicio-dividido__panel ul {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.inicio-dividido__panel li {
+  position: relative;
+  padding-left: 1.6rem;
+}
+
+.inicio-dividido__panel li::before {
+  content: '';
+  position: absolute;
+  top: 0.5rem;
+  left: 0;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: var(--a-lima);
+}
+
+.inicio-dividido__formulario {
+  padding: 3rem 3rem 2.75rem;
+}
+
+@media (width <= 60rem) {
+  .acceso.acceso--completo:has(.inicio-dividido) .tarjeta-acceso {
+    max-width: 34rem;
+  }
+
+  .inicio-dividido {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .inicio-dividido__panel {
+    display: none;
+  }
+}
+
+@media (width <= 48rem) {
+  .acceso.acceso--completo:has(.inicio-dividido) .tarjeta-acceso {
+    max-width: none;
+  }
+
+  .inicio-dividido__formulario {
+    padding: 2rem 1.25rem 2.25rem;
+  }
+}
+
+/* --- Registro: opciones del primer paso más espaciadas (037) --- */
+.acceso.acceso--completo .selector-camino {
+  gap: 1.1rem;
+}
+
+.acceso.acceso--completo .camino {
+  padding: 1.5rem 1.4rem;
+  gap: 0.75rem;
+}
