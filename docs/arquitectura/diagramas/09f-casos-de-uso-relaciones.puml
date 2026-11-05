@@ -1,0 +1,32 @@
+@startuml casos-de-uso-relaciones
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #4E5B54
+skinparam nodesep 40
+skinparam ranksep 55
+top to bottom direction
+skinparam usecaseBackgroundColor #F7F9FC
+skinparam usecaseBorderColor #2F5DA8
+usecase "Registrarse\n(CU01)" as CU01
+usecase "Eliminar cuenta propia\n(CU06)" as CU06
+usecase "Crear organización\n(CU08)" as CU08
+usecase "Responder invitación\n(CU11)" as CU11
+usecase "Gestionar miembros\n(CU12)" as CU12
+usecase "Abandonar organización\n(CU14)" as CU14
+usecase "Eliminar organización\n(CU15)" as CU15
+usecase "Transferir caso\n(CU23)" as CU23
+usecase "Eliminar caso\n(CU24)" as CU24
+usecase "Cargar imágenes\n(CU25)" as CU25
+usecase "Cargar imágenes desde el celular\n(CU33)" as CU33
+usecase "Pagar el plan de la organización\n(CU36)" as CU36
+CU01 ..> CU11 : <<extend>>
+CU06 ..> CU23 : <<include>>
+CU06 ..> CU24 : <<include>>
+CU06 ..> CU12 : <<include>>
+CU14 ..> CU23 : <<include>>
+CU15 ..> CU14 : <<extend>>
+CU33 ..> CU25 : <<extend>>
+CU36 ..> CU01 : <<extend>>
+CU36 ..> CU08 : <<extend>>
+@enduml

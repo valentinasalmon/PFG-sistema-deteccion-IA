@@ -1,0 +1,63 @@
+@startuml secuencia-de-un-caso
+' Diagrama de secuencia (UML 2.5) del flujo principal, según el código:
+' carga (servicio_imagenes), análisis (servicio_analisis), informe (servicio_informes),
+' sellos (servicio_sellos) y verificación pública (rutas/verificacion.py).
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #4E5B54
+skinparam sequenceParticipantBorderColor #2F5DA8
+skinparam sequenceParticipantBackgroundColor #F7F9FC
+skinparam sequenceLifeLineBorderColor #9AA5A0
+skinparam sequenceGroupBorderColor #4E5B54
+skinparam sequenceBoxBorderColor #C9D1CD
+autonumber
+
+actor "Usuario" as usuario
+participant "Interfaz React" as spa
+box "Servidor (EC2)" #F7FAF2
+participant "API Flask" as api
+queue "Cola\n(Redis)" as cola
+participant "Trabajador\n(RQ)" as trab
+database "PostgreSQL" as pg
+end box
+participant "Amazon S3" as s3
+participant "Hedera" as hedera
+actor "Tercero que\nverifica" as tercero
+
+== Carga de imágenes ==
+usuario -> spa : elige las imágenes del caso
+spa -> api : POST /api/casos/{id}/imagenes
+api -> api : valida el formato real\ny calcula la huella SHA-256
+api -> s3 : guarda la imagen (cifrada)
+api -> pg : registra la imagen, su origen y la auditoría
+api -> hedera : publica la huella de la imagen
+api --> spa : imagen cargada (sello pendiente de confirmación)
+
+== Análisis ==
+usuario -> spa : solicita el análisis
+spa -> api : POST /api/casos/{id}/analisis
+api -> cola : encola el análisis
+api --> spa : análisis en cola
+trab -> cola : toma el trabajo
+loop por cada imagen
+  trab -> s3 : lee la imagen
+  trab -> trab : capas: metadatos, C2PA, ELA y clasificador
+  trab -> pg : guarda el resultado y las anomalías de cada capa
+end
+trab -> trab : motor de reglas: nivel de indicios, sin veredicto
+
+== Informe ==
+trab -> hedera : confirma los sellos de las imágenes (mirror node)
+trab -> s3 : guarda el informe PDF
+trab -> hedera : publica la huella del informe
+trab -> pg : registra el informe y su código de verificación
+spa -> api : consulta el progreso
+api --> spa : informe disponible
+
+== Verificación pública ==
+tercero -> api : abre el enlace del QR del informe
+api -> hedera : consulta el registro de la huella (mirror node)
+api --> tercero : página de verificación (sin datos del caso)
+tercero -> tercero : el navegador calcula la huella del PDF\ny la compara, sin subirlo
+@enduml

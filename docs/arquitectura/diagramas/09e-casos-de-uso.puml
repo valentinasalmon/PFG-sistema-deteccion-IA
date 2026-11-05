@@ -1,0 +1,22 @@
+@startuml casos-de-uso-retención
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #4E5B54
+skinparam nodesep 40
+skinparam ranksep 55
+left to right direction
+skinparam usecaseBackgroundColor #F7F9FC
+skinparam usecaseBorderColor #2F5DA8
+skinparam actorBorderColor #17291F
+skinparam packageStyle rectangle
+
+actor "Responsable" as responsable #E8F1D2
+actor "Sistema\n(procesos automáticos)" as sistema #E4E7E5
+rectangle "evidentIA: retención" {
+  usecase "Prorrogar retención\n(CU31)" as CU31
+  usecase "Aplicar política de retención\n(CU32)" as CU32
+}
+responsable -- CU31
+sistema -- CU32
+@enduml

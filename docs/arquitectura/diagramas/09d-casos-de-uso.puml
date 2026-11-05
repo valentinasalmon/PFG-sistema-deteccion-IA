@@ -1,0 +1,48 @@
+@startuml casos-de-uso-imágenesanálisiseinformes
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #4E5B54
+skinparam nodesep 40
+skinparam ranksep 55
+left to right direction
+skinparam usecaseBackgroundColor #F7F9FC
+skinparam usecaseBorderColor #2F5DA8
+skinparam actorBorderColor #17291F
+skinparam packageStyle rectangle
+
+actor "Colaborador" as colaborador #E8F1D2
+actor "Lector" as lector #E8F1D2
+actor "Persona afectada" as personaafectada #E8F1D2
+actor "Responsable" as responsable #E8F1D2
+actor "Sistema\n(procesos automáticos)" as sistema #E4E7E5
+actor "Usuario" as usuario #DCE6F5
+actor "Visitante" as visitante #DDE3E0
+rectangle "evidentIA: imágenes, análisis e informes" {
+  usecase "Cargar imágenes\n(CU25)" as CU25
+  usecase "Eliminar imagen\n(CU26)" as CU26
+  usecase "Analizar imágenes\n(CU27)" as CU27
+  usecase "Procesar análisis y generar informe\n(CU28)" as CU28
+  usecase "Consultar y descargar informes\n(CU29)" as CU29
+  usecase "Consultar panel principal\n(CU30)" as CU30
+  usecase "Cargar imágenes desde el celular\n(CU33)" as CU33
+  usecase "Subir imágenes como persona afectada\n(CU34)" as CU34
+  usecase "Verificar un informe\n(CU35)" as CU35
+}
+responsable -- CU25
+colaborador -- CU25
+responsable -- CU26
+colaborador -- CU26
+responsable -- CU27
+colaborador -- CU27
+sistema -- CU28
+responsable -- CU29
+colaborador -- CU29
+lector -- CU29
+usuario -- CU30
+responsable -- CU33
+colaborador -- CU33
+personaafectada -- CU34
+visitante -- CU35
+CU33 .> CU25 : <<extend>>
+@enduml

@@ -1,0 +1,26 @@
+@startuml casos-de-uso-actores
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #4E5B54
+skinparam nodesep 40
+skinparam ranksep 55
+left to right direction
+skinparam actorBorderColor #17291F
+
+actor "Administrador" as administrador #F6E3C8
+actor "Colaborador" as colaborador #E8F1D2
+actor "Lector" as lector #E8F1D2
+actor "Miembro" as miembro #E8F1D2
+actor "Persona afectada" as personaafectada #E8F1D2
+actor "Referente" as referente #E8F1D2
+actor "Responsable" as responsable #E8F1D2
+actor "Sistema\n(procesos automáticos)" as sistema #E4E7E5
+actor "Usuario" as usuario #DCE6F5
+actor "Visitante" as visitante #DDE3E0
+usuario <|-- referente
+usuario <|-- miembro
+usuario <|-- responsable
+usuario <|-- colaborador
+usuario <|-- lector
+@enduml

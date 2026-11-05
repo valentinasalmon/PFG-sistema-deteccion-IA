@@ -36,6 +36,14 @@
 | CU30 | Consultar panel principal | Usuario | RF48 |
 | CU31 | Prorrogar retención | Responsable | RF51 |
 | CU32 | Aplicar política de retención | Sistema | RF49, RF50 |
+| CU33 | Cargar imágenes desde el celular | Responsable / Colaborador | RF53 |
+| CU34 | Subir imágenes como persona afectada | Persona afectada | RF53, CP-32 |
+| CU35 | Verificar un informe | Visitante | RF55, RF56 |
+| CU36 | Pagar el plan de la organización | Referente | RF10, RF19, RF20 |
+| CU37 | Verificar la identidad del Referente | Referente | RN41 |
+| CU38 | Aprobar o rechazar una aseguradora | Administrador | RN36, RN41 |
+
+Los casos CU33 a CU38 se agregan el 2026-11-05 para reflejar lo implementado en las funcionalidades 024, 026, 028, 032 y 035. Su comportamiento detallado está en la especificación de cada una.
 
 ## 5.2 Relaciones entre casos de uso
 
@@ -44,6 +52,8 @@
 - **CU14** incluye **CU23** cuando el miembro es Responsable de casos de la organización, y se extiende a **CU15** cuando el Referente es el único miembro.
 - **CU27** desencadena **CU28**, que se ejecuta en segundo plano.
 - **CU25** desencadena el sellado de tiempo (RF37) en segundo plano.
+- **CU33** extiende **CU25** cuando las imágenes se cargan desde el celular con el código QR.
+- **CU36** extiende **CU01** y **CU08** cuando se registra una aseguradora o se crea un estudio jurídico con un plan pago (funcionalidad 032).
 - **CU32** desencadena el aviso de RF50 y, al vencer el plazo, la destrucción con la misma lógica que **CU24**.
 
 Precondición común a todos los casos de uso cuyo actor es Usuario, Referente, Miembro, Responsable, Colaborador, Lector o Administrador: **el actor ha iniciado sesión**. Postcondición común a todos: **la operación queda registrada en la auditoría** (RNF06).

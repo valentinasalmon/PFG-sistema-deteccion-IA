@@ -1,0 +1,283 @@
+@startuml modelo-de-datos-completo
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #4E5B54
+skinparam nodesep 40
+skinparam ranksep 55
+hide circle
+skinparam linetype ortho
+skinparam classBackgroundColor #F7F9FC
+skinparam classBorderColor #2F5DA8
+
+entity "analisis" as analisis {
+  * id : Integer <<PK>>
+  --
+  * id_caso : Integer <<FK>>
+  id_solicitante : Integer <<FK>>
+  * estado : String(20)
+  * estado_anterior_caso : String(20)
+  * imagen_actual : Integer
+  capa_actual : String(40)
+  motivo_falla : String(300)
+  * versiones : JSON
+  * creado_en : DateTime
+  iniciado_en : DateTime
+  finalizado_en : DateTime
+  * actualizado_en : DateTime
+}
+entity "analisis_imagenes" as analisis_imagenes {
+  * id : Integer <<PK>>
+  --
+  * id_analisis : Integer <<FK>>
+  id_imagen : Integer <<FK>>
+  * orden : Integer
+  * nombre : String(255)
+  * huella : String(64)
+  integridad : String(20)
+}
+entity "resultados_capa" as resultados_capa {
+  * id : Integer <<PK>>
+  --
+  * id_analisis_imagen : Integer <<FK>>
+  * capa : String(40)
+  * estado : String(20)
+  nivel : Integer
+  conclusion : Text
+  motivo : String(300)
+  * detalle : JSON
+  * version : String(100)
+  clave_imagen : String(200)
+}
+entity "anomalias" as anomalias {
+  * id : Integer <<PK>>
+  --
+  * id_resultado : Integer <<FK>>
+  * campo : String(100)
+  valor : Text
+  * descripcion : Text
+  * severidad : String(20)
+}
+entity "casos" as casos {
+  * id : Integer <<PK>>
+  --
+  * numero : String(20) <<UK>>
+  id_organizacion : Integer <<FK>>
+  * id_responsable : Integer <<FK>>
+  * tipo : String(20)
+  * fecha_hecho : Date
+  * lugar : String(200)
+  expediente : String(100)
+  expediente_normalizado : String(100)
+  descripcion : Text
+  * estado : String(20)
+  retencion_desde : DateTime
+  transferencia_a : Integer <<FK>>
+  transferencia_en : DateTime
+  * creado_en : DateTime
+  * actualizado_en : DateTime
+}
+entity "accesos_caso" as accesos_caso {
+  * id : Integer <<PK>>
+  --
+  * id_caso : Integer <<FK>>
+  id_usuario : Integer <<FK>>
+  * toda_organizacion : Boolean
+  * nivel : String(20)
+  * otorgado_en : DateTime
+}
+entity "cobros" as cobros {
+  * id : Integer <<PK>>
+  --
+  id_organizacion : Integer <<FK>>
+  * nombre_organizacion : String(150)
+  * tipo_organizacion : String(20)
+  * plan : String(20)
+  * motivo : String(20)
+  * referencia : String(20) <<UK>>
+  * huella_token : String(64) <<UK>>
+  * estado : String(20)
+  * proveedor : String(40)
+  * cvu : String(22)
+  * alias : String(40)
+  * creado_en : DateTime
+  acreditado_en : DateTime
+  devuelto_en : DateTime
+}
+entity "enlaces_carga" as enlaces_carga {
+  * id : Integer <<PK>>
+  --
+  * huella_token : String(64) <<UK>>
+  * id_caso : Integer <<FK>>
+  * id_usuario : Integer <<FK>>
+  * creado_en : DateTime
+  * vence_en : DateTime
+  revocado_en : DateTime
+  * cargas : Integer
+  * tipo : String(20)
+  destinatario : String(100)
+  declaracion_aceptada_en : DateTime
+}
+entity "auditoria" as auditoria {
+  * id : BigInteger <<PK>>
+  --
+  * fecha : DateTime
+  id_usuario : Integer <<FK>>
+  ip : String(45)
+  * accion : String(60)
+  tipo_recurso : String(40)
+  id_recurso : String(64)
+  * resultado : String(10)
+  * detalle : JSON
+}
+entity "imagenes" as imagenes {
+  * id : Integer <<PK>>
+  --
+  * id_caso : Integer <<FK>>
+  * clave : String(100)
+  * clave_miniatura : String(100)
+  * nombre_original : String(255)
+  * formato : String(10)
+  * tamanio : BigInteger
+  * ancho : Integer
+  * alto : Integer
+  * huella : String(64)
+  id_usuario : Integer <<FK>>
+  * cargada_en : DateTime
+  origen : String(20)
+  sello_estado : String(20)
+  sello_recibo : Text
+  sello_referencia : String(200)
+  sello_fecha : DateTime
+  * sello_simulado : Boolean
+  * sello_intentos : Integer
+  * en_informe : Boolean
+}
+entity "informes" as informes {
+  * id : Integer <<PK>>
+  --
+  * id_caso : Integer <<FK>>
+  * id_analisis : Integer <<FK>>
+  * clave : String(100)
+  * huella : String(64)
+  * tamanio : Integer
+  * generado_en : DateTime
+  codigo_verificacion : String(16)
+  sello_estado : String(20)
+  sello_recibo : Text
+  sello_referencia : String(200)
+  sello_fecha : DateTime
+  * sello_simulado : Boolean
+  * sello_intentos : Integer
+}
+entity "organizaciones" as organizaciones {
+  * id : Integer <<PK>>
+  --
+  * nombre : String(150)
+  * tipo : String(20)
+  correo_contacto : String(254)
+  telefono : String(30)
+  * plan : String(20)
+  cuit : String(11)
+  * estado : String(20)
+  aprobada_en : DateTime
+  * creada_en : DateTime
+  * actualizada_en : DateTime
+}
+entity "membresias" as membresias {
+  * id : Integer <<PK>>
+  --
+  * id_organizacion : Integer <<FK>>
+  * id_usuario : Integer <<FK>>
+  * rol : String(20)
+  cargo : String(100)
+  * incorporado_en : DateTime
+}
+entity "invitaciones" as invitaciones {
+  * id : Integer <<PK>>
+  --
+  * id_organizacion : Integer <<FK>>
+  * correo : String(254)
+  cargo : String(100)
+  * estado : String(20)
+  id_invitante : Integer <<FK>>
+  * creada_en : DateTime
+  * vence_en : DateTime
+  respondida_en : DateTime
+}
+entity "usuarios" as usuarios {
+  * id : Integer <<PK>>
+  --
+  * nombre : String(100)
+  * apellido : String(100)
+  * correo : String(254) <<UK>>
+  * hash_contrasenia : String(60)
+  * perfil : String(20)
+  colegio : String(150)
+  empresa : String(150)
+  * rol : String(20)
+  * version_terminos : String(20)
+  * aceptacion_terminos_en : DateTime
+  correo_verificado_en : DateTime
+  google_sub : String(255) <<UK>>
+  * intentos_fallidos : Integer
+  bloqueado_hasta : DateTime
+  * version_sesion : Integer
+  * activo : Boolean
+  * creado_en : DateTime
+  * actualizado_en : DateTime
+}
+entity "verificaciones_identidad" as verificaciones_identidad {
+  * id : Integer <<PK>>
+  --
+  id_organizacion : Integer <<FK>>
+  id_usuario : Integer <<FK>>
+  * proveedor : String(40)
+  referencia_externa : String(120)
+  * huella_token : String(64) <<UK>>
+  * estado : String(20)
+  motivo : String(300)
+  * creada_en : DateTime
+  resuelta_en : DateTime
+}
+entity "versiones_sistema" as versiones_sistema {
+  * id : Integer <<PK>>
+  --
+  * version : String(20)
+  * commit : String(40)
+  * huella : String(64)
+  * desplegada_en : DateTime
+  sello_estado : String(20)
+  sello_recibo : Text
+  sello_referencia : String(200)
+  sello_fecha : DateTime
+  * sello_simulado : Boolean
+  * sello_intentos : Integer
+}
+
+casos ||--o{ analisis
+usuarios |o--o{ analisis
+analisis ||--o{ analisis_imagenes
+imagenes |o--o{ analisis_imagenes
+analisis_imagenes ||--o{ resultados_capa
+resultados_capa ||--o{ anomalias
+organizaciones |o--o{ casos
+usuarios ||--o{ casos
+usuarios |o--o{ casos
+casos ||--o{ accesos_caso
+usuarios |o--o{ accesos_caso
+organizaciones |o--o{ cobros
+casos ||--o{ enlaces_carga
+usuarios ||--o{ enlaces_carga
+usuarios |o--o{ auditoria
+casos ||--o{ imagenes
+usuarios |o--o{ imagenes
+casos ||--o{ informes
+analisis ||--o{ informes
+organizaciones ||--o{ membresias
+usuarios ||--o{ membresias
+organizaciones ||--o{ invitaciones
+usuarios |o--o{ invitaciones
+organizaciones |o--o{ verificaciones_identidad
+usuarios |o--o{ verificaciones_identidad
+@enduml

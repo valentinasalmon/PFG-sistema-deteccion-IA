@@ -1,0 +1,139 @@
+@startuml modelo-de-datos
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #4E5B54
+skinparam nodesep 40
+skinparam ranksep 55
+hide circle
+skinparam linetype ortho
+skinparam classBackgroundColor #F7F9FC
+skinparam classBorderColor #2F5DA8
+
+entity "analisis" as analisis {
+  * id : Integer <<PK>>
+  --
+  * id_caso : Integer <<FK>>
+  id_solicitante : Integer <<FK>>
+}
+entity "analisis_imagenes" as analisis_imagenes {
+  * id : Integer <<PK>>
+  --
+  * id_analisis : Integer <<FK>>
+  id_imagen : Integer <<FK>>
+}
+entity "resultados_capa" as resultados_capa {
+  * id : Integer <<PK>>
+  --
+  * id_analisis_imagen : Integer <<FK>>
+}
+entity "anomalias" as anomalias {
+  * id : Integer <<PK>>
+  --
+  * id_resultado : Integer <<FK>>
+}
+entity "casos" as casos {
+  * id : Integer <<PK>>
+  --
+  * numero : String(20) <<UK>>
+  id_organizacion : Integer <<FK>>
+  * id_responsable : Integer <<FK>>
+  transferencia_a : Integer <<FK>>
+}
+entity "accesos_caso" as accesos_caso {
+  * id : Integer <<PK>>
+  --
+  * id_caso : Integer <<FK>>
+  id_usuario : Integer <<FK>>
+}
+entity "cobros" as cobros {
+  * id : Integer <<PK>>
+  --
+  id_organizacion : Integer <<FK>>
+  * referencia : String(20) <<UK>>
+  * huella_token : String(64) <<UK>>
+}
+entity "enlaces_carga" as enlaces_carga {
+  * id : Integer <<PK>>
+  --
+  * huella_token : String(64) <<UK>>
+  * id_caso : Integer <<FK>>
+  * id_usuario : Integer <<FK>>
+}
+entity "auditoria" as auditoria {
+  * id : BigInteger <<PK>>
+  --
+  id_usuario : Integer <<FK>>
+}
+entity "imagenes" as imagenes {
+  * id : Integer <<PK>>
+  --
+  * id_caso : Integer <<FK>>
+  id_usuario : Integer <<FK>>
+}
+entity "informes" as informes {
+  * id : Integer <<PK>>
+  --
+  * id_caso : Integer <<FK>>
+  * id_analisis : Integer <<FK>>
+}
+entity "organizaciones" as organizaciones {
+  * id : Integer <<PK>>
+  --
+}
+entity "membresias" as membresias {
+  * id : Integer <<PK>>
+  --
+  * id_organizacion : Integer <<FK>>
+  * id_usuario : Integer <<FK>>
+}
+entity "invitaciones" as invitaciones {
+  * id : Integer <<PK>>
+  --
+  * id_organizacion : Integer <<FK>>
+  id_invitante : Integer <<FK>>
+}
+entity "usuarios" as usuarios {
+  * id : Integer <<PK>>
+  --
+  * correo : String(254) <<UK>>
+  google_sub : String(255) <<UK>>
+}
+entity "verificaciones_identidad" as verificaciones_identidad {
+  * id : Integer <<PK>>
+  --
+  id_organizacion : Integer <<FK>>
+  id_usuario : Integer <<FK>>
+  * huella_token : String(64) <<UK>>
+}
+entity "versiones_sistema" as versiones_sistema {
+  * id : Integer <<PK>>
+  --
+}
+
+casos ||--o{ analisis
+usuarios |o--o{ analisis
+analisis ||--o{ analisis_imagenes
+imagenes |o--o{ analisis_imagenes
+analisis_imagenes ||--o{ resultados_capa
+resultados_capa ||--o{ anomalias
+organizaciones |o--o{ casos
+usuarios ||--o{ casos
+usuarios |o--o{ casos
+casos ||--o{ accesos_caso
+usuarios |o--o{ accesos_caso
+organizaciones |o--o{ cobros
+casos ||--o{ enlaces_carga
+usuarios ||--o{ enlaces_carga
+usuarios |o--o{ auditoria
+casos ||--o{ imagenes
+usuarios |o--o{ imagenes
+casos ||--o{ informes
+analisis ||--o{ informes
+organizaciones ||--o{ membresias
+usuarios ||--o{ membresias
+organizaciones ||--o{ invitaciones
+usuarios |o--o{ invitaciones
+organizaciones |o--o{ verificaciones_identidad
+usuarios |o--o{ verificaciones_identidad
+@enduml

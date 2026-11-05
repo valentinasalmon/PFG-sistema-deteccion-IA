@@ -1,0 +1,27 @@
+@startgantt cronograma
+' Cronograma planificado frente a la ejecución real (Capítulo V). Fuente: bitácora y Trello.
+skinparam defaultFontName Arial
+printscale weekly with calendar date
+language es
+Project starts 2026-10-05
+saturday are open
+sunday are open
+-- Planificado --
+[Iteración 3: repositorio, motor y despliegue] starts 2026-10-05 and ends 2026-10-25
+[Iteración 4: clasificador] starts 2026-10-26 and ends 2026-11-08
+[Iteración 5: informe y gobierno] starts 2026-11-09 and ends 2026-11-15
+[Iteración 6: cierre] starts 2026-11-16 and ends 2026-11-20
+-- Real --
+[Repositorio y esqueleto caminante] starts 2026-10-08 and ends 2026-10-10
+[Cuentas, auditoría y organizaciones] starts 2026-10-11 and ends 2026-10-16
+[Casos, imágenes, capas 1 y 2, PDF y AWS] starts 2026-10-17 and ends 2026-10-19
+[ELA, panel, rediseño, planes y retención] starts 2026-10-20 and ends 2026-10-22
+[Hedera, celular e informe verificable] starts 2026-10-23 and ends 2026-10-27
+[Google, usabilidad y seguridad] starts 2026-10-28 and ends 2026-10-28
+[Cobro, portada, pulido, Clarity y arnés] starts 2026-10-29 and ends 2026-11-02
+[Verificación de identidad e índice de calidad] starts 2026-11-03 and ends 2026-11-04
+[Clasificador (en curso)] starts 2026-10-26 and ends 2026-11-08
+[Clasificador (en curso)] is colored in #A4CB3E
+[Cierre (previsto)] starts 2026-11-09 and ends 2026-11-19
+[Cierre (previsto)] is colored in #DDE3E0
+@endgantt

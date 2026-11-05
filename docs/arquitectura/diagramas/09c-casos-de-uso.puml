@@ -1,0 +1,34 @@
+@startuml casos-de-uso-casos
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #4E5B54
+skinparam nodesep 40
+skinparam ranksep 55
+left to right direction
+skinparam usecaseBackgroundColor #F7F9FC
+skinparam usecaseBorderColor #2F5DA8
+skinparam actorBorderColor #17291F
+skinparam packageStyle rectangle
+
+actor "Colaborador" as colaborador #E8F1D2
+actor "Responsable" as responsable #E8F1D2
+actor "Usuario" as usuario #DCE6F5
+rectangle "evidentIA: casos" {
+  usecase "Crear caso\n(CU18)" as CU18
+  usecase "Buscar y consultar casos\n(CU19)" as CU19
+  usecase "Editar caso\n(CU20)" as CU20
+  usecase "Cambiar estado del caso\n(CU21)" as CU21
+  usecase "Compartir caso y gestionar accesos\n(CU22)" as CU22
+  usecase "Transferir caso\n(CU23)" as CU23
+  usecase "Eliminar caso\n(CU24)" as CU24
+}
+usuario -- CU18
+usuario -- CU19
+responsable -- CU20
+colaborador -- CU20
+responsable -- CU21
+responsable -- CU22
+responsable -- CU23
+responsable -- CU24
+@enduml
