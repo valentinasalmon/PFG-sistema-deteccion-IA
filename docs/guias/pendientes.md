@@ -13,8 +13,8 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 | P1 | **Red neuronal (010 y 012)**: terminar el entrenamiento, exportar a ONNX y conectarla como capa 4 probabilística | Modelo de la autora; conjunto de datos y desempeño mínimo (CP-07) | Autora entrena, agente integra |
 | ✓ | Mejoras de interfaz (028 y 034): implementadas en cuatro tandas; falta la revisión final de la autora | Revisión | Autora |
 | P1 | **Revisión de la 034 pantalla por pantalla** (CA1, CA3, CA4, CA6, CA9) | PR de la tercera y la cuarta tanda | Autora revisa, agente corrige |
-| P2 | **Cobro real con Cresium**: proveedor, aviso firmado y conciliación (ver `docs/investigacion/2026-11-02-integracion-cresium.md`) | Precios (CP-38) y cuenta de Cresium con entorno de pruebas | Autora abre la cuenta, agente integra |
-| P2 | **Verificación de identidad con Identik (035)** para las aseguradoras | Definir el flujo, el costo y los datos biométricos (CP-35) | Autora define, agente especifica |
+| P2 | **Cobro real con Cresium**: proveedor, aviso firmado y conciliación (ver `docs/investigacion/2026-11-02-integracion-cresium.md`) | Precios (CP-38) y cuenta de Cresium con entorno de pruebas; el alta pide monotributo (2026-11-05) | Autora consulta a Cresium; si no hay opción, trabajo futuro |
+| P2 | **Verificación de identidad con Identik (035)** para las aseguradoras: *sandbox* habilitado y flujo propuesto (2026-11-05) | Reunión con Identik y confirmación de la autora (CP-35) | Autora agenda la reunión, agente especifica e integra |
 | P1 | **Quitar Clarity antes de la versión final** (CP-37): sacar el script, la excepción de la CSP y el apartado de la política de privacidad | Fin de las pruebas | Agente |
 | P2 | **Inicio de sesión con Google (027)**: implementado; falta crear el cliente OAuth y probarlo | La autora crea el cliente en Google Cloud (guía en `despliegue-aws.md`) | Autora |
 | ✓ | Hedera en *testnet* funcionando en producción (2026-11-02); falta comprobar la versión en un informe nuevo (029) | — | Autora |
@@ -87,6 +87,9 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 - **CP-13**: sin el tipo "Independiente".
 - **CP-20**: correos en la auditoría al borrar una cuenta.
 - **CP-26**: red de Hedera para la entrega.
+- **CP-34 y CP-35 (2026-11-05)**: ¿alcanza con mostrar las integraciones en su entorno de pruebas (Identik con documentos marcados como prueba y Cresium con cobro simulado), o se espera que funcionen con cuentas reales?
+- **CP-35**: ¿es razonable que un proyecto académico trate datos biométricos por medio de un tercero (Identik como encargado, sin que evidentIA guarde nada), con consentimiento expreso y aviso en la Política de Privacidad?
+- **CP-34**: ¿la facultad tiene algún convenio, o alguna forma de que un proyecto final abra cuentas en servicios que piden CUIT o monotributo?
 
 ## Orden sugerido hasta el 19/11
 
