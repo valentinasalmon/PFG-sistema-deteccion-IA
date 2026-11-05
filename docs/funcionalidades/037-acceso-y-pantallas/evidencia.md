@@ -45,3 +45,5 @@ Errores de JavaScript en la página: ninguno. Los 401 de la consola son la consu
 ![Análisis terminado (computadora)](evidencia/abogado-pc-05-analisis.jpg)
 ![Análisis terminado (celular)](evidencia/abogado-cel-05-analisis.jpg)
 ![Verificación pública](evidencia/abogado-pc-verificar.jpg)
+![Pendientes con la identidad sin verificar](evidencia/chromium-admin-pendientes.jpg)
+![Alta de un siniestro](evidencia/chromium-13-nuevo-siniestro.jpg)
