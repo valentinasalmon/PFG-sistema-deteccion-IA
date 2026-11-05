@@ -65,3 +65,14 @@ La autora pidió que la bitácora se actualice todos los días, con cada tanda d
 - Queda abierta la CP-43: si el detalle debería abrirse sin cuenta.
 - Plan, tareas y capturas del antes y el después de la 037 quedan en `docs/funcionalidades/037-acceso-y-pantallas/`.
 - Backend: 567 pruebas, cobertura 97,5 %, pylint 10/10.
+
+## Corrección pedida por la autora: vocabulario sostenible
+
+La primera versión del vocabulario por perfil agregaba una frase suelta por pantalla («Nuevo caso», «Casos recientes», «Buscar un caso»…) para cada rubro: una lista que crece sin control. Se reemplazó por una función, `vocabulario(singular, plural)`, que arma todas las frases desde una sola palabra por rubro. Cambiar «siniestro» por otra palabra, o sumar un rubro, es una línea. Pruebas en `utilidades/lenguaje.test.js`.
+
+## Otros avances del día
+
+- Pantalla del caso: «Datos y gestión» en su propia pestaña; el contenido del paso ocupa todo el ancho.
+- Inicio de sesión en dos columnas con «Continuar con Google» (visible donde Google está configurado, como en producción); registro más espaciado.
+- Administrador: menú grafito con la píldora «Admin».
+- Recorridos de punta a punta de aseguradora y abogado (computadora y celular emulado), con evidencia en `docs/funcionalidades/037-acceso-y-pantallas/evidencia.md`.
