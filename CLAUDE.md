@@ -27,6 +27,7 @@ El arnés completo (guías, sensores, memoria y persona en el circuito) está de
 - **Documentar siempre**: todo módulo, clase y función pública lleva docstring que explique qué hace, por qué y qué requisito realiza (por ejemplo, `Realiza: RF34, RN22`).
 - **Nunca** emitir veredictos en textos de análisis: solo indicios y recomendación de consultar a un profesional (RN27).
 - **Interfaz**: toda pantalla, correo o documento nuevo sigue la [guía de identidad visual](docs/guias/identidad-visual.md).
+- **Verificación visual obligatoria** (pedido de la autora, 2026-11-05): un cambio de interfaz no se da por terminado sin correr el sensor de diseño (`node frontend/e2e/sensor-diseno.cjs`) y los recorridos de punta a punta de `frontend/e2e/` en computadora y celular, y mirar sus capturas. Si se cambia un estilo **compartido** (tarjetas, disposiciones, avisos, botones), se revisan **todas** las pantallas que lo usan, con cada uno de sus estados (por ejemplo, el pago pendiente y el acreditado), no solo la que motivó el cambio.
 - **Resultados**: toda salida de análisis respeta [ADR-0017](docs/arquitectura/decisiones/0017-marco-normativo-y-supervision-humana.md): descargo de IA, persona en el circuito y umbrales publicados.
 - **Nunca** subir secretos, archivos `.env`, imágenes de casos reales ni modelos entrenados al repositorio. El gancho `proteger_secretos.py` bloquea leer, editar o usar en un comando `.env`, `terraform.tfvars`, `backend.hcl` y el estado de Terraform.
 - **Integraciones externas** (Hedera, Cresium, Google, AWS y las que vengan): no se dan por terminadas con las pruebas automáticas solas. Se prueban contra el servicio real (o la autora lo hace, con una guía) y su estado se ve en la página `/estado` cuando corresponde.
@@ -38,6 +39,8 @@ El arnés completo (guías, sensores, memoria y persona en el circuito) está de
 flake8 app/ && pylint app/ && pytest --cov=app --cov-fail-under=80
 # frontend
 npm run lint && npm run test
+# interfaz (con el entorno local levantado; ver frontend/e2e/README.md)
+node frontend/e2e/sensor-diseno.cjs
 # red neuronal (desde red_neuronal/)
 flake8 clasificador/ && pylint clasificador/ && pytest --cov=clasificador --cov-fail-under=80
 ```

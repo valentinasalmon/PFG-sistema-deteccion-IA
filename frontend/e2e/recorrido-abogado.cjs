@@ -1,4 +1,5 @@
 // Recorrido real del abogado: caso nuevo, fotos, análisis, informe y verificación pública.
+const { revisarPagina } = require('./sensor-diseno.cjs');
 const pw = require('playwright');
 const [,, dir, imgs, modo = 'pc'] = process.argv; const B = 'http://localhost:5173';
 let paso = 0; const log = (m) => console.log(`[${++paso}] ${m}`);
@@ -6,7 +7,9 @@ let paso = 0; const log = (m) => console.log(`[${++paso}] ${m}`);
   const b = await pw.chromium.launch();
   const ctx = await b.newContext(modo === 'cel' ? { ...pw.devices['iPhone 13'], acceptDownloads: true } : { viewport: { width: 1280, height: 860 }, acceptDownloads: true });
   const p = await ctx.newPage(); const errores = []; p.on('pageerror', (e) => errores.push(e.message));
-  const foto = (n) => p.screenshot({ path: `${dir}/abogado-${modo}-${String(paso).padStart(2, '0')}-${n}.png`, fullPage: true });
+  // Cada captura pasa también por el sensor de diseño (037): contenido cortado o escondido falla.
+  const diseno = [];
+  const foto = async (n) => { await p.screenshot({ path: `${dir}/abogado-${modo}-${String(paso).padStart(2, '0')}-${n}.png`, fullPage: true }); for (const x of await revisarPagina(p)) if (x.gravedad === 'error') diseno.push(`${n}: ${x.tipo} — ${x.detalle}`); };
   try {
     await p.goto(B + '/iniciar-sesion'); await p.getByLabel('Correo electrónico').fill('prueba@evidentia.local'); await p.getByLabel('Contraseña', { exact: true }).fill('Prueba12345');
     await p.getByRole('button', { name: 'Ingresar' }).click(); await p.waitForTimeout(1800); log('ingresó: ' + (await p.locator('h1').first().textContent()));
@@ -25,5 +28,6 @@ let paso = 0; const log = (m) => console.log(`[${++paso}] ${m}`);
     const codigo = await p.locator('a[href^="/verificar/"]').first().getAttribute('href').catch(() => null);
     if (codigo) { const v = await ctx.newPage(); await v.goto(B + codigo); await v.waitForTimeout(2500); await v.screenshot({ path: `${dir}/abogado-${modo}-verificar.png`, fullPage: true }); log('verificación pública: ' + (await v.locator('main').innerText()).replace(/\n/g, ' ').slice(140, 420)); }
   } catch (e) { log('ERROR: ' + e.message.split('\n')[0]); await foto('error'); }
-  console.log('Errores de la página:', errores.slice(0, 5)); await b.close();
+  console.log('Errores de la página:', errores.slice(0, 5));
+  console.log(diseno.length ? `Problemas de diseño:\n  ${diseno.join('\n  ')}` : 'Sin problemas de diseño.'); await b.close();
 })();

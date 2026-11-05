@@ -1,4 +1,5 @@
 // Recorrido real por la interfaz: registro de una aseguradora, pago, verificación, aprobación y uso.
+const { revisarPagina } = require('./sensor-diseno.cjs');
 const { chromium } = require('playwright'); const fs = require('fs'); const path = require('path');
 const [,, dir, buzon, navegador = 'chromium'] = process.argv;
 const pw = require('playwright'); const B = 'http://localhost:5173';
@@ -16,13 +17,16 @@ const ultimoToken = (desde) => {
   const b = await pw[navegador].launch();
   const ctx = await b.newContext({ viewport: { width: 1280, height: 860 } }); const p = await ctx.newPage();
   const errores = []; p.on('pageerror', (e) => errores.push(e.message)); p.on('console', (m) => m.type() === 'error' && errores.push(m.text()));
-  const foto = (n) => p.screenshot({ path: `${dir}/${navegador}-${String(paso).padStart(2, '0')}-${n}.png`, fullPage: true });
+  // Cada captura pasa también por el sensor de diseño (037): contenido cortado o escondido falla.
+  const diseno = [];
+  const foto = async (n) => { await p.screenshot({ path: `${dir}/${navegador}-${String(paso).padStart(2, '0')}-${n}.png`, fullPage: true }); for (const x of await revisarPagina(p)) if (x.gravedad === 'error') diseno.push(`${n}: ${x.tipo} — ${x.detalle}`); };
   try {
     await p.goto(B + '/registro'); await p.locator('.camino').nth(2).click(); await p.getByRole('button', { name: 'Siguiente' }).click();
     log('camino Aseguradora elegido');
     await p.getByLabel('Nombre', { exact: true }).fill('Rita'); await p.getByLabel('Apellido').fill('Prueba');
-    const buscar = p.getByLabel(/Buscá tu aseguradora/); await buscar.fill('SEGUROS'); await p.waitForTimeout(700);
-    await p.locator('.opciones-tarjeta label').nth(3 + (marca % 5)).click(); await foto('datos');
+    // La aseguradora se elige en la lista desplegable; ASEG elige una que todavía no esté registrada.
+    const buscar = p.getByLabel(/Buscá tu aseguradora/); await buscar.fill(process.env.ASEG || 'SEGUROS'); await p.waitForTimeout(500);
+    await p.getByRole('option').nth(Number(process.env.ASEG_N || 0)).click(); await foto('datos');
     await p.getByRole('button', { name: 'Siguiente' }).click(); log('datos y aseguradora');
     await p.waitForTimeout(500); await foto('plan');
     if (await p.getByRole('button', { name: 'Siguiente' }).isVisible()) { await p.getByRole('radio').first().check({ force: true }).catch(() => {}); await p.getByRole('button', { name: 'Siguiente' }).click(); log('plan'); }
@@ -52,5 +56,6 @@ const ultimoToken = (desde) => {
     await p.goto(B + '/casos/nuevo'); await p.waitForTimeout(1500); log('alta: ' + (await p.locator('h1').first().textContent())); await foto('nuevo-siniestro');
   } catch (e) { log('ERROR: ' + e.message.split('\n')[0]); await foto('error'); }
   console.log('Errores de consola:', errores.slice(0, 5));
+  console.log(diseno.length ? `Problemas de diseño:\n  ${diseno.join('\n  ')}` : 'Sin problemas de diseño.');
   await b.close();
 })();
