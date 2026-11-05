@@ -21,4 +21,10 @@
 - [x] T14 — Registro: opciones más espaciadas, manteniendo la elección con el punto.
 - [x] T15 — Celular: revisar lo que queda flotando o fuera de lugar.
 - [x] T16 — Resto de las pantallas con el diseño nuevo (organización, perfil, administración, verificar, estado, pago).
-- [ ] T17 — Presentación nueva con el antes y el después, y revisión de todo lo que falta del proyecto.
+- [x] T17 — Presentación nueva con el antes y el después, y revisión de todo lo que falta del proyecto.
+
+## Pendiente de la autora o para la próxima tanda
+
+- [ ] T18 — Decisiones de la segunda presentación: CP-43 (enlace al detalle con o sin cuenta) y qué tan breve es el PDF.
+- [ ] T19 — Correos con «siniestro» para las aseguradoras (hoy dicen «caso»).
+- [ ] T20 — Probar en Safari (iPhone) y Firefox reales (la autora).

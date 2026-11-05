@@ -83,3 +83,7 @@ La primera versión del vocabulario por perfil agregaba una frase suelta por pan
 - «Invitar miembros» ocupa el ancho de su tarjeta (el máximo de los formularios lo dejaba suelto).
 - Celular: la huella SHA-256 del análisis se salía del borde (ahora abreviada con «Copiar»); «Editar los datos» de la organización quedaba suelto a la derecha; con tres pestañas, la tercera quedaba sola en una fila. Corregido; capturas en `capturas/`.
 - Cada capa del análisis se describe sola (título, explicación y tipo) y el frontend los toma de la API: sumar la red neuronal es una clase (documentado en `docs/red-neuronal/07`).
+
+## Segunda presentación a la autora
+
+Se republicó la página de la revisión (versión 2) con el antes y el después de esta tanda, los recorridos de punta a punta y dos decisiones nuevas: CP-43 (enlace al análisis detallado con o sin cuenta) y si el PDF de 4 páginas está bien o se reduce a una página de resumen con anexo. Lo que falta del proyecto quedó actualizado en `docs/guias/pendientes.md`.
