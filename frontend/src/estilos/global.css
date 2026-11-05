@@ -6031,3 +6031,43 @@ h1.estado-vacio__titulo {
     border-bottom-color: #15191e;
   }
 }
+
+/*
+ * --- Notificaciones que no tapan el sistema (037) ---
+ * Arriba a la derecha tapaban los botones de la cabecera («Datos y gestión»,
+ * «Editar los datos»). Van abajo a la derecha, angostas; en el celular, abajo
+ * a todo el ancho, sobre la barra del sistema. Se cierran solas o con la X.
+ */
+.avisos-flotantes {
+  top: auto;
+  right: max(1.5rem, env(safe-area-inset-right, 0px));
+  bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+  max-width: min(24rem, calc(100vw - 2rem));
+}
+
+.aviso--flotante {
+  animation-name: aviso-subir;
+}
+
+@keyframes aviso-subir {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+@media (width <= 48rem) {
+  .avisos-flotantes {
+    right: 1rem;
+    left: 1rem;
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+    align-items: stretch;
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aviso--flotante {
+    animation: none;
+  }
+}
