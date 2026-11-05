@@ -29,4 +29,9 @@ La autora revisó el inicio de sesión y el registro (2026-11-04). En computador
 - [x] **CA6**: En un celular de 390 px ninguna pantalla tiene contenido cortado o fuera del ancho.
 - [x] **CA7**: El informe PDF lleva el aviso de que no emite veredictos en la primera página y la escala de lectura no se corta entre páginas.
 - [x] **CA8**: La política de privacidad cubre Google, los pagos, la verificación de identidad, las fotos de terceros y quién trata los datos; los términos explican la diferencia entre abogado y aseguradora.
-- [ ] **CA9**: Las decisiones 1 a 6 de la revisión integral, aplicadas según lo que elija la autora.
+- [x] **CA9**: Decisiones 1, 3, 4, 5 y 6 de la revisión integral aplicadas (2026-11-05).
+- [ ] **CA10**: Decisión 2: el análisis en pantalla tiene un solo descargo arriba y los datos técnicos plegados.
+- [x] **CA11**: El informe PDF es breve, arriba lleva una sola línea de herramienta de apoyo y enlaza con QR al análisis detallado en la plataforma.
+- [ ] **CA12**: La pantalla del caso, el login (con Google), el registro y el resto de las pantallas siguen el diseño nuevo, sin elementos flotando en el celular.
+
+Capturas del antes y el después en [`capturas/`](capturas/).

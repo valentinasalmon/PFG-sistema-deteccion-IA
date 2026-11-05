@@ -117,6 +117,9 @@ class ServicioInformes:
             "codigo": codigo_legible(codigo), "url": url, "qr": qr_svg(url),
             "pagina": f"{self.url_frontend}/verificar",
         }
+        # PDF breve con enlace al análisis completo en la plataforma (037, propuesta del tutor).
+        detalle = f"{self.url_frontend}/casos/{analisis.id_caso}?etapa=analisis"
+        datos["detalle"] = {"url": detalle, "qr": qr_svg(detalle)}
         contenido = informe_analisis.generar_pdf(datos, generado_en)
         informe = Informe(
             id_caso=analisis.id_caso, id_analisis=analisis.id,

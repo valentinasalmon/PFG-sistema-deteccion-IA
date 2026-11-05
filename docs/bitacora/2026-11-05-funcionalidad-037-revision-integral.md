@@ -56,3 +56,12 @@ La presentación con el antes y el después y estas opciones se publicó como p�
 ### Regla de trabajo
 
 La autora pidió que la bitácora se actualice todos los días, con cada tanda de trabajo, y no solo al cerrar una etapa.
+
+## Informe PDF breve (2026-11-05, noche)
+
+- Arriba, una sola línea: «Herramienta de apoyo: muestra indicios técnicos y no emite veredictos».
+- La escala de lectura pasa a una línea de etiquetas; cada técnica muestra solo su nivel y qué encontró.
+- Sección nueva «Más detalle y verificación» con dos QR: el análisis detallado en la plataforma (con cuenta) y la verificación pública del PDF.
+- Queda abierta la CP-43: si el detalle debería abrirse sin cuenta.
+- Plan, tareas y capturas del antes y el después de la 037 quedan en `docs/funcionalidades/037-acceso-y-pantallas/`.
+- Backend: 567 pruebas, cobertura 97,5 %, pylint 10/10.

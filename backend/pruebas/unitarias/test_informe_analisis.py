@@ -72,7 +72,7 @@ def test_el_informe_tiene_los_datos_del_caso_y_la_custodia():
         "Ana López (Abogado)", "Colegio de abogados", "CPACF",
         "Evidencia y cadena de custodia", "a" * 64, "Coincide", "Hedera, 19/10/2026 17:01 UTC",
         "Cronología:", "primera carga 19/10/2026 14:00", "análisis pedido 19/10/2026 15:00",
-        "data:image/jpeg;base64,", "Escala de lectura", "45 % a 69 %",
+        "data:image/jpeg;base64,", "Indicios moderados · 45 % a 69 %",
         "Este informe no constituye un dictamen pericial. Consulte a un profesional especializado.",
     ):
         assert texto in html, texto
@@ -85,8 +85,8 @@ def test_el_informe_tiene_los_datos_del_caso_y_la_custodia():
 def test_orden_de_las_secciones():
     """025 y 037: aviso primero, después caso, custodia, escala y resultados; sin cortes."""
     html = _html(_con_original(_analisis()))
-    titulos = ("Este informe presenta", "Caso y solicitud", "Evidencia y cadena de custodia",
-               "Escala de lectura", "Resultados por imagen")
+    titulos = ("Herramienta de apoyo", "Caso y solicitud", "Evidencia y cadena de custodia",
+               "Resultados por imagen")
     posiciones = [html.index(titulo) for titulo in titulos]
     assert posiciones == sorted(posiciones)
     assert "page-break-before" not in html  # sin saltos forzados
@@ -110,12 +110,12 @@ def test_resultado_detallado_con_su_tipo():
 
     html = _html(analisis)
 
-    assert "Qué revisó:" in html and "Qué encontró:" in html
+    # 037: el PDF es breve; qué revisó cada técnica y sus datos van en el análisis en línea.
+    assert "Qué revisó:" not in html and "Calidad JPEG estimada" not in html
     assert "Detalle de la región." in html and "Zona que se aparta." in html
     assert "no constituye una conclusión definitiva" not in html
-    assert "Calidad JPEG estimada" in html and "<td>Dimensiones</td>" not in html
-    assert "Adobe Photoshop 25.0" in html  # datos relevantes de la capa de metadatos
-    assert html.count("tipo tipo-determinista") >= 2 and "tipo tipo-probabilistico" in html
+    assert "Adobe Photoshop 25.0" not in html  # los datos de cada capa van en el detalle en línea
+    assert html.count("tipo tipo-determinista") >= 1 and "tipo tipo-probabilistico" in html
 
 
 def test_los_hallazgos_mencionados_en_la_conclusion_no_se_repiten():
@@ -153,12 +153,14 @@ def test_sin_veredictos():
 
 
 def test_bloque_de_verificacion():
-    """026 (RF55 CA2): el PDF lleva el QR y el código para verificarlo."""
+    """026 y 037: el PDF lleva el QR para verificarlo y el enlace al análisis detallado."""
     datos = informe_analisis.armar_datos(_analisis(), {}, "0.2.0")
     datos["verificacion"] = {"codigo": "ABCD-EFGH-JKMN", "url": "http://x/verificar/ABCDEFGHJKMN",
                              "qr": "data:image/svg+xml,qr", "pagina": "http://x/verificar"}
+    datos["detalle"] = {"url": "http://x/casos/7?etapa=analisis", "qr": "data:image/svg+xml,det"}
     html = entorno.get_template("informe_analisis.html").render(informe=datos, generado_en=GENERADO)
-    assert "Verificación de este informe" in html and "ABCD-EFGH-JKMN" in html
+    assert "Más detalle y verificación" in html and "ABCD-EFGH-JKMN" in html
+    assert "http://x/casos/7?etapa=analisis" in html and "data:image/svg+xml,det" in html
     assert "data:image/svg+xml,qr" in html and "http://x/verificar" in html
 
 
