@@ -38,7 +38,18 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-19 | [Funcionalidad 017: infraestructura y despliegue en AWS (código)](2026-10-19-funcionalidad-017-infraestructura.md) |
 | 2026-10-20 | [Funcionalidad 011: capa 3, niveles de error (ELA)](2026-10-20-funcionalidad-011-capa-ela.md) |
 | 2026-10-21 | [Funcionalidad 013: panel principal y notificaciones](2026-10-21-funcionalidad-013-panel-y-notificaciones.md) |
+| 2026-10-21 | [Funcionalidad 022: rediseño de la interfaz (primera entrega)](2026-10-21-funcionalidad-022-rediseno-interfaz.md) |
+| 2026-10-22 | [Corrección de la 016: dirección real del sello de BFA](2026-10-22-correccion-016-sello-tsa2.md) |
+| 2026-10-22 | [Corrección de la 016: Sello de Tiempo 1.0 de BFA](2026-10-22-correccion-016-sello-tsaapi.md) |
+| 2026-10-22 | [Funcionalidad 014: planes, pago simulado y tablero](2026-10-22-funcionalidad-014-planes-y-tablero.md) |
+| 2026-10-22 | [Funcionalidad 015: retención y destrucción de datos](2026-10-22-funcionalidad-015-retencion.md) |
+| 2026-10-22 | [Funcionalidad 016: sello de tiempo en Blockchain Federal Argentina](2026-10-22-funcionalidad-016-sello-bfa.md) |
+| 2026-10-25 | [Funcionalidad 023: sello de tiempo en Hedera](2026-10-25-funcionalidad-023-sello-hedera.md) |
+| 2026-10-25 | [Cambio a Hedera y ampliaciones del alcance](2026-10-25-plan-hedera-y-ampliaciones.md) |
 | 2026-10-26 | [Reorganización del tablero de Trello](2026-10-26-reorganizacion-del-tablero.md) |
+| 2026-10-26 | [Funcionalidad 024, etapa 1: carga desde el celular y HEIC](2026-10-26-funcionalidad-024-etapa-1.md) |
+| 2026-10-26 | [Funcionalidades 025 y 026: informe breve por rubro y verificable](2026-10-26-funcionalidades-025-y-026-informe.md) |
+| 2026-10-27 | [Ajustes del informe (025) y versión en Hedera (029)](2026-10-27-ajustes-informe-y-029.md) |
 | 2026-10-28 | [Integración continua en verde e inicio con Google (027)](2026-10-28-funcionalidad-027-inicio-con-google.md) |
 | 2026-10-28 | [Revisión y refuerzo de la seguridad (030)](2026-10-28-funcionalidad-030-seguridad.md) |
 | 2026-10-28 | [Mejoras de interfaz (028): auditoría, frames y primera tanda](2026-10-28-funcionalidad-028-interfaz.md) |
@@ -47,7 +58,20 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-29 | [Funcionalidad 032: pago del plan en el registro](2026-10-29-funcionalidad-032-pago-en-el-registro.md) |
 | 2026-10-29 | [Funcionalidad 033: portada pública con los planes](2026-10-29-funcionalidad-033-portada.md) |
 | 2026-10-29 | [Funcionalidad 034: pulido de UX/UI, primera tanda](2026-10-29-funcionalidad-034-pulido-ux.md) |
+| 2026-10-29 | [Borrador del informe final y sugerencias de integración](2026-10-29-redaccion-del-informe-y-sugerencias.md) |
 | 2026-10-30 | [Funcionalidad 010: primera corrida en Colab](2026-10-30-red-neuronal-primera-corrida-en-colab.md) |
 | 2026-10-30 | [Funcionalidad 010: prueba de concepto de la red neuronal](2026-10-30-prueba-de-concepto-red-neuronal.md) |
 | 2026-10-30 | [Funcionalidad 010: documentación, plan de entrenamientos y búsqueda de datos](2026-10-30-datos-y-plan-de-entrenamientos.md) |
 | 2026-10-30 | [Funcionalidad 010: exploración de datos, receta v1 y cuaderno de entrenamiento completo](2026-10-30-red-neuronal-exploracion-y-receta-v1.md) |
+| 2026-10-30 | [Funcionalidad 031: Microsoft Clarity instalado](2026-10-30-funcionalidad-031-clarity.md) |
+| 2026-10-30 | [Funcionalidad 034: pulido de UX/UI, segunda tanda](2026-10-30-funcionalidad-034-segunda-tanda.md) |
+| 2026-10-31 | [Funcionalidad 034, cuarta tanda: organización, administración, verificar y estado](2026-10-31-funcionalidad-034-cuarta-tanda.md) |
+| 2026-10-31 | [Funcionalidad 034, tercera tanda: portada, acceso, registro, privacidad y estado de Hedera](2026-10-31-funcionalidad-034-tercera-tanda.md) |
+| 2026-11-02 | [Corrección: el informe decía «Pendiente de confirmación en Hedera»](2026-11-02-correccion-sello-en-el-informe.md) |
+| 2026-11-02 | [Decisiones de la autora, revisión de Hedera e investigación de Cresium](2026-11-02-decisiones-hedera-y-cresium.md) |
+| 2026-11-02 | [Funcionalidad 034, quinta tanda: portada más limpia](2026-11-02-funcionalidad-034-quinta-tanda.md) |
+| 2026-11-02 | [Funcionalidad 036: arnés para el trabajo asistido por IA](2026-11-02-funcionalidad-036-arnes.md) |
+| 2026-11-02 | [Hedera funcionando en *testnet* en producción](2026-11-02-prueba-hedera-testnet.md) |
+| 2026-11-04 | [Funcionalidad 018: materiales del cierre](2026-11-04-funcionalidad-018-materiales.md) |
+| 2026-11-04 | [Funcionalidad 035: verificación de identidad de aseguradoras](2026-11-04-funcionalidad-035-identidad.md) |
+| 2026-11-05 | [Funcionalidad 038: revisión continua del arnés](2026-11-05-funcionalidad-038-revision-del-arnes.md) |
