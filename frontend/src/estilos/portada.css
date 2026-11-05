@@ -456,6 +456,10 @@
   color: var(--tinta-2);
 }
 
+.portada-perfil:last-child h3 {
+  color: #fff;
+}
+
 .portada-perfil:last-child p {
   color: #c4d3c9;
 }

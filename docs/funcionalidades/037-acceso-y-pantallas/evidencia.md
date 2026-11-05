@@ -47,3 +47,8 @@ Errores de JavaScript en la página: ninguno. Los 401 de la consola son la consu
 ![Verificación pública](evidencia/abogado-pc-verificar.jpg)
 ![Pendientes con la identidad sin verificar](evidencia/chromium-admin-pendientes.jpg)
 ![Alta de un siniestro](evidencia/chromium-13-nuevo-siniestro.jpg)
+
+## Segunda corrida (2026-11-05, noche)
+
+- Informe PDF real descargado por la interfaz: incluye «Más detalle y verificación» con los dos QR (análisis detallado y verificación pública); 4 páginas con dos imágenes.
+- Hallazgo y corrección: en la portada, el título de la tarjeta «Aseguradoras» no se veía (texto oscuro sobre fondo oscuro).
