@@ -6231,3 +6231,240 @@ h1.estado-vacio__titulo {
     justify-content: center;
   }
 }
+
+/* --- 037: selector de aseguradora como lista desplegable (combobox) --- */
+.combo {
+  position: relative;
+}
+
+.combo__lupa {
+  position: absolute;
+  top: 50%;
+  left: 0.9rem;
+  display: flex;
+  color: var(--tinta-2);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.combo input.campo__control.combo__control {
+  width: 100%;
+  padding-left: 2.75rem;
+  padding-right: 3rem;
+}
+
+.combo__limpiar {
+  position: absolute;
+  top: 50%;
+  right: 0.25rem;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--tinta-2);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.combo__limpiar:hover {
+  color: var(--tinta);
+}
+
+.combo__limpiar:focus-visible {
+  outline: 2px solid var(--lima);
+  outline-offset: -2px;
+}
+
+.combo__lista {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  max-height: min(18rem, 50vh);
+  margin: 0;
+  padding: 0.35rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+  background: var(--superficie, #fff);
+  box-shadow: 0 12px 32px rgb(16 32 24 / 16%);
+}
+
+.combo__lista[hidden] {
+  display: none;
+}
+
+.combo__opcion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.combo__opcion--activa {
+  background: var(--fondo-2);
+}
+
+.combo__opcion[aria-selected='true'] .combo__nombre {
+  color: var(--exito);
+}
+
+.combo__nombre {
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.combo__detalle {
+  color: var(--tinta-2);
+  font-size: 0.8rem;
+}
+
+.combo__elegida {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  color: var(--exito);
+  font-weight: 600;
+}
+
+.combo__elegida .icono {
+  flex: none;
+  margin-top: 0.15rem;
+}
+
+.combo {
+  scroll-margin-top: 1rem;
+}
+
+/* --- 037: resultado del pago parejo (pasos en línea de avance y formulario a lo ancho) --- */
+.resultado-pago__orden {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  width: 100%;
+  max-width: 40rem;
+  margin: 0.75rem 0 0.5rem;
+  counter-reset: orden;
+}
+
+.resultado-pago__orden li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* La línea que une los pasos, detrás de cada número. */
+.resultado-pago__orden li:not(:first-child)::after {
+  content: '';
+  position: absolute;
+  top: 0.875rem;
+  right: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--linea);
+  z-index: 0;
+}
+
+.resultado-pago__orden li.resultado-pago__paso--hecho::after,
+.resultado-pago__orden li.resultado-pago__paso--actual::after {
+  background: var(--exito);
+}
+
+.resultado-pago__orden li::before,
+.resultado-pago__paso--hecho::before {
+  content: counter(orden) !important;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 2px solid var(--linea);
+  border-radius: 50%;
+  background: var(--superficie);
+  color: var(--tinta-2);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.resultado-pago__orden li.resultado-pago__paso--hecho::before {
+  content: '✓' !important;
+  border-color: var(--exito);
+  background: var(--exito);
+  color: #fff;
+}
+
+.resultado-pago__orden li.resultado-pago__paso--actual::before {
+  border-color: var(--exito);
+  color: var(--exito);
+}
+
+.resultado-pago > .aviso,
+.resultado-pago > form,
+.resultado-pago > .formulario {
+  width: 100%;
+  max-width: 30rem;
+  text-align: left;
+}
+
+@media (width <= 30rem) {
+  .resultado-pago__orden {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+    justify-items: start;
+  }
+
+  .resultado-pago__orden li {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .resultado-pago__orden li:not(:first-child)::after {
+    display: none;
+  }
+}
+
+/* 037: los valores del resumen nunca se salen de la tarjeta; el nombre de la organización va debajo. */
+.pago__resumen dd {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pago__resumen dl > .pago__fila-apilada {
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pago__resumen .pago__fila-apilada dd {
+  font-size: 0.9rem;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.aviso > .aviso__texto {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+@media (width <= 30rem) {
+  .resultado-pago__orden {
+    width: auto;
+  }
+}

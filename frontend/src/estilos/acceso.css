@@ -664,3 +664,33 @@
     padding-block: 0.8rem;
   }
 }
+
+/*
+ * --- Pago y elección del plan sin panel de marca (037) ---
+ * El pago, su resultado y la elección del plan son pasos de «caja»: llevan
+ * datos para copiar, un resumen y comparaciones. En la tarjeta dividida de
+ * alto fijo quedaban cortados arriba y abajo. Mantienen el mismo ancho de
+ * tarjeta, ocultan el panel y toman el alto que necesitan (como mínimo, el de
+ * las demás tarjetas), así nada queda escondido ni desalineado.
+ */
+.inicio-dividido:has(.pago, .resultado-pago, .selector-plan) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.inicio-dividido:has(.pago, .resultado-pago, .selector-plan) .inicio-dividido__panel {
+  display: none;
+}
+
+@media (width > 60rem) {
+  .inicio-dividido:has(.pago, .resultado-pago, .selector-plan) {
+    height: auto;
+    min-height: 42rem;
+  }
+
+  .inicio-dividido:has(.pago, .resultado-pago, .selector-plan) .inicio-dividido__formulario {
+    overflow: visible;
+    justify-content: flex-start;
+    padding: 2.75rem 3.5rem 3rem;
+    scrollbar-gutter: auto;
+  }
+}
