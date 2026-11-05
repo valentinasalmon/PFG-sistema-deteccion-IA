@@ -53,18 +53,7 @@ export default function PaginaIniciarSesion() {
   const noVerificada = error?.codigo === 'cuenta_no_verificada'
 
   return (
-    <div className="inicio-dividido">
-      {/* 037: en computadora, un panel con lo que hace la plataforma llena la tarjeta. */}
-      <aside className="inicio-dividido__panel" aria-label="Qué hace evidentIA">
-        <p className="inicio-dividido__eti">Para abogados y aseguradoras</p>
-        <p className="inicio-dividido__tesis">Revisá cada foto antes de presentarla o de liquidar.</p>
-        <ul>
-          <li>Indicios de edición o de imagen con IA, técnica por técnica.</li>
-          <li>Informe breve con un enlace al análisis completo.</li>
-          <li>Verificable por cualquiera con su código.</li>
-        </ul>
-      </aside>
-      <div className="inicio-dividido__formulario">
+    <>
       <h1>Iniciar sesión</h1>
       <p className="tarjeta-acceso__bajada">
         ¿No tenés cuenta? <Link to="/registro">Creá una</Link>
@@ -105,7 +94,6 @@ export default function PaginaIniciarSesion() {
           {enviando ? 'Ingresando…' : 'Ingresar'}
         </button>
       </form>
-      </div>
-    </div>
+    </>
   )
 }
