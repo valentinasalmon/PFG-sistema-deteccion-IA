@@ -1,7 +1,7 @@
 # Especificación: 034 — Pulido de UX/UI de todo el sistema
 
-- **Rama**: `funcionalidad/034-pulido-ux`
-- **Estado**: Aprobada (mockups v3 validados por la autora el 2026-10-29; el detalle se pule pantalla por pantalla)
+- **Rama**: `funcionalidad/034-pulido-ux` (las tandas siguientes se hicieron en ramas propias, ya borradas o por borrar; desde la 039, las tandas de una funcionalidad van en su misma rama)
+- **Estado**: Implementada en cinco tandas, integradas entre el 2026-10-30 y el 2026-11-02 (mockups v3 validados por la autora el 2026-10-29). Falta la revisión final con la autora: CA1, CA3, CA4, CA6 y CA9
 - **Requisitos que realiza**: RNF10 (usabilidad y accesibilidad), RF19, RF20
 - **Reglas de negocio aplicadas**: RN27; ADR-0017
 - **Casos de uso**: todos los de la interfaz
@@ -31,6 +31,20 @@ La autora pidió un sistema limpio, sin fricciones, orientado a la usuaria princ
 ### Excluido
 - Cambios del modelo de datos o de las reglas de negocio.
 - Precios de los planes (a confirmar por la autora).
+
+## Tandas
+
+Historial unificado de la funcionalidad (funcionalidad 039, 2026-11-05). Cada tanda tiene su detalle en la bitácora.
+
+| Tanda | Integrada | Qué cambió | Pull Request | Bitácora |
+|---|---|---|---|---|
+| 1 | 2026-10-30 | Base común de componentes, acceso y registro a pantalla completa, el caso como flujo vertical | #53 | [2026-10-29](../../bitacora/2026-10-29-funcionalidad-034-pulido-ux.md) |
+| 2 | 2026-10-30 | Inicio, Casos con filtros instantáneos, Nuevo caso y el buscador «Buscar o ir a…» (Ctrl K) | #60 | [2026-10-30](../../bitacora/2026-10-30-funcionalidad-034-segunda-tanda.md) |
+| 3 | 2026-11-02 | Portada nueva, acceso, registro, privacidad y estado de Hedera | #64 | [2026-10-31](../../bitacora/2026-10-31-funcionalidad-034-tercera-tanda.md) |
+| 4 | 2026-11-02 | Organización en pestañas, administración, verificar un informe y estado del sistema | #65 | [2026-10-31](../../bitacora/2026-10-31-funcionalidad-034-cuarta-tanda.md) |
+| 5 | 2026-11-02 | Portada más limpia: menos adornos, «Cuatro miradas» en filas, planes alineados, pie ordenado | #67 | [2026-11-02](../../bitacora/2026-11-02-funcionalidad-034-quinta-tanda.md) |
+
+La línea completa del diseño de la interfaz (022, 028, 033, 034 y 037) está en [docs/funcionalidades/README.md](../README.md#diseño-de-la-interfaz).
 
 ## Criterios de aceptación
 

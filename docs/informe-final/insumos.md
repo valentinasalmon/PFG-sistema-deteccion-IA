@@ -319,3 +319,10 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Reglas nuevas en `CLAUDE.md`**: lo declarado tiene que ser verdad; nada se da por verificado sin correrlo; cada error repetido deja un control nuevo; el agente puede agregar controles, pero cambiar o quitar uno existente queda como propuesta para la autora. Comando `/revisar-arnes` para la revisión semanal.
 - **Idea para el informe**: el arnés pasa de «sensores sobre el producto» a **«sensores sobre el propio arnés»**. Es el paso que hace sostenible la mejora continua: sin él, cada mejora agrega documentación que después nadie verifica.
 - **Números al 2026-11-05**: 349 commits, 305 con co-autoría de IA (87 %), 73 Pull Requests integrados, 36 especificaciones, 58 entradas de bitácora, 21 ADR; 489 funciones de prueba en el backend y 265 en el frontend (273 casos ejecutados por Vitest).
+
+## Orden del repositorio y del flujo de integración (039, 2026-11-05)
+
+- **Diagnóstico con datos**: 353 commits en 18 días con actividad, 38 % solo de documentación; 73 Pull Requests (mediana de 3 commits), 8 de ellos tandas de diseño de una misma funcionalidad; 18 merges de sincronización; 51 ramas integradas sin borrar; una sola etiqueta para 14 pasos a producción.
+- **Hallazgo para el informe**: trabajar con un agente de IA abarata cada commit y cada rama, y el costo se traslada a la persona que revisa: **cada Pull Request es una revisión humana**. La política resultante (una funcionalidad, una rama, un Pull Request; seguimiento en el mismo Pull Request) ataca ese costo, no la cantidad de commits.
+- **Segundo hallazgo**: dos reglas de la guía de flujo de trabajo («se elimina la rama», «versiones etiquetadas») no se cumplían porque ningún control las revisaba. Es el mismo patrón que la 036 encontró con los secretos: **una regla sin sensor depende de que alguien se acuerde**.
+- **Límite del entorno**: la sesión del agente en la nube solo puede subir a su propia rama; borrar ramas ajenas devuelve 403. Es una protección razonable: la limpieza queda en un script que corre la autora.

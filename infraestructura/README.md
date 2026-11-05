@@ -6,7 +6,7 @@ Infraestructura como código y configuración de operación para AWS, región Ir
 |---|---|
 | `terraform/estado/` | Bucket del estado de Terraform (se aplica una sola vez) |
 | `terraform/principal/` | Todos los recursos de AWS |
-| `scripts/` | Preparación del servidor, despliegue, certificado y respaldos (más el script del entorno de WSL) |
+| `scripts/` | Preparación del servidor, despliegue, certificado, respaldos, entorno de WSL y limpieza de ramas del repositorio (`limpiar_ramas.sh`) |
 | `nginx/`, `systemd/` | Configuración del servidor web y de los servicios |
 
 Paso a paso para la autora: [docs/guias/despliegue-aws.md](../docs/guias/despliegue-aws.md).

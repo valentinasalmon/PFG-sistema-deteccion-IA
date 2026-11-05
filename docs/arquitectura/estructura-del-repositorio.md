@@ -80,7 +80,7 @@ Las carpetas vacías contienen un archivo `.gitkeep`, que solo existe para que G
 | `terraform/` | Infraestructura como código de AWS (EC2, S3, SES, IAM, grupos de seguridad). |
 | `nginx/` | Configuración del proxy inverso y TLS. |
 | `systemd/` | Servicios de Gunicorn y del trabajador de RQ. |
-| `scripts/` | Respaldos de la base de datos, restauración y tareas de operación. |
+| `scripts/` | Preparación del servidor, despliegue, respaldos de la base de datos, restauración y tareas de operación, incluida la limpieza de ramas del repositorio (`limpiar_ramas.sh`, 039). |
 
 ## `docs/`
 

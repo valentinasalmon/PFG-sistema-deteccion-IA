@@ -19,6 +19,25 @@ funcionalidad/005-casos  ●──●    ●       una rama por funcionalidad o 
 | `funcionalidad/NNN-nombre` | Una funcionalidad de `docs/funcionalidades/`. | `desarrollo` | `desarrollo` |
 | `correccion/descripcion` | Corrección de un defecto. | `desarrollo` | `desarrollo` |
 | `documentacion/descripcion` | Cambios solo de documentación. | `desarrollo` | `desarrollo` |
+| `claude/…` | Rama de una sesión del agente en la nube, que solo puede subir a su propia rama. Se usa como una rama de funcionalidad. | `desarrollo` | `desarrollo` |
+
+### Política de ramas, commits y Pull Requests
+
+Definida en la funcionalidad 039 (2026-11-05) a partir de un diagnóstico con datos: en 18 días de trabajo hubo 353 commits y 73 Pull Requests, 8 de ellos tandas de diseño de una misma funcionalidad, y quedaron 51 ramas integradas sin borrar. Los commits chicos son una buena práctica y no se buscan menos commits: **lo que cuesta es cada Pull Request, porque es una revisión de la autora, y cada rama olvidada, que confunde a la sesión siguiente**.
+
+| Regla | Por qué |
+|---|---|
+| **Una funcionalidad, una rama, un Pull Request.** Las tandas o etapas de una misma funcionalidad (por ejemplo, las cinco de la 034) son commits en la misma rama y secciones de la misma especificación, no ramas nuevas | Una revisión por funcionalidad, no por iteración |
+| **Una corrección chica de algo ya integrado va en la próxima rama de la misma área**, salvo que sea urgente para producción | Evita Pull Requests de un solo commit |
+| **El seguimiento viaja con el trabajo**: la bitácora, las casillas de `tareas.md`, los estados y los insumos van en el mismo Pull Request que el código, en un solo commit de documentación al cerrar la etapa | El 38 % de los commits eran solo de documentación, muchos sueltos |
+| **Para traer `desarrollo` a una rama propia se usa `git rebase`**, no un merge, mientras nadie más trabaje en esa rama | Los 18 merges «traer desarrollo» solo agregan ruido |
+| **Al integrar, la rama se borra** | Se acumulaban ramas que nadie usaba |
+| **Cada paso a `main` lleva una etiqueta de versión** (`v0.2`, `v0.3`…) | Hubo 14 pasos a producción y una sola etiqueta |
+
+Herramientas:
+- `infraestructura/scripts/limpiar_ramas.sh` clasifica las ramas del remoto (integrada, superada, con contenido propio o activa) y borra las que sobran. Sin argumentos solo muestra qué haría; con `--aplicar` borra; con `--archivar` guarda antes en una etiqueta `archivo/…` las que tienen contenido propio.
+- El verificador del arnés avisa al iniciar cada sesión si hay ramas integradas sin borrar.
+- La configuración de GitHub que haría todo esto automático (borrar la rama al integrar, integrar con *squash*) está propuesta en [docs/arnes/propuesta-flujo-de-integracion.md](../arnes/propuesta-flujo-de-integracion.md).
 
 Comandos habituales:
 
@@ -80,7 +99,8 @@ Los mensajes se validan automáticamente (commitlint en la integración continua
 1. La rama pasa la integración continua (lint, pruebas, cobertura y commits).
 2. La descripción indica la funcionalidad, los requisitos que realiza y cómo se verificó.
 3. Se revisan los criterios de aceptación de la especificación.
-4. Se integra con *merge* y se elimina la rama.
+4. Se integra con *merge* (o con *squash*, si la autora aprueba la propuesta) y **se borra la rama**.
+5. Al pasar `desarrollo` a `main`, se etiqueta la versión: `git tag -a v0.N -m "…"` y `git push origin v0.N`.
 
 ## 4. Desarrollo guiado por especificaciones
 
@@ -98,4 +118,4 @@ Ver [docs/funcionalidades/README.md](../funcionalidades/README.md). Ninguna func
 - El asistente registra en la bitácora cada decisión que toma y su justificación, para que la autora pueda revisarla y revertirla.
 - Las decisiones importantes que surgen durante el trabajo se registran como cuestiones abiertas con una propuesta provisoria, sin bloquear el resto.
 - Al iniciar una sesión, el asistente lee `CLAUDE.md` y la constitución.
-- Comandos disponibles: `/especificar`, `/planificar`, `/tareas`.
+- Comandos disponibles: `/especificar`, `/planificar`, `/tareas`, `/cerrar-etapa` y `/revisar-arnes` (ver [CLAUDE.md](../../CLAUDE.md)).

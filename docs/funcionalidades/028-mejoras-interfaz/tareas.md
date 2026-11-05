@@ -19,4 +19,4 @@
 ## Tercera tanda (2026-10-29)
 - [x] T13 — Celular: tarjetas de imagen con los datos técnicos plegados, informe sin la huella en vertical, cabecera y zona de riesgo de la organización apiladas, barra de análisis compacta.
 - [x] T14 — Inicio de sesión (frames 9a y 9c): ventajas y rubros en el panel de marca, «Creá una» bajo el título, «¿La olvidaste?» junto a la contraseña y botón «Mostrar»; banda corta en el celular.
-- [ ] T15 — Registro (frame 9b): se rehace junto con el pago en el registro (032, frames 10a a 10g), que espera la validación de la autora.
+- [x] T15 — Registro (frame 9b): se rehízo junto con el pago en el registro, en la [032](../032-pago-en-el-registro/especificacion.md) (implementada).

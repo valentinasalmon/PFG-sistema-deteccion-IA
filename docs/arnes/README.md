@@ -70,7 +70,7 @@ Ordenados del más temprano al más tardío. Cuanto antes avisa un sensor, más 
 
 | Momento | Sensor | Qué controla | Si falla |
 |---|---|---|---|
-| Al iniciar cada sesión | Gancho `verificar_arnes.py --sesion` (`SessionStart`) | Que lo declarado en los documentos coincida con lo real: enlaces, comandos, ganchos, skills, índices de bitácora y ADR, tabla de funcionalidades, números de este mapa, cambios sin registrar y propuestas pendientes | Le muestra al agente qué está desactualizado; no bloquea |
+| Al iniciar cada sesión | Gancho `verificar_arnes.py --sesion` (`SessionStart`) | Que lo declarado en los documentos coincida con lo real: enlaces, comandos, ganchos, skills, índices de bitácora y ADR, tabla de funcionalidades, números de este mapa, cambios sin registrar, propuestas pendientes y ramas integradas sin borrar | Le muestra al agente qué está desactualizado; no bloquea |
 | Antes de cada acción del agente | Gancho `proteger_secretos.py` (`.claude/settings.json`, `PreToolUse`) | Que no lea, edite ni suba `.env`, `terraform.tfvars`, `backend.hcl`, estado de Terraform ni claves | **Bloquea la acción** y le explica el motivo al agente |
 | Después de cada archivo editado | Gancho `revisar_estilo.py` (`PostToolUse`) | flake8 en Python del backend, ESLint en JavaScript del frontend | Le devuelve los errores al agente, que los corrige en el momento |
 | Antes de cada commit | `.pre-commit-config.yaml` | Formato del mensaje (commitlint), flake8, **detección de claves privadas**, archivos grandes, conflictos | El commit no se crea |
@@ -115,11 +115,11 @@ Desde la funcionalidad 038 (pedido de la autora, 2026-11-05) el arnés **se revi
 
 | Indicador | Valor |
 |---|---|
-| Commits (sin contar integraciones) | 349 |
-| Commits con co-autoría de IA | 305 (87 %) |
+| Commits (sin contar integraciones) | 353 |
+| Commits con co-autoría de IA | 309 (88 %) |
 | Pull Requests integrados | 73 |
-| Especificaciones / planes | 36 / 35 |
-| Entradas de bitácora | 59 |
+| Especificaciones / planes | 37 / 36 |
+| Entradas de bitácora | 60 |
 | ADR | 21 |
 | Pruebas automáticas escritas | 489 backend + 265 frontend |
 

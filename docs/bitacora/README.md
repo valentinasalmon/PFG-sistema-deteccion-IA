@@ -75,3 +75,4 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-11-04 | [Funcionalidad 018: materiales del cierre](2026-11-04-funcionalidad-018-materiales.md) |
 | 2026-11-04 | [Funcionalidad 035: verificación de identidad de aseguradoras](2026-11-04-funcionalidad-035-identidad.md) |
 | 2026-11-05 | [Funcionalidad 038: revisión continua del arnés](2026-11-05-funcionalidad-038-revision-del-arnes.md) |
+| 2026-11-05 | [Funcionalidad 039: orden del repositorio y del flujo de integración](2026-11-05-funcionalidad-039-orden-del-repositorio.md) |
