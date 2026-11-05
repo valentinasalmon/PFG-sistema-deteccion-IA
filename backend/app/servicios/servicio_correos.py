@@ -177,6 +177,15 @@ class ServicioCorreos:  # pylint: disable=too-many-public-methods
             enlace=self._enlace_organizacion(organizacion),
         )
 
+    def enviar_aviso_aseguradora_pendiente(self, administrador, organizacion):
+        """Aviso al Administrador de que una aseguradora pagó y espera su aprobación (037)."""
+        return self._enviar(
+            administrador.correo, f"{organizacion.nombre} espera tu aprobación",
+            "aseguradora_pendiente",
+            nombre=administrador.nombre, organizacion=organizacion.nombre,
+            cuit=organizacion.cuit, enlace=f"{self.url_frontend}/administracion",
+        )
+
     def enviar_aviso_aseguradora_rechazada(self, usuario, nombre_organizacion, motivo):
         """Aviso al Referente de que su aseguradora fue rechazada, con el motivo (CA9)."""
         return self._enviar(

@@ -127,8 +127,16 @@ def test_aseguradora_paga_antes_de_la_aprobacion_y_se_devuelve_al_rechazar(aplic
     pendientes = admin.get("/api/administracion/aseguradoras-pendientes").get_json()
     assert pendientes["aseguradoras"] == []  # sin pago no llega al Administrador
 
+    enviados_antes = len(correos)
     pagar(rita, respuesta)
     assert _organizacion(rita)["estado"] == "pendiente"
+    # 037: el Administrador recibe un correo con la aseguradora para revisar.
+    avisos = [c for c in correos[enviados_antes:] if c.destinatario == "admin@plataforma.com"]
+    assert len(avisos) == 1 and "espera tu aprobación" in avisos[0].asunto
+    assert "/administracion" in avisos[0].texto
+    pagar(rita, respuesta)  # acreditar otra vez no repite el aviso
+    assert len([c for c in correos if c.destinatario == "admin@plataforma.com"
+                and "espera tu aprobación" in c.asunto]) == 1
     id_org = admin.get("/api/administracion/aseguradoras-pendientes").get_json()[
         "aseguradoras"][0]["id"]
     rechazo = admin.post(
