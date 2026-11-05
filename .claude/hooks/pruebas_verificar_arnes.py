@@ -180,6 +180,35 @@ class PruebasVerificador(unittest.TestCase):
         self.assertEqual(len(avisos), 1)
         self.assertIn("regla nueva", avisos[0])
 
+    def test_avisa_ramas_integradas_sin_borrar_y_respeta_las_recientes(self):
+        """Una rama remota integrada y vieja genera aviso; main, la base y las recientes no."""
+        entorno = {"GIT_COMMITTER_DATE": "2026-01-01T10:00:00", "PATH": "/usr/bin:/bin"}
+        for comando in (
+            ["git", "init", "-q"],
+            ["git", "-c", "user.name=a", "-c", "user.email=a@b", "add", "-A"],
+            ["git", "-c", "user.name=a", "-c", "user.email=a@b", "commit", "-qm", "inicio",
+             "--date", "2026-01-01T10:00:00"],
+        ):
+            subprocess.run(comando, cwd=self.raiz, check=True, env=entorno)
+        for rama in ("desarrollo", "main", "funcionalidad/001-vieja"):
+            subprocess.run(["git", "update-ref", f"refs/remotes/origin/{rama}", "HEAD"],
+                           cwd=self.raiz, check=True)
+        informe = verificar_arnes.Informe()
+        enero = datetime.datetime(2026, 1, 10).timestamp()
+        verificar_arnes.revisar_ramas(informe, ahora=enero)
+        self.assertEqual(len(informe.avisos), 1)
+        self.assertIn("1 ramas remotas", informe.avisos[0])
+        self.assertIn("funcionalidad/001-vieja", informe.avisos[0])
+        reciente = verificar_arnes.Informe()
+        verificar_arnes.revisar_ramas(reciente, ahora=datetime.datetime(2026, 1, 1, 12).timestamp())
+        self.assertEqual(reciente.avisos, [])
+
+    def test_ramas_sin_base_no_revisa(self):
+        """Sin la rama base en el clon (integración continua), el control no opina."""
+        informe = verificar_arnes.Informe()
+        verificar_arnes.revisar_ramas(informe)
+        self.assertEqual(informe.avisos, [])
+
     def test_modo_sesion_nunca_bloquea(self):
         """El resumen para el inicio de sesión sale con 0 aunque haya errores."""
         (self.raiz / ".claude" / "hooks" / "gancho.py").unlink()

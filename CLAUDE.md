@@ -57,6 +57,8 @@ flake8 clasificador/ && pylint clasificador/ && pytest --cov=clasificador --cov-
 
 `tipo(ámbito): descripción` con tipos en español: `funcionalidad`, `correccion`, `documentacion`, `estilo`, `refactorizacion`, `rendimiento`, `pruebas`, `construccion`, `integracion`, `tarea`, `revertir`. Ver [docs/guias/flujo-de-trabajo.md](docs/guias/flujo-de-trabajo.md).
 
+**Ramas y Pull Requests** (política de la funcionalidad 039): una funcionalidad, una rama, un Pull Request; las tandas o etapas de una funcionalidad van en su misma rama; el seguimiento viaja en el mismo Pull Request que el código; para traer `desarrollo` a una rama propia se usa `rebase`; al integrar, la rama se borra (`infraestructura/scripts/limpiar_ramas.sh`) y cada paso a `main` se etiqueta.
+
 ## Documentación obligatoria al cerrar una etapa
 
 El comando `/cerrar-etapa` recorre estos pasos en orden.

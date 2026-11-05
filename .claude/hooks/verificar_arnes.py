@@ -13,8 +13,8 @@ Controles:
   no existen, *skills* sin registro de origen, funcionalidades, entradas de
   bitácora o ADR que no figuran en su índice.
 - **Avisos** (no bloquean): números del mapa del arnés desactualizados,
-  cambios del arnés sin anotar en el registro de cambios y propuestas que
-  esperan la aprobación de la autora.
+  cambios del arnés sin anotar en el registro de cambios, propuestas que
+  esperan la aprobación de la autora y ramas integradas sin borrar.
 
 Modos:
 
@@ -22,7 +22,7 @@ Modos:
 - ``--actualizar``: además reescribe la tabla de números del mapa del arnés;
 - ``--sesion``: resumen breve para el gancho ``SessionStart``; nunca bloquea.
 
-Realiza: funcionalidad 038 (CA1 a CA5); RNF19 (documentación al día).
+Realiza: funcionalidad 038 (CA1 a CA5) y 039 (CA3); RNF19 (documentación al día).
 """
 import argparse
 import datetime
@@ -273,6 +273,35 @@ def revisar_registro(informe):
         )
 
 
+def revisar_ramas(informe, base="origin/desarrollo", dias_gracia=1, ahora=None):
+    """Avisa por las ramas remotas ya integradas en ``base`` que nadie borró.
+
+    La guía de flujo de trabajo dice que una rama se borra al integrarla; sin
+    este control quedaron 51 ramas vivas (funcionalidad 039). Se dejan
+    ``dias_gracia`` días por si la rama sigue en uso. Sin la rama base en el
+    clon (por ejemplo, en la integración continua) no revisa nada.
+    """
+    if _git("rev-parse", "--verify", "--quiet", base) is None:
+        return
+    remoto = base.split("/", 1)[0]
+    salida = _git(
+        "for-each-ref", "--merged", base, "--format=%(refname:short) %(committerdate:unix)",
+        f"refs/remotes/{remoto}",
+    ) or ""
+    limite = (ahora or datetime.datetime.now().timestamp()) - dias_gracia * 86400
+    conservar = {base, f"{remoto}/main", f"{remoto}/HEAD", remoto}
+    viejas = [
+        nombre for nombre, fecha in (linea.rsplit(" ", 1) for linea in salida.splitlines())
+        if nombre not in conservar and int(fecha) < limite
+    ]
+    if viejas:
+        informe.aviso(
+            f"{len(viejas)} ramas remotas ya integradas en {base} siguen sin borrar "
+            "(por ejemplo, " + ", ".join(sorted(viejas)[:3]) + "). "
+            "Correr infraestructura/scripts/limpiar_ramas.sh --aplicar"
+        )
+
+
 def revisar_propuestas(informe):
     """Avisa por cada propuesta del arnés que espera la aprobación de la autora."""
     for propuesta in sorted((RAIZ / "docs" / "arnes").glob("propuesta-*.md")):
@@ -284,6 +313,7 @@ def revisar_propuestas(informe):
 CONTROLES = (
     revisar_enlaces, revisar_comandos, revisar_ganchos, revisar_skills,
     revisar_funcionalidades, revisar_indices, revisar_registro, revisar_propuestas,
+    revisar_ramas,
 )
 
 

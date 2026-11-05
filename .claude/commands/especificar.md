@@ -6,7 +6,7 @@ Instrucciones (reparto del trabajo vigente desde el 2026-10-16: el agente escrib
 
 1. Leé `docs/constitucion.md`, la especificación general en `docs/especificacion/` y el mapa del arnés en `docs/arnes/README.md`.
 2. A partir de la descripción de `$ARGUMENTS`, identificá los requisitos (RF, RNF), reglas (RN) y casos de uso (CU) que cubre. Si la funcionalidad figura en la tabla de `docs/funcionalidades/README.md`, usá ese número y nombre; si no, tomá el siguiente número libre y agregala a la tabla.
-3. Creá la rama `funcionalidad/NNN-nombre` desde `desarrollo`.
+3. Creá la rama `funcionalidad/NNN-nombre` desde `desarrollo`. Si la funcionalidad ya existe (una tanda o etapa nueva de algo ya especificado), **no crees otra funcionalidad ni otra rama**: agregá la etapa a su especificación y trabajala en su rama (política de ramas en `docs/guias/flujo-de-trabajo.md`).
 4. Redactá `docs/funcionalidades/NNN-nombre/especificacion.md` a partir de `docs/funcionalidades/plantillas/especificacion.md`, **sin detalles de implementación** y con criterios de aceptación verificables.
 5. Lo que puedas resolver con la especificación y la constitución, decidilo y registralo. Lo que sea una decisión de la autora (alcance, legal, privacidad, arquitectura de gran impacto, lo que validan los tutores) va a `docs/especificacion/06-cuestiones-abiertas.md` con una propuesta provisoria.
 6. Commit: `documentacion(NNN): agregar especificacion de ...`. Seguí con `/planificar`.
