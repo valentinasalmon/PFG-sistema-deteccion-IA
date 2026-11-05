@@ -1,4 +1,4 @@
-# Lo que falta para llegar al 100 % (al 2026-11-02)
+# Lo que falta para llegar al 100 % (actualizado el 2026-11-05)
 
 Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm), que es la referencia de seguimiento desde el 2026-10-26 y que el agente actualiza solo desde el 2026-10-29 ([convenciones](tablero-trello.md)) (ver la [bitácora](../bitacora/2026-10-26-reorganizacion-del-tablero.md)). Las tareas nuevas se cargan primero allá. La entrega es antes del 2026-11-19 (CP-16). La prioridad es una propuesta:
 
@@ -10,11 +10,11 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 
 | Prioridad | Tarea | Depende de | Quién |
 |---|---|---|---|
-| P1 | **Red neuronal (010 y 012)**: terminar el entrenamiento, exportar a ONNX y conectarla como capa 4 probabilística | Modelo de la autora; conjunto de datos y desempeño mínimo (CP-07) | Autora entrena, agente integra |
+| P1 | **Red neuronal (010 y 012)**: terminar el entrenamiento, exportar a ONNX y conectarla como capa 4 probabilística. El sistema ya está preparado: es una clase y una línea en el registro (ver `docs/red-neuronal/07`); al integrarla, quitar el «Próximamente» de la portada y de los términos | Modelo de la autora; conjunto de datos y desempeño mínimo (CP-07) | Autora entrena, agente integra |
 | ✓ | Mejoras de interfaz (028 y 034): implementadas en cuatro tandas; falta la revisión final de la autora | Revisión | Autora |
 | P1 | **Revisión de la 034 pantalla por pantalla** (CA1, CA3, CA4, CA6, CA9) | PR de la tercera y la cuarta tanda | Autora revisa, agente corrige |
 | P2 | **Cobro real con Cresium**: proveedor, aviso firmado y conciliación (ver `docs/investigacion/2026-11-02-integracion-cresium.md`) | Precios (CP-38) y cuenta de Cresium con entorno de pruebas | Autora abre la cuenta, agente integra |
-| P2 | **Verificación de identidad con Identik (035)** para las aseguradoras | Definir el flujo, el costo y los datos biométricos (CP-35) | Autora define, agente especifica |
+| P2 | **Conectar Identik real (035)**: la verificación ya funciona con el proveedor simulado; falta el sandbox, el aviso firmado y la prueba real | Reunión técnica con Identik y CP-41 (qué servicio usar) | Autora (reunión y token), agente integra |
 | P1 | **Quitar Clarity antes de la versión final** (CP-37): sacar el script, la excepción de la CSP y el apartado de la política de privacidad | Fin de las pruebas | Agente |
 | P2 | **Inicio de sesión con Google (027)**: implementado; falta crear el cliente OAuth y probarlo | La autora crea el cliente en Google Cloud (guía en `despliegue-aws.md`) | Autora |
 | ✓ | Hedera en *testnet* funcionando en producción (2026-11-02); falta comprobar la versión en un informe nuevo (029) | — | Autora |
@@ -22,6 +22,16 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 | P3 | Código de carga de 6 dígitos y "compartir desde la galería" (Web Share Target en Android, Atajo de Apple en iPhone) | — | Agente |
 | P3 | Firma digital del PDF (CP-27) | Certificado | Agente |
 | P3 | Importar fotos desde un enlace de Drive o Dropbox de un tercero (con declaración de autorización, Ley 25.326) | Decisión de alcance | Autora decide |
+
+## Agregado el 2026-11-05 (revisión integral, 037)
+
+| Prioridad | Tarea | Depende de | Quién |
+|---|---|---|---|
+| P1 | **Integrar la 037** (Pull Request hacia `desarrollo` y después a `main`) y probar en producción: login con Google, siniestros, PDF breve con QR al detalle | Revisión de la autora | Autora |
+| P1 | **Probar en Safari (iPhone) y Firefox**: en el entorno del agente solo hay Chromium; los recorridos de punta a punta pasaron en Chromium de computadora y en un iPhone 13 emulado | — | Autora, con `frontend/e2e/` y la guía de usuario |
+| P1 | **CP-43**: ¿el enlace al análisis detallado del PDF se abre sin cuenta? Hoy exige una cuenta con acceso | Autora y tutor | Autora |
+| P2 | Sumar los recorridos de `frontend/e2e/` a la integración continua (hoy se corren a mano contra el entorno local) | Servicios de prueba en GitHub Actions | Agente |
+| P2 | Los correos todavía dicen «caso» también a las aseguradoras (los textos de la pantalla y el PDF ya dicen «siniestro») | — | Agente |
 
 ## Infraestructura y puesta en producción
 
@@ -42,7 +52,7 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 | P1 | **Pruebas de usabilidad** con 3 a 5 abogados o liquidadores: guion, tareas, cuestionario SUS y conclusiones | Participantes | Agente arma, autora conduce |
 | P1 | **Índice de calidad (QI ≥ 0,75)**: definir la fórmula y medir (cobertura, análisis estático, pruebas, usabilidad) | CP-04 (tutor) | Agente mide, tutor valida |
 | ✓ | Revisión de seguridad (030, hecha: `docs/arquitectura/seguridad.md`) | — | Agente |
-| P2 | Guía de uso para la persona usuaria (abogado y aseguradora) | — | Agente |
+| ~~P2~~ | ~~Guía de uso para la persona usuaria~~ — hecha en `docs/guias/guia-de-usuario.md` (018); actualizarla con la 037 (siniestros, PDF breve, «Datos y gestión») | — | Agente |
 
 ## Documento final del proyecto (informe para la facultad)
 
