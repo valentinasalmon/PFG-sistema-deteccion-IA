@@ -3,7 +3,7 @@
  */
 import { screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { CON_SESION, simularApi } from '../pruebas/api.js'
+import { CON_SESION, simularApi, USUARIO } from '../pruebas/api.js'
 import { renderizarEn } from '../pruebas/renderizar.jsx'
 
 const caso = (id, extra = {}) => ({
@@ -163,5 +163,19 @@ describe('panel principal', () => {
     renderizarEn('/')
 
     expect(await screen.findByText('Error del servidor.')).toBeInTheDocument()
+  })
+})
+
+describe('vocabulario por rubro (037)', () => {
+  it('para una aseguradora habla de siniestros en el menú y en el inicio', async () => {
+    simularApi({
+      'GET /api/sesion': { cuerpo: { usuario: { ...USUARIO, perfil: 'aseguradora' } } },
+      'GET /api/panel': { cuerpo: { panel: COMPLETO } },
+    })
+    renderizarEn('/')
+    expect(await screen.findByRole('heading', { name: 'Siniestros recientes' })).toBeInTheDocument()
+    expect(screen.getAllByRole('link', { name: /Nuevo siniestro/ }).length).toBeGreaterThan(0)
+    expect(screen.getByRole('link', { name: 'Siniestros' })).toBeInTheDocument()
+    expect(screen.queryByText('Casos recientes')).not.toBeInTheDocument()
   })
 })

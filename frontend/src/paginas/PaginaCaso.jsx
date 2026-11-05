@@ -52,6 +52,7 @@ import { useSesion } from '../hooks/useSesion.js'
 import { OPCIONES_NIVEL, OPCIONES_TIPO } from '../utilidades/casos.js'
 import { textosDelRubro } from '../utilidades/lenguaje.js'
 import { formatearDia, formatearFecha, hoyIso } from '../utilidades/fechas.js'
+import { useRubro } from '../hooks/useRubro.js'
 
 async function cargarCaso(id) {
   const datos = await obtenerCaso(id)
@@ -654,6 +655,7 @@ function FlujoDelCaso({ caso, actual, alElegir, children }) {
 }
 
 export default function PaginaCaso() {
+  const rubro = useRubro()
   const { id } = useParams()
   const { state } = useLocation()
   const cargar = useCallback(() => cargarCaso(id), [id])
@@ -681,9 +683,9 @@ export default function PaginaCaso() {
   // Sin el caso, un estado vacío con salida en lugar de un aviso suelto (037).
   if (error) {
     return (
-      <EstadoVacio Ilustracion={IlustracionCarpeta} titulo="No pudimos abrir el caso" texto={error.message} encabezado>
+      <EstadoVacio Ilustracion={IlustracionCarpeta} titulo={`No pudimos abrir el ${rubro.caso}`} texto={error.message} encabezado>
         <Link to="/casos" className="boton">
-          Volver a mis casos
+          Volver a {rubro.Casos.toLowerCase()}
         </Link>
       </EstadoVacio>
     )
@@ -696,7 +698,7 @@ export default function PaginaCaso() {
     <>
       <Link to="/casos" className="volver">
         <Icono nombre="derecha" tamanio={16} />
-        Casos
+        {rubro.Casos}
       </Link>
       <header className="cabecera-caso">
         <div className="cabecera-caso__titulo">

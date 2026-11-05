@@ -109,6 +109,11 @@ def _por_bloques(matriz, funcion):
     return funcion(bloques, axis=(1, 3))
 
 
+def _decimal(valor):
+    """Número con un decimal y coma decimal, como se escribe en español (037)."""
+    return f"{valor:.1f}".replace(".", ",")
+
+
 def desvios_por_bloque(error, textura):
     """Desvío robusto de cada bloque respecto de los bloques de textura parecida.
 
@@ -267,9 +272,9 @@ class CapaELA(CapaAnalisis):
         for region in regiones[:MAXIMO_REGIONES_INFORMADAS]:
             moderada = region.desvio >= UMBRAL_DESVIO_MODERADO and not limitado
             anomalias.append(Anomalia(
-                "Región", f"{region.bloques} bloques, desvío {region.desvio:.1f}",
+                "Región", f"{region.bloques} bloques, desvío {_decimal(region.desvio)}",
                 f"El nivel de error de {describir_ubicacion(region, filas, columnas)} se aparta "
-                f"del resto de la imagen ({region.desvio:.1f} desvíos). Puede corresponder a "
+                f"del resto de la imagen ({_decimal(region.desvio)} desvíos). Puede corresponder a "
                 "una zona pegada, retocada o guardada aparte, pero también a un borde o un "
                 "detalle muy marcado.",
                 SEVERIDAD_MODERADO if moderada else SEVERIDAD_DEBIL,

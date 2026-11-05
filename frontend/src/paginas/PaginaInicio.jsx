@@ -32,6 +32,7 @@ import { IlustracionCarpeta } from '../componentes/Ilustraciones.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { textosDelRubro } from '../utilidades/lenguaje.js'
+import { useRubro } from '../hooks/useRubro.js'
 import { OPCIONES_ESTADO } from '../utilidades/casos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 
@@ -214,21 +215,22 @@ function Compartidos({ compartidos }) {
 }
 
 function Recientes({ casos }) {
+  const rubro = useRubro()
   return (
     <Seccion
       id="titulo-recientes"
-      titulo="Casos recientes"
+      titulo={rubro.recientes}
       accion={
         <Link to="/casos" className="boton boton--fantasma boton--chico">
-          Ver todos los casos
+          {rubro.verTodos}
         </Link>
       }
     >
       {casos.length === 0 ? (
-        <EstadoVacio Ilustracion={IlustracionCarpeta} titulo="Todavía no tenés casos recientes.">
+        <EstadoVacio Ilustracion={IlustracionCarpeta} titulo={rubro.vacio}>
           <Link to="/casos/nuevo" className="boton">
             <Icono nombre="mas" tamanio={18} />
-            Nuevo caso
+            {rubro.nuevo}
           </Link>
         </EstadoVacio>
       ) : (

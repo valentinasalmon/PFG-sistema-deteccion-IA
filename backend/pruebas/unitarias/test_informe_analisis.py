@@ -83,10 +83,10 @@ def test_el_informe_tiene_los_datos_del_caso_y_la_custodia():
 
 
 def test_orden_de_las_secciones():
-    """025: caso, custodia, escala, resultados y aviso final; los bloques no se cortan."""
+    """025 y 037: aviso primero, después caso, custodia, escala y resultados; sin cortes."""
     html = _html(_con_original(_analisis()))
-    titulos = ("Caso y solicitud", "Evidencia y cadena de custodia", "Escala de lectura",
-               "Resultados por imagen", "Este informe presenta")
+    titulos = ("Este informe presenta", "Caso y solicitud", "Evidencia y cadena de custodia",
+               "Escala de lectura", "Resultados por imagen")
     posiciones = [html.index(titulo) for titulo in titulos]
     assert posiciones == sorted(posiciones)
     assert "page-break-before" not in html  # sin saltos forzados
@@ -127,17 +127,19 @@ def test_los_hallazgos_mencionados_en_la_conclusion_no_se_repiten():
     assert html.count("El archivo declara procesamiento con Photoshop.") == 1
 
 
-@pytest.mark.parametrize("perfil, titulo, referencia, intro", [
-    ("abogado", "Informe técnico de imágenes", "Expediente", "ofrecerlas como prueba"),
+@pytest.mark.parametrize("perfil, titulo, referencia, intro, objeto", [
+    ("abogado", "Informe técnico de imágenes", "Expediente", "ofrecerlas como prueba", "Caso"),
     ("aseguradora", "Informe de verificación de fotos del siniestro", "N.° de siniestro",
-     "se liquida o se deriva a verificación"),
+     "se liquida o se deriva a verificación", "Siniestro"),
 ])
-def test_lenguaje_segun_el_rubro(perfil, titulo, referencia, intro):
-    """RF54: título, etiqueta de la referencia e introducción según el perfil del solicitante."""
+def test_lenguaje_segun_el_rubro(perfil, titulo, referencia, intro, objeto):
+    """RF54 y 037: título, referencia, introducción y «caso» o «siniestro» según el perfil."""
     analisis = _analisis()
     analisis.solicitante.perfil = perfil
     html = _html(analisis)
     assert titulo in html and f"<td>{referencia}</td>" in html and intro in html
+    assert f"<h2>{objeto} y solicitud</h2>" in html
+    assert f"Número de {objeto.lower()}" in html
 
 
 def test_sin_veredictos():

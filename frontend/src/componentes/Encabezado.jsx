@@ -59,7 +59,7 @@ export default function Encabezado() {
         {!esAdministradora && (
           <Link to="/casos/nuevo" className="boton lateral__nuevo" onClick={cerrarMenu}>
             <Icono nombre="mas" tamanio={18} />
-            Nuevo caso
+            {rubro.nuevo}
           </Link>
         )}
         <BuscadorRapido alAbrir={cerrarMenu} />
@@ -77,7 +77,7 @@ export default function Encabezado() {
               </NavLink>
               <NavLink to="/casos" onClick={cerrarMenu}>
                 <Icono nombre="casos" />
-                <span>Casos</span>
+                <span>{rubro.Casos}</span>
               </NavLink>
               {usuario.en_organizacion && (
                 <NavLink to="/organizaciones" onClick={cerrarMenu}>

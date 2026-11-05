@@ -30,6 +30,7 @@ import { useSesion } from '../hooks/useSesion.js'
 import { OPCIONES_ESTADO, OPCIONES_TIPO } from '../utilidades/casos.js'
 import { textosDelRubro } from '../utilidades/lenguaje.js'
 import { formatearFecha } from '../utilidades/fechas.js'
+import { useRubro } from '../hooks/useRubro.js'
 
 const CAMPOS_FILTRO = ['busqueda', 'estado', 'tipo', 'espacio', 'desde', 'hasta']
 
@@ -96,6 +97,7 @@ function Transferencias({ transferencias, alResponder }) {
 }
 
 function Filtros({ filtros, clave, espacios, alAplicar, etiquetaReferencia }) {
+  const rubro = useRubro()
   const [valores, setValores] = useState(filtros)
   const [clavePrevia, setClavePrevia] = useState(clave)
   const temporizador = useRef(null)
@@ -139,7 +141,7 @@ function Filtros({ filtros, clave, espacios, alAplicar, etiquetaReferencia }) {
     <form className="filtros" onSubmit={aplicar} role="search" aria-label="Buscar casos">
       <div className="filtros__principal">
         <CampoTexto
-          etiqueta="Buscar un caso"
+          etiqueta={rubro.buscar}
           nombre="busqueda"
           tipo="search"
           placeholder={`Número de caso, ${etiquetaReferencia.toLowerCase()} o lugar`}
@@ -186,6 +188,7 @@ function Filtros({ filtros, clave, espacios, alAplicar, etiquetaReferencia }) {
 
 /** Lista sin resultados: dice por qué y ofrece cómo seguir. */
 function ListaVacia({ filtros, conFiltros, alQuitar }) {
+  const rubro = useRubro()
   let titulo = 'Todavía no tenés casos.'
   if (conFiltros) {
     titulo = filtros.busqueda ? `Ningún caso coincide con «${filtros.busqueda}».` : 'No hay casos con esos filtros.'
@@ -194,7 +197,7 @@ function ListaVacia({ filtros, conFiltros, alQuitar }) {
     <EstadoVacio
       Ilustracion={IlustracionCarpeta}
       titulo={titulo}
-      texto={conFiltros ? 'Probá con el número del caso o quitá los filtros.' : 'Creá el primero y cargá sus fotos.'}
+      texto={conFiltros ? `Probá con el número del ${rubro.caso} o quitá los filtros.` : 'Creá el primero y cargá sus fotos.'}
     >
       {conFiltros && (
         <button type="button" className="boton boton--secundario" onClick={alQuitar}>
@@ -203,7 +206,7 @@ function ListaVacia({ filtros, conFiltros, alQuitar }) {
       )}
       <Link to="/casos/nuevo" className="boton">
         <Icono nombre="mas" tamanio={18} />
-        Nuevo caso
+        {rubro.nuevo}
       </Link>
     </EstadoVacio>
   )
@@ -249,7 +252,7 @@ export default function PaginaCasos() {
     <>
       <div className="encabezado-pagina">
         <div>
-          <h1>Casos</h1>
+          <h1>{textosDelRubro(usuario.perfil).Casos}</h1>
           <p className="encabezado-pagina__bajada">{textosDelRubro(usuario.perfil).bajadaCasos}</p>
         </div>
       </div>

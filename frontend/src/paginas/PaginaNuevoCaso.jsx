@@ -82,7 +82,7 @@ function Formulario({ espacios }) {
         </p>
       )}
       <fieldset className="opciones-tarjeta opciones-tarjeta--dos" aria-describedby={errores.tipo ? 'error-tipo' : undefined}>
-        <legend className="campo__etiqueta">Tipo de caso</legend>
+        <legend className="campo__etiqueta">{textosDelRubro(usuario.perfil).tipo}</legend>
         <OpcionTarjeta
           nombre="tipo"
           valor="automovilistico"
@@ -180,7 +180,7 @@ export default function PaginaNuevoCaso() {
     <>
       <div className="encabezado-pagina">
         <div>
-          <h1>Nuevo caso</h1>
+          <h1>{textosDelRubro(usuario.perfil).nuevo}</h1>
           <p className="encabezado-pagina__bajada">{textosDelRubro(usuario.perfil).bajadaNuevoCaso}</p>
         </div>
       </div>

@@ -15,6 +15,7 @@ import { listarCasos } from '../api/casos.js'
 import { useSesion } from '../hooks/useSesion.js'
 import Dialogo from './Dialogo.jsx'
 import Icono from './Icono.jsx'
+import { textosDelRubro } from '../utilidades/lenguaje.js'
 
 /** Milisegundos sin escribir antes de buscar casos. */
 const ESPERA_BUSQUEDA = 250
@@ -30,10 +31,11 @@ function atajosPara(usuario) {
       { ruta: '/perfil', texto: 'Mi perfil', icono: 'perfil' },
     ]
   }
+  const rubro = textosDelRubro(usuario.perfil)
   return [
-    { ruta: '/casos/nuevo', texto: 'Nuevo caso', icono: 'mas' },
+    { ruta: '/casos/nuevo', texto: rubro.nuevo, icono: 'mas' },
     { ruta: '/', texto: 'Inicio', icono: 'inicio' },
-    { ruta: '/casos', texto: 'Casos', icono: 'casos' },
+    { ruta: '/casos', texto: rubro.Casos, icono: 'casos' },
     ...(usuario.en_organizacion
       ? [{ ruta: '/organizaciones', texto: 'Organizaciones', icono: 'organizaciones' }]
       : []),
@@ -91,7 +93,7 @@ function Ventana({ alCerrar }) {
             texto: caso.numero,
             detalle: [caso.lugar, caso.estado_nombre].filter(Boolean).join(' · '),
             icono: 'documento',
-            grupo: 'Casos',
+            grupo: textosDelRubro(usuario.perfil).Casos,
           }))
     return [...encontrados, ...atajos]
   }, [texto, casos, usuario])
