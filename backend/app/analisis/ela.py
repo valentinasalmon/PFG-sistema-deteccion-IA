@@ -234,6 +234,12 @@ class CapaELA(CapaAnalisis):
 
     nombre = "ela"
     titulo = "Niveles de error (ELA)"
+    que_significa = (
+        "Vuelve a comprimir la imagen y compara cuánto cambia cada zona: una parte pegada o "
+        "retocada suele comportarse distinto. Es orientativa: bordes, textos e imágenes "
+        "reenviadas también producen diferencias, por eso nunca supera el nivel moderado."
+    )
+    tipo_de_resultado = "probabilistico"
 
     def version(self):
         """Versión de la capa, de sus bibliotecas y de la calidad de recompresión (RN29)."""

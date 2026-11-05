@@ -42,24 +42,10 @@ import Icono from './Icono.jsx'
 
 export const INTERVALO_DE_CONSULTA = 2000
 
-const TITULOS_CAPA = {
-  metadatos: 'Metadatos',
-  c2pa: 'Credenciales de contenido (C2PA)',
-  ela: 'Niveles de error (ELA)',
-}
 const TITULOS_TABLA = {
   metadatos: 'Metadatos extraídos',
   c2pa: 'Datos de las credenciales',
   ela: 'Datos del análisis',
-}
-// Versión breve del recuadro "¿Qué significa?" del informe PDF.
-const QUE_SIGNIFICA = {
-  metadatos:
-    'Revisa los datos guardados dentro del archivo (dispositivo, fecha, programa de edición) en busca de señales de edición o de inteligencia artificial. WhatsApp y las redes sociales suelen borrarlos: su ausencia no indica por sí sola una manipulación.',
-  c2pa:
-    'Comprueba si la imagen trae credenciales de contenido firmadas (C2PA) que declaren quién la hizo y con qué herramienta. Si la firma es confiable y declara inteligencia artificial, es el indicio más fuerte de la plataforma. No tener credenciales es lo más habitual.',
-  ela:
-    'Vuelve a comprimir la imagen y compara cuánto cambia cada zona: una parte pegada o retocada suele comportarse distinto. Es orientativa: bordes, textos e imágenes reenviadas también producen diferencias, por eso nunca supera el nivel moderado.',
 }
 
 const ESTADOS_FIRMA = {
@@ -195,7 +181,8 @@ function sinDescargo(texto) {
 }
 
 function ResultadoDeCapa({ resultado, imagen, original }) {
-  const titulo = TITULOS_CAPA[resultado.capa] ?? resultado.capa
+  // Cada capa se describe sola desde el backend (037): título y explicación.
+  const titulo = resultado.titulo ?? resultado.capa
   if (resultado.estado === 'no_disponible') {
     return (
       <div className="resultado-capa">
@@ -262,7 +249,7 @@ function ResultadoDeCapa({ resultado, imagen, original }) {
       {/* 037: lo explicativo y lo técnico, juntos y plegados, para que la pantalla se lea rápido. */}
       <details className="mas-detalle">
         <summary>Qué significa y datos técnicos</summary>
-        <p>{QUE_SIGNIFICA[resultado.capa] ?? 'Esta capa busca señales técnicas de edición o de generación artificial.'}</p>
+        <p>{resultado.que_significa || 'Esta técnica busca señales de edición o de generación artificial.'}</p>
         {resultado.detalle?.tabla?.length > 0 && (
           <>
             <h5>{TITULOS_TABLA[resultado.capa] ?? 'Datos extraídos'}</h5>
@@ -287,7 +274,8 @@ export function ResumenDeImagen({ imagen }) {
   return (
     <ul className="resumen-capas" aria-label={`Resumen de ${imagen.nombre}`}>
       {imagen.resultados.map((resultado) => {
-        const titulo = TITULOS_CAPA[resultado.capa] ?? resultado.capa
+        // Cada capa se describe sola desde el backend (037): título y explicación.
+  const titulo = resultado.titulo ?? resultado.capa
         if (resultado.estado === 'no_disponible') {
           return (
             <li key={resultado.capa} className="resumen-capas__item">

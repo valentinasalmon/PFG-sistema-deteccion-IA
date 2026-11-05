@@ -17,3 +17,20 @@ def crear_capas(configuracion):
         CapaC2PA(configuracion["CARPETA_CONFIANZA_C2PA"]),
         CapaELA(),
     ]
+
+
+# Clases de las capas activas: describen cada capa sin crear instancias (037).
+CLASES_DE_CAPAS = (CapaMetadatos, CapaC2PA, CapaELA)
+
+
+def describir_capa(nombre):
+    """Título, explicación y tipo de una capa, para mostrar su resultado (037).
+
+    La pantalla y el informe los toman de la propia capa: una capa nueva se
+    describe sola. Devuelve None si la capa ya no está activa.
+    """
+    for clase in CLASES_DE_CAPAS:
+        if clase.nombre == nombre:
+            return {"titulo": clase.titulo, "que_significa": clase.que_significa,
+                    "tipo": clase.tipo_de_resultado}
+    return None

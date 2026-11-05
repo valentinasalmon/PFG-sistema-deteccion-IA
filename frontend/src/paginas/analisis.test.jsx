@@ -65,7 +65,7 @@ const RESUMEN = {
   motivo_falla: null,
 }
 const RESULTADO = {
-  capa: 'metadatos',
+  capa: 'metadatos', titulo: 'Metadatos',
   estado: 'completado',
   nivel: 90,
   conclusion: 'Los metadatos presentan indicios fuertes. Se recomienda consultar a un perito especializado.',
@@ -214,7 +214,7 @@ describe('progreso y resultados', () => {
 
   it('muestra la capa de credenciales con el estado de la firma (009 CA4, CA7)', async () => {
     const credenciales = {
-      capa: 'c2pa',
+      capa: 'c2pa', titulo: 'Credenciales de contenido (C2PA)',
       estado: 'completado',
       nivel: 100,
       conclusion: 'La imagen tiene credenciales de contenido con firma confiable. Es el indicio más fuerte.',
@@ -258,7 +258,7 @@ describe('progreso y resultados', () => {
   it('muestra el mapa de la capa ELA con su aclaración (011 CA4)', async () => {
     const ela = {
       ...RESULTADO,
-      capa: 'ela',
+      capa: 'ela', titulo: 'Niveles de error (ELA)',
       nivel: 45,
       imagen: '/api/archivos/mapa-ela',
       detalle: { tabla: [{ campo: 'Calidad JPEG estimada', valor: '85 %' }], regiones: 1 },
@@ -276,7 +276,7 @@ describe('progreso y resultados', () => {
   })
 
   it('compara la foto con su mapa de error con un control deslizante (034)', async () => {
-    const ela = { ...RESULTADO, capa: 'ela', nivel: 45, imagen: '/api/archivos/mapa-ela', detalle: { tabla: [] } }
+    const ela = { ...RESULTADO, capa: 'ela', titulo: 'Niveles de error (ELA)', nivel: 45, imagen: '/api/archivos/mapa-ela', detalle: { tabla: [] } }
     const conMiniatura = { ...IMAGENES, imagenes: [{ ...IMAGENES.imagenes[0], miniatura: '/api/archivos/mini-1' }] }
     api({
       imagenes: conMiniatura,
@@ -301,7 +301,7 @@ describe('progreso y resultados', () => {
         ...DETALLE,
         imagenes: [{
           ...DETALLE.imagenes[0],
-          resultados: [{ ...RESULTADO, capa: 'c2pa', nivel: 55, detalle: { tabla: [], estado_firma: 'contenido_modificado' } }],
+          resultados: [{ ...RESULTADO, capa: 'c2pa', titulo: 'Credenciales de contenido (C2PA)', nivel: 55, detalle: { tabla: [], estado_firma: 'contenido_modificado' } }],
         }],
       },
     })

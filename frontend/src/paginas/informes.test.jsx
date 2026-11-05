@@ -164,7 +164,7 @@ describe('informes del caso', () => {
         imagenes: [
           {
             id_imagen: 1, nombre: 'frente.jpg', huella: 'a', integridad: 'verificada',
-            resultados: [{ capa: 'metadatos', estado: 'completado', nivel: 10, anomalias: [] }],
+            resultados: [{ capa: 'metadatos', titulo: 'Metadatos', estado: 'completado', nivel: 10, anomalias: [] }],
           },
         ],
       },
