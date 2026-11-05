@@ -421,6 +421,16 @@ export default function SeccionImagenes({ idCaso, alSolicitarAnalisis, alCambiar
           <h3 className="etapa-imagenes__titulo-galeria">
             Imágenes cargadas ({datos.imagenes.length} de {datos.limite})
           </h3>
+          {/* 037: la elección y el botón van arriba de la galería, en su lugar; antes la barra
+              flotaba sobre las fotos aunque no hubiera ninguna elegida. */}
+          {datos.puede_modificar && imagenes.length > 0 && (
+            <BarraAnalisis
+              cantidad={elegidas.size}
+              total={imagenes.length}
+              alElegirTodas={(todas) => setEleccion(todas ? imagenes.map((i) => i.id) : [])}
+              alAnalizar={analizar}
+            />
+          )}
           {datos.imagenes.length === 0 ? (
             <p className="nota">Todavía no hay imágenes en este caso.</p>
           ) : (
@@ -445,14 +455,6 @@ export default function SeccionImagenes({ idCaso, alSolicitarAnalisis, alCambiar
                 />
               ))}
             </ul>
-          )}
-          {datos.puede_modificar && imagenes.length > 0 && (
-            <BarraAnalisis
-              cantidad={elegidas.size}
-              total={imagenes.length}
-              alElegirTodas={(todas) => setEleccion(todas ? imagenes.map((i) => i.id) : [])}
-              alAnalizar={analizar}
-            />
           )}
         </>
       )}

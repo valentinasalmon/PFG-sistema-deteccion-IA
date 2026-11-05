@@ -2938,6 +2938,8 @@ select.campo__control {
 }
 
 .invitar {
+  /* 037: ocupa el ancho de su tarjeta; con el máximo de los formularios quedaba suelto. */
+  max-width: none;
   margin-top: 1.25rem;
   padding: 1rem;
   border: 1px solid var(--linea-suave);
@@ -3319,17 +3321,14 @@ select.campo__control {
 
 /* Barra fija al pie con el pedido de análisis */
 .barra-analisis {
-  position: sticky;
-  bottom: 1rem;
-  z-index: 5;
   justify-content: space-between;
   gap: 0.75rem 1rem;
-  margin: 1rem 0 0;
-  padding: 0.875rem 1rem 0.875rem 1.25rem;
-  border-radius: var(--radio);
-  background: var(--bosque);
-  color: #fff;
-  box-shadow: var(--sombra-flotante);
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.75rem 0.75rem 1.1rem;
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  background: var(--fondo-2);
+  color: var(--tinta);
 }
 
 .barra-analisis__texto {
@@ -3341,7 +3340,7 @@ select.campo__control {
 
 .barra-analisis .nota {
   margin: 0;
-  color: #cfd9d3;
+  color: var(--tinta-2);
 }
 
 .barra-analisis__eleccion {
