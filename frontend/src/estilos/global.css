@@ -6071,3 +6071,89 @@ h1.estado-vacio__titulo {
     animation: none;
   }
 }
+
+/* --- Administración: pendientes compactas con «Ver detalle» (037) --- */
+.pendiente__resumen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+}
+
+.pendiente__detalle {
+  margin-top: 0.35rem;
+}
+
+.pendiente__detalle > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--bosque);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pendiente__detalle > summary:focus-visible {
+  outline: 2px solid var(--lima);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.pendiente__datos {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.3rem 1rem;
+  margin: 0.25rem 0 0.75rem;
+  font-size: 0.875rem;
+}
+
+.pendiente__datos dt {
+  color: var(--tinta-2);
+  font-weight: 600;
+}
+
+.pendiente__datos dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (width <= 40rem) {
+  .pendiente__datos {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.1rem;
+  }
+
+  .pendiente__datos dd {
+    margin-bottom: 0.4rem;
+  }
+}
+
+.pendiente__detalle > summary {
+  list-style: none;
+  gap: 0.35rem;
+}
+
+.pendiente__detalle > summary::-webkit-details-marker {
+  display: none;
+}
+
+.pendiente__detalle > summary::after {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 2px solid currentcolor;
+  border-bottom: 2px solid currentcolor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+.pendiente__detalle[open] > summary::after {
+  transform: translateY(2px) rotate(-135deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pendiente__detalle > summary::after {
+    transition: none;
+  }
+}

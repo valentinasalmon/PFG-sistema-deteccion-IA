@@ -84,15 +84,9 @@ function FormularioRechazo({ aseguradora, alTerminar }) {
 }
 
 /** Estado de la identidad del Referente; sin aprobar, la aseguradora no se aprueba (035, RN41). */
-function IdentidadDelReferente({ identidad }) {
-  const estado = identidad?.estado ?? 'sin_verificar'
-  const { texto, tipo } = etiquetaDeIdentidad(estado)
-  return (
-    <span className="tarjeta-item__detalle">
-      <Etiqueta tipo={tipo}>{texto}</Etiqueta>
-      {estado !== 'aprobada' && ' Se puede aprobar cuando el Referente verifique su identidad.'}
-    </span>
-  )
+function EtiquetaIdentidad({ identidad }) {
+  const { texto, tipo } = etiquetaDeIdentidad(identidad?.estado ?? 'sin_verificar')
+  return <Etiqueta tipo={tipo}>{texto}</Etiqueta>
 }
 
 function Pendientes() {
@@ -134,29 +128,42 @@ function Pendientes() {
       <h2 id="titulo-pendientes">
         Aseguradoras pendientes de aprobación <span className="contador-titulo">{datos.length}</span>
       </h2>
-      <p className="nota">
-        Antes de aprobar, comprobá que la persona trabaje en la aseguradora (por ejemplo, con el dominio de su
-        correo o comunicándote con la empresa).
-      </p>
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
       <ul className="lista-tarjetas">
         {datos.map((aseguradora) => (
           <li key={aseguradora.id} className="tarjeta-item">
             <div className="tarjeta-item__principal">
               <span className="tarjeta-item__titulo">{aseguradora.nombre}</span>
-              <span className="tarjeta-item__detalle">
-                CUIT {aseguradora.cuit} · Registrada el {formatearFecha(aseguradora.creada_en)}
+              <span className="tarjeta-item__detalle pendiente__resumen">
+                Registrada el {formatearFecha(aseguradora.creada_en)}
+                <Etiqueta tipo="destacada">Pago acreditado</Etiqueta>
+                {aseguradora.exigeIdentidad && <EtiquetaIdentidad identidad={aseguradora.identidad} />}
               </span>
-              <span className="tarjeta-item__detalle">
-                Por {aseguradora.referente.nombre} ({aseguradora.referente.correo})
-                {!aseguradora.referente.verificado && ' · correo sin verificar'}
-              </span>
-              <span className="tarjeta-item__detalle">
-                <Etiqueta tipo="destacada">Pago acreditado</Etiqueta> Plan{' '}
-                {NOMBRES_DE_PLAN[aseguradora.plan] ?? aseguradora.plan}. Si la rechazás, el pago se
-                devuelve.
-              </span>
-              {aseguradora.exigeIdentidad && <IdentidadDelReferente identidad={aseguradora.identidad} />}
+              <details className="pendiente__detalle">
+                <summary>Ver detalle</summary>
+                <dl className="pendiente__datos">
+                  <dt>CUIT</dt>
+                  <dd>{aseguradora.cuit}</dd>
+                  <dt>Referente</dt>
+                  <dd>
+                    {aseguradora.referente.nombre} ({aseguradora.referente.correo})
+                    {!aseguradora.referente.verificado && ' · correo sin verificar'}
+                  </dd>
+                  <dt>Plan</dt>
+                  <dd>
+                    {NOMBRES_DE_PLAN[aseguradora.plan] ?? aseguradora.plan}. Si la rechazás, el pago se devuelve.
+                  </dd>
+                </dl>
+                <p className="nota">
+                  Antes de aprobar, comprobá que la persona trabaje en la aseguradora (por ejemplo, con el dominio
+                  de su correo o comunicándote con la empresa).
+                </p>
+              </details>
+              {aseguradora.exigeIdentidad && aseguradora.identidad?.estado !== 'aprobada' && (
+                <span className="tarjeta-item__detalle">
+                  Se puede aprobar cuando el Referente verifique su identidad.
+                </span>
+              )}
             </div>
             {rechazando === aseguradora.id ? (
               <FormularioRechazo aseguradora={aseguradora} alTerminar={terminar} />
@@ -553,12 +560,12 @@ export default function PaginaAdministracion() {
         <div>
           <h1>Administración</h1>
           <p className="encabezado-pagina__bajada">
-            Qué aseguradoras esperan aprobación, cómo crece la plataforma y quiénes la usan.
+            Cómo crece la plataforma, qué aseguradoras esperan aprobación y quiénes la usan.
           </p>
         </div>
       </div>
-      <Pendientes />
       <Tablero />
+      <Pendientes />
       <Listados />
     </>
   )
