@@ -30,8 +30,14 @@ La autora revisó el inicio de sesión y el registro (2026-11-04). En computador
 - [x] **CA7**: El informe PDF lleva el aviso de que no emite veredictos en la primera página y la escala de lectura no se corta entre páginas.
 - [x] **CA8**: La política de privacidad cubre Google, los pagos, la verificación de identidad, las fotos de terceros y quién trata los datos; los términos explican la diferencia entre abogado y aseguradora.
 - [x] **CA9**: Decisiones 1, 3, 4, 5 y 6 de la revisión integral aplicadas (2026-11-05).
-- [ ] **CA10**: Decisión 2: el análisis en pantalla tiene un solo descargo arriba y los datos técnicos plegados.
+- [x] **CA10**: Decisión 2: el análisis en pantalla tiene un solo descargo arriba y los datos técnicos plegados.
 - [x] **CA11**: El informe PDF es breve, arriba lleva una sola línea de herramienta de apoyo y enlaza con QR al análisis detallado en la plataforma.
-- [ ] **CA12**: La pantalla del caso, el login (con Google), el registro y el resto de las pantallas siguen el diseño nuevo, sin elementos flotando en el celular.
+- [x] **CA12**: La pantalla del caso, el login (con Google), el registro y el resto de las pantallas siguen el diseño nuevo, sin elementos flotando en el celular.
+- [x] **CA13**: En computadora, todas las tarjetas de cuenta (inicio de sesión, registro, recuperación, verificación, invitación) miden lo mismo (60 × 42 rem); en el celular ocupan todo el ancho. El pago, el plan y el resultado del pago usan la misma tarjeta a todo el ancho y el alto que necesitan, sin contenido escondido.
+- [x] **CA14**: En Administración el tablero va arriba y las solicitudes abajo; cada aseguradora pendiente ocupa dos líneas (nombre, fecha, pago e identidad) y el resto se abre con «Ver detalle».
+- [x] **CA15**: Cuando una aseguradora paga y queda pendiente, cada Administrador recibe un correo con el enlace a Administración.
+- [x] **CA16**: Al cargar fotos, la barra de análisis se destaca como siguiente paso; al terminar el análisis, al pie aparecen «Descargar el informe PDF» y «Seguir al informe».
+- [x] **CA17**: La aseguradora se elige en una lista desplegable que se maneja con el teclado (flechas, Enter, Escape) y no empuja el formulario.
+- [x] **CA18**: El sensor de diseño (`frontend/e2e/sensor-diseno.cjs`) y los recorridos de punta a punta, en computadora y celular, terminan con «Sin problemas de diseño».
 
-Capturas del antes y el después en [`capturas/`](capturas/).
+Capturas del antes y el después en [`capturas/`](capturas/); evidencia de cada corrida en [`evidencia.md`](evidencia.md).

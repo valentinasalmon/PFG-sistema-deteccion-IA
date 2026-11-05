@@ -30,7 +30,7 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 | P1 | **Integrar la 037** (Pull Request hacia `desarrollo` y después a `main`) y probar en producción: login con Google, siniestros, PDF breve con QR al detalle | Revisión de la autora | Autora |
 | P1 | **Probar en Safari (iPhone) y Firefox**: en el entorno del agente solo hay Chromium; los recorridos de punta a punta pasaron en Chromium de computadora y en un iPhone 13 emulado | — | Autora, con `frontend/e2e/` y la guía de usuario |
 | P1 | **CP-43**: ¿el enlace al análisis detallado del PDF se abre sin cuenta? Hoy exige una cuenta con acceso | Autora y tutor | Autora |
-| P2 | Sumar los recorridos de `frontend/e2e/` a la integración continua (hoy se corren a mano contra el entorno local) | Servicios de prueba en GitHub Actions | Agente |
+| P2 | Sumar los recorridos de `frontend/e2e/` y el sensor de diseño a la integración continua (hoy se corren a mano contra el entorno local, y son obligatorios antes de dar por terminado un cambio de interfaz) | Servicios de prueba en GitHub Actions | Agente |
 | P2 | Los correos todavía dicen «caso» también a las aseguradoras (los textos de la pantalla y el PDF ya dicen «siniestro») | — | Agente |
 
 ## Infraestructura y puesta en producción

@@ -52,3 +52,24 @@ Errores de JavaScript en la página: ninguno. Los 401 de la consola son la consu
 
 - Informe PDF real descargado por la interfaz: incluye «Más detalle y verificación» con los dos QR (análisis detallado y verificación pública); 4 páginas con dos imágenes.
 - Hallazgo y corrección: en la portada, el título de la tarjeta «Aseguradoras» no se veía (texto oscuro sobre fondo oscuro).
+
+## Tercera corrida (2026-11-05, noche): pagos, administración y sensor de diseño
+
+- **Recorrido de la aseguradora** (Chromium, computadora y celular de 390 px): registro con la lista desplegable → plan → pago → acreditación → correo → identidad → aprobación → «Siniestros». Pasa, con el sensor de diseño en cada captura: **«Sin problemas de diseño»**.
+- **Recorrido del abogado** (computadora e iPhone 13 emulado): caso → 2 fotos → análisis → PDF → verificación pública. Pasa, **«Sin problemas de diseño»**.
+- **Correo al Administrador**: al acreditarse el pago de una aseguradora llegó «… espera tu aprobación» a las dos cuentas con rol de Administrador del entorno local (servidor SMTP de prueba).
+- **Pagos revisados uno por uno** (pc y celular): pago y resultado de una aseguradora y de un estudio en el registro, cambio de plan desde la organización y página del enlace de pago. El sensor no marca problemas.
+- **El sensor detecta el error que vio la autora**: volviendo a poner la tarjeta de alto fijo sobre el pago, informa «contenido escondido: … muestra 672px de 1308px»; con la corrección, nada.
+
+| Antes | Después |
+|---|---|
+| ![Pago cortado dentro de la tarjeta](capturas/pago-antes.jpg) | ![Pago completo](capturas/pago-despues.jpg) |
+| ![Resultado cortado y pasos desparejos](capturas/pago-resultado-antes.jpg) | ![Resultado con línea de avance](capturas/pago-resultado-despues.jpg) |
+| ![Lista larga de aseguradoras](capturas/aseguradora-lista-antes.jpg) | ![Lista desplegable](capturas/aseguradora-lista-despues.jpg) |
+
+![Pago en el celular](capturas/pago-celular-despues.jpg)
+![Administración: tablero arriba y pendientes compactas](capturas/administracion-despues.jpg)
+![Cierre del análisis con el informe](capturas/analisis-cierre-despues.jpg)
+![Fotos cargadas: siguiente paso](capturas/carga-siguiente-paso-despues.jpg)
+![Cambio de plan](capturas/plan-cambio-despues.jpg)
+

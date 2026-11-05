@@ -87,3 +87,25 @@ La primera versión del vocabulario por perfil agregaba una frase suelta por pan
 ## Segunda presentación a la autora
 
 Se republicó la página de la revisión (versión 2) con el antes y el después de esta tanda, los recorridos de punta a punta y dos decisiones nuevas: CP-43 (enlace al análisis detallado con o sin cuenta) y si el PDF de 4 páginas está bien o se reduce a una página de resumen con anexo. Lo que falta del proyecto quedó actualizado en `docs/guias/pendientes.md`.
+
+## Tercera tanda: pedidos de la noche y pagos (2026-11-05)
+
+**Decisiones de la autora**: CP-43 con cuenta (como está) y el PDF breve así está bien.
+
+**Hecho** (cada punto con su commit en la rama `funcionalidad/037-acceso-y-pantallas`):
+
+- Tarjetas de cuenta del mismo tamaño en computadora (60 × 42 rem) y a todo el ancho en el celular; el panel de marca lo pone la disposición, no cada página.
+- «Datos y gestión» en la cabecera del caso, como vista aparte con vuelta a las etapas; notificaciones abajo, sin tapar el sistema; QR del PDF apilados con su título.
+- Administración: tablero arriba, solicitudes abajo y cada pendiente en dos líneas con «Ver detalle».
+- **Correo al Administrador** cuando una aseguradora paga y queda pendiente (`ServicioPagos` avisa a las cuentas con rol de Administrador; prueba de integración y prueba real con el servidor SMTP local).
+- Caso: al cargar fotos, la barra de análisis se destaca como siguiente paso; al terminar, un cierre al pie con «Descargar el informe PDF» y «Seguir al informe». El paso «Análisis» ya no dice «se habilita cuando cargues las fotos» si ya hay fotos.
+- Elección de la aseguradora como **lista desplegable** (pedido de la autora: la lista de tarjetas ocupaba mucho y se perdía). Patrón WAI-ARIA combobox: flechas, Enter, Escape, lupa y botón para borrar.
+- **Pagos** (la autora los encontró desalineados): el pago, el plan y el resultado quedaban cortados dentro de la tarjeta de alto fijo. Ahora usan la tarjeta a todo el ancho y el alto que necesitan; el resumen no deja salir el nombre de la organización; el resultado muestra los pasos como una línea de avance; los avisos llevan el texto en un solo bloque; el botón ocupa todo el ancho en el celular; un plan único no se estira; desde el pago se puede volver a la organización.
+- Detalles: el registro no repite arriba un error que ya está junto al campo; la hora de vencimiento del enlace del celular en 24 horas.
+
+**Arnés**: se agregó el sensor de diseño (`frontend/e2e/sensor-diseno.cjs`), aplicado en cada captura de los recorridos, y la regla de verificación visual en `CLAUDE.md` (también en `docs/arnes/`). Motivo: el error de los pagos lo vio la autora y no un control; el sensor lo reproduce.
+
+**Verificación**: backend 569 pruebas (97,5 %), flake8, pylint 10/10, import-linter; frontend ESLint y 280 pruebas de Vitest; recorridos de punta a punta de la aseguradora y del abogado en computadora y celular con «Sin problemas de diseño». Evidencia y capturas en `funcionalidades/037-acceso-y-pantallas/evidencia.md`.
+
+**Pendiente**: correos con «siniestro» para las aseguradoras (T19), Safari y Firefox reales (T20, autora), y sumar el sensor y los recorridos a la integración continua.
+
