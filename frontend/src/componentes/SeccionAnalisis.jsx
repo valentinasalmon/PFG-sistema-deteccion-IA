@@ -374,27 +374,34 @@ function AccionesDelInforme({ idCaso, analisis, puedeGenerar, alGenerar, alVerIn
     }
   }
 
+  // 037: el cierre del análisis va al pie de los resultados, como siguiente paso.
   return (
-    <div className="acciones-informe">
+    <div className="acciones-informe cierre-etapa" role="region" aria-label="Siguiente paso">
       {error && <Aviso tipo="error">{error}</Aviso>}
       {analisis.informe ? (
-        <div className="acciones-en-linea">
-          {alVerInforme && (
-            <button type="button" className="boton" onClick={alVerInforme}>
-              <Icono nombre="documento" tamanio={18} />
-              Ver el informe
+        <>
+          <div className="cierre-etapa__texto">
+            <strong>Análisis terminado. El informe PDF está listo.</strong>
+            <span className="nota">Descargalo o seguí a la etapa Informe para verificarlo y compartirlo.</span>
+          </div>
+          <div className="acciones-en-linea">
+            <button
+              type="button"
+              className={alVerInforme ? 'boton boton--secundario' : 'boton'}
+              disabled={enviando}
+              onClick={() => ejecutar(() => descargarInforme(idCaso, analisis.informe.id))}
+            >
+              <Icono nombre="descargar" tamanio={18} />
+              Descargar el informe PDF
             </button>
-          )}
-          <button
-            type="button"
-            className={alVerInforme ? 'boton boton--secundario' : 'boton'}
-            disabled={enviando}
-            onClick={() => ejecutar(() => descargarInforme(idCaso, analisis.informe.id))}
-          >
-            <Icono nombre="descargar" tamanio={18} />
-            Descargar el informe PDF
-          </button>
-        </div>
+            {alVerInforme && (
+              <button type="button" className="boton boton--lima" onClick={alVerInforme}>
+                Seguir al informe
+                <Icono nombre="derecha" tamanio={18} />
+              </button>
+            )}
+          </div>
+        </>
       ) : (
         <>
           <Aviso tipo="info">No se pudo generar el informe PDF de este análisis.</Aviso>
@@ -466,6 +473,7 @@ function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar, alVerInforme })
       )}
       {analisis.estado === 'finalizado' && (
         <>
+          <Resultados analisis={analisis} miniaturas={miniaturas} />
           <AccionesDelInforme
             idCaso={idCaso}
             analisis={analisis}
@@ -476,7 +484,6 @@ function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar, alVerInforme })
               await alTerminar()
             }}
           />
-          <Resultados analisis={analisis} miniaturas={miniaturas} />
         </>
       )}
     </>

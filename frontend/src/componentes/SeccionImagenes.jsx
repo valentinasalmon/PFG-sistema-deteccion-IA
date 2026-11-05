@@ -18,7 +18,7 @@
  * Realiza: RF34 (CA1 a CA5), RF35, RF36, RF38 (CA1, CA2); CA1 a CA9 de la
  * funcionalidad 006 y CA1, CA2 de la 007; CP-32.
  */
-import { useCallback, useId, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { solicitarAnalisis } from '../api/analisis.js'
 import { cargarImagen, eliminarImagen, enlaceDeDescarga, listarImagenes } from '../api/imagenes.js'
 import { useDatos } from '../hooks/useDatos.js'
@@ -57,7 +57,7 @@ function OpcionDeCarga({ icono, titulo, texto, elegida, children }) {
   )
 }
 
-function Carga({ idCaso, tamanioMaximo, alTerminar }) {
+function Carga({ idCaso, tamanioMaximo, alTerminar, alCargar }) {
   const idCampo = useId()
   const [cargando, setCargando] = useState(null)
   const [resultados, setResultados] = useState([])
@@ -92,6 +92,7 @@ function Carga({ idCaso, tamanioMaximo, alTerminar }) {
     setCargando(null)
     setResultados(nuevos)
     await alTerminar()
+    alCargar?.(nuevos.filter((resultado) => resultado.ok).length)
   }
 
   function alElegir(evento) {
@@ -293,9 +294,18 @@ function TarjetaImagen({
   )
 }
 
-/** Barra fija al pie de la etapa: cuántas imágenes se van a analizar y el botón para hacerlo (028). */
-function BarraAnalisis({ cantidad, total, alElegirTodas, alAnalizar }) {
+/**
+ * Cuántas imágenes se van a analizar y el botón para hacerlo (028). Recién
+ * cargadas, la barra se destaca y se acerca a la vista como «siguiente paso»
+ * (037): el análisis abre la etapa siguiente.
+ */
+function BarraAnalisis({ cantidad, total, recienCargadas, alElegirTodas, alAnalizar }) {
   const [enviando, setEnviando] = useState(false)
+  const barra = useRef(null)
+
+  useEffect(() => {
+    if (recienCargadas > 0) barra.current?.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' })
+  }, [recienCargadas])
 
   async function analizar() {
     setEnviando(true)
@@ -306,8 +316,20 @@ function BarraAnalisis({ cantidad, total, alElegirTodas, alAnalizar }) {
   const textoBoton =
     cantidad === 1 ? 'Analizar la imagen' : `Analizar las ${cantidad} imágenes`
   return (
-    <div className="barra-analisis" role="region" aria-label="Pedir el análisis">
+    <div
+      ref={barra}
+      className={`barra-analisis${recienCargadas > 0 ? ' barra-analisis--siguiente' : ''}`}
+      role="region"
+      aria-label="Pedir el análisis"
+    >
       <div className="barra-analisis__texto">
+        {recienCargadas > 0 && (
+          <span className="barra-analisis__paso" role="status">
+            <Icono nombre="marca" tamanio={16} />
+            {recienCargadas === 1 ? 'Se cargó 1 imagen.' : `Se cargaron ${recienCargadas} imágenes.`} Siguiente
+            paso: analizarlas.
+          </span>
+        )}
         <strong>
           {cantidad} de {total} elegida{total === 1 ? '' : 's'}
         </strong>
@@ -369,6 +391,7 @@ export default function SeccionImagenes({ idCaso, alSolicitarAnalisis, alCambiar
     await alCambiar?.()
   }, [recargarImagenes, alCambiar])
   const [aviso, setAviso] = useState(null)
+  const [recienCargadas, setRecienCargadas] = useState(0)
   // Sin elección propia, quedan elegidas las imágenes que todavía no se analizaron.
   const [eleccion, setEleccion] = useState(null)
   const imagenes = datos?.imagenes ?? []
@@ -416,7 +439,12 @@ export default function SeccionImagenes({ idCaso, alSolicitarAnalisis, alCambiar
       {datos && (
         <>
           {datos.puede_modificar && (
-            <Carga idCaso={idCaso} tamanioMaximo={datos.tamanio_maximo} alTerminar={recargar} />
+            <Carga
+              idCaso={idCaso}
+              tamanioMaximo={datos.tamanio_maximo}
+              alTerminar={recargar}
+              alCargar={setRecienCargadas}
+            />
           )}
           <h3 className="etapa-imagenes__titulo-galeria">
             Imágenes cargadas ({datos.imagenes.length} de {datos.limite})
@@ -427,6 +455,7 @@ export default function SeccionImagenes({ idCaso, alSolicitarAnalisis, alCambiar
             <BarraAnalisis
               cantidad={elegidas.size}
               total={imagenes.length}
+              recienCargadas={recienCargadas}
               alElegirTodas={(todas) => setEleccion(todas ? imagenes.map((i) => i.id) : [])}
               alAnalizar={analizar}
             />

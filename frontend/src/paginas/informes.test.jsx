@@ -107,6 +107,17 @@ describe('informes del caso', () => {
     await vi.waitFor(() => expect(abrirDescarga).toHaveBeenCalledWith('/api/archivos/token-pdf'))
   })
 
+  it('al terminar, el pie ofrece seguir a la etapa Informe (037)', async () => {
+    api()
+    const { usuario } = renderizarEn('/casos/7?etapa=analisis')
+
+    const cierre = await screen.findByRole('region', { name: 'Siguiente paso' })
+    expect(within(cierre).getByText('Análisis terminado. El informe PDF está listo.')).toBeInTheDocument()
+    await usuario.click(within(cierre).getByRole('button', { name: 'Seguir al informe' }))
+
+    expect(await screen.findByRole('region', { name: 'Informes' })).toBeInTheDocument()
+  })
+
   it('si el informe no se generó, permite generarlo de nuevo (CA6)', async () => {
     let informe = null
     const { solicitudes } = api({

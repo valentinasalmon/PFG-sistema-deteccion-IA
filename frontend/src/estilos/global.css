@@ -6157,3 +6157,48 @@ h1.estado-vacio__titulo {
     transition: none;
   }
 }
+
+/* --- 037: siguiente paso destacado (imágenes → análisis → informe) --- */
+.barra-analisis--siguiente {
+  border-color: var(--lima);
+  box-shadow: 0 0 0 3px rgb(164 203 62 / 25%);
+}
+
+.barra-analisis__paso {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-basis: 100%;
+  color: var(--exito);
+  font-weight: 600;
+}
+
+.cierre-etapa {
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.5rem 0 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--lima);
+  border-radius: 14px;
+  background: var(--fondo-2);
+}
+
+.cierre-etapa__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+@media (width <= 40rem) {
+  .cierre-etapa .acciones-en-linea,
+  .cierre-etapa .acciones-en-linea .boton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.barra-analisis--siguiente .barra-analisis__texto {
+  flex: 1 1 20rem;
+  min-width: 0;
+}

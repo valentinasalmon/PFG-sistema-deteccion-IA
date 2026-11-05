@@ -591,7 +591,9 @@ function resumirEtapas(caso) {
           ? 'En curso'
           : analizado
             ? 'revisá los indicios'
-            : 'Se habilita cuando cargues las fotos',
+            : conImagenes
+              ? 'Elegí las fotos y pedilo'
+              : 'Se habilita cuando cargues las fotos',
       disponible: conImagenes,
     },
     informe: {
