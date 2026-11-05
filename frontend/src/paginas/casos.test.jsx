@@ -553,13 +553,14 @@ describe('retención (funcionalidad 015)', () => {
 })
 
 describe('pantalla del caso reorganizada (037)', () => {
-  it('los datos y la gestión van en su propia pestaña, fuera del flujo', async () => {
+  it('los datos y la gestión se abren desde la cabecera como una vista aparte', async () => {
     apiDeCaso()
     const { usuario } = renderizarEn('/casos/7')
-    const gestion = await screen.findByRole('link', { name: 'Datos y gestión' })
-    expect(screen.queryByRole('heading', { name: 'Datos del caso' })).not.toBeInTheDocument()
-    await usuario.click(gestion)
+    await usuario.click(await screen.findByRole('button', { name: 'Datos y gestión' }))
     expect(await screen.findByRole('heading', { name: 'Datos del caso' })).toBeInTheDocument()
-    expect(gestion).toHaveAttribute('aria-current', 'page')
+    // Mientras se ve la gestión, el flujo se oculta y hay una forma clara de volver.
+    expect(screen.queryByRole('list', { name: 'Etapas del caso' })).not.toBeInTheDocument()
+    await usuario.click(screen.getByRole('button', { name: /Volver a las imágenes/ }))
+    expect(await screen.findByRole('list', { name: 'Etapas del caso' })).toBeInTheDocument()
   })
 })

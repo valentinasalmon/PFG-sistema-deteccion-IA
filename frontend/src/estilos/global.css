@@ -4925,10 +4925,26 @@ body:has(.dialogo-velo) {
   gap: 1.25rem;
 }
 
-/* La fila de arriba: los tres pasos y, aparte, «Datos y gestión» (037). */
+/* «Datos y gestión» es una vista aparte que se abre desde la cabecera (037). */
 .flujo-caso {
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.vista-gestion {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.vista-gestion__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.vista-gestion__cabecera h2 {
+  margin: 0;
 }
 
 .flujo-caso__cuerpo {
