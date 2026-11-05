@@ -66,3 +66,10 @@ El comando `/cerrar-etapa` recorre estos pasos en orden.
 | `/planificar [NNN]` | Crea el `plan.md` técnico de la funcionalidad |
 | `/tareas [NNN]` | Crea el `tareas.md` con los pasos ejecutables y los implementa |
 | `/cerrar-etapa` | Calidad, bitácora, seguimiento, decisiones, insumos, registro del arnés y Trello |
+| `/redactar-informe <sección>` | Escribe o actualiza una sección del informe final con la guía, los hechos verificados y la evidencia |
+| `/revisar-informe <enlace>` | Revisa el informe completo como un evaluador de tesis y deja las correcciones listas para pegar |
+| `/generar-diagramas` | Genera los diagramas desde el código, los verifica (fidelidad, notación, ortografía, tamaño) y obliga a mirarlos |
+
+## Informe final
+
+Todo texto, tabla o figura para el informe sigue [docs/informe-final/guia-de-redaccion.md](docs/informe-final/guia-de-redaccion.md) y usa los datos de [docs/informe-final/hechos-del-sistema.md](docs/informe-final/hechos-del-sistema.md): prosa en presente, sin viñetas, APA 7, nada previsto presentado como hecho y cifras recalculadas con `backend/herramientas/cifras_del_proyecto.py`. Ningún diagrama se entrega sin pasar `diagramas_del_sistema.py verificar` y sin mirar la imagen. Las versiones descartadas se borran: el repositorio guarda solo la vigente.

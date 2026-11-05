@@ -103,6 +103,19 @@ Las sesiones con el agente se cortan, se resumen o cambian; el conocimiento qued
 
 El arnés no se escribió de una vez. **Cada vez que algo falla o se repite, se agrega una regla, un comando, un gancho o un control**, y queda en el [registro de cambios](registro-de-cambios.md) con el problema que lo motivó. Eso es lo que distingue al arnés de una lista de buenas prácticas: se mide por los errores que dejan de repetirse.
 
+## 6. El informe final también tiene arnés (funcionalidad 037)
+
+El documento para la facultad se escribe con la misma lógica que el código: guías antes de escribir, sensores que detectan errores y memoria del estado. Detalle en [docs/informe-final/README.md](../informe-final/README.md).
+
+| Pieza | Tipo | Qué hace |
+|---|---|---|
+| `guia-de-redaccion.md`, `hechos-del-sistema.md`, `trabajo-con-ia.md`, `plan-de-negocios.md` | Guías | Estructura del protocolo, reglas de redacción y de evidencia, datos verificados y textos base |
+| `/redactar-informe`, `/revisar-informe`, `/generar-diagramas` | Guías (comandos) | Escribir una sección, revisar como un evaluador de tesis, generar y revisar los diagramas |
+| `revisar_informe.py` | Sensor | Secciones vacías, duplicados, numeración, citas y bibliografía, viñetas, tiempo verbal, marcadores, veredictos |
+| `cifras_del_proyecto.py` | Sensor | Las cifras del proceso salen del repositorio, nunca de memoria |
+| `diagramas_del_sistema.py verificar` | Sensor | Diagramas generados desde el código; fidelidad contra la infraestructura; notación UML; ortografía; recortes |
+| `estado-del-informe.md` y `revisiones/` | Memoria | Qué falta por capítulo y la última revisión con sus correcciones |
+
 ## Números del proceso (al 2026-11-02)
 
 | Indicador | Valor |
@@ -114,6 +127,8 @@ El arnés no se escribió de una vez. **Cada vez que algo falla o se repite, se 
 | Entradas de bitácora | 48 |
 | ADR | 18 |
 | Pruebas automáticas | 471 backend + 253 frontend |
+
+Las cifras actualizadas se obtienen con `python backend/herramientas/cifras_del_proyecto.py`. Al 2026-11-05: 332 commits, 301 con coautoría de IA (90,7 %), 73 pull requests, 754 pruebas, 21 ADR y 58 entradas de bitácora.
 
 ## Límites conocidos
 

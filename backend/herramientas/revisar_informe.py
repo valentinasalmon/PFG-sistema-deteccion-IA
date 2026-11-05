@@ -299,7 +299,7 @@ def autor_clave(texto):
 
 def es_autor(texto):
     """Descarta paréntesis que tienen un año pero no son citas (fechas, medidas)."""
-    return bool(texto) and texto[0].isupper() and not re.search(r"[\d:=/]", texto)
+    return bool(texto) and texto[0].isupper() and not re.search(r"[:=/]|^\d", texto)
 
 
 def alias_del_texto(informe):

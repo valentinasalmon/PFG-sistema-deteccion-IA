@@ -309,3 +309,19 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Medición provisoria**: 0,977 sin SUS. Valores: backend 97,5 %, frontend 92,4 %, pylint 10, ninguna función con complejidad mayor a 10, 0,1 % de duplicación.
 - **Hallazgo metodológico**: un índice dominado por métricas de código que ya están al máximo puede ocultar una mala usabilidad (con estos valores, alcanzaría un SUS de 23). Conviene informar el SUS y la tasa de éxito aparte, con sus propios objetivos.
 - **Prueba de usabilidad**: protocolo con 8 tareas del flujo principal, SUS en español (Brooke, 1996) y al menos 5 participantes del dominio (Nielsen y Landauer, 1993). Resultados pendientes.
+
+## Arnés del informe final (037, 2026-11-05)
+
+- El informe también se trabaja con un arnés: guías (redacción, hechos, trabajo con IA, plan de negocios), sensores (un revisor mecánico, las cifras desde el repositorio y un verificador de diagramas) y memoria (el estado y las revisiones). **Para el Cap. VI y la defensa:** la misma lógica de calidad se aplicó al código y al documento.
+- **Diagramas fieles al sistema:**
+  - el entidad-relación, los componentes y los casos de uso se generan desde el código y la especificación;
+  - el despliegue se verifica contra la infraestructura.
+
+  La primera tanda de diagramas se descartó por no ser UML ni coincidir con el código; la segunda tuvo un error de fidelidad en la secuencia (quién sella la imagen), detectado al contrastarla con los servicios. **Lección:** un diagrama dibujado de memoria miente sin querer.
+- **Hallazgo:** el inventario de casos de uso no incluía seis casos implementados (CU33 a CU38). La documentación de requisitos también se desactualiza si nada la contrasta con el código.
+- **Plan de negocios para Argentina (`plan-de-negocios.md`):**
+  - precios propuestos de US$ 49 y US$ 149 sin IVA;
+  - punto de equilibrio operativo con 2 organizaciones;
+  - monotributo al inicio y luego SAS (la factura A importa para vender a aseguradoras);
+  - Ley 27.506;
+  - inscripción de la base ante la AAIP y contrato de encargado del tratamiento.
