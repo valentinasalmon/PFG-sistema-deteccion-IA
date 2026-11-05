@@ -183,6 +183,17 @@ function EstadoDeLaFirma({ detalle }) {
   )
 }
 
+/**
+ * Conclusión de una técnica sin la recomendación de consultar a un perito, que
+ * ya figura una sola vez arriba del análisis (037).
+ */
+function sinDescargo(texto) {
+  return (texto ?? '')
+    .replace(/\s*Este resultado es un indicio y no constituye una conclusión definitiva\.?/g, '')
+    .replace(/\s*Se recomienda consultar a un perito especializado[^.]*\.?/g, '')
+    .trim()
+}
+
 function ResultadoDeCapa({ resultado, imagen, original }) {
   const titulo = TITULOS_CAPA[resultado.capa] ?? resultado.capa
   if (resultado.estado === 'no_disponible') {
@@ -215,7 +226,7 @@ function ResultadoDeCapa({ resultado, imagen, original }) {
         />
         <strong>{resultado.nivel} %</strong>
       </div>
-      <p>{resultado.conclusion}</p>
+      <p>{sinDescargo(resultado.conclusion)}</p>
       {resultado.anomalias.length > 0 && (
         <ul className="lista-anomalias" aria-label={`Hallazgos de la capa ${titulo}`}>
           {resultado.anomalias.map((anomalia, indice) => (
@@ -248,24 +259,25 @@ function ResultadoDeCapa({ resultado, imagen, original }) {
           </figcaption>
         </figure>
       )}
-      <details className="que-significa">
-        <summary>¿Qué significa?</summary>
+      {/* 037: lo explicativo y lo técnico, juntos y plegados, para que la pantalla se lea rápido. */}
+      <details className="mas-detalle">
+        <summary>Qué significa y datos técnicos</summary>
         <p>{QUE_SIGNIFICA[resultado.capa] ?? 'Esta capa busca señales técnicas de edición o de generación artificial.'}</p>
+        {resultado.detalle?.tabla?.length > 0 && (
+          <>
+            <h5>{TITULOS_TABLA[resultado.capa] ?? 'Datos extraídos'}</h5>
+            <dl className="datos-fijos">
+              {resultado.detalle.tabla.map((fila) => (
+                <div key={fila.campo} className="datos-fijos__fila">
+                  <dt>{fila.campo}</dt>
+                  <dd>{fila.valor}</dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        )}
+        <p className="nota">Versión de la técnica: {resultado.version}</p>
       </details>
-      {resultado.detalle?.tabla?.length > 0 && (
-        <details>
-          <summary>{TITULOS_TABLA[resultado.capa] ?? 'Datos extraídos'}</summary>
-          <dl className="datos-fijos">
-            {resultado.detalle.tabla.map((fila) => (
-              <div key={fila.campo} className="datos-fijos__fila">
-                <dt>{fila.campo}</dt>
-                <dd>{fila.valor}</dd>
-              </div>
-            ))}
-          </dl>
-        </details>
-      )}
-      <p className="nota">Versión: {resultado.version}</p>
     </div>
   )
 }
@@ -520,14 +532,11 @@ export default function SeccionAnalisis({
   return (
     <section className="seccion" aria-labelledby="titulo-analisis">
       <h2 id="titulo-analisis">Análisis</h2>
-      <p className="nota">
-        Cada capa informa indicios por separado; no se combinan en un puntaje único. Ante
-        cualquier duda, consultá con un perito especializado.
-      </p>
+      {/* 037 (decisión de la autora): un solo descargo, arriba, en lugar de repetirlo en cada técnica. */}
       <p className="descargo">
-        <strong>Herramienta auxiliar.</strong> Estos resultados son parciales: los produce un
-        sistema automatizado que incluye técnicas de inteligencia artificial y no reemplazan el
-        criterio de un perito o criminalista, que toma la decisión final.
+        <strong>Herramienta de apoyo.</strong> Cada técnica informa indicios por separado, que no se
+        suman ni se promedian. No emite veredictos: la decisión final es de un perito o de quien
+        evalúa la prueba.
       </p>
       <Escala />
       {historial.length > 1 && (

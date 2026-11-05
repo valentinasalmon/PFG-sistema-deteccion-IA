@@ -202,12 +202,14 @@ describe('progreso y resultados', () => {
     const analisis = await screen.findByRole('region', { name: 'Análisis' })
     expect(await within(analisis).findByRole('heading', { name: 'frente.png' })).toBeInTheDocument()
     expect(within(analisis).getByRole('meter', { name: 'Nivel de indicio' })).toHaveAttribute('value', '90')
-    expect(within(analisis).getByText(/Se recomienda consultar a un perito/)).toBeInTheDocument()
+    // 037: la recomendación de consultar a un perito figura una sola vez, arriba.
+    expect(within(analisis).queryByText(/Se recomienda consultar a un perito/)).not.toBeInTheDocument()
+    expect(within(analisis).getByText(/No emite veredictos/)).toBeInTheDocument()
     const hallazgos = within(analisis).getByRole('list', { name: 'Hallazgos de la capa Metadatos' })
     expect(within(hallazgos).getByText('Directo')).toBeInTheDocument()
     expect(within(analisis).getByText('Metadatos extraídos')).toBeInTheDocument()
-    expect(within(analisis).getByText('Versión: 1.0 (ExifTool 12.76)')).toBeInTheDocument()
-    expect(within(analisis).getByText(/no se combinan en un puntaje único/)).toBeInTheDocument()
+    expect(within(analisis).getByText('Versión de la técnica: 1.0 (ExifTool 12.76)')).toBeInTheDocument()
+    expect(within(analisis).getAllByText(/no se suman ni se promedian/).length).toBeGreaterThan(0)
   })
 
   it('muestra la capa de credenciales con el estado de la firma (009 CA4, CA7)', async () => {
