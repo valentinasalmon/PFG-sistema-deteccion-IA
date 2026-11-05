@@ -23,6 +23,7 @@ flowchart LR
     subgraph Sensores["2 · Sensores (mientras y después)"]
         G1[Gancho: secretos]
         G2[Gancho: estilo]
+        G3[Gancho: documentación al día]
         PC[pre-commit]
         IL[import-linter]
         CI[Integración continua]
@@ -43,7 +44,7 @@ flowchart LR
     A -->|commit| PC
     A -->|Pull Request| CI
     IL --> CI
-    G1 & G2 & PC & CI -->|errores| A
+    G1 & G2 & G3 & PC & CI -->|errores| A
     A --> Memoria
     Memoria -->|sesión siguiente| A
     CI -->|verde| P
@@ -59,7 +60,7 @@ flowchart LR
 | Reglamento del agente | `CLAUDE.md` | Reparto del trabajo, idioma, arquitectura en capas, documentar cada función con su requisito, nunca emitir veredictos, nunca tocar secretos, calidad mínima, commits y documentación al cerrar |
 | Principios no negociables | `docs/constitucion.md` | Lo que no se discute en ninguna funcionalidad |
 | Fuente de verdad | `docs/especificacion/` | Requisitos, reglas de negocio, casos de uso y cuestiones abiertas: sin especificación no se implementa |
-| Flujo guiado por especificaciones | `.claude/commands/` | `/especificar` → `/planificar` → `/tareas` → `/cerrar-etapa`; cada funcionalidad tiene su carpeta en `docs/funcionalidades/` |
+| Flujo guiado por especificaciones | `.claude/commands/` | `/especificar` → `/planificar` → `/tareas` → `/cerrar-etapa`; cada funcionalidad tiene su carpeta en `docs/funcionalidades/`. Además, `/revisar-arnes` para la revisión periódica del propio arnés |
 | Skills | `.claude/skills/`, `skills-lock.json` | Conocimiento instalado (diseño de interfaces, revisión de código, diagramas, crítica de ideas), con su origen y su huella |
 | Guías de trabajo | `docs/guias/` | Flujo de trabajo, identidad visual, despliegue, Trello |
 
@@ -69,6 +70,7 @@ Ordenados del más temprano al más tardío. Cuanto antes avisa un sensor, más 
 
 | Momento | Sensor | Qué controla | Si falla |
 |---|---|---|---|
+| Al iniciar cada sesión | Gancho `verificar_arnes.py --sesion` (`SessionStart`) | Que lo declarado en los documentos coincida con lo real: enlaces, comandos, ganchos, skills, índices de bitácora y ADR, tabla de funcionalidades, números de este mapa, cambios sin registrar y propuestas pendientes | Le muestra al agente qué está desactualizado; no bloquea |
 | Antes de cada acción del agente | Gancho `proteger_secretos.py` (`.claude/settings.json`, `PreToolUse`) | Que no lea, edite ni suba `.env`, `terraform.tfvars`, `backend.hcl`, estado de Terraform ni claves | **Bloquea la acción** y le explica el motivo al agente |
 | Después de cada archivo editado | Gancho `revisar_estilo.py` (`PostToolUse`) | flake8 en Python del backend, ESLint en JavaScript del frontend | Le devuelve los errores al agente, que los corrige en el momento |
 | Antes de cada commit | `.pre-commit-config.yaml` | Formato del mensaje (commitlint), flake8, **detección de claves privadas**, archivos grandes, conflictos | El commit no se crea |
@@ -103,20 +105,27 @@ Las sesiones con el agente se cortan, se resumen o cambian; el conocimiento qued
 
 El arnés no se escribió de una vez. **Cada vez que algo falla o se repite, se agrega una regla, un comando, un gancho o un control**, y queda en el [registro de cambios](registro-de-cambios.md) con el problema que lo motivó. Eso es lo que distingue al arnés de una lista de buenas prácticas: se mide por los errores que dejan de repetirse.
 
-## Números del proceso (al 2026-11-02)
+Desde la funcionalidad 038 (pedido de la autora, 2026-11-05) el arnés **se revisa a sí mismo**:
+
+- **Lo declarado tiene que ser verdad.** `.claude/hooks/verificar_arnes.py` compara lo que dicen los documentos con lo que existe. Corre al iniciar cada sesión, en `/cerrar-etapa` (que además actualiza los números de este mapa) y en la integración continua, donde un error impide integrar.
+- **Nada se da por verificado sin correrlo.** Un control que no se pudo ejecutar se informa como «no verificado».
+- **Revisión periódica con `/revisar-arnes`**, al menos una vez por semana: verifica, corrige lo desactualizado, recuerda lo que espera a la autora y propone al menos una mejora.
+
+## Números del proceso (al 2026-11-05)
 
 | Indicador | Valor |
 |---|---|
-| Commits (sin contar integraciones) | 282 |
-| Commits con co-autoría de IA | 238 (84 %) |
-| Pull Requests integrados | 67 |
-| Especificaciones / planes | 30 / 29 |
-| Entradas de bitácora | 48 |
-| ADR | 18 |
-| Pruebas automáticas | 471 backend + 253 frontend |
+| Commits (sin contar integraciones) | 349 |
+| Commits con co-autoría de IA | 305 (87 %) |
+| Pull Requests integrados | 73 |
+| Especificaciones / planes | 36 / 35 |
+| Entradas de bitácora | 59 |
+| ADR | 21 |
+| Pruebas automáticas escritas | 489 backend + 265 frontend |
 
 ## Límites conocidos
 
 - El agente trabaja en un contenedor en la nube: no llega a producción, a AWS ni a algunos servicios externos (Hedera, Cresium). Esas verificaciones dependen de la autora.
 - Los ganchos de estilo dependen de que la herramienta esté instalada en la máquina; si no está, no hacen nada y el control definitivo sigue siendo la integración continua.
+- El verificador de la documentación compara estructura (enlaces, índices, tablas, números), no contenido: no detecta que un texto describa mal lo que hace el código. Eso sigue en las pruebas y en la revisión del Pull Request.
 - El gancho de secretos reconoce los archivos por su nombre: no detecta un secreto copiado dentro de otro archivo (para eso están `detect-private-key` y la revisión del Pull Request).

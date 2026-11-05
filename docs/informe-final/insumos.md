@@ -309,3 +309,13 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Medición provisoria**: 0,977 sin SUS. Valores: backend 97,5 %, frontend 92,4 %, pylint 10, ninguna función con complejidad mayor a 10, 0,1 % de duplicación.
 - **Hallazgo metodológico**: un índice dominado por métricas de código que ya están al máximo puede ocultar una mala usabilidad (con estos valores, alcanzaría un SUS de 23). Conviene informar el SUS y la tasa de éxito aparte, con sus propios objetivos.
 - **Prueba de usabilidad**: protocolo con 8 tareas del flujo principal, SUS en español (Brooke, 1996) y al menos 5 participantes del dominio (Nielsen y Landauer, 1993). Resultados pendientes.
+
+## Revisión continua del arnés (038, 2026-11-05)
+
+- **Pedido de la autora**: que el arnés trabaje todo el tiempo, se mejore día a día, distribuya la información de manera adecuada y que todo lo que declaran los documentos sea verdad.
+- **Hallazgo de la auditoría**: el arnés de la 036 controlaba el código, pero no su propia documentación. El mapa del arnés tenía números de tres días antes (282 commits, 84 % con IA) cuando los reales eran 349 y 87 %, y 23 entradas de bitácora, desde el 2026-10-21, no figuraban en su índice. **Un documento desactualizado es especialmente dañino con un agente sin memoria: la sesión siguiente toma como cierto lo que dice.**
+- **Segundo hallazgo**: medir los números sobre el clon parcial de la sesión en la nube daba 327 commits en lugar de 349, sin ningún aviso. El verificador ahora se niega a calcular números si el historial está cortado.
+- **Qué se hizo**: un verificador (`.claude/hooks/verificar_arnes.py`, 11 pruebas) que compara lo declarado con lo real (enlaces, comandos, ganchos, skills, índices, tablas, números del proceso, cambios sin registrar y propuestas pendientes). Corre al iniciar cada sesión, al cerrar cada etapa y en la integración continua. Los números del mapa del arnés ya no se escriben a mano: se calculan.
+- **Reglas nuevas en `CLAUDE.md`**: lo declarado tiene que ser verdad; nada se da por verificado sin correrlo; cada error repetido deja un control nuevo; el agente puede agregar controles, pero cambiar o quitar uno existente queda como propuesta para la autora. Comando `/revisar-arnes` para la revisión semanal.
+- **Idea para el informe**: el arnés pasa de «sensores sobre el producto» a **«sensores sobre el propio arnés»**. Es el paso que hace sostenible la mejora continua: sin él, cada mejora agrega documentación que después nadie verifica.
+- **Números al 2026-11-05**: 349 commits, 305 con co-autoría de IA (87 %), 73 Pull Requests integrados, 36 especificaciones, 58 entradas de bitácora, 21 ADR; 489 funciones de prueba en el backend y 265 en el frontend (273 casos ejecutados por Vitest).
