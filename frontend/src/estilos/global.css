@@ -6202,3 +6202,32 @@ h1.estado-vacio__titulo {
   flex: 1 1 20rem;
   min-width: 0;
 }
+
+/* --- 037: el pago se acomoda al ancho de su tarjeta, no al de la pantalla --- */
+.pago {
+  container-type: inline-size;
+}
+
+@container (width < 40rem) {
+  .pago__cuerpo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@container (width < 26rem) {
+  .pago__dato {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .pago__dato dt {
+    grid-column: 1 / -1;
+  }
+}
+
+@container (width < 26rem) {
+  .pago__acciones,
+  .pago__acciones .boton {
+    width: 100%;
+    justify-content: center;
+  }
+}
