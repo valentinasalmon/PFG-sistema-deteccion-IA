@@ -1,6 +1,6 @@
 # Informe final: arnés de redacción
 
-Todo lo necesario para que el informe final del Proyecto Final de Grado sea fiel al sistema, esté completo según el protocolo y esté bien escrito. Es la parte del [arnés](../arnes/README.md) dedicada al documento (funcionalidad 037).
+Todo lo necesario para que el informe final del Proyecto Final de Grado sea fiel al sistema, esté completo según el protocolo y esté bien escrito. Es la parte del [arnés](../arnes/README.md) dedicada al documento (funcionalidad 039).
 
 | Pieza | Para qué sirve |
 |---|---|

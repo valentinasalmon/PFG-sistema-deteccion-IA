@@ -1,4 +1,4 @@
-# 037 — Arnés del informe final
+# 039 — Arnés del informe final
 
 **Estado:** Implementada · **Rama:** `claude/gracious-thompson-9slyyn` · **Requisitos:** RNF19 (calidad y documentación), RNF17 (arquitectura verificable) · **Pedido de la autora:** 2026-11-05
 

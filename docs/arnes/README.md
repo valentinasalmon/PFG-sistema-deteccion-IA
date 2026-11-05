@@ -103,7 +103,7 @@ Las sesiones con el agente se cortan, se resumen o cambian; el conocimiento qued
 
 El arnés no se escribió de una vez. **Cada vez que algo falla o se repite, se agrega una regla, un comando, un gancho o un control**, y queda en el [registro de cambios](registro-de-cambios.md) con el problema que lo motivó. Eso es lo que distingue al arnés de una lista de buenas prácticas: se mide por los errores que dejan de repetirse.
 
-## 6. El informe final también tiene arnés (funcionalidad 037)
+## 6. El informe final también tiene arnés (funcionalidad 039)
 
 El documento para la facultad se escribe con la misma lógica que el código: guías antes de escribir, sensores que detectan errores y memoria del estado. Detalle en [docs/informe-final/README.md](../informe-final/README.md).
 

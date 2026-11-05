@@ -1,4 +1,4 @@
-"""Pruebas del generador de diagramas desde el código (funcionalidad 037)."""
+"""Pruebas del generador de diagramas desde el código (funcionalidad 039)."""
 from herramientas import diagramas_del_sistema as diagramas
 
 MODELO = '''

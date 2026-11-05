@@ -310,7 +310,7 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Hallazgo metodológico**: un índice dominado por métricas de código que ya están al máximo puede ocultar una mala usabilidad (con estos valores, alcanzaría un SUS de 23). Conviene informar el SUS y la tasa de éxito aparte, con sus propios objetivos.
 - **Prueba de usabilidad**: protocolo con 8 tareas del flujo principal, SUS en español (Brooke, 1996) y al menos 5 participantes del dominio (Nielsen y Landauer, 1993). Resultados pendientes.
 
-## Arnés del informe final (037, 2026-11-05)
+## Arnés del informe final (039, 2026-11-05)
 
 - El informe también se trabaja con un arnés: guías (redacción, hechos, trabajo con IA, plan de negocios), sensores (un revisor mecánico, las cifras desde el repositorio y un verificador de diagramas) y memoria (el estado y las revisiones). **Para el Cap. VI y la defensa:** la misma lógica de calidad se aplicó al código y al documento.
 - **Diagramas fieles al sistema:**

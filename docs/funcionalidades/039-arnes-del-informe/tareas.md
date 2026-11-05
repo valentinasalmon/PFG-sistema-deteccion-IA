@@ -1,4 +1,4 @@
-# Tareas — 037 Arnés del informe final
+# Tareas — 039 Arnés del informe final
 
 - [x] T1. Revisor mecánico del informe (`backend/herramientas/revisar_informe.py`) y sus pruebas.
 - [x] T2. Cifras del proyecto desde el repositorio (`cifras_del_proyecto.py`) y sus pruebas.

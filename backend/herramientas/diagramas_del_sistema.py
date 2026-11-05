@@ -1,4 +1,4 @@
-"""Diagramas del sistema generados desde el código real (funcionalidad 037).
+"""Diagramas del sistema generados desde el código real (funcionalidad 039).
 
 Un diagrama del informe vale si coincide con el sistema. Esta herramienta lo
 garantiza de tres formas:
@@ -25,7 +25,7 @@ Uso, desde ``backend/``::
     python herramientas/diagramas_del_sistema.py verificar
     python herramientas/diagramas_del_sistema.py renderizar
 
-Realiza: RNF19 (documentación fiel al sistema); funcionalidad 037.
+Realiza: RNF19 (documentación fiel al sistema); funcionalidad 039.
 """
 import argparse
 import ast

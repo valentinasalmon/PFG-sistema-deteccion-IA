@@ -1,4 +1,4 @@
-# 2026-11-05 — Funcionalidad 037: arnés del informe final
+# 2026-11-05 — Funcionalidad 039: arnés del informe final
 
 ## Qué se hizo
 
