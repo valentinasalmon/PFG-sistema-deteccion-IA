@@ -5909,6 +5909,6 @@ h1.estado-vacio__titulo {
 }
 
 /* Enlaces del contenido en verde. */
-.disposicion--interna main a:not(.boton, .boton-enlace, .flujo-caso__titulo) {
+.disposicion--interna main a:not(.boton, .boton-enlace, .flujo-caso__titulo, .contador) {
   color: var(--verde);
 }

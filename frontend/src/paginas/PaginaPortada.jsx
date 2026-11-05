@@ -92,8 +92,8 @@ const MIRADAS = [
 ]
 
 const PASOS = [
-  { titulo: 'Creá el caso', texto: 'Con la fecha y el lugar del hecho.' },
-  { titulo: 'Subí o pedí las fotos', texto: 'Desde tu compu, tu celular o el de tu cliente.' },
+  { titulo: 'Creá el caso o el siniestro', texto: 'Con la fecha y el lugar del hecho.' },
+  { titulo: 'Subí o pedí las fotos', texto: 'Desde tu compu, tu celular o el de tu cliente o asegurado.' },
   { titulo: 'Descargá el informe', texto: 'Sellado y con un código para verificarlo.' },
 ]
 
@@ -269,8 +269,8 @@ export default function PaginaPortada() {
             <span className="portada-recuadro">minutos</span>.
           </h1>
           <p className="portada-heroe__bajada">
-            Subí las fotos de tu caso y evidentIA te muestra, capa por capa, si hay señales de edición o de
-            imagen hecha con IA. Con un informe claro para presentar.
+            Subí las fotos de un caso o de un siniestro y evidentIA te muestra, capa por capa, si hay señales
+            de edición o de imagen hecha con IA. Con un informe claro para presentar o para decidir.
           </p>
           <div className="portada-ctas">
             <Link to="/registro?tipo=independiente" className="portada-pill portada-pill--lima">
@@ -343,7 +343,7 @@ export default function PaginaPortada() {
             <img
               src="/portada/buscador.jpg"
               width="640"
-              height="490"
+              height="409"
               loading="lazy"
               alt="Buscador de evidentIA: escribiendo parte de una dirección aparecen los casos que coinciden"
             />
