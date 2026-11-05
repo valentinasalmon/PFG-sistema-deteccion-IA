@@ -15,7 +15,7 @@
 
 ## Falta
 
-- [ ] T11 — Análisis en pantalla: un solo descargo arriba y los datos técnicos plegados (decisión 2).
+- [x] T11 — Análisis en pantalla: un solo descargo arriba y los datos técnicos plegados (decisión 2).
 - [ ] T12 — Pantalla del caso reorganizada para que no haya tantas tarjetas.
 - [ ] T13 — Login más completo en computadora y con el inicio con Google visible.
 - [ ] T14 — Registro: opciones más espaciadas, manteniendo la elección con el punto.
