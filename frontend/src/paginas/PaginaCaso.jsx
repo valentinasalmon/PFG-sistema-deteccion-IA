@@ -653,6 +653,18 @@ function FlujoDelCaso({ caso, actual, alElegir, children }) {
           )
         })}
       </ol>
+      <a
+        href="?etapa=gestion"
+        className={`flujo-caso__gestion${actual === 'gestion' ? ' flujo-caso__gestion--activa' : ''}`}
+        aria-current={actual === 'gestion' ? 'page' : undefined}
+        onClick={(evento) => {
+          evento.preventDefault()
+          alElegir('gestion')
+        }}
+      >
+        <Icono nombre="lapiz" tamanio={18} />
+        Datos y gestión
+      </a>
       <div className="flujo-caso__cuerpo">{children}</div>
     </div>
   )
@@ -697,7 +709,8 @@ export default function PaginaCaso() {
 
   const { caso, accesos, miembros } = datos
   const pedida = parametros.get('etapa')
-  const etapa = ETAPAS.includes(pedida) ? pedida : etapaPorDefecto(caso)
+  // 037: «gestion» reúne los datos, el estado, los permisos y la transferencia, fuera del flujo.
+  const etapa = pedida === 'gestion' || ETAPAS.includes(pedida) ? pedida : etapaPorDefecto(caso)
   return (
     <>
       <Link to="/casos" className="volver">
@@ -719,68 +732,68 @@ export default function PaginaCaso() {
       </header>
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
 
-      <div className="dos-columnas dos-columnas--caso">
-        <div className="dos-columnas__principal">
-          <FlujoDelCaso caso={caso} actual={etapa} alElegir={elegirEtapa}>
-            {/* Se vuelven a montar al cambiar el estado: cerrar o reabrir cambia qué se puede hacer. */}
-            {etapa === 'imagenes' && (
-              <SeccionImagenes
-                key={caso.estado}
-                idCaso={caso.id}
-                alCambiar={recargar}
-                alSolicitarAnalisis={async () => {
-                  await recargar()
-                  elegirEtapa('analisis')
-                }}
-              />
-            )}
-            {etapa === 'analisis' && (
-              <SeccionAnalisis
-                key={`analisis-${caso.estado}`}
-                idCaso={caso.id}
-                puedeGenerar={caso.acciones.editar}
-                alTerminar={recargar}
-                alVerInforme={() => elegirEtapa('informe')}
-                alCargarImagenes={() => elegirEtapa('imagenes')}
-              />
-            )}
-            {etapa === 'informe' && (
-              <SeccionInformes
-                key={`informes-${caso.actualizado_en}`}
-                idCaso={caso.id}
-                alVerAnalisis={() => elegirEtapa('analisis')}
-              />
-            )}
-          </FlujoDelCaso>
-        </div>
-        <div className="dos-columnas__lateral">
-          <SeccionDatos
-            key={`${caso.actualizado_en}-${caso.estado}`}
-            caso={caso}
-            alGuardar={async (mensaje) => {
-              setAviso({ tipo: 'exito', texto: mensaje })
+      <FlujoDelCaso caso={caso} actual={etapa} alElegir={elegirEtapa}>
+        {/* Se vuelven a montar al cambiar el estado: cerrar o reabrir cambia qué se puede hacer. */}
+        {etapa === 'imagenes' && (
+          <SeccionImagenes
+            key={caso.estado}
+            idCaso={caso.id}
+            alCambiar={recargar}
+            alSolicitarAnalisis={async () => {
               await recargar()
+              elegirEtapa('analisis')
             }}
           />
-          <SeccionEstado caso={caso} ejecutar={ejecutar} />
-          {caso.espacio.tipo === 'organizacion' && (
-            <SeccionAccesos caso={caso} accesos={accesos} miembros={miembros} ejecutar={ejecutar} />
-          )}
-          {(caso.acciones.transferir || caso.acciones.eliminar) && (
-            <details className="plegable plegable--peligro" open={Boolean(caso.transferencia_pendiente)}>
-              <summary>
-                <span className="plegable__titulo">Transferir o eliminar el caso</span>
-              </summary>
-              <div className="plegable__cuerpo">
-                {caso.acciones.transferir && (
-                  <SeccionTransferir caso={caso} miembros={miembros} ejecutar={ejecutar} />
-                )}
-                {caso.acciones.eliminar && <SeccionEliminar caso={caso} />}
-              </div>
-            </details>
-          )}
-        </div>
-      </div>
+        )}
+        {etapa === 'analisis' && (
+          <SeccionAnalisis
+            key={`analisis-${caso.estado}`}
+            idCaso={caso.id}
+            puedeGenerar={caso.acciones.editar}
+            alTerminar={recargar}
+            alVerInforme={() => elegirEtapa('informe')}
+            alCargarImagenes={() => elegirEtapa('imagenes')}
+          />
+        )}
+        {etapa === 'informe' && (
+          <SeccionInformes
+            key={`informes-${caso.actualizado_en}`}
+            idCaso={caso.id}
+            alVerAnalisis={() => elegirEtapa('analisis')}
+          />
+        )}
+        {etapa === 'gestion' && (
+          <div className="gestion-caso">
+            <SeccionDatos
+              key={`${caso.actualizado_en}-${caso.estado}`}
+              caso={caso}
+              alGuardar={async (mensaje) => {
+                setAviso({ tipo: 'exito', texto: mensaje })
+                await recargar()
+              }}
+            />
+            <div className="gestion-caso__columna">
+              <SeccionEstado caso={caso} ejecutar={ejecutar} />
+              {caso.espacio.tipo === 'organizacion' && (
+                <SeccionAccesos caso={caso} accesos={accesos} miembros={miembros} ejecutar={ejecutar} />
+              )}
+              {(caso.acciones.transferir || caso.acciones.eliminar) && (
+                <details className="plegable plegable--peligro" open={Boolean(caso.transferencia_pendiente)}>
+                  <summary>
+                    <span className="plegable__titulo">Transferir o eliminar el {rubro.caso}</span>
+                  </summary>
+                  <div className="plegable__cuerpo">
+                    {caso.acciones.transferir && (
+                      <SeccionTransferir caso={caso} miembros={miembros} ejecutar={ejecutar} />
+                    )}
+                    {caso.acciones.eliminar && <SeccionEliminar caso={caso} />}
+                  </div>
+                </details>
+              )}
+            </div>
+          </div>
+        )}
+      </FlujoDelCaso>
     </>
   )
 }

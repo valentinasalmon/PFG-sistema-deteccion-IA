@@ -4926,6 +4926,72 @@ body:has(.dialogo-velo) {
   gap: 1.25rem;
 }
 
+/* La fila de arriba: los tres pasos y, aparte, «Datos y gestión» (037). */
+.flujo-caso {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+}
+
+.flujo-caso__cuerpo {
+  grid-column: 1 / -1;
+}
+
+.flujo-caso__gestion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1.1rem;
+  border: 1px dashed var(--linea-control);
+  border-radius: 16px;
+  color: var(--tinta-2);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.flujo-caso__gestion:hover,
+.flujo-caso__gestion--activa {
+  border-style: solid;
+  border-color: var(--bosque);
+  color: var(--tinta);
+}
+
+.flujo-caso__gestion--activa {
+  box-shadow: 0 0 0 3px rgb(164 203 62 / 45%);
+}
+
+/* Datos y gestión: datos a la izquierda, estado, permisos y transferencia a la derecha. */
+.gestion-caso {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.gestion-caso__columna {
+  display: grid;
+  gap: 1rem;
+}
+
+.gestion-caso .seccion {
+  margin: 0;
+}
+
+@media (width <= 60rem) {
+  .flujo-caso {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .flujo-caso__gestion {
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .gestion-caso {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* Pasos en horizontal (037): tres columnas unidas por una línea. */
 .flujo-caso__pasos {
   display: grid;
@@ -5911,4 +5977,12 @@ h1.estado-vacio__titulo {
 /* Enlaces del contenido en verde. */
 .disposicion--interna main a:not(.boton, .boton-enlace, .flujo-caso__titulo, .contador) {
   color: var(--verde);
+}
+
+/* Informe dentro del caso: un nivel menos de tarjetas (037, «muchas tarjetas»). */
+.flujo-caso__cuerpo .informe-reciente {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
