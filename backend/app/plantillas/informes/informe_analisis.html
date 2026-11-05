@@ -78,7 +78,9 @@
     .aviso p:last-child { margin-bottom: 0; }
     .apoyo { margin: 10pt 0 0; padding: 0 0 0 8pt; border-left: 2.5pt solid #a4cb3e; font-size: 8.8pt; color: #3a4640; }
     .escala-breve { margin: 0 0 4pt; line-height: 2; }
-    .verificacion td.enlace { padding-right: 10pt; font-size: 8.6pt; }
+    .verificacion td.enlace { padding-left: 4pt; font-size: 8.8pt; }
+    .qr-bloque { break-inside: avoid; page-break-inside: avoid; margin: 0 0 14pt; padding: 10pt 12pt; border: 0.6pt solid #d9e0dc; border-radius: 4pt; }
+    .qr-bloque h3 { margin: 0 0 6pt; font-size: 10.5pt; }
     .aviso strong { color: #17291f; }
   </style>
 </head>
@@ -180,22 +182,30 @@
 
   {% if informe.verificacion %}
   <h2>Más detalle y verificación</h2>
-  <table class="verificacion"><tr>
-    {% if informe.detalle %}
-    <td class="qr"><img src="{{ informe.detalle.qr }}" alt="Código QR del análisis detallado"></td>
-    <td class="enlace">
-      <p><strong>Análisis detallado.</strong> Qué revisó cada técnica, los datos que encontró y por qué llegó a cada nivel, en
-        <strong>{{ informe.detalle.url }}</strong>.</p>
-      <p class="nota">Se abre con una cuenta que tenga acceso a este {{ informe.rubro.objeto | lower }}.</p>
-    </td>
-    {% endif %}
-    <td class="qr"><img src="{{ informe.verificacion.qr }}" alt="Código QR de verificación"></td>
-    <td class="enlace">
-      <p><strong>Verificar este PDF.</strong> Entrá a <strong>{{ informe.verificacion.pagina }}</strong> con el código
-        <strong class="codigo">{{ informe.verificacion.codigo }}</strong>. Si el archivo cambió aunque sea en un carácter, no coincide.</p>
-      <p class="nota">Sin cuenta. La huella del PDF queda sellada en una red pública.</p>
-    </td>
-  </tr></table>
+  {% if informe.detalle %}
+  <div class="qr-bloque">
+    <h3>1. Análisis detallado</h3>
+    <table class="verificacion"><tr>
+      <td class="qr"><img src="{{ informe.detalle.qr }}" alt="Código QR del análisis detallado"></td>
+      <td class="enlace">
+        <p>Qué revisó cada técnica, los datos que encontró y por qué llegó a cada nivel, en
+          <strong>{{ informe.detalle.url }}</strong>.</p>
+        <p class="nota">Se abre con una cuenta que tenga acceso a este {{ informe.rubro.objeto | lower }}.</p>
+      </td>
+    </tr></table>
+  </div>
+  {% endif %}
+  <div class="qr-bloque">
+    <h3>{{ "2. " if informe.detalle else "" }}Verificar este PDF</h3>
+    <table class="verificacion"><tr>
+      <td class="qr"><img src="{{ informe.verificacion.qr }}" alt="Código QR de verificación"></td>
+      <td class="enlace">
+        <p>Entrá a <strong>{{ informe.verificacion.pagina }}</strong> con el código
+          <strong class="codigo">{{ informe.verificacion.codigo }}</strong>. Si el archivo cambió aunque sea en un carácter, no coincide.</p>
+        <p class="nota">Sin cuenta. La huella del PDF queda sellada en una red pública.</p>
+      </td>
+    </tr></table>
+  </div>
   {% endif %}
 
 </body>
