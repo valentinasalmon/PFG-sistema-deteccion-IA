@@ -171,7 +171,7 @@ function Ventana({ alCerrar }) {
           ))}
         </ul>
         <p className="buscador-rapido__estado" role="status">
-          {buscando && 'Buscando casos…'}
+          {buscando && `Buscando ${textosDelRubro(usuario.perfil).casos}…`}
           {sinResultados && `Nada coincide con «${texto}».`}
         </p>
         <p className="buscador-rapido__ayuda" aria-hidden="true">

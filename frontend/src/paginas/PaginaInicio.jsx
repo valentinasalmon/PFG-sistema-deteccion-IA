@@ -133,19 +133,20 @@ function SeguiDonde({ casos }) {
 
 /** Bienvenida para quien todavía no tiene casos: los tres pasos y la acción. */
 function PrimerCaso() {
+  const rubro = useRubro()
   return (
     <section className="seccion primer-caso" aria-labelledby="titulo-primer-caso">
       <IlustracionCarpeta clase="primer-caso__ilustracion" />
       <div className="primer-caso__texto">
-        <h2 id="titulo-primer-caso">Tu primer caso</h2>
+        <h2 id="titulo-primer-caso">Tu primer {rubro.caso}</h2>
         <ol className="primer-caso__pasos">
-          <li>Creá el caso con la fecha y el lugar del hecho.</li>
+          <li>Creá el {rubro.caso} con la fecha y el lugar del hecho.</li>
           <li>Cargá las fotos o pedíselas a la persona afectada.</li>
           <li>Analizalas y descargá el informe.</li>
         </ol>
         <Link to="/casos/nuevo" className="boton">
           <Icono nombre="mas" tamanio={18} />
-          Crear mi primer caso
+          Crear mi primer {rubro.caso}
         </Link>
       </div>
     </section>

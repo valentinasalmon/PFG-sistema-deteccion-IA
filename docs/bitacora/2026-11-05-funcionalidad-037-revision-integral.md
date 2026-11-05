@@ -33,3 +33,26 @@ La presentación con el antes y el después y estas opciones se publicó como p�
 
 - Frontend: 275 pruebas, ESLint sin errores, compilación correcta.
 - Backend: pruebas del informe y del ELA actualizadas; flake8 sin errores.
+
+## Decisiones de la autora sobre la revisión (2026-11-05, tarde)
+
+1. Red neuronal en la portada y los términos: **«Próximamente»** hasta integrar la 012. Aplicado.
+2. Textos del análisis: **un solo descargo arriba y los datos técnicos plegados**. En curso.
+3. Portada: **dos tarjetas por perfil** («Tus casos, con prueba revisada» y «Tus siniestros, verificados antes de liquidar»). Aplicado.
+4. Numeración: **se mantiene «CASO-»** como identificador interno.
+5. Textos nuevos de privacidad: **aprobados** (siguen provisorios hasta la revisión legal final).
+6. Contador «Cerrado»: **ícono claro como el resto**. Aplicado.
+
+### Pedidos nuevos de la autora
+
+- «Siniestro» en todo lo que ve una aseguradora y «caso» para abogados, sin importar perder lo anterior. Aplicado en el caso (datos, estado, compartir, eliminar), la lista, el inicio, el alta, el perfil y el buscador.
+- Login más lleno en computadora y con el inicio con Google; registro con las opciones más espaciadas.
+- Pantalla del caso reorganizada: muchas tarjetas, se pierde la persona.
+- Revisar el celular: cosas fuera de lugar o flotando.
+- Informe: arriba solo una línea («no emite veredictos, es una herramienta de apoyo»).
+- Propuesta del tutor: **PDF breve con un enlace a la versión detallada en línea**, para quien quiera ver el porqué de cada resultado.
+- Seguir revisando el resto de las pantallas y mostrar todo con el antes y el después. Criterio pedido: profesional, limpio y fluido.
+
+### Regla de trabajo
+
+La autora pidió que la bitácora se actualice todos los días, con cada tanda de trabajo, y no solo al cerrar una etapa.

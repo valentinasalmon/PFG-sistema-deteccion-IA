@@ -191,7 +191,7 @@ function ListaVacia({ filtros, conFiltros, alQuitar }) {
   const rubro = useRubro()
   let titulo = 'Todavía no tenés casos.'
   if (conFiltros) {
-    titulo = filtros.busqueda ? `Ningún caso coincide con «${filtros.busqueda}».` : 'No hay casos con esos filtros.'
+    titulo = filtros.busqueda ? `Ningún ${rubro.caso} coincide con «${filtros.busqueda}».` : `No hay ${rubro.casos} con esos filtros.`
   }
   return (
     <EstadoVacio
@@ -222,6 +222,7 @@ async function cargarPantalla(consulta) {
 }
 
 export default function PaginaCasos() {
+  const rubro = useRubro()
   const [parametros, setParametros] = useSearchParams()
   const { state } = useLocation()
   const { usuario } = useSesion()
@@ -273,9 +274,9 @@ export default function PaginaCasos() {
 
       <section className="seccion seccion--lista" aria-labelledby="titulo-resultados" aria-busy={cargando}>
         <h2 id="titulo-resultados" className="seccion__titulo-chico">
-          {datos ? `${datos.total} ${datos.total === 1 ? 'caso' : 'casos'}` : 'Resultados'}
+          {datos ? `${datos.total} ${datos.total === 1 ? rubro.caso : rubro.casos}` : 'Resultados'}
         </h2>
-        {cargando && <Cargando texto="Buscando casos…" />}
+        {cargando && <Cargando texto={`Buscando ${rubro.casos}…`} />}
         {error && <Aviso tipo="error">{error.message}</Aviso>}
         {datos && datos.casos.length === 0 && (
           <ListaVacia filtros={filtros} conFiltros={Boolean(clave)} alQuitar={() => aplicarFiltros(FILTROS_VACIOS)} />
@@ -283,7 +284,7 @@ export default function PaginaCasos() {
         {datos && datos.casos.length > 0 && (
           <ul className="lista-casos">
             <li className="fila-caso fila-caso--encabezado" aria-hidden="true">
-              <span>Caso</span>
+              <span>{rubro.Caso}</span>
               <span>Tipo</span>
               <span>Espacio</span>
               <span>Hecho</span>

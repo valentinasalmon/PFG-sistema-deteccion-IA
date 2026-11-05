@@ -58,7 +58,7 @@ function Formulario({ espacios }) {
     const resultado = await enviar((datos) => crearCaso(datos))
     if (resultado.ok) {
       navegar(`/casos/${resultado.datos.id}?etapa=imagenes`, {
-        state: { mensaje: `Se creó el caso ${resultado.datos.numero}.` },
+        state: { mensaje: `Se creó el ${textosDelRubro(usuario.perfil).caso} ${resultado.datos.numero}.` },
       })
     }
   }

@@ -64,6 +64,7 @@ async function cargarCaso(id) {
 }
 
 function SeccionDatos({ caso, alGuardar }) {
+  const rubro = useRubro()
   const [editando, setEditando] = useState(false)
   const { usuario } = useSesion()
   const referencia = textosDelRubro(usuario.perfil).etiquetaReferencia
@@ -86,7 +87,7 @@ function SeccionDatos({ caso, alGuardar }) {
 
   return (
     <section className="seccion" aria-labelledby="titulo-datos-caso">
-      <h2 id="titulo-datos-caso">Datos del caso</h2>
+      <h2 id="titulo-datos-caso">Datos del {rubro.caso}</h2>
       <dl className="datos-fijos">
         <dt>Responsable</dt>
         <dd>{caso.responsable.nombre}</dd>
@@ -247,6 +248,7 @@ function Plegable({ id, titulo, resumen, abierto = false, children }) {
 }
 
 function SeccionEstado({ caso, ejecutar }) {
+  const rubro = useRubro()
   const { acciones } = caso
   if (!acciones.cerrar && !acciones.archivar && !acciones.desarchivar && !acciones.reabrir) return null
   const vence = caso.retencion_vence ? new Date(caso.retencion_vence) : null
@@ -259,7 +261,7 @@ function SeccionEstado({ caso, ejecutar }) {
       abierto={diasRestantes !== null && diasRestantes <= 30}
     >
       <p className="nota">
-        Cerrar deja el caso en solo lectura y comienza el plazo de retención de 5 años; al reabrirlo, el plazo
+        Cerrar deja el {rubro.caso} en solo lectura y comienza el plazo de retención de 5 años; al reabrirlo, el plazo
         se detiene.
       </p>
       {vence && (
@@ -274,8 +276,8 @@ function SeccionEstado({ caso, ejecutar }) {
       <div className="acciones-en-linea">
         {acciones.cerrar && (
           <BotonConfirmar
-            texto="Cerrar el caso"
-            pregunta="¿Cerrar el caso? Queda en solo lectura y comienza el plazo de retención."
+            texto={`Cerrar el ${rubro.caso}`}
+            pregunta={`¿Cerrar el ${rubro.caso}? Queda en solo lectura y comienza el plazo de retención.`}
             textoConfirmar="Cerrar"
             onConfirmar={() => ejecutar(() => cambiarEstadoCaso(caso.id, 'cerrar'))}
           />
@@ -283,7 +285,7 @@ function SeccionEstado({ caso, ejecutar }) {
         {acciones.archivar && (
           <BotonConfirmar
             texto="Archivar"
-            pregunta="¿Archivar el caso? Deja de aparecer en el listado por defecto."
+            pregunta={`¿Archivar el ${rubro.caso}? Deja de aparecer en el listado por defecto.`}
             textoConfirmar="Archivar"
             onConfirmar={() => ejecutar(() => cambiarEstadoCaso(caso.id, 'archivar'))}
           />
@@ -291,7 +293,7 @@ function SeccionEstado({ caso, ejecutar }) {
         {acciones.desarchivar && (
           <BotonConfirmar
             texto="Desarchivar"
-            pregunta="¿Desarchivar el caso? Vuelve a Cerrado."
+            pregunta={`¿Desarchivar el ${rubro.caso}? Vuelve a Cerrado.`}
             textoConfirmar="Desarchivar"
             onConfirmar={() => ejecutar(() => cambiarEstadoCaso(caso.id, 'desarchivar'))}
           />
@@ -299,7 +301,7 @@ function SeccionEstado({ caso, ejecutar }) {
         {acciones.reabrir && (
           <BotonConfirmar
             texto="Reabrir"
-            pregunta="¿Reabrir el caso? Se detiene el plazo de retención."
+            pregunta={`¿Reabrir el ${rubro.caso}? Se detiene el plazo de retención.`}
             textoConfirmar="Reabrir"
             onConfirmar={() => ejecutar(() => cambiarEstadoCaso(caso.id, 'reabrir'))}
           />
@@ -310,6 +312,7 @@ function SeccionEstado({ caso, ejecutar }) {
 }
 
 function SeccionAccesos({ caso, accesos, miembros, ejecutar }) {
+  const rubro = useRubro()
   const [destino, setDestino] = useState('organizacion')
   const [nivel, setNivel] = useState('lectura')
   const puedeCompartir = caso.acciones.compartir
@@ -399,7 +402,7 @@ function SeccionAccesos({ caso, accesos, miembros, ejecutar }) {
             />
           </div>
           <button type="submit" className="boton">
-            Compartir el caso
+            Compartir el {rubro.caso}
           </button>
         </form>
       )}
@@ -491,6 +494,7 @@ function SeccionTransferir({ caso, miembros, ejecutar }) {
 }
 
 function SeccionEliminar({ caso }) {
+  const rubro = useRubro()
   const navegar = useNavigate()
   const [confirmacion, setConfirmacion] = useState('')
   const [error, setError] = useState(null)
@@ -512,9 +516,9 @@ function SeccionEliminar({ caso }) {
 
   return (
     <section className="seccion zona-riesgo" aria-labelledby="titulo-eliminar">
-      <h2 id="titulo-eliminar">Eliminar el caso</h2>
+      <h2 id="titulo-eliminar">Eliminar el {rubro.caso}</h2>
       <p>
-        Se eliminan el caso y sus datos de forma definitiva, y se avisa a quienes tenían acceso. No se puede
+        Se eliminan el {rubro.caso} y sus datos de forma definitiva, y se avisa a quienes tenían acceso. No se puede
         deshacer.
       </p>
       {error && <Aviso tipo="error">{error}</Aviso>}
@@ -527,7 +531,7 @@ function SeccionEliminar({ caso }) {
           autoComplete="off"
         />
         <button type="submit" className="boton boton--peligro" disabled={!coincide || enviando}>
-          Eliminar el caso
+          Eliminar el {rubro.caso}
         </button>
       </form>
     </section>
@@ -679,7 +683,7 @@ export default function PaginaCaso() {
     [recargar],
   )
 
-  if (cargando) return <Cargando texto="Cargando el caso…" />
+  if (cargando) return <Cargando texto={`Cargando el ${rubro.caso}…`} />
   // Sin el caso, un estado vacío con salida en lugar de un aviso suelto (037).
   if (error) {
     return (
