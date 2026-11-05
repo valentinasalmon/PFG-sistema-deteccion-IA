@@ -5768,16 +5768,17 @@ h1.estado-vacio__titulo {
     grid-column: 1 / -1;
   }
 
-  /* Pestañas: botones en dos columnas, todos a la vista. */
+  /* Pestañas: botones que llenan cada fila (ninguno queda solo y suelto), todos a la vista. */
   .pestanias {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 0.4rem;
     border-bottom: 0;
     overflow: visible;
   }
 
   .pestanias__pestania {
+    flex: 1 1 auto;
     min-height: 44px;
     padding: 0 0.75rem;
     border: 1px solid var(--linea);
@@ -5823,6 +5824,11 @@ h1.estado-vacio__titulo {
 
   .seccion--filtros {
     padding: 1rem;
+  }
+
+  /* La acción de la cabecera va debajo del título, alineada con el resto, no suelta a la derecha. */
+  .cabecera-caso__accion {
+    margin-left: 0;
   }
 }
 

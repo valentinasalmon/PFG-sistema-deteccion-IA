@@ -76,3 +76,10 @@ La primera versión del vocabulario por perfil agregaba una frase suelta por pan
 - Inicio de sesión en dos columnas con «Continuar con Google» (visible donde Google está configurado, como en producción); registro más espaciado.
 - Administrador: menú grafito con la píldora «Admin».
 - Recorridos de punta a punta de aseguradora y abogado (computadora y celular emulado), con evidencia en `docs/funcionalidades/037-acceso-y-pantallas/evidencia.md`.
+
+## Espacios y elementos flotantes (pedido de la autora)
+
+- La barra «0 de 2 elegidas · Analizar» flotaba sobre las fotos aunque no hubiera ninguna elegida: pasó a una fila fija arriba de la galería.
+- «Invitar miembros» ocupa el ancho de su tarjeta (el máximo de los formularios lo dejaba suelto).
+- Celular: la huella SHA-256 del análisis se salía del borde (ahora abreviada con «Copiar»); «Editar los datos» de la organización quedaba suelto a la derecha; con tres pestañas, la tercera quedaba sola en una fila. Corregido; capturas en `capturas/`.
+- Cada capa del análisis se describe sola (título, explicación y tipo) y el frontend los toma de la API: sumar la red neuronal es una clase (documentado en `docs/red-neuronal/07`).

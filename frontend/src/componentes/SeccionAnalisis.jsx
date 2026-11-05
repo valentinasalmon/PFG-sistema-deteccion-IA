@@ -38,6 +38,7 @@ import Aviso from './Aviso.jsx'
 import Cargando from './Cargando.jsx'
 import ComparadorMapa from './ComparadorMapa.jsx'
 import Etiqueta from './Etiqueta.jsx'
+import HuellaCorta from './HuellaCorta.jsx'
 import Icono from './Icono.jsx'
 
 export const INTERVALO_DE_CONSULTA = 2000
@@ -318,7 +319,9 @@ function Resultados({ analisis, miniaturas }) {
           Integridad verificada
         </span>
       )}
-      <p className="huella">SHA-256 {imagen.huella}</p>
+      <p className="nota">
+        SHA-256 <HuellaCorta huella={imagen.huella} />
+      </p>
       {imagen.integridad === 'alterada' ? (
         <Aviso tipo="error">
           La huella SHA-256 de esta imagen ya no coincide con la registrada al cargarla: se
