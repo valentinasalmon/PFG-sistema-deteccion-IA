@@ -78,3 +78,4 @@ Decisión de la autora (CP-17, 2026-10-16), aplicada en la funcionalidad 021.
 | **RN38** | Una organización de aseguradora queda pendiente hasta que el Administrador la aprueba; mientras tanto no puede invitar miembros. Si el Administrador la rechaza, se elimina y la cuenta de quien la registró se desactiva. |
 | **RN39** | Una cuenta con perfil Aseguradora que deja de pertenecer a toda aseguradora queda desactivada: no puede iniciar sesión, salvo para aceptar una invitación vigente, que la reactiva. |
 | **RN40** | Solo los usuarios con perfil Abogado pueden crear organizaciones, y solo del tipo Estudio Jurídico. Las organizaciones de aseguradora se crean únicamente al registrar la aseguradora (RN36). |
+| **RN41** | Si la verificación de identidad está activa, una aseguradora pendiente solo se aprueba con la identidad de su Referente aprobada. La plataforma guarda el resultado de la verificación, no los datos biométricos (funcionalidad 035, CP-35). |

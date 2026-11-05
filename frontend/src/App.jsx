@@ -38,6 +38,7 @@ import PaginaNuevoCaso from './paginas/PaginaNuevoCaso.jsx'
 import PaginaOrganizacion from './paginas/PaginaOrganizacion.jsx'
 import PaginaOrganizaciones from './paginas/PaginaOrganizaciones.jsx'
 import PaginaPago from './paginas/PaginaPago.jsx'
+import PaginaVerificacionIdentidad from './paginas/PaginaVerificacionIdentidad.jsx'
 import PaginaPerfil from './paginas/PaginaPerfil.jsx'
 import PaginaPortada from './paginas/PaginaPortada.jsx'
 import PaginaPrivacidad from './paginas/PaginaPrivacidad.jsx'
@@ -67,6 +68,7 @@ export default function App() {
         <Route path="/invitaciones/responder" element={<PaginaInvitacion />} />
         <Route path="/cargar/:token" element={<PaginaCargaCelular />} />
         <Route path="/pago/:token" element={<PaginaPago />} />
+        <Route path="/identidad/:token" element={<PaginaVerificacionIdentidad />} />
         <Route path="/verificar" element={<PaginaVerificarInforme />} />
         <Route path="/verificar/:codigo" element={<PaginaVerificarInforme />} />
         <Route path="/terminos" element={<PaginaTerminos />} />

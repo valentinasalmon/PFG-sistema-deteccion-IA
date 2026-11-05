@@ -5,10 +5,18 @@
  */
 import { solicitar } from './cliente.js'
 
-/** Aseguradoras pendientes de aprobación, con su Referente. */
+/**
+ * Aseguradoras pendientes de aprobación, con su Referente y su identidad (035).
+ *
+ * Cada una lleva ``exigeIdentidad``: si la verificación de identidad está
+ * activa, no se puede aprobar sin la identidad del Referente aprobada (RN41).
+ */
 export async function listarAseguradorasPendientes() {
-  const { aseguradoras } = await solicitar('GET', '/api/administracion/aseguradoras-pendientes')
-  return aseguradoras
+  const { aseguradoras, verificacion_identidad: exige } = await solicitar(
+    'GET',
+    '/api/administracion/aseguradoras-pendientes',
+  )
+  return aseguradoras.map((aseguradora) => ({ ...aseguradora, exigeIdentidad: exige === true }))
 }
 
 /** Aprueba una aseguradora pendiente. */

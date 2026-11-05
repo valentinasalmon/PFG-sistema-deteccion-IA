@@ -63,7 +63,7 @@ class ServicioOrganizaciones:
 
     def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self, repositorio, usuarios, correos, tokens, configuracion, registro, casos=None,
-        archivos=None, pagos=None,
+        archivos=None, pagos=None, identidad=None,
     ):
         """
         Args:
@@ -75,7 +75,10 @@ class ServicioOrganizaciones:
             archivos: ``ArchivosDeCasos``, que borra las imágenes de los casos
                 que se eliminan con la organización (RN21, funcionalidad 006).
             pagos: ``ServicioPagos``, que cobra el plan (funcionalidad 032).
+            identidad: ``ServicioIdentidad``, que exige la identidad verificada del
+                Referente antes de aprobar una aseguradora (funcionalidad 035).
         """
+        self.identidad = identidad
         self.pagos = pagos
         self.casos = casos
         self.archivos = archivos
@@ -831,6 +834,9 @@ class ServicioOrganizaciones:
         """Aprueba una aseguradora pendiente y avisa a su Referente (CA8 de la 021)."""
         self._exigir_administrador(usuario)
         organizacion = self._pendiente(id_organizacion)
+        if self.identidad is not None:
+            # RN41: con la verificación activa, solo con la identidad del Referente aprobada.
+            self.identidad.exigir_aprobada(organizacion)
         organizacion.estado = ORGANIZACION_ACTIVA
         organizacion.aprobada_en = ahora_utc()
         self._auditar(
