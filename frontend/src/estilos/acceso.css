@@ -634,3 +634,33 @@
   gap: 1rem;
   margin: 1.25rem 0 1.75rem;
 }
+
+/*
+ * --- Mismo alto para todas las tarjetas de cuenta (037) ---
+ * En computadora, inicio de sesión, registro, recuperación y las demás miden
+ * exactamente lo mismo (60rem × 42rem). El contenido se centra; si un paso es
+ * más largo, se desplaza dentro de la columna sin cambiar la tarjeta.
+ */
+@media (width > 60rem) {
+  .acceso.acceso--completo:has(.inicio-dividido) .tarjeta-acceso {
+    min-height: 0;
+  }
+
+  .inicio-dividido {
+    height: 42rem;
+    min-height: 0;
+  }
+
+  .inicio-dividido__formulario {
+    display: flex;
+    flex-direction: column;
+    justify-content: safe center;
+    overflow-y: auto;
+    padding: 2.5rem 3rem;
+    scrollbar-gutter: stable;
+  }
+
+  .acceso.acceso--completo .inicio-dividido .camino {
+    padding-block: 0.8rem;
+  }
+}
