@@ -187,9 +187,9 @@ function esAtajoBuscar(evento) {
 
 /**
  * Botón del menú que abre el buscador y escucha el atajo de teclado en toda
- * la pantalla interna.
+ * la pantalla interna. Con ``conBoton={false}`` solo escucha el atajo (037).
  */
-export default function BuscadorRapido({ alAbrir }) {
+export default function BuscadorRapido({ alAbrir, conBoton = true }) {
   const [abierto, setAbierto] = useState(false)
 
   useEffect(() => {
@@ -204,19 +204,21 @@ export default function BuscadorRapido({ alAbrir }) {
 
   return (
     <>
-      <button
-        type="button"
-        className="buscador-rapido__abrir"
-        onClick={() => {
-          alAbrir?.()
-          setAbierto(true)
-        }}
-        aria-keyshortcuts="Control+K Meta+K"
-      >
-        <Icono nombre="buscar" tamanio={18} />
-        <span>Buscar o ir a…</span>
-        <kbd aria-hidden="true">Ctrl K</kbd>
-      </button>
+      {conBoton && (
+        <button
+          type="button"
+          className="buscador-rapido__abrir"
+          onClick={() => {
+            alAbrir?.()
+            setAbierto(true)
+          }}
+          aria-keyshortcuts="Control+K Meta+K"
+        >
+          <Icono nombre="buscar" tamanio={18} />
+          <span>Buscar o ir a…</span>
+          <kbd aria-hidden="true">Ctrl K</kbd>
+        </button>
+      )}
       {abierto && <Ventana alCerrar={() => setAbierto(false)} />}
     </>
   )

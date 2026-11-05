@@ -585,7 +585,7 @@ function resumirEtapas(caso) {
         caso.estado === 'en_analisis'
           ? 'En curso'
           : analizado
-            ? 'Listo · revisá los indicios'
+            ? 'revisá los indicios'
             : 'Se habilita cuando cargues las fotos',
       disponible: conImagenes,
     },
@@ -600,57 +600,56 @@ function resumirEtapas(caso) {
 }
 
 /**
- * El caso como un flujo vertical continuo (034): Imágenes → Análisis →
- * Informe unidos por una línea. El paso abierto muestra su contenido; los
- * terminados quedan plegados en verde con su resumen; los pendientes dicen
- * cuándo se habilitan. Cada título es un enlace (``?etapa=``) para abrirlo.
+ * El caso como un flujo de tres pasos (034): Imágenes → Análisis → Informe.
+ *
+ * Desde la funcionalidad 037 los pasos van en horizontal, unidos por una
+ * línea, y el contenido del paso abierto va debajo, a todo el ancho. Cada
+ * paso es un enlace (``?etapa=``) que se puede tocar entero; los terminados
+ * quedan en verde con su resumen y los pendientes dicen cuándo se habilitan.
  */
 function FlujoDelCaso({ caso, actual, alElegir, children }) {
   const etapas = describirEtapas(caso)
   const resumenes = resumirEtapas(caso)
   return (
-    <ol className="flujo-caso" aria-label="Etapas del caso">
-      {ETAPAS.map((etapa) => {
-        const { texto, hecha } = etapas[etapa]
-        const { resumen, disponible } = resumenes[etapa]
-        const abierta = etapa === actual
-        const estado = abierta ? 'actual' : hecha ? 'hecho' : 'pendiente'
-        const abrir = (evento) => {
-          evento.preventDefault()
-          alElegir(etapa)
-        }
-        return (
-          <li key={etapa} className={`flujo-caso__paso flujo-caso__paso--${estado}`}>
-            <span className="flujo-caso__nodo" aria-hidden="true">
-              <Icono nombre={hecha && !abierta ? 'marca' : ICONO_DE_ETAPA[etapa]} tamanio={20} />
-            </span>
-            <div className="flujo-caso__cabecera">
-              {disponible || abierta ? (
-                <a
-                  href={`?etapa=${etapa}`}
-                  className="flujo-caso__titulo"
-                  aria-current={abierta ? 'page' : undefined}
-                  onClick={abrir}
-                >
-                  {texto}
-                </a>
-              ) : (
-                <span className="flujo-caso__titulo">{texto}</span>
-              )}
-              {hecha && !abierta && <span className="flujo-caso__chip flujo-caso__chip--listo">Listo</span>}
-              {abierta && <span className="flujo-caso__chip">Abierto</span>}
-              {!abierta && <span className="flujo-caso__resumen">{resumen}</span>}
-              {!abierta && disponible && (
-                <button type="button" className="boton boton--fantasma boton--chico" onClick={abrir}>
-                  {hecha ? 'Ver' : 'Abrir'}
-                </button>
-              )}
-            </div>
-            {abierta && <div className="flujo-caso__cuerpo">{children}</div>}
-          </li>
-        )
-      })}
-    </ol>
+    <div className="flujo-caso">
+      <ol className="flujo-caso__pasos" aria-label="Etapas del caso">
+        {ETAPAS.map((etapa) => {
+          const { texto, hecha } = etapas[etapa]
+          const { resumen, disponible } = resumenes[etapa]
+          const abierta = etapa === actual
+          const estado = abierta ? 'actual' : hecha ? 'hecho' : 'pendiente'
+          const abrir = (evento) => {
+            evento.preventDefault()
+            alElegir(etapa)
+          }
+          return (
+            <li key={etapa} className={`flujo-caso__paso flujo-caso__paso--${estado}`}>
+              <span className="flujo-caso__nodo" aria-hidden="true">
+                <Icono nombre={hecha && !abierta ? 'marca' : ICONO_DE_ETAPA[etapa]} tamanio={20} />
+              </span>
+              <div className="flujo-caso__cabecera">
+                {disponible || abierta ? (
+                  <a
+                    href={`?etapa=${etapa}`}
+                    className="flujo-caso__titulo"
+                    aria-current={abierta ? 'page' : undefined}
+                    onClick={abrir}
+                  >
+                    {texto}
+                  </a>
+                ) : (
+                  <span className="flujo-caso__titulo">{texto}</span>
+                )}
+                <span className="flujo-caso__resumen">
+                  {abierta ? 'Viendo ahora' : hecha ? `Listo · ${resumen}` : resumen}
+                </span>
+              </div>
+            </li>
+          )
+        })}
+      </ol>
+      <div className="flujo-caso__cuerpo">{children}</div>
+    </div>
   )
 }
 

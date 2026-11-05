@@ -122,7 +122,7 @@ function SeguiDonde({ casos }) {
           {[caso.lugar, `actualizado el ${formatearFecha(caso.actualizado_en)}`].filter(Boolean).join(' · ')}
         </p>
       </div>
-      <Link to={`/casos/${caso.id}`} className="boton">
+      <Link to={`/casos/${caso.id}`} className="boton boton--oscuro">
         {paso.accion}
         <Icono nombre="derecha" tamanio={18} />
       </Link>
