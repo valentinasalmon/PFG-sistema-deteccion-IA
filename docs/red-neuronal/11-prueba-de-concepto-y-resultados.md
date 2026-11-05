@@ -2,6 +2,42 @@
 
 Este capítulo registra **cada corrida** del modelo, de la más nueva a la más vieja. Cada corrida nueva agrega su sección.
 
+## Corrida 2 · Entrenamiento completo con la receta v1 · 2026-11-05 · versión 1.0.0 (sin publicar todavía)
+
+| | |
+|---|---|
+| Objetivo | Entrenamiento completo (T30) con la receta v1 depurada |
+| Entorno | Google Colab Pro, cuaderno `03_entrenamiento_completo_colab.ipynb` |
+| Código | Commit `0ee4e9e` de `funcionalidad/010-red-neuronal` |
+| Datos | 17 500 reales y 17 500 sintéticas: Community Forensics (7 500 + 7 500) y OpenFake (10 000 + 10 000), 210 generadores. Validación sin errores |
+| Huella del manifiesto | `9ad67940…f929c480` |
+| Configuración | `v1.yaml`: EfficientNet-B0, 15 épocas, lote 64, tasa 0,0003, paciencia 3 |
+| Experimento MLflow | `a2c520ed7fc14b9985a6ebe35abe28dc` |
+| Tiempos | validar 194 s; preparar 2 900 s (48 min). El entrenamiento terminó a las 18:06 y la evaluación a las 18:10 |
+
+### Entrenamiento
+
+El AUC de validación subió de 0,875 (época 0) a **0,948 (época 12)**, la mejor; las épocas 13 y 14 no mejoraron. La pérdida de entrenamiento bajó de 0,85 a 0,09. Temperatura **2,36**; ECE de validación **0,069 → 0,020**.
+
+### Resultados
+
+| Conjunto | AUC | Otras métricas (umbral 0,5) |
+|---|---|---|
+| **Prueba** (generadores conocidos, 1 750 reales y 1 696 sintéticas) | **0,961** | Exactitud 0,909 · precisión 0,940 · exhaustividad 0,870 · **F1 0,904** · ECE 0,085 |
+| **No visto: familia de Google** (219 sintéticas contra las 1 750 reales de prueba) | **0,938** | Detecta el 74 % (161 de 219). Imagen 4: AUC 0,949; Imagen 3: 0,929; Nano Banana 2: 0,855 (solo 17 imágenes) |
+| **Condiciones reales: conjunto propio** (49 imágenes de choques: ChatGPT 12, Copilot 17, Gemini 20; original y captura) | — (no hay reales todavía) | **Detecta solo 5 de 49 (10 %)**: Gemini 3/20, ChatGPT 1/12, Copilot 1/17. Original 3/24, captura 2/25 |
+| Exportación ONNX | — | Diferencia con PyTorch 0,0000015 · 22,9 ms por imagen en CPU |
+
+**Por generador (prueba, grupos con 20 o más sintéticas):** los ajustes de SDXL, SD 1.5 y StyleGAN2 superan 0,99. Los más difíciles: VQDiffusion (0,67), GigaGAN (0,62, solo 17 imágenes), SDXL RealVis (0,87), Midjourney 6 (0,92; detecta el 68 %), FLUX 1.1 Pro (0,93; detecta el 54 %) y GPT Image 1 (0,94; detecta el 74 %).
+
+### Cómo leerlo
+
+- **Cumple los dos criterios** que estaban en discusión (CP-07): AUC de prueba 0,961 ≥ 0,90 y F1 0,904 ≥ 0,85. El modelo está bien calibrado (ECE 0,02 en validación).
+- **Generaliza razonablemente a una familia comercial que no vio** (Google: AUC 0,938), aunque detecta menos que en la prueba (74 % contra 87 %).
+- **El hallazgo más importante es negativo:** con las imágenes que generó la autora con ChatGPT, Gemini y Copilot en la escena de choques, el modelo detecta apenas una de cada diez con el umbral 0,5. Con tan pocas imágenes y sin fotos reales de choques no se puede calcular el AUC, así que todavía no se sabe si el modelo las ordena bien con otro umbral o si directamente no las distingue. Las razones posibles: las herramientas de 2025 y 2026 son más nuevas que los generadores del entrenamiento, y las escenas de autos dañados no están en los datos de entrenamiento.
+- **Qué hacer:** sumar fotos reales de choques al conjunto propio (CarDD y fotos propias) para calcular el AUC por escena; ampliar el conjunto propio a las demás escenas; y, en la versión 1.1.0, sumar al entrenamiento generadores comerciales recientes (la familia de Google y, si se puede leer, MLLM-Generated con GPT Image 2 y Nano Banana 2). **Ninguna imagen del conjunto propio se usa para entrenar** (CA12).
+- **Falta publicar:** no se ejecutó la celda de publicación (no hay `compuerta.json`). Con estas métricas la compuerta debería aprobar.
+
 ## Corrida 1 · Prueba de concepto · 2026-10-30 · versión 0.1.0
 
 | | |
