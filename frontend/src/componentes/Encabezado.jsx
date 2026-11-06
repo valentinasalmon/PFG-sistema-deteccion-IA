@@ -10,7 +10,10 @@
  * plataforma ve solo Administración y Mi perfil; «Organizaciones» aparece
  * solo para quien es miembro de alguna.
  *
- * Desde la funcionalidad 034 suma el buscador «Buscar o ir a…» (Ctrl K).
+ * Desde la funcionalidad 034 suma el buscador «Buscar o ir a…» (Ctrl K); desde
+ * la 037 el menú es verde bosque y, en computadora, el buscador se abre solo
+ * con el atajo, sin botón en la barra (pedido de la autora); en el celular,
+ * donde no hay teclado, el botón queda dentro del menú desplegable.
  *
  * Realiza: RF04 y CA7, CA11 de la funcionalidad 002; CA7 de la 034; RNF10.
  */
@@ -36,12 +39,13 @@ export default function Encabezado() {
   const cerrarMenu = () => setAbierto(false)
 
   return (
-    <header className={`lateral ${abierto ? 'lateral--abierto' : ''}`}>
+    <header className={`lateral ${esAdministradora ? 'lateral--admin' : ''} ${abierto ? 'lateral--abierto' : ''}`}>
       <div className="lateral__marca">
         <Link to={esAdministradora ? '/administracion' : '/'} className="lateral__logo" onClick={cerrarMenu}>
-          <img src="/marca/logo-tipografia-negra.png" alt="evidentIA, ir al inicio" />
+          <img src="/marca/logo-tipografia-blanca.png" alt="evidentIA, ir al inicio" />
         </Link>
-        <span className="lateral__servicio">{rubro.servicio}</span>
+        {/* 037: la administración se distingue a simple vista de una cuenta de trabajo. */}
+        <span className="lateral__servicio">{esAdministradora ? 'Admin' : rubro.servicio}</span>
         <button
           type="button"
           className="lateral__alternar"
@@ -56,7 +60,7 @@ export default function Encabezado() {
         {!esAdministradora && (
           <Link to="/casos/nuevo" className="boton lateral__nuevo" onClick={cerrarMenu}>
             <Icono nombre="mas" tamanio={18} />
-            Nuevo caso
+            {rubro.nuevo}
           </Link>
         )}
         <BuscadorRapido alAbrir={cerrarMenu} />
@@ -74,7 +78,7 @@ export default function Encabezado() {
               </NavLink>
               <NavLink to="/casos" onClick={cerrarMenu}>
                 <Icono nombre="casos" />
-                <span>Casos</span>
+                <span>{rubro.Casos}</span>
               </NavLink>
               {usuario.en_organizacion && (
                 <NavLink to="/organizaciones" onClick={cerrarMenu}>

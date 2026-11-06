@@ -1,0 +1,199 @@
+# Receta de datos y entrenamiento v1 (tarea T27).
+#
+# Completada el 2026-11-04 con la exploración (T25) que corrió la autora en
+# Colab: revisión exacta de cada conjunto, columnas confirmadas, conteos por
+# clase y por generador en 12 archivos de cada uno. Detalle y números en el
+# capítulo 4 de docs/red-neuronal/ y en la bitácora del 2026-10-30.
+#
+# Decisiones:
+#   - Community Forensics: cada archivo tiene una sola clase (2 992 imágenes)
+#     y un único bloque de 0,3 a 4,1 GB. Se usan 4 archivos de reales y los 6
+#     de sintéticas explorados (se evita el HFCF_small_103, de 4,1 GB). Sus
+#     sintéticas son 216 generadores abiertos: 6 grandes (GAN y difusión) y
+#     unos 210 ajustes finos chicos. La cuota de 500 evita que GigaGAN y
+#     VQDiffusion dominen; sin los generadores que no hacen fotos quedan unas
+#     9 100 sintéticas disponibles y se piden 7 500 (margen para las
+#     descartadas por contenido explícito).
+#   - OpenFake: los 12 archivos explorados mezclan reales (~2 000) y
+#     sintéticas (~2 000) de 74 generadores, comerciales incluidos (GPT Image,
+#     DALL·E 3, Midjourney 6, Ideogram, FLUX Pro, Seedream, Grok). La cuota de
+#     700 limita a SD 3.5, SD 2.1 y FLUX dev. Sus reales son fotos grandes
+#     (lado menor mediano 3 349 px, ~4 MB): por eso el búfer de mezcla es
+#     chico (300), para no agotar la RAM de Colab.
+#   - Generadores no vistos: la familia de Google (Imagen 4, Imagen 3 y Nano
+#     Banana 2, que es lo que usa Gemini). Van completos a «no_visto» y son
+#     la base de la demostración de reentrenamiento (versión 1.1.0). Son ~1,7 %
+#     de las sintéticas de OpenFake: quedan en la misma fuente y el desbalance
+#     que generan en el entrenamiento (~1 %) está dentro de la tolerancia.
+#   - Las fotos reales de escenas del sistema (CarDD, SCIN, obras) NO se usan
+#     para entrenar: van al conjunto propio, para evaluar (regla de oro).
+#   - Treasure, MLLM-Generated, ShareGPT-4o y CarDD no están en Parquet (son
+#     carpetas de imágenes o archivos .tar): no entran en esta versión.
+#     ConstructionSite espera la aprobación del acceso. Semi-Truths no declara
+#     una licencia verificable.
+#
+# Depuración (2026-11-04): además del contenido explícito, se excluyen los
+# generadores que no hacen fotos (56 de Community Forensics y 10 de OpenFake,
+# elegidos por su nombre), se descartan las imágenes de menos de 256 px y la
+# normalización nunca agranda. Los duplicados exactos se saltean al obtener y
+# la etapa validar detiene el pipeline ante imágenes corruptas, duplicadas o
+# fugas entre particiones.
+#
+# Total: 17 500 reales y 17 500 sintéticas (3,5 veces la prueba de concepto),
+# de las que ~170 sintéticas de Google quedan como «no vistas».
+
+nombre: v1
+semilla: 42
+datos:
+  fuentes:
+    - nombre: community_forensics
+      tipo: hugging_face
+      conjunto: OwensLab/CommunityForensics-Small
+      revision: 6c539a534c07917307c381f5af4053c6091b5278
+      columna_imagen: image_data
+      columna_clase: label
+      valores_sinteticos: ["1"]
+      columna_generador: model_name
+      excluir:
+        nsfw_flag: ["True"]               # contenido explícito: no se usa
+        # Generadores que no hacen fotos (dibujo, anime, historieta, pixel art,
+        # 3D caricaturesco, logos, maquetas web, fractales, patrones), elegidos
+        # por su nombre: las reales son fotos, y con ellos el modelo aprendería
+        # «ilustración = sintética» en lugar de las huellas de la generación.
+        model_name:
+          - "Muhammadreza/mann-e-artistic-1"
+          - "Muhammadreza/mann-e-artistic-2-revised-2"
+          - "Muhammadreza/mann-e-sketches-revised-2"
+          - "Muhammadreza/mann-e-dark-fantasy"
+          - "Muhammadreza/mann-e-dark-fantasy-revised-2"
+          - "Muhammadreza/mann-e-pixel-art-revised-2"
+          - "Muhammadreza/mann-e-comics-revised-2"
+          - "Muhammadreza/mann-e-concept-revised-2"
+          - "Muhammadreza/mann-e-bitmap-revised-2"
+          - "Muhammadreza/mann-e-barbie-revised-2"
+          - "Muhammadreza/mann-e-barbie"
+          - "JacobPerera/website-design-mockup-1"
+          - "baruga/mandelbrot-fractals"
+          - "nan2/lcbanner"
+          - "ainz/astroidlogox-v1"
+          - "Yntec/Emoticons"
+          - "Yntec/3DCute"
+          - "Yntec/Cute"
+          - "Yntec/DucHaitenClassicAnime768"
+          - "Yntec/WoopWoopAnime"
+          - "Yntec/mistoonEmerald2"
+          - "Yntec/DucHaiten-Retro-Diffusers"
+          - "Yntec/NyankoMotsiX"
+          - "Yntec/Astro_-_-Gemu"
+          - "metametaivan/anime-test"
+          - "ImAbbieKitten/protoanime2"
+          - "mm00/anything-v3.0-light"
+          - "xyn-ai/EimisAnimeDiffusion_1.0v"
+          - "erens/GhostShellStyleV1"
+          - "erens/YourNameStyleV3"
+          - "Nacholmo/Counterfeit-V2.5-vae-swapped"
+          - "Nacholmo/VOXO-v0-vtuber-diffusers"
+          - "shrikant11/pokemon_text_to_image_2"
+          - "MirageML/lowpoly-world"
+          - "gurbofrogman/spyro-etd"
+          - "gurbofrogman/happy-textures-model-happytex"
+          - "ainz/diseny-pixar"
+          - "FloydianSound/Aoi_Ogata_Artstyle_v1-5"
+          - "FloydianSound/Nixeu_Diffusion_v1-5"
+          - "FloydianSound/Redline_Diffusion_V1-5"
+          - "lexsplash/SynthwavePunk-v2"
+          - "EnD-Diffusers/duskfallcomicmixpartdeux"
+          - "EnD-Diffusers/BallJointDoll"
+          - "EnD-Diffusers/bubble-toys"
+          - "EnD-Diffusers/JemandtheHolograms"
+          - "EnD-Diffusers/Gambit_and_Rogue"
+          - "gagong/korean-sumukhwa-model-ver-1"
+          - "Norod78/SD15-VinageStyle"
+          - "AmritaLakshmi/kuromi-swg"
+          - "Duskfallcrew/duskfallai"
+          - "MaxReynolds/textual_inversion_apriltag1-object"
+          - "MaxReynolds/textual_inversion_rusicon"
+          - "MaxReynolds/textual_inversion_apriltag2-object-rainbow"
+          - "MaxReynolds/textual_inversion_apriltag2-object"
+          - "MaxReynolds/textual_inversion_apriltag1"
+          - "Zack3D/Zack3D_Kinky-v1"
+      archivos:
+        # reales (2 992 cada uno)
+        - data/HFCF_small_118.parquet
+        - data/HFCF_small_121.parquet
+        - data/HFCF_small_123.parquet
+        - data/HFCF_small_154.parquet
+        # sintéticas (2 992 o 2 993 cada uno)
+        - data/HFCF_small_13.parquet
+        - data/HFCF_small_15.parquet
+        - data/HFCF_small_57.parquet
+        - data/HFCF_small_68.parquet
+        - data/HFCF_small_79.parquet
+        - data/HFCF_small_88.parquet
+      cuota_por_generador: 500
+      bufer_mezcla: 1000
+      cantidad_reales: 7500
+      cantidad_sinteticas: 7500
+      licencia: CC BY-NC-SA 4.0 (ficha de la revisión 6c539a5)
+
+    - nombre: openfake
+      tipo: hugging_face
+      conjunto: ComplexDataLab/OpenFake
+      revision: 3247b942f18d39d1fd476b1077852af033d35d8c
+      columna_imagen: image
+      columna_clase: label
+      valores_sinteticos: ["fake"]
+      columna_generador: model
+      excluir:
+        # Anime, estilo Ghibli y un modelo de prueba que genera ruido
+        # («tiny-random-sana»): no son fotos.
+        model:
+          - "novaanimexl_ilv140"
+          - "animagine-xl-3.0"
+          - "animagine-xl-3.1"
+          - "animagine-xl-4.0"
+          - "anima-preview"
+          - "anima-preview2"
+          - "studio-ghibli-wan2.1-t2v-14b-v1.0"
+          - "noobai"
+          - "one-obsession-17-red-sdxl"
+          - "tiny-random-sana"
+      archivos:
+        - core/train-00000-of-00032-00012.parquet
+        - core/train-00001-of-00032-00000.parquet
+        - core/train-00004-of-00032-00000.parquet
+        - core/train-00004-of-00032-00015.parquet
+        - core/train-00005-of-00032-00006.parquet
+        - core/train-00006-of-00032-00015.parquet
+        - core/train-00011-of-00032-00006.parquet
+        - core/train-00012-of-00032-00009.parquet
+        - core/train-00014-of-00032-00002.parquet
+        - core/train-00022-of-00032-00001.parquet
+        - core/train-00028-of-00032-00013.parquet
+        - core/train-00031-of-00032-00002.parquet
+      cuota_por_generador: 700
+      bufer_mezcla: 300
+      cantidad_reales: 10000
+      cantidad_sinteticas: 10000
+      licencia: CC BY-NC 4.0 (ficha de la revisión 3247b94)
+
+  # Familia de Google (Gemini): nunca se usa para entrenar ni validar.
+  generadores_reservados: ["imagen-4.0", "imagen-3.0-002", "nano-banana-2"]
+  proporciones: { entrenamiento: 0.8, validacion: 0.1, prueba: 0.1 }
+  calidad_jpeg: [75, 95]
+  lado_menor: [256, 512]
+  # Las imágenes con el lado menor por debajo de 256 px se descartan al obtener:
+  # al normalizar habría que agrandarlas, y la interpolación deja marcas propias.
+  lado_menor_minimo: 256
+
+entrenamiento:
+  arquitectura: efficientnet_b0
+  epocas: 15
+  tamanio_lote: 64
+  tasa_aprendizaje: 0.0003
+  paciencia: 3
+  trabajadores_carga: 4
+  precision_mixta: true
+
+exportacion: { opset: 18, tolerancia: 0.001 }
+compuerta: { auc_minimo: 0.90 }

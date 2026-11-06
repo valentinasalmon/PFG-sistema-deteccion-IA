@@ -86,6 +86,12 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   Criterio: la plataforma muestra la versión breve y el PDF, el detalle legible.
 - **"Host tokenizado" (029):** cada despliegue sella en Hedera la huella de su artefacto, y cada análisis guarda su commit. La verificación pública muestra con qué versión se analizó: refuerza la cadena de custodia sobre el propio software.
 
+- **Entorno de entrenamiento de la red neuronal (2026-10-28):**
+  - se pasó de Kaggle a Google Colab gratuito (GPU T4), a elección de la autora;
+  - como Colab no conserva el disco entre sesiones, el cuaderno respalda en Google Drive el resultado de cada etapa y retoma desde la última completa;
+  - gracias a que el *pipeline* separa las etapas con entradas y salidas en disco, el cambio solo tocó el cuaderno, no el código;
+  - Colab Pro (unos US$ 10 por mes) queda como opción si la versión gratuita no alcanza.
+
 - **Inicio con Google (027, 2026-10-28):**
   - OpenID Connect con código de autorización y PKCE del lado del servidor, sin JavaScript de terceros ni biblioteca de JWT (ADR-0019, con la justificación de OpenID Connect Core 3.1.3.7);
   - el rubro se pide igual la primera vez, porque define el lenguaje y los permisos;
@@ -184,6 +190,74 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
 ## Portada: quinta tanda (2026-11-02)
 
 - La autora simplificó la portada: menos elementos decorativos (globos, sellos, letras de fondo, ojo) y menos secciones (sin «para quién»), con las cuatro capas del análisis presentadas como una lista vertical junto a su título. Para el informe: iteración de diseño guiada por la revisión de la autora, de una portada «cargada» a una más directa.
+## Prueba de concepto de la red neuronal (2026-10-30)
+
+- El pipeline del clasificador corrió de punta a punta en Colab (GPU T4) con 10 000 imágenes, en unos 11 minutos. Resultados: AUC de prueba 0,985, exactitud 0,933, calibración por temperatura (ECE de 0,047 a 0,021), modelo ONNX idéntico al de PyTorch (diferencia 2,6 × 10⁻⁶) y 24 ms por imagen en CPU.
+- Para el informe:
+  - es la validación del diseño MLOps (ADR-0014): etapas separadas, respaldo en Drive, ficha generada automáticamente y registro en MLflow;
+  - **las métricas de la prueba de concepto no deben presentarse como desempeño real:** una sola fuente, sin generadores no vistos ni imágenes recomprimidas. El resultado válido es el del entrenamiento completo con el conjunto propio;
+  - lección aprendida: con muchos generadores y pocas imágenes por cada uno, las métricas por generador son ruido; la receta v1 usa menos generadores con más imágenes;
+  - el 82 % del tiempo se va en obtener y preparar los datos, no en entrenar.
+- La autora cuenta con Colab Pro por un año (suscripción a Gemini), lo que elimina el costo de GPU del presupuesto.
+
+## Exploración de datos, receta v1 y conjunto propio (2026-10-30)
+
+- **Exploración antes de entrenar:** cada conjunto se verifica en su revisión exacta (licencia, columnas, generadores, formatos) sin bajarlo entero, leyendo solo las columnas livianas de los Parquet. Un conjunto sin licencia verificable se excluye (CA2). Es un buen ejemplo de gobernanza de datos para el informe.
+- **Atajos por tema, no solo por formato:** si se agregan fotos reales de autos dañados o de lesiones al entrenamiento sin sintéticas de las mismas escenas, el modelo aprende el tema. Por eso esas fotos solo se usan para evaluar, y la evaluación se desglosa por escena (reales y sintéticas del mismo tema).
+- **No hay conjuntos públicos de lesiones con origen verificable** fotografiadas con celular: los que circulan están armados con fotos de internet. Se usa SCIN (piel fotografiada por las propias personas, con tono de piel etiquetado), fotos de conocidos con consentimiento y Fitzpatrick17k para el tono de piel.
+- **Diseño del conjunto propio:** 90 prompts numerados y equilibrados (escenas, autos, luces, seis tonos de piel), el mismo prompt en todas las herramientas, versiones del prompt registradas (v1, v2 si la herramienta se niega, v3 si sale con aspecto de render) y tres variantes de cada imagen. Si una herramienta se niega más con algún tono de piel, también se registra como hallazgo.
+- **Corrección metodológica:** la partición «no visto» solo tiene sintéticas; se evalúa contra las reales de prueba para que el AUC tenga sentido.
+- **Robustez operativa:** el entrenamiento completo saltea las etapas ya terminadas con el mismo manifiesto y guarda los datos preparados en Drive, para tolerar los cortes de Colab sin rehacer horas de trabajo.
+
+## Decisiones de alcance del conjunto propio y relevamiento completo de fuentes (2026-10-30)
+
+### Decisiones de la autora
+
+- **Sin escenas de viviendas** (CP-39): el sistema solo tiene casos automovilísticos y laborales (`TIPOS_CASO` del backend). Se quitaron de la especificación (010, CA12).
+- **Sin la versión de WhatsApp** en el conjunto propio: las fotos de un caso las sube la persona afectada desde el enlace de carga, así que llegan como **original, captura o imagen generada con IA**. Se evalúa en dos versiones (original y captura). La aumentación de entrenamiento sigue incluyendo recompresión JPEG, que cubre capturas, cámaras de celular y fotos que pasaron antes por alguna aplicación. Para el informe: es un ejemplo de cómo el diseño del sistema (el enlace de carga de la funcionalidad 028) cambia las condiciones que hay que medir en el modelo.
+
+### Relevamiento de fuentes: qué se encontró y qué se hizo con cada una
+
+Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-imagenes-sinteticas.md`.
+
+| Fuente | Tipo | Licencia | Decisión | Motivo |
+|---|---|---|---|---|
+| Community Forensics *Small* | Reales y sintéticas, cientos de generadores abiertos | CC BY-NC-SA 4.0 | Entrenamiento (base) | Ya probada en la prueba de concepto |
+| OpenFake | Generadores comerciales recientes | Cambia entre revisiones (CC BY-SA / BY-NC / BY-NC-SA) | Entrenamiento y no vistos | Fijar una revisión: ejemplo de que la licencia es parte de la versión de los datos |
+| Treasure, AIGenImages2026, MLLM-Generated | Generadores de 2025 y 2026 (GPT-image, Midjourney v7, Gemini, FLUX.2) | A verificar | Candidatos a no vistos | Medir generalización a herramientas comerciales nuevas |
+| ShareGPT-4o-Image | Solo GPT-4o | Sin licencia encontrada | Solo si se verifica | CA2: sin licencia verificable no se usa |
+| TrueFake | Imágenes compartidas en redes sociales | A verificar | Ya no es prioritaria | Su aporte era la recompresión de redes, que dejó de medirse |
+| Semi-Truths | Ediciones localizadas | «cc» sin variante | Solo para medir ediciones (CA13) | La capa 4 no es responsable de ediciones parciales |
+| VISION y FODB | Fotos reales de celulares, originales y reenviadas | CC BY-SA 4.0 / a verificar | Descartadas para evaluar | Escenas ajenas al sistema (regla de oro) y la versión WhatsApp ya no se mide |
+| CarDD | Fotos reales de autos dañados | Investigación no comercial | Reales del conjunto propio (escenas 1 a 3) | Misma escena que las generadas; no se usa para entrenar |
+| SCIN (Google y Stanford) | Fotos de piel sacadas por las personas, con tono de piel | Licencia de uso de datos SCIN, investigación | Reales de lesiones (escena 5), repartidas por tono | Único conjunto con fotos caseras de origen verificable y tono etiquetado |
+| Fitzpatrick17k | Fotos clínicas con tipo de piel 1 a 6 | CC BY-NC-SA 3.0 | Complemento para el tono de piel | Origen documentado, anterior a 2022 |
+| MOCS / ConstructionSite | Fotos reales de obras | CC BY-NC 4.0 | Reales de lugares de trabajo (escena 6) | Misma escena que las generadas |
+| SODA | Obras con trabajadores y herramientas | Sin verificar | Quizás, escena 7 | Pendiente de licencia |
+| Heridas de Kaggle, Roboflow y rupeshsah/wound | Heridas por tipo | Varias | **Descartadas** | Fotos juntadas de internet: origen no verificable (podrían ser generadas) y, en un caso, tamaño fijo de 350 × 350 que es un atajo de formato |
+| HOUSE DAMAGE LEVEL y otros de viviendas | Daños en casas | CC BY 4.0 | **Fuera de alcance** | Sin casos de viviendas en el sistema (CP-39) |
+| GenImage, WildFake, Chameleon | Detección de sintéticas | Sin licencia o a pedido | Descartados por ahora | Generadores viejos, sesgo de JPEG documentado o licencia no verificable |
+
+### Hallazgos para el informe
+
+- **Licencias:** casi todas son no comerciales y algunas cambian entre revisiones. Alcanza para el proyecto final; una versión comercial requeriría reentrenar con datos de licencia compatible.
+- **Atajos:** además del atajo de formato («Fake or JPEG?»), existe el **atajo de tema**. Si se suman fotos reales de una escena sin sintéticas de la misma escena, el modelo aprende el tema. Por eso las fotos reales de las escenas del sistema solo se usan para evaluar, y la evaluación se desglosa por escena.
+- **Equidad:** las lesiones se generan y se evalúan en seis tonos de piel (escala de Fitzpatrick aproximada). Si una herramienta se niega a generar con algún tono más que con otros, se registra como hallazgo.
+- **Gobernanza de datos:** antes de usar un conjunto se verifica en su revisión exacta, sin bajarlo entero; lo que no tiene licencia verificable queda excluido y anotado.
+- **Herramienta de generación más probable en casos reales:** Meta AI, porque está dentro de WhatsApp, Instagram y Facebook. Se genera desde la web para tener el archivo original.
+
+## Exploración de datos sin agotar la memoria (2026-11-03)
+
+- La primera ejecución de la exploración en Colab terminó con el código -9: el proceso se quedó sin memoria al bajar un bloque completo de imágenes solo para mirar 24. Medido con un Parquet de prueba, pyarrow lee el bloque entero de la columna aunque se pidan pocas filas.
+- Solución: consultar primero el tamaño del bloque en los metadatos del Parquet (unos KB) y omitir la muestra si es grande, guardar los resultados después de cada conjunto y correr cada conjunto en un proceso aparte. Para el informe: ejemplo de diseño robusto ante límites del entorno de ejecución y de diagnóstico a partir del cuaderno guardado.
+
+## Resultado de la exploración y receta v1 (2026-11-04)
+
+- De ocho conjuntos candidatos, dos quedaron para entrenar (Community Forensics y OpenFake). Los demás quedaron fuera por formato (carpetas de imágenes o `.tar` en lugar de Parquet), por licencia no verificable (Semi-Truths, CA2) o por acceso pendiente (ConstructionSite). Tabla completa en `docs/red-neuronal/04-datos.md`.
+- **Sesgo de tamaño y formato medido:** en OpenFake las fotos reales tienen un lado menor mediano de 3 349 px (JPEG, calidad 95) y las sintéticas de unos 880 px (PNG, JPEG, WebP). En Community Forensics, las sintéticas son PNG de 512 × 512. Es la evidencia concreta de por qué hace falta la normalización anti-atajos.
+- **Generadores no vistos:** la familia de Google (Imagen 4, Imagen 3, Nano Banana 2), que usa Gemini. Permite medir la generalización a una herramienta comercial y demostrar el reentrenamiento (1.0.0 → 1.1.0).
+- **Lección de ingeniería de datos:** una propuesta automática de receta no garantiza que los datos alcancen; se verificó la disponibilidad real por generador antes de fijar cantidades. Y los límites del entorno (RAM y disco de Colab) obligaron a decisiones concretas: búfer de mezcla por fuente y borrado de las imágenes crudas una vez preparadas.
+- Receta v1: 19 000 reales y 19 000 sintéticas, 290 generadores en total.
 
 ## Hedera y Cresium: estado real al 2026-11-02
 
@@ -213,3 +287,40 @@ Lista viva de temas, decisiones y hallazgos que tienen que quedar en el **inform
   - las integraciones externas se prueban contra el servicio real.
 - **Números del proceso**: 282 commits, 238 con co-autoría de IA (84 %), 67 Pull Requests integrados, 30 especificaciones, 48 entradas de bitácora, 18 ADR y 724 pruebas automáticas.
 - **Episodio para el informe y la exposición**: al commitear la 036, el gancho de secretos bloqueó un commit del propio agente (falso positivo: el mensaje nombraba un archivo secreto). El agente intentó corregir el gancho y Claude Code se lo impidió por ser auto-modificación de un control. La corrección quedó como propuesta para la autora. Muestra que el arnés protege sus propios controles y que la última palabra es humana.
+
+## Depuración de los datos de entrenamiento (2026-11-04)
+
+- No se usan los conjuntos completos: se toma una muestra de archivos con revisión fija y se depura en cada etapa (tabla en `docs/red-neuronal/04-datos.md`).
+- Se agregaron dos filtros contra atajos: **excluir los generadores que no hacen fotos** (anime, historieta, pixel art, logos, maquetas, fractales: 66 en total), porque las reales son fotos y el modelo aprendería «ilustración = IA»; y **descartar las imágenes de menos de 256 px sin agrandar nunca** al normalizar, porque la interpolación deja marcas propias.
+- Limitaciones declaradas: no se detectan casi duplicados, no se filtran las reales de OpenFake que no son fotos y los temas de reales y sintéticas difieren entre conjuntos.
+- Incidente de los cuadernos (2026-11-04): al cuaderno de entrenamiento completo le faltaba la celda de instalación; las pruebas automáticas cubren el paquete, pero no los cuadernos de Colab, que solo se validaban por sintaxis. Se agregó una verificación de dependencias al inicio del cuaderno. Para el informe: límite de la integración continua y por qué el paso a paso en Colab tiene su propia comprobación.
+
+## Verificación de identidad de aseguradoras (035, 2026-11-04)
+
+- **Qué resuelve**: antes, el Administrador solo podía comprobar a mano que quien registraba una aseguradora trabajara en ella. Con la 035, el Referente verifica su identidad (DNI + rostro con prueba de vida) y la aprobación queda bloqueada hasta que esté aprobada (RN41).
+- **Privacidad por diseño**: la plataforma guarda solo el resultado, el motivo y una referencia del proveedor; no tiene dónde guardar biometría. Los datos biométricos son sensibles (Ley 25.326) y quedan del lado del proveedor.
+- **Proveedor intercambiable**: igual que el cobro (ADR-0020), con una versión simulada que permite mostrar el flujo completo antes de tener el contrato.
+- **Identik** (proveedor argentino): ofrece redirección o iFrame y resultado por *webhook*. Precios publicados al 2026-11-04: firma electrónica desde USD 0,27 por documento (pack de 1.000) y verificación biométrica USD 0,80 por firma; firma digital $ 21.990 por documento. La verificación aparte se cotiza a medida. RENAPER requiere credencial propia del registro.
+- **Decisiones abiertas** para el informe: CP-41 (verificación aparte o dentro de la firma electrónica) y CP-42 (firmar el informe PDF o dejarlo como trabajo futuro).
+
+## Índice de calidad y usabilidad (018, 2026-11-04)
+
+- **Fórmula del QI** (propuesta para CP-04): QI = 0,20·Cb + 0,15·Cf + 0,15·E + 0,10·K + 0,10·D + 0,30·U. Los componentes son la cobertura del backend y del frontend, pylint, la complejidad ciclomática acotada, el código sin duplicar y el SUS. Se mide con `backend/herramientas/indice_calidad.py`.
+- **Medición provisoria**: 0,977 sin SUS. Valores: backend 97,5 %, frontend 92,4 %, pylint 10, ninguna función con complejidad mayor a 10, 0,1 % de duplicación.
+- **Hallazgo metodológico**: un índice dominado por métricas de código que ya están al máximo puede ocultar una mala usabilidad (con estos valores, alcanzaría un SUS de 23). Conviene informar el SUS y la tasa de éxito aparte, con sus propios objetivos.
+- **Prueba de usabilidad**: protocolo con 8 tareas del flujo principal, SUS en español (Brooke, 1996) y al menos 5 participantes del dominio (Nielsen y Landauer, 1993). Resultados pendientes.
+
+## Revisión integral de la interfaz (037, 2026-11-05)
+
+- **Método**: recorrido automatizado con capturas en dos anchos (1440 y 390 px), por perfil (abogado, aseguradora, administrador y visitante), más un script que detecta contenido fuera del ancho. Encontró 21 problemas; 17 se corrigieron y 4 quedaron como decisiones de la autora.
+- **Hallazgo de diseño**: el mismo motor sirve a dos rubros, pero el vocabulario era único («caso»). Para una aseguradora el objeto de trabajo es el *siniestro*; se resolvió con un diccionario por perfil, sin tocar los datos ni las direcciones.
+- **Hallazgo de coherencia**: la portada y el acceso tenían una identidad (verde bosque y lima) y el sistema otra (azul). Se unificaron con una maqueta previa de dos alternativas sobre las pantallas reales.
+- **Informe**: el descargo de que no emite veredictos estaba solo al final; pasó a la primera página, que es la que se lee siempre (ADR-0017).
+
+## Verificación visual automatizada (037, 2026-11-05)
+
+- **Problema**: al unificar el tamaño de las tarjetas de acceso (alto fijo, pedido de la autora), el agente verificó las pantallas que motivaron el cambio y no las demás que usan la misma tarjeta; el pago, la elección del plan y el resultado del pago quedaron cortados. Lo detectó la autora.
+- **Lección**: un estilo compartido es una dependencia: cambiarlo exige revisar a todos sus usuarios, igual que una función compartida exige correr las pruebas de quienes la llaman. Las pruebas unitarias de la interfaz (Vitest con jsdom) no ven la maquetación.
+- **Solución en el arnés**: un sensor de diseño con Playwright que mide, en 1440 y 390 px, desplazamiento horizontal, contenido cortado, contenido escondido en contenedores con desplazamiento propio y controles fuera de la pantalla, aplicado en cada captura de los recorridos de punta a punta. Se validó reintroduciendo el error: el sensor lo informa («muestra 672 px de 1308 px») y no marca nada con la corrección.
+- **Otras decisiones de la tanda**: el pago es una «caja» y usa la tarjeta a todo el ancho; la aseguradora se elige con un cuadro combinado accesible (WAI-ARIA combobox) en lugar de una lista de tarjetas; el Administrador recibe un correo cuando una aseguradora paga; el caso guía el siguiente paso (cargar → analizar → informe) con un cierre al pie del análisis.
+

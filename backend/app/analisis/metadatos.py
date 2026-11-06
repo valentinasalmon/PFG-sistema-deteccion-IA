@@ -163,6 +163,12 @@ class CapaMetadatos(CapaAnalisis):
 
     nombre = "metadatos"
     titulo = "Metadatos"
+    que_significa = (
+        "Revisa los datos guardados dentro del archivo (dispositivo, fecha, programa de "
+        "edición) en busca de señales de edición o de inteligencia artificial. WhatsApp y las "
+        "redes sociales suelen borrarlos: su ausencia no indica por sí sola una manipulación."
+    )
+    tipo_de_resultado = "determinista"
 
     def __init__(self, ruta_exiftool="exiftool", tiempo_espera=20):
         self.ruta_exiftool = ruta_exiftool

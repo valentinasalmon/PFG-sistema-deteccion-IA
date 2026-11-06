@@ -131,6 +131,11 @@ class CapaAnalisis:
 
     nombre = ""
     titulo = ""
+    # Qué mira la capa, en lenguaje común, y si comprueba un dato o estima (025, 037).
+    # Cada capa los declara: la pantalla y el informe los toman de acá, así una capa
+    # nueva (la red neuronal) se muestra bien sin tocar el frontend.
+    que_significa = ""
+    tipo_de_resultado = "probabilistico"
 
     def version(self):
         """Versión de la capa y de sus herramientas, para la reproducibilidad (RN29)."""

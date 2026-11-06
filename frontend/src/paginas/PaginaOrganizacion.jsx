@@ -37,6 +37,7 @@ import Pestanias from '../componentes/Pestanias.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
 import Icono from '../componentes/Icono.jsx'
+import SeccionIdentidad from '../componentes/SeccionIdentidad.jsx'
 import SeccionPlan from '../componentes/SeccionPlan.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { usePestaniaElegida } from '../hooks/usePestaniaElegida.js'
@@ -588,6 +589,9 @@ export default function PaginaOrganizacion() {
           La aseguradora está pendiente de aprobación. El Administrador de la plataforma va a
           revisar el registro y te avisamos por correo; mientras tanto no podés invitar a tu equipo.
         </Aviso>
+      )}
+      {organizacion.estado === 'pendiente' && organizacion.tipo === 'aseguradora' && (
+        <SeccionIdentidad organizacion={organizacion} esReferente={esReferente} />
       )}
 
       <Pestanias etiqueta="Secciones de la organización" pestanias={PESTANIAS} actual={actual} alElegir={elegir}>

@@ -38,28 +38,15 @@ import Aviso from './Aviso.jsx'
 import Cargando from './Cargando.jsx'
 import ComparadorMapa from './ComparadorMapa.jsx'
 import Etiqueta from './Etiqueta.jsx'
+import HuellaCorta from './HuellaCorta.jsx'
 import Icono from './Icono.jsx'
 
 export const INTERVALO_DE_CONSULTA = 2000
 
-const TITULOS_CAPA = {
-  metadatos: 'Metadatos',
-  c2pa: 'Credenciales de contenido (C2PA)',
-  ela: 'Niveles de error (ELA)',
-}
 const TITULOS_TABLA = {
   metadatos: 'Metadatos extraídos',
   c2pa: 'Datos de las credenciales',
   ela: 'Datos del análisis',
-}
-// Versión breve del recuadro "¿Qué significa?" del informe PDF.
-const QUE_SIGNIFICA = {
-  metadatos:
-    'Revisa los datos guardados dentro del archivo (dispositivo, fecha, programa de edición) en busca de señales de edición o de inteligencia artificial. WhatsApp y las redes sociales suelen borrarlos: su ausencia no indica por sí sola una manipulación.',
-  c2pa:
-    'Comprueba si la imagen trae credenciales de contenido firmadas (C2PA) que declaren quién la hizo y con qué herramienta. Si la firma es confiable y declara inteligencia artificial, es el indicio más fuerte de la plataforma. No tener credenciales es lo más habitual.',
-  ela:
-    'Vuelve a comprimir la imagen y compara cuánto cambia cada zona: una parte pegada o retocada suele comportarse distinto. Es orientativa: bordes, textos e imágenes reenviadas también producen diferencias, por eso nunca supera el nivel moderado.',
 }
 
 const ESTADOS_FIRMA = {
@@ -183,8 +170,20 @@ function EstadoDeLaFirma({ detalle }) {
   )
 }
 
+/**
+ * Conclusión de una técnica sin la recomendación de consultar a un perito, que
+ * ya figura una sola vez arriba del análisis (037).
+ */
+function sinDescargo(texto) {
+  return (texto ?? '')
+    .replace(/\s*Este resultado es un indicio y no constituye una conclusión definitiva\.?/g, '')
+    .replace(/\s*Se recomienda consultar a un perito especializado[^.]*\.?/g, '')
+    .trim()
+}
+
 function ResultadoDeCapa({ resultado, imagen, original }) {
-  const titulo = TITULOS_CAPA[resultado.capa] ?? resultado.capa
+  // Cada capa se describe sola desde el backend (037): título y explicación.
+  const titulo = resultado.titulo ?? resultado.capa
   if (resultado.estado === 'no_disponible') {
     return (
       <div className="resultado-capa">
@@ -215,7 +214,7 @@ function ResultadoDeCapa({ resultado, imagen, original }) {
         />
         <strong>{resultado.nivel} %</strong>
       </div>
-      <p>{resultado.conclusion}</p>
+      <p>{sinDescargo(resultado.conclusion)}</p>
       {resultado.anomalias.length > 0 && (
         <ul className="lista-anomalias" aria-label={`Hallazgos de la capa ${titulo}`}>
           {resultado.anomalias.map((anomalia, indice) => (
@@ -248,24 +247,25 @@ function ResultadoDeCapa({ resultado, imagen, original }) {
           </figcaption>
         </figure>
       )}
-      <details className="que-significa">
-        <summary>¿Qué significa?</summary>
-        <p>{QUE_SIGNIFICA[resultado.capa] ?? 'Esta capa busca señales técnicas de edición o de generación artificial.'}</p>
+      {/* 037: lo explicativo y lo técnico, juntos y plegados, para que la pantalla se lea rápido. */}
+      <details className="mas-detalle">
+        <summary>Qué significa y datos técnicos</summary>
+        <p>{resultado.que_significa || 'Esta técnica busca señales de edición o de generación artificial.'}</p>
+        {resultado.detalle?.tabla?.length > 0 && (
+          <>
+            <h5>{TITULOS_TABLA[resultado.capa] ?? 'Datos extraídos'}</h5>
+            <dl className="datos-fijos">
+              {resultado.detalle.tabla.map((fila) => (
+                <div key={fila.campo} className="datos-fijos__fila">
+                  <dt>{fila.campo}</dt>
+                  <dd>{fila.valor}</dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        )}
+        <p className="nota">Versión de la técnica: {resultado.version}</p>
       </details>
-      {resultado.detalle?.tabla?.length > 0 && (
-        <details>
-          <summary>{TITULOS_TABLA[resultado.capa] ?? 'Datos extraídos'}</summary>
-          <dl className="datos-fijos">
-            {resultado.detalle.tabla.map((fila) => (
-              <div key={fila.campo} className="datos-fijos__fila">
-                <dt>{fila.campo}</dt>
-                <dd>{fila.valor}</dd>
-              </div>
-            ))}
-          </dl>
-        </details>
-      )}
-      <p className="nota">Versión: {resultado.version}</p>
     </div>
   )
 }
@@ -275,7 +275,8 @@ export function ResumenDeImagen({ imagen }) {
   return (
     <ul className="resumen-capas" aria-label={`Resumen de ${imagen.nombre}`}>
       {imagen.resultados.map((resultado) => {
-        const titulo = TITULOS_CAPA[resultado.capa] ?? resultado.capa
+        // Cada capa se describe sola desde el backend (037): título y explicación.
+  const titulo = resultado.titulo ?? resultado.capa
         if (resultado.estado === 'no_disponible') {
           return (
             <li key={resultado.capa} className="resumen-capas__item">
@@ -318,7 +319,9 @@ function Resultados({ analisis, miniaturas }) {
           Integridad verificada
         </span>
       )}
-      <p className="huella">SHA-256 {imagen.huella}</p>
+      <p className="nota">
+        SHA-256 <HuellaCorta huella={imagen.huella} />
+      </p>
       {imagen.integridad === 'alterada' ? (
         <Aviso tipo="error">
           La huella SHA-256 de esta imagen ya no coincide con la registrada al cargarla: se
@@ -371,27 +374,34 @@ function AccionesDelInforme({ idCaso, analisis, puedeGenerar, alGenerar, alVerIn
     }
   }
 
+  // 037: el cierre del análisis va al pie de los resultados, como siguiente paso.
   return (
-    <div className="acciones-informe">
+    <div className="acciones-informe cierre-etapa" role="region" aria-label="Siguiente paso">
       {error && <Aviso tipo="error">{error}</Aviso>}
       {analisis.informe ? (
-        <div className="acciones-en-linea">
-          {alVerInforme && (
-            <button type="button" className="boton" onClick={alVerInforme}>
-              <Icono nombre="documento" tamanio={18} />
-              Ver el informe
+        <>
+          <div className="cierre-etapa__texto">
+            <strong>Análisis terminado. El informe PDF está listo.</strong>
+            <span className="nota">Descargalo o seguí a la etapa Informe para verificarlo y compartirlo.</span>
+          </div>
+          <div className="acciones-en-linea">
+            <button
+              type="button"
+              className={alVerInforme ? 'boton boton--secundario' : 'boton'}
+              disabled={enviando}
+              onClick={() => ejecutar(() => descargarInforme(idCaso, analisis.informe.id))}
+            >
+              <Icono nombre="descargar" tamanio={18} />
+              Descargar el informe PDF
             </button>
-          )}
-          <button
-            type="button"
-            className={alVerInforme ? 'boton boton--secundario' : 'boton'}
-            disabled={enviando}
-            onClick={() => ejecutar(() => descargarInforme(idCaso, analisis.informe.id))}
-          >
-            <Icono nombre="descargar" tamanio={18} />
-            Descargar el informe PDF
-          </button>
-        </div>
+            {alVerInforme && (
+              <button type="button" className="boton boton--lima" onClick={alVerInforme}>
+                Seguir al informe
+                <Icono nombre="derecha" tamanio={18} />
+              </button>
+            )}
+          </div>
+        </>
       ) : (
         <>
           <Aviso tipo="info">No se pudo generar el informe PDF de este análisis.</Aviso>
@@ -463,6 +473,7 @@ function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar, alVerInforme })
       )}
       {analisis.estado === 'finalizado' && (
         <>
+          <Resultados analisis={analisis} miniaturas={miniaturas} />
           <AccionesDelInforme
             idCaso={idCaso}
             analisis={analisis}
@@ -473,7 +484,6 @@ function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar, alVerInforme })
               await alTerminar()
             }}
           />
-          <Resultados analisis={analisis} miniaturas={miniaturas} />
         </>
       )}
     </>
@@ -520,14 +530,11 @@ export default function SeccionAnalisis({
   return (
     <section className="seccion" aria-labelledby="titulo-analisis">
       <h2 id="titulo-analisis">Análisis</h2>
-      <p className="nota">
-        Cada capa informa indicios por separado; no se combinan en un puntaje único. Ante
-        cualquier duda, consultá con un perito especializado.
-      </p>
+      {/* 037 (decisión de la autora): un solo descargo, arriba, en lugar de repetirlo en cada técnica. */}
       <p className="descargo">
-        <strong>Herramienta auxiliar.</strong> Estos resultados son parciales: los produce un
-        sistema automatizado que incluye técnicas de inteligencia artificial y no reemplazan el
-        criterio de un perito o criminalista, que toma la decisión final.
+        <strong>Herramienta de apoyo.</strong> Cada técnica informa indicios por separado, que no se
+        suman ni se promedian. No emite veredictos: la decisión final es de un perito o de quien
+        evalúa la prueba.
       </p>
       <Escala />
       {historial.length > 1 && (
@@ -540,7 +547,7 @@ export default function SeccionAnalisis({
                 aria-pressed={analisis.id === idElegido}
                 onClick={() => setElegido(analisis.id)}
               >
-                {formatearFecha(analisis.creado_en)} · {analisis.cantidad_imagenes} imagen(es)
+                {formatearFecha(analisis.creado_en)} · {analisis.cantidad_imagenes} {analisis.cantidad_imagenes === 1 ? 'imagen' : 'imágenes'}
               </button>{' '}
               <Etiqueta tipo={tipoDeEtiquetaDeAnalisis(analisis.estado)}>
                 {analisis.estado_nombre}

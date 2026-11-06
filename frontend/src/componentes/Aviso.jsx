@@ -66,7 +66,8 @@ export default function Aviso({ tipo = 'info', flotante = tipo === 'exito', chil
   if (flotante) return <AvisoFlotante>{children}</AvisoFlotante>
   return (
     <div className={`aviso aviso--${tipo}`} role={tipo === 'error' ? 'alert' : 'status'}>
-      {children}
+      {/* 037: un solo bloque de texto, así una palabra en negrita no queda en una columna aparte. */}
+      <span className="aviso__texto">{children}</span>
     </div>
   )
 }

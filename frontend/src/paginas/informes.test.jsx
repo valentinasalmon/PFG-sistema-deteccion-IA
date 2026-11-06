@@ -107,6 +107,17 @@ describe('informes del caso', () => {
     await vi.waitFor(() => expect(abrirDescarga).toHaveBeenCalledWith('/api/archivos/token-pdf'))
   })
 
+  it('al terminar, el pie ofrece seguir a la etapa Informe (037)', async () => {
+    api()
+    const { usuario } = renderizarEn('/casos/7?etapa=analisis')
+
+    const cierre = await screen.findByRole('region', { name: 'Siguiente paso' })
+    expect(within(cierre).getByText('Análisis terminado. El informe PDF está listo.')).toBeInTheDocument()
+    await usuario.click(within(cierre).getByRole('button', { name: 'Seguir al informe' }))
+
+    expect(await screen.findByRole('region', { name: 'Informes' })).toBeInTheDocument()
+  })
+
   it('si el informe no se generó, permite generarlo de nuevo (CA6)', async () => {
     let informe = null
     const { solicitudes } = api({
@@ -164,7 +175,7 @@ describe('informes del caso', () => {
         imagenes: [
           {
             id_imagen: 1, nombre: 'frente.jpg', huella: 'a', integridad: 'verificada',
-            resultados: [{ capa: 'metadatos', estado: 'completado', nivel: 10, anomalias: [] }],
+            resultados: [{ capa: 'metadatos', titulo: 'Metadatos', estado: 'completado', nivel: 10, anomalias: [] }],
           },
         ],
       },
@@ -176,7 +187,7 @@ describe('informes del caso', () => {
     expect(within(resumen).getByText('frente.jpg')).toBeInTheDocument()
     expect(within(resumen).getByText(/· 10 %/)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Informes anteriores' })).toBeInTheDocument()
-    expect(screen.getByText(/1 imagen\(es\): viejo.jpg/)).toBeInTheDocument()
+    expect(screen.getByText(/1 imagen: viejo.jpg/)).toBeInTheDocument()
   })
 
   it('sin informes, la etapa lo explica (028)', async () => {

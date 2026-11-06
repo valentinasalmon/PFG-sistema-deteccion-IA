@@ -35,7 +35,7 @@ implementación siguiendo tareas.md, con pruebas
 | 007 | Motor de análisis y capa 1 (metadatos) | 4 | RF38, RF39, RF43, RF46 | Completado |
 | 008 | Informe PDF e historial | 4 | RF44, RF45 | Completado |
 | 009 | Capa 2 (C2PA) | 5 | RF40 | Completado |
-| 010 | Red neuronal: entrenamiento y exportación (pista paralela) | 2 – 5 | RNF24 | Pendiente |
+| 010 | [Red neuronal: ciclo de vida, entrenamiento y exportación](010-red-neuronal/especificacion.md) (pista paralela) | 2 – 5 | RNF24 | En curso |
 | 011 | [Capa 3 (ELA)](011-capa-ela/especificacion.md) | 5 | RF41 | Completado |
 | 012 | Capa 4 (ONNX) | 5 | RF42 | Pendiente |
 | 013 | [Notificaciones y panel principal](013-panel-y-notificaciones/especificacion.md) | 6 | RF47, RF48 | Completado |
@@ -43,7 +43,7 @@ implementación siguiendo tareas.md, con pruebas
 | 015 | [Retención y destrucción de datos](015-retencion/especificacion.md) | 7 | RF49 – RF51 | Completado |
 | 016 | [Sello de tiempo en Blockchain Federal Argentina](016-sello-bfa/especificacion.md) | 7 | RF37 | Reemplazada por la 023 (ADR-0018) |
 | 017 | [Infraestructura y despliegue en AWS](017-infraestructura-aws/especificacion.md) | 8 | RNF02, RNF03, RNF15, RNF22 | Desplegada (falta probar la restauración y el dominio) |
-| 018 | Cierre: usabilidad, índice de calidad y documentación final | 9 | RNF10, RNF11, RNF19 | Pendiente |
+| 018 | [Cierre: usabilidad, índice de calidad y documentación final](018-cierre/especificacion.md) | 9 | RNF10, RNF11, RNF19 | En curso: materiales listos (protocolo SUS, QI provisorio 0,977, guía de usuario); faltan la prueba con participantes y la validación del tutor |
 | 019 | Eliminación de cuenta y copia de datos personales | 3 | RF08, RF09 | Completado |
 | 020 | Registro guiado por pasos | 2 | RF01 (interfaz), RNF10 | Completado |
 | 021 | Organizaciones de aseguradoras | 3 | RF01, RF10, RF12 – RF17 (ajustes), RN36 – RN40 | Completado |
@@ -60,7 +60,8 @@ implementación siguiendo tareas.md, con pruebas
 | 032 | [Pago del plan en el registro](032-pago-en-el-registro/especificacion.md) | 10 | RF10, RF19, RF20 | Implementada (cobro simulado con Cresium; precios a confirmar) |
 | 033 | [Portada pública con los planes](033-portada/especificacion.md) | 10 | RF19, RF20, RNF10 | Implementada (primera versión; se puede seguir enriqueciendo el diseño) |
 | 034 | [Pulido de UX/UI de todo el sistema](034-pulido-ux/especificacion.md) | 10 | RNF10 | Implementada en cuatro tandas (la tercera y la cuarta, en revisión); falta la revisión final con la autora (CA1, CA3, CA4, CA6, CA9) |
-| 035 | Verificación de identidad de aseguradoras con Identik (CP-35) | 10 | RN36, RF01 | Pendiente: sin especificar |
+| 035 | [Verificación de identidad de aseguradoras](035-identidad-aseguradoras/especificacion.md) | 10 | RN36, RN41, RF01 | Implementada con proveedor simulado; falta conectar Identik (CP-41) |
+| 037 | [Revisión integral: acceso, pantallas, siniestros e informe breve](037-acceso-y-pantallas/especificacion.md) | 10 | RNF10, RNF12, RF44 | En curso: aplicado lo pedido por la autora el 2026-11-05; quedan la presentación y la integración |
 | 036 | [Arnés para el trabajo asistido por IA](036-arnes/especificacion.md) | 10 | RNF02, RNF17, RNF19 | Implementada (ganchos, `/cerrar-etapa`, mapa y registro del arnés, ADR-0021) |
 
 Las fases, los hitos y el ciclo de trabajo están en [docs/guias/hoja-de-ruta.md](../guias/hoja-de-ruta.md).
