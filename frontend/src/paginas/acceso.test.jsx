@@ -66,6 +66,13 @@ describe('inicio de sesión', () => {
     expect(await screen.findByRole('heading', { name: 'Mi perfil' })).toBeInTheDocument()
   })
 
+  it('vuelve con la consulta incluida, como el QR del análisis detallado (038)', async () => {
+    simularApi({ 'POST /api/sesion': { cuerpo: { usuario: USUARIO, csrf: 't' } } })
+    const { usuario } = renderizarEn('/perfil?seccion=seguridad')
+    await completarInicioDeSesion(usuario)
+    expect(await screen.findByRole('heading', { name: 'Contraseña' })).toBeInTheDocument()
+  })
+
   it('con credenciales inválidas muestra el mensaje genérico (CA8)', async () => {
     simularApi({ 'POST /api/sesion': ERROR_CREDENCIALES })
     const { usuario } = renderizarEn('/iniciar-sesion')
