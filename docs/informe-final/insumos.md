@@ -324,3 +324,10 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Solución en el arnés**: un sensor de diseño con Playwright que mide, en 1440 y 390 px, desplazamiento horizontal, contenido cortado, contenido escondido en contenedores con desplazamiento propio y controles fuera de la pantalla, aplicado en cada captura de los recorridos de punta a punta. Se validó reintroduciendo el error: el sensor lo informa («muestra 672 px de 1308 px») y no marca nada con la corrección.
 - **Otras decisiones de la tanda**: el pago es una «caja» y usa la tarjeta a todo el ancho; la aseguradora se elige con un cuadro combinado accesible (WAI-ARIA combobox) en lugar de una lista de tarjetas; el Administrador recibe un correo cuando una aseguradora paga; el caso guía el siguiente paso (cargar → analizar → informe) con un cierre al pie del análisis.
 
+## Flujos del día a día (038, 2026-11-06)
+
+- **Aprobación de estudios**: la autora decidió que ninguna organización se presenta como activa antes de la revisión del Administrador; se extendió RN38 a los estudios jurídicos sin exigirles la verificación de identidad de las aseguradoras.
+- **Redirección después de iniciar sesión**: un enlace con consulta (`?etapa=analisis`) perdía la consulta al pasar por el inicio de sesión. Es un error típico de las rutas protegidas en aplicaciones de una sola página; se corrigió conservando la dirección completa y, para Google (que sale del sistema), guardándola en el navegador.
+- **QR de un solo uso**: atar el enlace al primer dispositivo al abrir la página falló en la prueba porque el navegador puede repetir la consulta; se ata con la primera foto subida. Lección: los controles de un solo uso tienen que tolerar repeticiones.
+- **Diseño**: agrandar un contenedor no alcanza; el contenido tiene que reorganizarse (dos columnas, índice, largo de línea). Se registró como criterio de revisión visual.
+
