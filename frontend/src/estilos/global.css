@@ -6565,3 +6565,41 @@ h1.estado-vacio__titulo {
     max-width: none;
   }
 }
+
+/* --- 038: enlace para la persona afectada alineado --- */
+.enlace-afectada__formulario {
+  margin-top: 1rem;
+}
+
+@media (width > 48rem) {
+  .enlace-afectada__formulario {
+    align-items: start;
+  }
+
+  /* El botón a la altura de los campos, debajo de la línea de las etiquetas. */
+  .enlace-afectada__formulario > .boton {
+    margin-top: 1.85rem;
+  }
+}
+
+/* --- 038: imagen elegida sin borde grueso ni esquinas; la que queda afuera, atenuada --- */
+.tarjeta-imagen--elegida {
+  border-color: var(--linea);
+  box-shadow: none;
+}
+
+.tarjeta-imagen--elegida .tarjeta-imagen__vista {
+  background-image: none;
+}
+
+.tarjeta-imagen:not(.tarjeta-imagen--elegida) .tarjeta-imagen__vista img {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+  transition: opacity 0.15s ease, filter 0.15s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta-imagen:not(.tarjeta-imagen--elegida) .tarjeta-imagen__vista img {
+    transition: none;
+  }
+}
