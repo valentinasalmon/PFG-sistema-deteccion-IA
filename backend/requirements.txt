@@ -41,3 +41,9 @@ numpy==2.4.6                # Cálculo por bloques del análisis de niveles de e
 
 # --- Funcionalidad 023: sello de tiempo en Hedera (ADR-0018) ---
 hiero-sdk-python==0.3.0     # SDK oficial de Hiero/Hedera: publicar huellas en Consensus Service
+
+# --- Funcionalidad 012: capa 4 (red neuronal) ---
+# El paquete "clasificador" (red_neuronal/) se instala aparte con --no-deps, para
+# no arrastrar PyTorch: solo usa estas dos bibliotecas además de numpy y Pillow.
+onnxruntime==1.31.1         # Ejecución del modelo ONNX en CPU (ADR-0015)
+huggingface_hub==2.4.0      # Descarga de la versión fija del modelo del registro privado (ADR-0014)

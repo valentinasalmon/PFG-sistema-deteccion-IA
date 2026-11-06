@@ -33,7 +33,8 @@ jobs:
       - name: Instalar las bibliotecas del sistema (WeasyPrint y ExifTool)
         run: sudo apt-get update && sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0 fonts-dejavu libimage-exiftool-perl
       - name: Instalar dependencias
-        run: pip install -r requirements-dev.txt
+        # El clasificador de la red neuronal (capa 4) va sin dependencias: no necesita PyTorch.
+        run: pip install -r requirements-dev.txt && pip install --no-deps ../red_neuronal
       - name: Estilo (flake8)
         run: flake8 app pruebas wsgi.py
       - name: Análisis estático (pylint, mínimo 8,5)
@@ -171,6 +172,7 @@ jobs:
           tar -czf artefacto.tar.gz
           --exclude=__pycache__ --exclude=backend/almacenamiento_local --exclude=backend/pruebas
           backend frontend/dist infraestructura/nginx infraestructura/systemd infraestructura/scripts
+          red_neuronal/pyproject.toml red_neuronal/README.md red_neuronal/clasificador
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.AWS_ROLE_DESPLIEGUE }}

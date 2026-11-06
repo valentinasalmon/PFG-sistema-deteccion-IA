@@ -324,3 +324,19 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Solución en el arnés**: un sensor de diseño con Playwright que mide, en 1440 y 390 px, desplazamiento horizontal, contenido cortado, contenido escondido en contenedores con desplazamiento propio y controles fuera de la pantalla, aplicado en cada captura de los recorridos de punta a punta. Se validó reintroduciendo el error: el sensor lo informa («muestra 672 px de 1308 px») y no marca nada con la corrección.
 - **Otras decisiones de la tanda**: el pago es una «caja» y usa la tarjeta a todo el ancho; la aseguradora se elige con un cuadro combinado accesible (WAI-ARIA combobox) en lugar de una lista de tarjetas; el Administrador recibe un correo cuando una aseguradora paga; el caso guía el siguiente paso (cargar → analizar → informe) con un cierre al pie del análisis.
 
+## Capa 4 en el análisis: el clasificador ONNX en el backend (012, 2026-11-06)
+
+- **Mismo código en la evaluación y en producción.** El backend instala el paquete `clasificador` sin dependencias y usa su `PredictorOnnx`: no hay una segunda implementación del preprocesamiento que pueda desviarse. Una prueba automática verifica que la probabilidad del backend es igual a la de la evaluación (ADR-0015). El servidor no instala PyTorch ni usa GPU.
+- **Lectura publicada de la probabilidad (ADR-0017).** Por debajo de 50 % la capa no aporta indicios; desde ahí el nivel es la probabilidad calibrada, con tope de 90 (el 100 queda para C2PA, RN28). La conclusión aclara siempre tres limitaciones: no detecta ediciones parciales, puede fallar con generadores que no vio y una probabilidad baja no indica que la foto sea real. Es la traducción directa de los resultados de la 010: AUC 0,961 con generadores conocidos, 0,938 con la familia de Google no vista y solo 10 % de detección en el conjunto propio de choques.
+- **Integridad y reproducibilidad del modelo.** Versión fija, huella SHA-256 verificada antes de usarlo (ADR-0014) y, en cada resultado, versión, huella del ONNX, huella del manifiesto de entrenamiento, commit y versión de ONNX Runtime (RN29). Cambiar de versión es cambiar un parámetro; los análisis anteriores conservan la suya.
+- **Tolerancia a fallas (RN26).** Sin modelo configurado, con el registro caído o con un archivo alterado, la capa queda «No disponible» con el motivo y las otras tres se presentan igual. Por eso la funcionalidad se pudo integrar antes de publicar el modelo.
+- **Pruebas sin red ni PyTorch.** Un ONNX diminuto con el mismo contrato que el real (sigmoide del brillo medio) permite probar la carga, la caché, las huellas y la capa en milisegundos.
+- **Hallazgo de despliegue.** El script que arma el `.env` del servidor copia solo las variables que nombra; sin agregarlas, los parámetros del Parameter Store nunca habrían llegado a la aplicación. Se detectó al escribir la guía de activación, no con las pruebas: refuerza la regla de probar las integraciones contra el servicio real.
+
+## Entrenamiento completo de la red (2026-11-05)
+
+- Con 35 000 imágenes de 210 generadores: **AUC de prueba 0,961, F1 0,904, ECE 0,02** (validación, tras calibrar). Cumple tanto el AUC ≥ 0,90 de la especificación como el F1 ≥ 0,85 del informe (CP-07).
+- **Generalización:** con la familia de Google que nunca vio (Imagen 4, Imagen 3, Nano Banana 2), AUC 0,938.
+- **Límite en condiciones reales:** con imágenes de choques generadas por la autora con ChatGPT, Gemini y Copilot, detecta 5 de 49 con el umbral 0,5. Es el resultado más importante para el informe: los detectores entrenados con conjuntos públicos rinden mucho peor con las herramientas comerciales actuales y con escenas que no vieron. Justifica la capa 4 como un indicio más y no un veredicto (RN27), y el ciclo de reentrenamiento (CA18).
+- Generadores más difíciles en la prueba: VQDiffusion y GigaGAN (AUC ~0,62-0,67), Midjourney 6 y FLUX 1.1 Pro (detecta el 54-68 %).
+

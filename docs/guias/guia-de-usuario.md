@@ -46,7 +46,7 @@ Cada imagen guarda su huella digital al subirse, así se puede probar que no cam
    - **Metadatos**: cámara, fecha, ubicación y programas de edición registrados en el archivo.
    - **Credenciales de contenido (C2PA)**: si la foto trae una firma de origen y si es válida.
    - **Niveles de error (ELA)**: zonas con una compresión distinta del resto, que pueden indicar retoques. El mapa se compara con la foto deslizando el control.
-   - **Red neuronal** (se suma con la funcionalidad 012): la probabilidad de que la imagen esté manipulada o generada por IA, según un modelo entrenado.
+   - **Red neuronal**: la probabilidad de que la imagen completa haya sido generada con inteligencia artificial, según un modelo entrenado. Por debajo de 50 % no aporta indicios, lo que no significa que la foto sea real; no detecta ediciones parciales (para eso están las otras capas).
 
 Los resultados se leen como **indicios**, con un nivel de atención. Los umbrales y los límites de cada mirada están publicados en el informe.
 
