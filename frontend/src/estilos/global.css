@@ -6603,3 +6603,54 @@ h1.estado-vacio__titulo {
     transition: none;
   }
 }
+
+/* --- 038: casos recientes sin textos amontonados --- */
+.fila-caso--compacta .fila-caso__principal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.fila-caso--compacta .fila-caso__lugar {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fila-caso__fecha {
+  color: var(--tinta-2);
+  font-size: 0.8rem;
+}
+
+/* --- 038: en el celular, nada queda solo en una fila --- */
+@media (width <= 48rem) {
+  /* Contadores del inicio: una fila de cinco que se desplaza de costado. */
+  .contadores {
+    display: flex;
+    gap: 0.6rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 0.25rem;
+  }
+
+  .contadores::-webkit-scrollbar {
+    display: none;
+  }
+
+  .contadores > li {
+    flex: 0 0 8.5rem;
+    scroll-snap-align: start;
+  }
+
+  /* Pestañas: si no entran en una fila, en dos columnas parejas. */
+  .pestanias:has(> :nth-child(4)) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pestanias:has(> :nth-child(4)) > * {
+    width: 100%;
+  }
+}

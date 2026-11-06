@@ -33,11 +33,9 @@ export default function FilaCaso({ caso, compacta = false }) {
       <li className="fila-caso fila-caso--compacta">
         <div className="fila-caso__principal">
           {numero}
-          <span className="fila-caso__lugar">
-            {[caso.lugar, caso.tipo_nombre, `actualizado el ${formatearFecha(caso.actualizado_en)}`]
-              .filter(Boolean)
-              .join(' · ')}
-          </span>
+          {/* 038: lugar y tipo en una línea; la fecha aparte, para que no se amontonen. */}
+          <span className="fila-caso__lugar">{[caso.lugar, caso.tipo_nombre].filter(Boolean).join(' · ')}</span>
+          <span className="fila-caso__fecha">Actualizado el {formatearFecha(caso.actualizado_en)}</span>
         </div>
         <EtiquetaEstado estado={caso.estado}>{caso.estado_nombre}</EtiquetaEstado>
         <Icono nombre="derecha" tamanio={18} />
