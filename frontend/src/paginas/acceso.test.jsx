@@ -511,7 +511,7 @@ describe('registro con pago del plan (032)', () => {
     expect(screen.getByText('Esperando la transferencia…')).toBeInTheDocument()
 
     await usuario.click(screen.getByRole('button', { name: 'Simular la transferencia' }))
-    expect(await screen.findByRole('heading', { name: '¡Listo! Tu estudio ya está activo' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Pago recibido: falta la aprobación' })).toBeInTheDocument()
     expect(screen.getByText(/confirmá tu correo/)).toBeInTheDocument()
   })
 

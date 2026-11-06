@@ -6473,3 +6473,21 @@ h1.estado-vacio__titulo {
 .selector-plan {
   grid-template-columns: repeat(auto-fit, minmax(16rem, 26rem));
 }
+
+/* --- 038: los planes van uno al lado del otro en computadora --- */
+.formulario:has(.selector-plan) {
+  max-width: 56rem;
+}
+
+@media (width > 48rem) {
+  fieldset.selector-plan,
+  .selector-plan {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-inline-size: 0;
+  }
+
+  /* Una sola opción (cambio de plan) no se estira a todo el ancho. */
+  .selector-plan:has(> :only-child) {
+    grid-template-columns: minmax(0, 26rem);
+  }
+}

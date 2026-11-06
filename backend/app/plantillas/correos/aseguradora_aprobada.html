@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block contenido %}
 <p>Hola, {{ nombre }}:</p>
-<p>El Administrador de la plataforma aprobó el registro de <strong>{{ organizacion }}</strong>. Ya podés invitar a tu equipo para que trabaje dentro de la aseguradora.</p>
+<p>El Administrador de la plataforma aprobó el registro de <strong>{{ organizacion }}</strong>. Ya podés invitar a tu equipo para que trabaje dentro {% if es_aseguradora %}de la aseguradora{% else %}del estudio{% endif %}.</p>
 {% with texto_boton = "Ir a la organización" %}{% include "_boton.html" %}{% endwith %}
 {% endblock %}

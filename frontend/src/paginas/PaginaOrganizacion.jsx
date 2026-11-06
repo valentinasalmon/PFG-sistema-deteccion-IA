@@ -586,8 +586,9 @@ export default function PaginaOrganizacion() {
       {state?.mensaje && <Aviso tipo="exito">{state.mensaje}</Aviso>}
       {organizacion.estado === 'pendiente' && (
         <Aviso tipo="info">
-          La aseguradora está pendiente de aprobación. El Administrador de la plataforma va a
-          revisar el registro y te avisamos por correo; mientras tanto no podés invitar a tu equipo.
+          {organizacion.tipo === 'aseguradora' ? 'La aseguradora' : 'El estudio'} está pendiente de
+          aprobación. El Administrador de la plataforma va a revisar el registro y te avisamos por correo;
+          mientras tanto no podés invitar a tu equipo.
         </Aviso>
       )}
       {organizacion.estado === 'pendiente' && organizacion.tipo === 'aseguradora' && (

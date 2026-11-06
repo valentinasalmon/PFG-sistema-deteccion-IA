@@ -246,7 +246,7 @@ describe('administración', () => {
   it('sin pendientes lo indica', async () => {
     simularApi({ ...CON_SESION_ADMINISTRADOR, 'GET /api/administracion/aseguradoras-pendientes': { cuerpo: { aseguradoras: [] } } })
     renderizarEn('/administracion')
-    expect(await screen.findByText('No hay aseguradoras esperando aprobación.')).toBeInTheDocument()
+    expect(await screen.findByText('No hay organizaciones esperando aprobación.')).toBeInTheDocument()
   })
 
   it('si la lista no carga, muestra el error', async () => {
@@ -272,7 +272,7 @@ describe('administración', () => {
     await usuario.click(await screen.findByRole('button', { name: 'Aprobar' }))
     await usuario.click(within(screen.getByRole('dialog', { name: /¿Aprobar/ })).getByRole('button', { name: 'Aprobar' }))
     expect(await screen.findByText('SEGUROS GALICIA S.A. fue aprobada.')).toBeInTheDocument()
-    expect(screen.getByText('No hay aseguradoras esperando aprobación.')).toBeInTheDocument()
+    expect(screen.getByText('No hay organizaciones esperando aprobación.')).toBeInTheDocument()
     expect(solicitudes.some((s) => s.ruta.endsWith('/aprobacion'))).toBe(true)
   })
 

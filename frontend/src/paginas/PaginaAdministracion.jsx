@@ -118,7 +118,7 @@ function Pendientes() {
       <div className="pendientes-al-dia" role="status">
         {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
         <Icono nombre="verificado" tamanio={20} />
-        <span>No hay aseguradoras esperando aprobación.</span>
+        <span>No hay organizaciones esperando aprobación.</span>
       </div>
     )
   }
@@ -126,7 +126,7 @@ function Pendientes() {
   return (
     <section className="seccion seccion--atencion" aria-labelledby="titulo-pendientes">
       <h2 id="titulo-pendientes">
-        Aseguradoras pendientes de aprobación <span className="contador-titulo">{datos.length}</span>
+        Organizaciones pendientes de aprobación <span className="contador-titulo">{datos.length}</span>
       </h2>
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
       <ul className="lista-tarjetas">
@@ -135,15 +135,20 @@ function Pendientes() {
             <div className="tarjeta-item__principal">
               <span className="tarjeta-item__titulo">{aseguradora.nombre}</span>
               <span className="tarjeta-item__detalle pendiente__resumen">
-                Registrada el {formatearFecha(aseguradora.creada_en)}
+                {aseguradora.tipo === 'estudio_juridico' ? 'Estudio jurídico' : 'Aseguradora'} · Registrada el{' '}
+                {formatearFecha(aseguradora.creada_en)}
                 <Etiqueta tipo="destacada">Pago acreditado</Etiqueta>
                 {aseguradora.exigeIdentidad && <EtiquetaIdentidad identidad={aseguradora.identidad} />}
               </span>
               <details className="pendiente__detalle">
                 <summary>Ver detalle</summary>
                 <dl className="pendiente__datos">
-                  <dt>CUIT</dt>
-                  <dd>{aseguradora.cuit}</dd>
+                  {aseguradora.cuit && (
+                    <>
+                      <dt>CUIT</dt>
+                      <dd>{aseguradora.cuit}</dd>
+                    </>
+                  )}
                   <dt>Referente</dt>
                   <dd>
                     {aseguradora.referente.nombre} ({aseguradora.referente.correo})
@@ -151,12 +156,14 @@ function Pendientes() {
                   </dd>
                   <dt>Plan</dt>
                   <dd>
-                    {NOMBRES_DE_PLAN[aseguradora.plan] ?? aseguradora.plan}. Si la rechazás, el pago se devuelve.
+                    {NOMBRES_DE_PLAN[aseguradora.plan] ?? aseguradora.plan}. Si no la aprobás, el pago se devuelve.
                   </dd>
                 </dl>
                 <p className="nota">
-                  Antes de aprobar, comprobá que la persona trabaje en la aseguradora (por ejemplo, con el dominio
-                  de su correo o comunicándote con la empresa).
+                  {aseguradora.tipo === 'estudio_juridico'
+                    ? 'Antes de aprobar, comprobá la matrícula de quien lo registró en su colegio de abogados.'
+                    : 'Antes de aprobar, comprobá que la persona trabaje en la aseguradora (por ejemplo, con el ' +
+                      'dominio de su correo o comunicándote con la empresa).'}
                 </p>
               </details>
               {aseguradora.exigeIdentidad && aseguradora.identidad?.estado !== 'aprobada' && (

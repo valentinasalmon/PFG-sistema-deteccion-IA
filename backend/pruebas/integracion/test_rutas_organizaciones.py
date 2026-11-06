@@ -11,7 +11,7 @@ import pytest
 from app.extensiones import db
 from app.modelos.organizacion import Invitacion, Membresia
 from app.utilidades.tiempo import ahora_utc
-from pruebas.conftest import entradas_auditoria, extraer_token, pagar
+from pruebas.conftest import aprobar_organizacion, entradas_auditoria, extraer_token, pagar
 
 ORGANIZACION = {"nombre": "Estudio Pérez", "tipo": "estudio_juridico", "telefono": "11 5555-0000"}
 
@@ -32,7 +32,9 @@ def _crear_organizacion(cliente, **cambios):
     respuesta = cliente.post("/api/organizaciones", json={**ORGANIZACION, **cambios})
     assert respuesta.status_code == 201, respuesta.get_json()
     pagar(cliente, respuesta)
-    return respuesta.get_json()["organizacion"]["id"]
+    id_organizacion = respuesta.get_json()["organizacion"]["id"]
+    aprobar_organizacion(cliente, id_organizacion)
+    return id_organizacion
 
 
 def _invitar(cliente, id_org, correo, cargo=None):
