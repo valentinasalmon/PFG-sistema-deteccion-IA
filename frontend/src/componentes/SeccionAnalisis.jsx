@@ -46,11 +46,13 @@ const TITULOS_CAPA = {
   metadatos: 'Metadatos',
   c2pa: 'Credenciales de contenido (C2PA)',
   ela: 'Niveles de error (ELA)',
+  red_neuronal: 'Red neuronal',
 }
 const TITULOS_TABLA = {
   metadatos: 'Metadatos extraídos',
   c2pa: 'Datos de las credenciales',
   ela: 'Datos del análisis',
+  red_neuronal: 'Criterios y versión del modelo',
 }
 // Versión breve del recuadro "¿Qué significa?" del informe PDF.
 const QUE_SIGNIFICA = {
@@ -60,6 +62,8 @@ const QUE_SIGNIFICA = {
     'Comprueba si la imagen trae credenciales de contenido firmadas (C2PA) que declaren quién la hizo y con qué herramienta. Si la firma es confiable y declara inteligencia artificial, es el indicio más fuerte de la plataforma. No tener credenciales es lo más habitual.',
   ela:
     'Vuelve a comprimir la imagen y compara cuánto cambia cada zona: una parte pegada o retocada suele comportarse distinto. Es orientativa: bordes, textos e imágenes reenviadas también producen diferencias, por eso nunca supera el nivel moderado.',
+  red_neuronal:
+    'Un modelo entrenado con miles de fotos reales y generadas estima la probabilidad de que la imagen completa haya sido creada con inteligencia artificial. No detecta ediciones parciales y puede fallar con generadores que no conoce; una probabilidad baja no significa que la foto sea real.',
 }
 
 const ESTADOS_FIRMA = {
@@ -82,14 +86,15 @@ function tipoDeEtiquetaDeAnalisis(estado) {
   return 'destacada'
 }
 
-const CAPAS = ['metadatos', 'c2pa', 'ela']
+const CAPAS = ['metadatos', 'c2pa', 'ela', 'red_neuronal']
 // Títulos que informa el progreso del análisis (capa_actual) para cada capa.
 const CAPA_DEL_PROGRESO = {
   Metadatos: 'metadatos',
   'Credenciales de contenido': 'c2pa',
   'Niveles de error (ELA)': 'ela',
+  'Red neuronal': 'red_neuronal',
 }
-const TITULOS_CORTOS = { metadatos: 'Metadatos', c2pa: 'C2PA', ela: 'Niveles de error' }
+const TITULOS_CORTOS = { metadatos: 'Metadatos', c2pa: 'C2PA', ela: 'Niveles de error', red_neuronal: 'Red neuronal' }
 
 /** Situación de cada imagen y de cada capa mientras corre el análisis (028). */
 function situacionDeImagen(analisis, posicion, imagen) {
