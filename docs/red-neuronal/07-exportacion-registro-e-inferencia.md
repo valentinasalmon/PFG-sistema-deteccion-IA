@@ -89,6 +89,46 @@ Cambiar cualquiera de estos pasos obliga a publicar una versión **MAJOR**.
 
 Solo `numpy`, `Pillow` y `onnxruntime`. Nada de PyTorch ni GPU. En AWS el modelo se descarga del registro en la versión fijada y cada informe guarda qué versión se usó.
 
-## Cómo se ve en el informe (funcionalidad 012)
+## Cómo lo usa el backend: la capa 4 (funcionalidad 012)
 
-La capa 4 aparece como una probabilidad con la versión del modelo y la leyenda de que es un indicio. Nunca se combina con las otras capas en un puntaje único (RN27).
+El backend no reimplementa nada del modelo: instala el paquete `clasificador` **sin dependencias** (`pip install --no-deps red_neuronal`) y usa `PredictorOnnx`, el mismo código que la evaluación. Así no necesita PyTorch ni GPU, y la probabilidad de una foto es exactamente la de la ficha (ADR-0015). Una prueba automática compara las dos.
+
+```mermaid
+flowchart LR
+    C[Configuración<br/>registro + versión fija] --> O[obtener_modelo]
+    O -->|ya bajado| V[Verificar huella<br/>huellas.json]
+    O -->|no está| R[Bajar del registro<br/>Hugging Face privado]
+    R --> V
+    V -->|coincide| P[PredictorOnnx<br/>en caché del proceso]
+    V -->|no coincide| ND[Capa «No disponible»]
+    P --> CAPA[CapaRedNeuronal<br/>probabilidad → nivel]
+```
+
+| Pieza | Archivo | Qué hace |
+|---|---|---|
+| Configuración | `backend/app/configuracion/entornos.py` | `MODELO_RED_NEURONAL_REGISTRO` (`hugging_face:<usuario/repositorio>` o `local:<carpeta>`), `MODELO_RED_NEURONAL_VERSION` (versión fija, por ejemplo `1.0.0`) y `CARPETA_MODELOS_ONNX`. Sin valores por defecto: sin configurar, la capa queda «No disponible». `HF_TOKEN` (lectura) solo por el entorno. |
+| Obtención del modelo | `backend/app/integraciones/modelo_red_neuronal.py` | Reutiliza el modelo ya bajado si su huella coincide; si no, lo pide al registro. Verifica la huella SHA-256 antes de usarlo y lo deja en una caché por proceso: cada trabajador lo carga una sola vez. Cualquier falla se convierte en un motivo legible. |
+| Capa 4 | `backend/app/analisis/red_neuronal.py` | Pasa la foto por el predictor y arma el resultado. |
+| Registro de capas | `backend/app/analisis/registro.py` | La agrega después de metadatos, C2PA y ELA, sin tocarlas (ADR-0006). |
+
+### Cómo se lee la probabilidad (ADR-0017)
+
+| Probabilidad calibrada | Nivel de la capa | Lectura |
+|---|---|---|
+| Menor que 50 % | 0 | La capa no aporta indicios. **No** significa que la foto sea real. |
+| De 50 % a 69 % | La probabilidad en porcentaje | Indicios moderados (escala común: desde 45 %) |
+| Desde 70 % | La probabilidad, con un máximo de 90 | Indicios fuertes. El 100 se reserva para una declaración de IA con firma C2PA (RN28) |
+
+La conclusión **siempre** aclara que el modelo mira la imagen completa (no detecta ediciones parciales, para eso están las otras capas), que puede fallar con generadores que no vio y, cuando la probabilidad es baja, que eso no indica que la foto sea real. Termina con la recomendación de consultar a un profesional (RN27). Nunca se combina con las otras capas en un puntaje único.
+
+### Qué queda registrado (RN29)
+
+Cada resultado guarda la probabilidad, la versión del modelo, la huella SHA-256 del ONNX, la huella del manifiesto de entrenamiento, el commit con que se entrenó y la versión de ONNX Runtime. La tabla de criterios que ven el usuario y el informe PDF muestra la probabilidad, el umbral, la escala, la versión del modelo y el desempeño publicado de esa versión (AUC 0,961 con generadores conocidos y 0,938 con la familia de Google, que no vio).
+
+### Pruebas sin red
+
+Las pruebas del backend usan un **ONNX diminuto** (`backend/pruebas/modelo_diminuto.py`) con la misma entrada, la misma salida y los mismos metadatos que el real, pero que calcula una sigmoide del brillo medio. Así se prueban la carga, la caché, la verificación de huellas y la capa sin PyTorch, sin Hugging Face y en milisegundos.
+
+### En producción
+
+`generar_entorno.sh` copia del Parameter Store `MODELO_RED_NEURONAL_REGISTRO`, `MODELO_RED_NEURONAL_VERSION` y `HF_TOKEN`, y fija `CARPETA_MODELOS_ONNX=/opt/plataforma/modelos_onnx`, fuera de cada versión desplegada, para no volver a bajar el modelo en cada despliegue. La guía para activarlo está en [despliegue-aws.md](../guias/despliegue-aws.md#capa-4-modelo-de-la-red-neuronal-funcionalidad-012).

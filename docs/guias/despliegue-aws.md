@@ -262,6 +262,43 @@ El cliente se crea con tu cuenta de Google en https://console.cloud.google.com. 
    - La segunda vez entra directo.
    - Con tu correo de administradora, se vincula a tu cuenta existente.
 
+## Capa 4: modelo de la red neuronal (funcionalidad 012)
+
+Sin estos pasos la plataforma funciona igual: la capa 4 aparece como «No disponible» y las otras tres capas se presentan normalmente. Se hace una vez por versión del modelo.
+
+1. **Publicar el modelo en Hugging Face** (tarea E03 de la 010 y T33).
+   - En [huggingface.co/new](https://huggingface.co/new) creá un repositorio de **modelo**, **privado**, llamado `pfg-clasificador-sintetico`.
+   - En Colab, agregá el secreto `HF_TOKEN` con un token de tipo **Write** (llave de la barra izquierda; nunca pegado en una celda).
+   - En el cuaderno `03`, poné `PUBLICAR_EN_HUGGING_FACE = True` y corré la celda de publicación. Tiene que terminar diciendo que la versión `1.0.0` quedó publicada. En la página del repositorio, la pestaña *Files and versions* muestra `modelo.onnx` y `huellas.json`, y el selector de ramas tiene la etiqueta `v1.0.0`.
+2. **Crear un token de solo lectura para el servidor**: [Settings → Access Tokens](https://huggingface.co/settings/tokens) → *Create new token* → tipo **Read** → nombre `servidor-evidentia`. Copialo solo para el paso siguiente.
+3. **Cargar los tres parámetros en SSM** (consola web: AWS → región Europa (Irlanda) → *Parameter Store*):
+
+   | Nombre | Tipo | Valor |
+   |---|---|---|
+   | `/deteccion-imagenes/produccion/HF_TOKEN` | **SecureString** | El token de lectura del paso 2 |
+   | `/deteccion-imagenes/produccion/MODELO_RED_NEURONAL_REGISTRO` | String | `hugging_face:<tu-usuario>/pfg-clasificador-sintetico` |
+   | `/deteccion-imagenes/produccion/MODELO_RED_NEURONAL_VERSION` | String | `1.0.0` |
+
+   El token por terminal, sin que quede en el historial (se copia solo la línea del comando):
+   ```bash
+   read -rs TOKEN && aws ssm put-parameter --name /deteccion-imagenes/produccion/HF_TOKEN \
+     --type SecureString --value "$TOKEN" --overwrite --region eu-west-1 && unset TOKEN
+   ```
+4. **Desplegar** (PR de `desarrollo` a `main`). El despliegue instala ONNX Runtime y el paquete `clasificador`, y regenera el `.env` con los tres valores. Si no hay nada que desplegar, en Session Manager:
+   ```bash
+   sudo bash /opt/plataforma/servidor/scripts/generar_entorno.sh
+   ```
+   ```bash
+   sudo systemctl restart plataforma-web plataforma-trabajador
+   ```
+5. **Probar**: analizar un caso con una foto propia (nunca una de un caso real). En la pantalla del análisis tiene que aparecer **Red neuronal** con una probabilidad, y en la tabla «Versión del modelo: 1.0.0»; lo mismo en el informe PDF. El primer análisis tarda unos segundos más, porque baja el modelo (unos 20 MB) a `/opt/plataforma/modelos_onnx`.
+6. **Si dice «No disponible»**, el motivo aparece en la misma capa:
+   - «todavía no está configurado»: falta alguno de los parámetros o no se regeneró el `.env`;
+   - «No se pudo obtener la versión 1.0.0 del modelo del registro»: el token no tiene acceso o el nombre del repositorio está mal. Lo confirma `sudo journalctl -u plataforma-trabajador -n 50`;
+   - «No se pudo verificar la versión»: la versión no existe en el registro o el archivo no coincide con su huella.
+
+Para pasar a una versión nueva (por ejemplo, `1.1.0`) solo se cambia `MODELO_RED_NEURONAL_VERSION`, se regenera el `.env` y se reinician los servicios. Los análisis anteriores conservan la versión con la que se hicieron (RN29).
+
 ## Microsoft Clarity (funcionalidades 031 y 034)
 
 Clarity graba cómo se usa la plataforma (mapas de calor y recorridos) para que la autora detecte fricciones antes del lanzamiento. Es una herramienta de la autora: los usuarios no ven nada.
