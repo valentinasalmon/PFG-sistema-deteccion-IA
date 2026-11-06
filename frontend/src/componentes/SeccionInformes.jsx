@@ -23,6 +23,7 @@ import { formatearFecha } from '../utilidades/fechas.js'
 import { codigoLegible } from '../utilidades/verificacion.js'
 import Aviso from './Aviso.jsx'
 import Cargando from './Cargando.jsx'
+import HuellaCorta from './HuellaCorta.jsx'
 import Icono from './Icono.jsx'
 import { ResumenDeImagen } from './SeccionAnalisis.jsx'
 
@@ -93,7 +94,9 @@ function InformeReciente({ idCaso, informe, alDescargar }) {
             </>
           )}
           <dt>Huella SHA-256 del PDF</dt>
-          <dd className="huella">{informe.huella}</dd>
+          <dd>
+            <HuellaCorta huella={informe.huella} />
+          </dd>
         </dl>
         <button
           type="button"
@@ -167,7 +170,7 @@ export default function SeccionInformes({ idCaso, alVerAnalisis }) {
                 <div className="tarjeta-item__principal">
                   <span className="tarjeta-item__titulo">Informe del {formatearFecha(informe.generado_en)}</span>
                   <span className="tarjeta-item__detalle">
-                    Pedido por {informe.solicitante} · {informe.imagenes.length} imagen(es):{' '}
+                    Pedido por {informe.solicitante} · {informe.imagenes.length} {informe.imagenes.length === 1 ? 'imagen' : 'imágenes'}:{' '}
                     {informe.imagenes.join(', ')}
                   </span>
                   <span className="huella">

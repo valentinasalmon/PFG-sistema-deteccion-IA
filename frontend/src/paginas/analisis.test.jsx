@@ -65,7 +65,7 @@ const RESUMEN = {
   motivo_falla: null,
 }
 const RESULTADO = {
-  capa: 'metadatos',
+  capa: 'metadatos', titulo: 'Metadatos',
   estado: 'completado',
   nivel: 90,
   conclusion: 'Los metadatos presentan indicios fuertes. Se recomienda consultar a un perito especializado.',
@@ -202,17 +202,19 @@ describe('progreso y resultados', () => {
     const analisis = await screen.findByRole('region', { name: 'Análisis' })
     expect(await within(analisis).findByRole('heading', { name: 'frente.png' })).toBeInTheDocument()
     expect(within(analisis).getByRole('meter', { name: 'Nivel de indicio' })).toHaveAttribute('value', '90')
-    expect(within(analisis).getByText(/Se recomienda consultar a un perito/)).toBeInTheDocument()
+    // 037: la recomendación de consultar a un perito figura una sola vez, arriba.
+    expect(within(analisis).queryByText(/Se recomienda consultar a un perito/)).not.toBeInTheDocument()
+    expect(within(analisis).getByText(/No emite veredictos/)).toBeInTheDocument()
     const hallazgos = within(analisis).getByRole('list', { name: 'Hallazgos de la capa Metadatos' })
     expect(within(hallazgos).getByText('Directo')).toBeInTheDocument()
     expect(within(analisis).getByText('Metadatos extraídos')).toBeInTheDocument()
-    expect(within(analisis).getByText('Versión: 1.0 (ExifTool 12.76)')).toBeInTheDocument()
-    expect(within(analisis).getByText(/no se combinan en un puntaje único/)).toBeInTheDocument()
+    expect(within(analisis).getByText('Versión de la técnica: 1.0 (ExifTool 12.76)')).toBeInTheDocument()
+    expect(within(analisis).getAllByText(/no se suman ni se promedian/).length).toBeGreaterThan(0)
   })
 
   it('muestra la capa de credenciales con el estado de la firma (009 CA4, CA7)', async () => {
     const credenciales = {
-      capa: 'c2pa',
+      capa: 'c2pa', titulo: 'Credenciales de contenido (C2PA)',
       estado: 'completado',
       nivel: 100,
       conclusion: 'La imagen tiene credenciales de contenido con firma confiable. Es el indicio más fuerte.',
@@ -256,7 +258,7 @@ describe('progreso y resultados', () => {
   it('muestra el mapa de la capa ELA con su aclaración (011 CA4)', async () => {
     const ela = {
       ...RESULTADO,
-      capa: 'ela',
+      capa: 'ela', titulo: 'Niveles de error (ELA)',
       nivel: 45,
       imagen: '/api/archivos/mapa-ela',
       detalle: { tabla: [{ campo: 'Calidad JPEG estimada', valor: '85 %' }], regiones: 1 },
@@ -273,8 +275,30 @@ describe('progreso y resultados', () => {
     expect(within(analisis).getAllByRole('img', { name: /Mapa de/ })).toHaveLength(1)
   })
 
+  it('muestra la capa 4 con su probabilidad y sus limitaciones (012 CA8)', async () => {
+    const red = {
+      ...RESULTADO,
+      capa: 'red_neuronal',
+      titulo: 'Red neuronal',
+      que_significa:
+        'Un modelo entrenado estima la probabilidad de que la imagen completa haya sido creada con inteligencia artificial; una probabilidad baja no significa que la foto sea real.',
+      nivel: 80,
+      conclusion: 'La red neuronal estima una probabilidad de 80 % de que la imagen haya sido generada íntegramente con inteligencia artificial.',
+      version: '1.0 (modelo 1.0.0, ONNX Runtime 1.31.1)',
+      detalle: { tabla: [{ campo: 'Probabilidad estimada de imagen generada con IA', valor: '80 %' }] },
+      anomalias: [],
+    }
+    api({ historial: [RESUMEN], detalle: { ...DETALLE, imagenes: [{ ...DETALLE.imagenes[0], resultados: [RESULTADO, red] }] } })
+    renderizarEn('/casos/7?etapa=analisis')
+
+    const analisis = await screen.findByRole('region', { name: 'Análisis' })
+    expect(await within(analisis).findByRole('heading', { name: 'Red neuronal' })).toBeInTheDocument()
+    expect(within(analisis).getByText(/una probabilidad baja no significa que la foto sea real/)).toBeInTheDocument()
+    expect(within(analisis).getByText('Criterios y versión del modelo')).toBeInTheDocument()
+  })
+
   it('compara la foto con su mapa de error con un control deslizante (034)', async () => {
-    const ela = { ...RESULTADO, capa: 'ela', nivel: 45, imagen: '/api/archivos/mapa-ela', detalle: { tabla: [] } }
+    const ela = { ...RESULTADO, capa: 'ela', titulo: 'Niveles de error (ELA)', nivel: 45, imagen: '/api/archivos/mapa-ela', detalle: { tabla: [] } }
     const conMiniatura = { ...IMAGENES, imagenes: [{ ...IMAGENES.imagenes[0], miniatura: '/api/archivos/mini-1' }] }
     api({
       imagenes: conMiniatura,
@@ -299,7 +323,7 @@ describe('progreso y resultados', () => {
         ...DETALLE,
         imagenes: [{
           ...DETALLE.imagenes[0],
-          resultados: [{ ...RESULTADO, capa: 'c2pa', nivel: 55, detalle: { tabla: [], estado_firma: 'contenido_modificado' } }],
+          resultados: [{ ...RESULTADO, capa: 'c2pa', titulo: 'Credenciales de contenido (C2PA)', nivel: 55, detalle: { tabla: [], estado_firma: 'contenido_modificado' } }],
         }],
       },
     })
@@ -348,7 +372,7 @@ describe('progreso y resultados', () => {
     const { usuario } = renderizarEn('/casos/7?etapa=analisis')
 
     const historial = await screen.findByRole('list', { name: 'Historial de análisis' })
-    await usuario.click(within(historial).getByRole('button', { name: /18\/10\/2026 · 2 imagen/ }))
+    await usuario.click(within(historial).getByRole('button', { name: /18\/10\/2026 · 2 imágenes/ }))
 
     expect(await screen.findByRole('heading', { name: 'anterior.png' })).toBeInTheDocument()
   })
@@ -387,7 +411,7 @@ describe('progreso y resultados', () => {
     expect(within(filas[0]).getByText('C2PA en curso')).toBeInTheDocument()
     expect(within(filas[0]).getByText('Analizando…')).toBeInTheDocument()
     expect(within(filas[1]).getByText('En espera')).toBeInTheDocument()
-    expect(screen.getByRole('progressbar', { name: 'Progreso del análisis' })).toHaveAttribute('aria-valuenow', '17')
+    expect(screen.getByRole('progressbar', { name: 'Progreso del análisis' })).toHaveAttribute('aria-valuenow', '13')
   })
 
   it('muestra el error del historial', async () => {

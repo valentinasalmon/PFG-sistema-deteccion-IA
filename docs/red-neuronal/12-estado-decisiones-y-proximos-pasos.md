@@ -18,7 +18,7 @@
 | Entrenamiento completo (T30) | ✔ 2026-11-05: AUC de prueba 0,961, F1 0,904, no visto (Google) 0,938 (capítulo 11) |
 | Reproducibilidad y condiciones reales (T31, T32) | Pendiente. Primer dato del conjunto propio: detecta 5 de 49 imágenes de choques |
 | Repositorio de modelos en Hugging Face (E03) y publicación de `1.0.0` (T33) | Pendiente |
-| Integración en el backend y el informe (funcionalidad 012) | Pendiente |
+| Integración en el backend y el informe (funcionalidad 012) | ✔ Código hecho el 2026-11-06 en `funcionalidad/012-capa-4-onnx` (capítulo 7). Falta publicar `1.0.0` y activarlo en producción con la [guía](../guias/despliegue-aws.md#capa-4-modelo-de-la-red-neuronal-funcionalidad-012) |
 
 Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento completo.
 

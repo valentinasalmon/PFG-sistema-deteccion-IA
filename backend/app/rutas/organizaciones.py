@@ -17,6 +17,8 @@ DELETE /api/organizaciones/<id>/invitaciones/<id_inv>           Cancelar (RF12 C
 GET    /api/organizaciones/<id>/plan                            Plan y consumo (RF20)
 POST   /api/organizaciones/<id>/plan                            Pedir otro plan, con pago (032)
 POST   /api/organizaciones/<id>/cobro                           Retomar el pago pendiente (032)
+GET    /api/organizaciones/<id>/identidad                       Estado de la verificación (035)
+POST   /api/organizaciones/<id>/identidad                       Iniciar la verificación (035)
 """
 from flask import Blueprint, current_app, jsonify, request
 from flask_login import login_required
@@ -37,7 +39,11 @@ from app.esquemas.organizaciones import (
 from app.seguridad.autenticacion import cerrar_sesion, usuario_actual
 from app.seguridad.origen import origen_de_la_solicitud
 from app.esquemas.administracion import SolicitudCambioPlan
-from app.servicios.fabrica import crear_servicio_organizaciones, crear_servicio_planes
+from app.servicios.fabrica import (
+    crear_servicio_identidad,
+    crear_servicio_organizaciones,
+    crear_servicio_planes,
+)
 from app.servicios.servicio_sesion import MOTIVO_CIERRE_CUENTA_DESACTIVADA
 from app.utilidades.tiempo import ahora_utc
 
@@ -247,3 +253,25 @@ def retomar_pago(id_organizacion):
     """Enlace de pago nuevo para una organización con el pago pendiente (032). Referente."""
     _, token = _servicio().retomar_pago(id_organizacion, usuario_actual())
     return jsonify({"pago": {"token": token}}), 201
+
+
+def _identidad():
+    return crear_servicio_identidad(current_app.config, origen_de_la_solicitud())
+
+
+@organizaciones_bp.get("/<int:id_organizacion>/identidad")
+@login_required
+def estado_identidad(id_organizacion):
+    """Estado de la verificación de identidad del Referente (CA1, CA4 de la 035)."""
+    return jsonify({"identidad": _identidad().estado(id_organizacion, usuario_actual())})
+
+
+@organizaciones_bp.post("/<int:id_organizacion>/identidad")
+@login_required
+def iniciar_identidad(id_organizacion):
+    """Inicia la verificación y devuelve el enlace al proveedor (CA1, CA2, CA7 de la 035)."""
+    _, url = _identidad().iniciar(id_organizacion, usuario_actual())
+    return jsonify({
+        "url": url,
+        "mensaje": "Completá la verificación en la página del proveedor.",
+    }), 201

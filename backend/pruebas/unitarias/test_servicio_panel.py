@@ -39,7 +39,7 @@ def test_estado_desconocido_y_cuenta_eliminada():
      "Cargaste la imagen «foto.jpg» en CASO-2026-000007"),
     (auditoria.CASO_CREACION, {}, "Creaste el caso CASO-2026-000007"),
     (auditoria.ANALISIS_SOLICITUD, {"imagenes": 3},
-     "Pediste el análisis de 3 imagen(es) de CASO-2026-000007"),
+     "Pediste el análisis de 3 imágenes de CASO-2026-000007"),
 ])
 def test_la_actividad_propia_va_en_segunda_persona(accion, detalle, esperado):
     """Quien mira el panel no ve su propio nombre: «Cargaste…» (funcionalidad 028)."""

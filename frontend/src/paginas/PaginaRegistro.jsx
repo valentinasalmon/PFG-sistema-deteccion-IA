@@ -315,6 +315,9 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
   }
 
   const esPasoDeCuenta = paso === 'cuenta'
+  // 037: si el mensaje ya se muestra junto a su campo, no se repite arriba.
+  const errorGeneral =
+    error && !Object.values(error.errores ?? {}).includes(error.message) ? error.message : null
 
   return (
     <div className="registro-ancho">
@@ -343,7 +346,7 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
       <h2 id="titulo-paso" ref={refTitulo} tabIndex={-1} className="pasos__titulo">
         {tituloDelPaso(paso, valores, esEmpleado)}
       </h2>
-      {error && <Aviso tipo="error">{error.message}</Aviso>}
+      {errorGeneral && <Aviso tipo="error">{errorGeneral}</Aviso>}
 
       <form onSubmit={esPasoDeCuenta ? crearCuenta : avanzar} className="formulario" noValidate>
         {paso === 'perfil' && (

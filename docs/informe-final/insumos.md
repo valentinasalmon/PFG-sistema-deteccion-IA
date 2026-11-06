@@ -295,6 +295,44 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - Limitaciones declaradas: no se detectan casi duplicados, no se filtran las reales de OpenFake que no son fotos y los temas de reales y sintéticas difieren entre conjuntos.
 - Incidente de los cuadernos (2026-11-04): al cuaderno de entrenamiento completo le faltaba la celda de instalación; las pruebas automáticas cubren el paquete, pero no los cuadernos de Colab, que solo se validaban por sintaxis. Se agregó una verificación de dependencias al inicio del cuaderno. Para el informe: límite de la integración continua y por qué el paso a paso en Colab tiene su propia comprobación.
 
+## Verificación de identidad de aseguradoras (035, 2026-11-04)
+
+- **Qué resuelve**: antes, el Administrador solo podía comprobar a mano que quien registraba una aseguradora trabajara en ella. Con la 035, el Referente verifica su identidad (DNI + rostro con prueba de vida) y la aprobación queda bloqueada hasta que esté aprobada (RN41).
+- **Privacidad por diseño**: la plataforma guarda solo el resultado, el motivo y una referencia del proveedor; no tiene dónde guardar biometría. Los datos biométricos son sensibles (Ley 25.326) y quedan del lado del proveedor.
+- **Proveedor intercambiable**: igual que el cobro (ADR-0020), con una versión simulada que permite mostrar el flujo completo antes de tener el contrato.
+- **Identik** (proveedor argentino): ofrece redirección o iFrame y resultado por *webhook*. Precios publicados al 2026-11-04: firma electrónica desde USD 0,27 por documento (pack de 1.000) y verificación biométrica USD 0,80 por firma; firma digital $ 21.990 por documento. La verificación aparte se cotiza a medida. RENAPER requiere credencial propia del registro.
+- **Decisiones abiertas** para el informe: CP-41 (verificación aparte o dentro de la firma electrónica) y CP-42 (firmar el informe PDF o dejarlo como trabajo futuro).
+
+## Índice de calidad y usabilidad (018, 2026-11-04)
+
+- **Fórmula del QI** (propuesta para CP-04): QI = 0,20·Cb + 0,15·Cf + 0,15·E + 0,10·K + 0,10·D + 0,30·U. Los componentes son la cobertura del backend y del frontend, pylint, la complejidad ciclomática acotada, el código sin duplicar y el SUS. Se mide con `backend/herramientas/indice_calidad.py`.
+- **Medición provisoria**: 0,977 sin SUS. Valores: backend 97,5 %, frontend 92,4 %, pylint 10, ninguna función con complejidad mayor a 10, 0,1 % de duplicación.
+- **Hallazgo metodológico**: un índice dominado por métricas de código que ya están al máximo puede ocultar una mala usabilidad (con estos valores, alcanzaría un SUS de 23). Conviene informar el SUS y la tasa de éxito aparte, con sus propios objetivos.
+- **Prueba de usabilidad**: protocolo con 8 tareas del flujo principal, SUS en español (Brooke, 1996) y al menos 5 participantes del dominio (Nielsen y Landauer, 1993). Resultados pendientes.
+
+## Revisión integral de la interfaz (037, 2026-11-05)
+
+- **Método**: recorrido automatizado con capturas en dos anchos (1440 y 390 px), por perfil (abogado, aseguradora, administrador y visitante), más un script que detecta contenido fuera del ancho. Encontró 21 problemas; 17 se corrigieron y 4 quedaron como decisiones de la autora.
+- **Hallazgo de diseño**: el mismo motor sirve a dos rubros, pero el vocabulario era único («caso»). Para una aseguradora el objeto de trabajo es el *siniestro*; se resolvió con un diccionario por perfil, sin tocar los datos ni las direcciones.
+- **Hallazgo de coherencia**: la portada y el acceso tenían una identidad (verde bosque y lima) y el sistema otra (azul). Se unificaron con una maqueta previa de dos alternativas sobre las pantallas reales.
+- **Informe**: el descargo de que no emite veredictos estaba solo al final; pasó a la primera página, que es la que se lee siempre (ADR-0017).
+
+## Verificación visual automatizada (037, 2026-11-05)
+
+- **Problema**: al unificar el tamaño de las tarjetas de acceso (alto fijo, pedido de la autora), el agente verificó las pantallas que motivaron el cambio y no las demás que usan la misma tarjeta; el pago, la elección del plan y el resultado del pago quedaron cortados. Lo detectó la autora.
+- **Lección**: un estilo compartido es una dependencia: cambiarlo exige revisar a todos sus usuarios, igual que una función compartida exige correr las pruebas de quienes la llaman. Las pruebas unitarias de la interfaz (Vitest con jsdom) no ven la maquetación.
+- **Solución en el arnés**: un sensor de diseño con Playwright que mide, en 1440 y 390 px, desplazamiento horizontal, contenido cortado, contenido escondido en contenedores con desplazamiento propio y controles fuera de la pantalla, aplicado en cada captura de los recorridos de punta a punta. Se validó reintroduciendo el error: el sensor lo informa («muestra 672 px de 1308 px») y no marca nada con la corrección.
+- **Otras decisiones de la tanda**: el pago es una «caja» y usa la tarjeta a todo el ancho; la aseguradora se elige con un cuadro combinado accesible (WAI-ARIA combobox) en lugar de una lista de tarjetas; el Administrador recibe un correo cuando una aseguradora paga; el caso guía el siguiente paso (cargar → analizar → informe) con un cierre al pie del análisis.
+
+## Capa 4 en el análisis: el clasificador ONNX en el backend (012, 2026-11-06)
+
+- **Mismo código en la evaluación y en producción.** El backend instala el paquete `clasificador` sin dependencias y usa su `PredictorOnnx`: no hay una segunda implementación del preprocesamiento que pueda desviarse. Una prueba automática verifica que la probabilidad del backend es igual a la de la evaluación (ADR-0015). El servidor no instala PyTorch ni usa GPU.
+- **Lectura publicada de la probabilidad (ADR-0017).** Por debajo de 50 % la capa no aporta indicios; desde ahí el nivel es la probabilidad calibrada, con tope de 90 (el 100 queda para C2PA, RN28). La conclusión aclara siempre tres limitaciones: no detecta ediciones parciales, puede fallar con generadores que no vio y una probabilidad baja no indica que la foto sea real. Es la traducción directa de los resultados de la 010: AUC 0,961 con generadores conocidos, 0,938 con la familia de Google no vista y solo 10 % de detección en el conjunto propio de choques.
+- **Integridad y reproducibilidad del modelo.** Versión fija, huella SHA-256 verificada antes de usarlo (ADR-0014) y, en cada resultado, versión, huella del ONNX, huella del manifiesto de entrenamiento, commit y versión de ONNX Runtime (RN29). Cambiar de versión es cambiar un parámetro; los análisis anteriores conservan la suya.
+- **Tolerancia a fallas (RN26).** Sin modelo configurado, con el registro caído o con un archivo alterado, la capa queda «No disponible» con el motivo y las otras tres se presentan igual. Por eso la funcionalidad se pudo integrar antes de publicar el modelo.
+- **Pruebas sin red ni PyTorch.** Un ONNX diminuto con el mismo contrato que el real (sigmoide del brillo medio) permite probar la carga, la caché, las huellas y la capa en milisegundos.
+- **Hallazgo de despliegue.** El script que arma el `.env` del servidor copia solo las variables que nombra; sin agregarlas, los parámetros del Parameter Store nunca habrían llegado a la aplicación. Se detectó al escribir la guía de activación, no con las pruebas: refuerza la regla de probar las integraciones contra el servicio real.
+
 ## Entrenamiento completo de la red (2026-11-05)
 
 - Con 35 000 imágenes de 210 generadores: **AUC de prueba 0,961, F1 0,904, ECE 0,02** (validación, tras calibrar). Cumple tanto el AUC ≥ 0,90 de la especificación como el F1 ≥ 0,85 del informe (CP-07).

@@ -7,6 +7,7 @@ from typing import List
 from pydantic import Field
 
 from app.esquemas.cuentas import EsquemaBase
+from app.analisis.registro import describir_capa
 
 NOMBRES_ESTADO = {
     "en_cola": "En cola",
@@ -51,8 +52,13 @@ def analisis_resumen_a_dict(analisis):
 
 
 def _resultado_a_dict(resultado, enlaces):
+    descripcion = describir_capa(resultado.capa) or {}
     return {
         "capa": resultado.capa,
+        # La capa se describe sola (037): la pantalla no repite títulos ni textos.
+        "titulo": descripcion.get("titulo", resultado.capa),
+        "que_significa": descripcion.get("que_significa", ""),
+        "tipo": descripcion.get("tipo"),
         "estado": resultado.estado,
         "nivel": resultado.nivel,
         "conclusion": resultado.conclusion,

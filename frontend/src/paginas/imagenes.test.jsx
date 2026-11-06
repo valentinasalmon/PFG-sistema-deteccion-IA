@@ -123,6 +123,8 @@ describe('imágenes del caso', () => {
     expect(within(resultados).getByText(/El formato real del archivo no es válido/)).toBeInTheDocument()
     expect(within(resultados).getByText(/Supera el máximo de 20 MB/)).toBeInTheDocument()
     expect(await screen.findByRole('img', { name: 'Vista previa de frente.jpg' })).toBeInTheDocument()
+    // 037: lo cargado lleva al siguiente paso, el análisis.
+    expect(await screen.findByText(/Se cargó 1 imagen\. Siguiente paso: analizarlas\./)).toBeInTheDocument()
     // El archivo demasiado grande no se envía.
     expect(solicitudes.filter((s) => s.metodo === 'POST').map((s) => s.cuerpo.archivo.name)).toEqual([
       'frente.jpg',
