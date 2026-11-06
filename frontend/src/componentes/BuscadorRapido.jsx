@@ -15,6 +15,7 @@ import { listarCasos } from '../api/casos.js'
 import { useSesion } from '../hooks/useSesion.js'
 import Dialogo from './Dialogo.jsx'
 import Icono from './Icono.jsx'
+import { textosDelRubro } from '../utilidades/lenguaje.js'
 
 /** Milisegundos sin escribir antes de buscar casos. */
 const ESPERA_BUSQUEDA = 250
@@ -30,10 +31,11 @@ function atajosPara(usuario) {
       { ruta: '/perfil', texto: 'Mi perfil', icono: 'perfil' },
     ]
   }
+  const rubro = textosDelRubro(usuario.perfil)
   return [
-    { ruta: '/casos/nuevo', texto: 'Nuevo caso', icono: 'mas' },
+    { ruta: '/casos/nuevo', texto: rubro.nuevo, icono: 'mas' },
     { ruta: '/', texto: 'Inicio', icono: 'inicio' },
-    { ruta: '/casos', texto: 'Casos', icono: 'casos' },
+    { ruta: '/casos', texto: rubro.Casos, icono: 'casos' },
     ...(usuario.en_organizacion
       ? [{ ruta: '/organizaciones', texto: 'Organizaciones', icono: 'organizaciones' }]
       : []),
@@ -91,7 +93,7 @@ function Ventana({ alCerrar }) {
             texto: caso.numero,
             detalle: [caso.lugar, caso.estado_nombre].filter(Boolean).join(' · '),
             icono: 'documento',
-            grupo: 'Casos',
+            grupo: textosDelRubro(usuario.perfil).Casos,
           }))
     return [...encontrados, ...atajos]
   }, [texto, casos, usuario])
@@ -169,7 +171,7 @@ function Ventana({ alCerrar }) {
           ))}
         </ul>
         <p className="buscador-rapido__estado" role="status">
-          {buscando && 'Buscando casos…'}
+          {buscando && `Buscando ${textosDelRubro(usuario.perfil).casos}…`}
           {sinResultados && `Nada coincide con «${texto}».`}
         </p>
         <p className="buscador-rapido__ayuda" aria-hidden="true">
@@ -187,9 +189,9 @@ function esAtajoBuscar(evento) {
 
 /**
  * Botón del menú que abre el buscador y escucha el atajo de teclado en toda
- * la pantalla interna.
+ * la pantalla interna. Con ``conBoton={false}`` solo escucha el atajo (037).
  */
-export default function BuscadorRapido({ alAbrir }) {
+export default function BuscadorRapido({ alAbrir, conBoton = true }) {
   const [abierto, setAbierto] = useState(false)
 
   useEffect(() => {
@@ -204,19 +206,21 @@ export default function BuscadorRapido({ alAbrir }) {
 
   return (
     <>
-      <button
-        type="button"
-        className="buscador-rapido__abrir"
-        onClick={() => {
-          alAbrir?.()
-          setAbierto(true)
-        }}
-        aria-keyshortcuts="Control+K Meta+K"
-      >
-        <Icono nombre="buscar" tamanio={18} />
-        <span>Buscar o ir a…</span>
-        <kbd aria-hidden="true">Ctrl K</kbd>
-      </button>
+      {conBoton && (
+        <button
+          type="button"
+          className="buscador-rapido__abrir"
+          onClick={() => {
+            alAbrir?.()
+            setAbierto(true)
+          }}
+          aria-keyshortcuts="Control+K Meta+K"
+        >
+          <Icono nombre="buscar" tamanio={18} />
+          <span>Buscar o ir a…</span>
+          <kbd aria-hidden="true">Ctrl K</kbd>
+        </button>
+      )}
       {abierto && <Ventana alCerrar={() => setAbierto(false)} />}
     </>
   )

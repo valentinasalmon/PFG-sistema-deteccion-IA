@@ -119,7 +119,7 @@ def test_cambios_de_estado_y_analisis_en_la_actividad(ana):
         f"Cerraste el caso {numero}",
         f"Terminó el análisis de {numero}",
         f"Se generó el informe PDF de {numero}",
-        f"Pediste el análisis de 1 imagen(es) de {numero}",
+        f"Pediste el análisis de 1 imagen de {numero}",
     ]
 
 

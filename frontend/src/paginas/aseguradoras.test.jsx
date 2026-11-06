@@ -236,7 +236,9 @@ describe('administración', () => {
     })
     renderizarEn('/administracion')
     expect(await screen.findAllByText('SEGUROS GALICIA S.A.')).toHaveLength(2)
-    expect(screen.getAllByText(/CUIT 30500000127 · Registrada el 16\/10\/2026/)).toHaveLength(2)
+    expect(screen.getAllByText(/Registrada el 16\/10\/2026/)).toHaveLength(2)
+    expect(screen.getAllByText('30500000127')).toHaveLength(2)
+    expect(screen.getAllByText('Ver detalle')).toHaveLength(2)
     expect(screen.getByText(/correo sin verificar/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Administración' })).toBeInTheDocument()
   })
@@ -345,5 +347,15 @@ describe('tablero del Administrador (funcionalidad 014)', () => {
     expect(solicitudes.some((s) => s.ruta.startsWith(`/api/administracion/tablero?desde=${anio}-01-01`))).toBe(true)
 
     expect(screen.getByRole('tab', { name: 'Cuentas' })).toHaveAttribute('aria-selected', 'true')
+  })
+})
+
+describe('Administrador diferenciado (037)', () => {
+  it('su menú dice «Admin» y no muestra el rubro de una cuenta de trabajo', async () => {
+    simularApi({ ...CON_SESION_ADMINISTRADOR, 'GET /api/administracion/aseguradoras-pendientes': { cuerpo: { aseguradoras: [] } } })
+    renderizarEn('/administracion')
+    expect(await screen.findByText('Admin')).toBeInTheDocument()
+    expect(screen.queryByText('Legal')).not.toBeInTheDocument()
+    expect(document.querySelector('.lateral--admin')).not.toBeNull()
   })
 })

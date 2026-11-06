@@ -43,18 +43,20 @@ describe('portada pública', () => {
     expect(screen.getByRole('link', { name: 'Iniciar sesión' })).toHaveAttribute('href', '/iniciar-sesion')
     // La portada habla de beneficios: no nombra proveedores ni la infraestructura.
     expect(document.body.textContent).not.toMatch(/AWS|Hedera|SHA-256|Irlanda/)
-    // Quinta tanda: sin beneficios, globos, «para quién», sello de Ctrl K ni ojo del cierre.
+    // Quinta tanda: sin beneficios, globos, sello de Ctrl K ni ojo del cierre. Desde la 037
+    // vuelven dos tarjetas cortas por perfil (decisión de la autora).
     for (const quitado of [
       /Nadie puede alterarlo/,
       /Moderados en el lateral/,
       /Análisis listo/,
-      /Para aseguradoras/,
       /Encontrás todo con Ctrl K/,
     ]) {
       expect(screen.queryByText(quitado)).not.toBeInTheDocument()
     }
     expect(screen.queryByRole('link', { name: 'Para quién' })).not.toBeInTheDocument()
     expect(document.querySelector('img[src="/portada/ojo.jpg"]')).toBeNull()
+    expect(screen.getByRole('link', { name: /Registrar mi aseguradora/ })).toHaveAttribute('href', '/registro?tipo=aseguradora')
+    expect(screen.getByText('Próximamente')).toBeInTheDocument()
   })
 
   it('con sesión, la raíz sigue siendo el Inicio (CA1)', async () => {

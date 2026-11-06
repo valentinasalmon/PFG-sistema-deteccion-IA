@@ -148,7 +148,7 @@ export default function PanelPago({ token, alAcreditar }) {
               <dt>Período</dt>
               <dd>1 mes</dd>
             </div>
-            <div>
+            <div className="pago__fila-apilada">
               <dt>Organización</dt>
               <dd>{cobro.organizacion.nombre}</dd>
             </div>

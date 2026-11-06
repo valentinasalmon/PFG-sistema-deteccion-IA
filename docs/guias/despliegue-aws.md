@@ -291,7 +291,7 @@ Sin estos pasos la plataforma funciona igual: la capa 4 aparece como «No dispon
    ```bash
    sudo systemctl restart plataforma-web plataforma-trabajador
    ```
-5. **Probar**: analizar un caso con una foto propia (nunca una de un caso real). En la pantalla del análisis tiene que aparecer **Red neuronal** con una probabilidad, y en la tabla «Versión del modelo: 1.0.0»; lo mismo en el informe PDF. El primer análisis tarda unos segundos más, porque baja el modelo (unos 20 MB) a `/opt/plataforma/modelos_onnx`.
+5. **Probar**: analizar un caso con una foto propia (nunca una de un caso real). En la pantalla del análisis tiene que aparecer **Red neuronal** con una probabilidad, y en su tabla «Versión del modelo: 1.0.0». En el informe PDF (breve desde la 037) aparece «Red neuronal» con su conclusión; la tabla queda en el detalle en línea. El primer análisis tarda unos segundos más, porque baja el modelo (unos 20 MB) a `/opt/plataforma/modelos_onnx`.
 6. **Si dice «No disponible»**, el motivo aparece en la misma capa:
    - «todavía no está configurado»: falta alguno de los parámetros o no se regeneró el `.env`;
    - «No se pudo obtener la versión 1.0.0 del modelo del registro»: el token no tiene acceso o el nombre del repositorio está mal. Lo confirma `sudo journalctl -u plataforma-trabajador -n 50`;

@@ -126,6 +126,13 @@ class CapaRedNeuronal(CapaAnalisis):
 
     nombre = "red_neuronal"
     titulo = "Red neuronal"
+    que_significa = (
+        "Un modelo entrenado con miles de fotos reales y generadas estima la probabilidad de "
+        "que la imagen completa haya sido creada con inteligencia artificial. No detecta "
+        "ediciones parciales y puede fallar con generadores que no conoce; una probabilidad "
+        "baja no significa que la foto sea real."
+    )
+    tipo_de_resultado = "probabilistico"
 
     def __init__(self, configuracion):
         self.configuracion = configuracion

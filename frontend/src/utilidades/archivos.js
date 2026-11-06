@@ -19,3 +19,8 @@ export function abrirDescarga(url) {
   enlace.click()
   enlace.remove()
 }
+
+/** Los primeros 12 y los últimos 8 caracteres de una huella SHA-256 (037). */
+export function abreviarHuella(huella) {
+  return huella.length > 24 ? `${huella.slice(0, 12)}…${huella.slice(-8)}` : huella
+}

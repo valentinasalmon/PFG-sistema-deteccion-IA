@@ -3,7 +3,7 @@
  */
 import { screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { CON_SESION, simularApi } from '../pruebas/api.js'
+import { CON_SESION, simularApi, USUARIO } from '../pruebas/api.js'
 import { renderizarEn } from '../pruebas/renderizar.jsx'
 
 const caso = (id, extra = {}) => ({
@@ -71,7 +71,7 @@ describe('panel principal', () => {
 
     const enCurso = screen.getByRole('region', { name: 'Análisis en curso' })
     expect(within(enCurso).getByRole('link', { name: 'CASO-2026-000001' })).toHaveAttribute('href', '/casos/1')
-    expect(within(enCurso).getByText(/3 imagen\(es\), en proceso/)).toBeInTheDocument()
+    expect(within(enCurso).getByText(/3 imágenes, en proceso/)).toBeInTheDocument()
 
     const compartidos = screen.getByRole('region', { name: 'Compartidos con vos recientemente' })
     expect(within(compartidos).getByText(/Beto Pérez te dio permiso de lectura el 19\/10\/2026/)).toBeInTheDocument()
@@ -163,5 +163,19 @@ describe('panel principal', () => {
     renderizarEn('/')
 
     expect(await screen.findByText('Error del servidor.')).toBeInTheDocument()
+  })
+})
+
+describe('vocabulario por rubro (037)', () => {
+  it('para una aseguradora habla de siniestros en el menú y en el inicio', async () => {
+    simularApi({
+      'GET /api/sesion': { cuerpo: { usuario: { ...USUARIO, perfil: 'aseguradora' } } },
+      'GET /api/panel': { cuerpo: { panel: COMPLETO } },
+    })
+    renderizarEn('/')
+    expect(await screen.findByRole('heading', { name: 'Siniestros recientes' })).toBeInTheDocument()
+    expect(screen.getAllByRole('link', { name: /Nuevo siniestro/ }).length).toBeGreaterThan(0)
+    expect(screen.getByRole('link', { name: 'Siniestros' })).toBeInTheDocument()
+    expect(screen.queryByText('Casos recientes')).not.toBeInTheDocument()
   })
 })

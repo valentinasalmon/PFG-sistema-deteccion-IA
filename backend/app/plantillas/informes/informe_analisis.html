@@ -8,7 +8,7 @@
       size: A4;
       margin: 2.2cm 1.9cm 2.3cm;
       @top-left { content: "evidentIA · {{ informe.rubro.titulo }}"; font-family: "DejaVu Sans", sans-serif; font-size: 7.5pt; color: #4e5b54; }
-      @top-right { content: "Caso {{ informe.caso.numero }} · Análisis N.° {{ informe.analisis.id }}"; font-family: "DejaVu Sans", sans-serif; font-size: 7.5pt; color: #4e5b54; }
+      @top-right { content: "{{ informe.caso.numero }} · Análisis N.° {{ informe.analisis.id }}"; font-family: "DejaVu Sans", sans-serif; font-size: 7.5pt; color: #4e5b54; }
       @bottom-left { content: "{{ informe.leyenda }}"; font-family: "DejaVu Sans", sans-serif; font-size: 7.5pt; color: #7a1a12; width: 75%; }
       @bottom-right { content: "Página " counter(page) " de " counter(pages); font-family: "DejaVu Sans", sans-serif; font-size: 7.5pt; color: #4e5b54; }
     }
@@ -36,7 +36,7 @@
     .nivel-ninguno { background: #f3f5f4; color: #3a4640; border: 0.6pt solid #c5cec9; }
     .nivel-nd { background: #ffffff; color: #4e5b54; border: 0.6pt dashed #8e9a93; }
     .tipo { display: inline-block; font-size: 7.6pt; font-weight: bold; padding: 1pt 5pt; border-radius: 3pt; white-space: nowrap; }
-    .tipo-determinista { background: #e8effa; color: #1e3f7a; }
+    .tipo-determinista { background: #eef5dc; color: #2f4a0c; }
     .tipo-probabilistico { background: #f0ecf8; color: #4b2f7a; }
     .huella { font-family: "DejaVu Sans Mono", monospace; font-size: 7.2pt; word-break: break-all; }
     .ok { color: #33500c; font-weight: bold; }
@@ -48,7 +48,7 @@
     .imagen { margin: 0 0 18pt; }
     /* Ningún bloque se corta entre páginas: si no entra, pasa entero a la siguiente. */
     h2, h3, .ficha, .intro-resultados { break-after: avoid; page-break-after: avoid; }
-    table tr, .tecnica, .ficha, .verificacion, .aviso, .alerta, figure, .cronologia { break-inside: avoid; page-break-inside: avoid; }
+    table tr, .tecnica, .ficha, .verificacion, .aviso, .alerta, figure, .cronologia, .bloque-escala { break-inside: avoid; page-break-inside: avoid; }
     .ficha td.vista { width: 4cm; }
     .tecnica { border: 0.6pt solid #d9e0dc; border-radius: 4pt; padding: 9pt 11pt; margin: 0 0 10pt; }
     .tecnica-cabecera td { border: 0; padding: 0 0 6pt; vertical-align: middle; }
@@ -65,7 +65,7 @@
     .ficha img { width: 3.8cm; max-height: 4.2cm; object-fit: contain; border: 0.6pt solid #d9e0dc; border-radius: 3pt; }
     .ficha .texto { padding-left: 12pt; }
     .mapa { margin: 8pt 0 0; }
-    .mapa img { max-width: 7.5cm; max-height: 5.5cm; border-radius: 3pt; }
+    .mapa img { max-width: 5.5cm; max-height: 4cm; border-radius: 3pt; }
     .nota { color: #4e5b54; font-size: 8pt; }
     .alerta { border: 1pt solid #b42318; background: #fef3f2; color: #7a1a12; padding: 8pt 10pt; border-radius: 4pt; }
     ol.pasos { margin: 4pt 0; padding-left: 15pt; }
@@ -74,23 +74,29 @@
     .verificacion td.qr { width: 3.3cm; }
     .verificacion img { width: 2.9cm; height: 2.9cm; }
     .codigo { font-family: "DejaVu Sans Mono", monospace; letter-spacing: 0.5pt; }
-    .aviso { border: 1pt solid #2f5da8; background: #eef3fb; padding: 10pt 12pt; border-radius: 4pt; margin: 26pt 0 0; }
+    .aviso { border: 1pt solid #3e6110; background: #f4f8ea; padding: 10pt 12pt; border-radius: 4pt; margin: 26pt 0 0; }
     .aviso p:last-child { margin-bottom: 0; }
-    .aviso strong { color: #1e3f7a; }
+    .apoyo { margin: 10pt 0 0; padding: 0 0 0 8pt; border-left: 2.5pt solid #a4cb3e; font-size: 8.8pt; color: #3a4640; }
+    .escala-breve { margin: 0 0 4pt; line-height: 2; }
+    .verificacion td.enlace { padding-left: 4pt; font-size: 8.8pt; }
+    .qr-bloque { break-inside: avoid; page-break-inside: avoid; margin: 0 0 14pt; padding: 10pt 12pt; border: 0.6pt solid #d9e0dc; border-radius: 4pt; }
+    .qr-bloque h3 { margin: 0 0 6pt; font-size: 10.5pt; }
+    .aviso strong { color: #17291f; }
   </style>
 </head>
 <body>
   <img class="portada-logo" src="{{ informe.logo }}" alt="evidentIA">
   <div class="acento"></div>
   <h1>{{ informe.rubro.titulo }}</h1>
-  <p class="subtitulo">Caso {{ informe.caso.numero }} · Análisis N.° {{ informe.analisis.id }} · Generado el {{ generado_en | hora_argentina }} (hora de Argentina)</p>
+  <p class="subtitulo">{{ informe.caso.numero }} · Análisis N.° {{ informe.analisis.id }} · Generado el {{ generado_en | hora_argentina }} (hora de Argentina)</p>
   <p class="intro">{{ informe.rubro.intro }}</p>
+  <p class="apoyo"><strong>Herramienta de apoyo:</strong> muestra indicios técnicos y no emite veredictos. Ante cualquier duda, consultá con un perito especializado.</p>
 
-  <h2>Caso y solicitud</h2>
+  <h2>{{ informe.rubro.objeto }} y solicitud</h2>
   <table class="dos-columnas"><tr>
     <td>
       <table class="datos">
-        <tr><td>Número de caso</td><td>{{ informe.caso.numero }}</td></tr>
+        <tr><td>Número de {{ informe.rubro.objeto | lower }}</td><td>{{ informe.caso.numero }}</td></tr>
         <tr><td>{{ informe.rubro.etiqueta_referencia }}</td><td>{{ informe.caso.expediente or "—" }}</td></tr>
         <tr><td>Tipo</td><td>{{ informe.caso.tipo }}</td></tr>
         <tr><td>Fecha y lugar del hecho</td><td>{{ informe.caso.fecha_hecho | dia }} · {{ informe.caso.lugar }}</td></tr>
@@ -128,26 +134,14 @@
     <span>informe generado {{ generado_en | hora_argentina }}</span> (hora de Argentina).
   </p>
 
-  <h2>Escala de lectura</h2>
-  <table class="escala">
-    <tr><th>Nivel</th><th>Se lee como</th><th>Qué significa</th></tr>
-    {% for banda in informe.bandas %}
-    <tr>
-      <td style="white-space: nowrap">{{ banda.rango }}</td>
-      <td><span class="nivel nivel-{{ banda.clase }}">{{ banda.nombre }}</span></td>
-      <td>
-        {% if banda.clase == "fuerte" %}Señales claras de edición o de generación. Requiere revisión profesional.
-        {% elif banda.clase == "moderado" %}Señales que conviene revisar; pueden tener explicaciones legítimas.
-        {% elif banda.clase == "debil" %}Señales menores, frecuentes también en imágenes sin editar.
-        {% else %}No se encontraron señales. No garantiza que la imagen no haya sido modificada.{% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
-  <p class="nota" style="margin-top: 7pt">Cada técnica mira un aspecto distinto: sus niveles no se suman ni se promedian.</p>
-
+  <div>
   <h2>Resultados por imagen</h2>
-  <p class="intro-resultados">Cada técnica revisa un aspecto distinto de la imagen. Las <span class="tipo tipo-determinista">deterministas</span> comprueban datos verificables del archivo; las <span class="tipo tipo-probabilistico">probabilísticas</span> estiman con umbrales estadísticos y pueden equivocarse en los dos sentidos.</p>
+  <p class="escala-breve">
+    {% for banda in informe.bandas %}<span class="nivel nivel-{{ banda.clase }}">{{ banda.nombre }} · {{ banda.rango }}</span> {% endfor %}
+  </p>
+  <p class="nota">Cada técnica mira un aspecto distinto: sus niveles no se suman ni se promedian. «Sin indicios» no garantiza que la imagen no haya sido modificada.</p>
+  </div>
+
   {% for imagen in informe.imagenes %}
   <section class="imagen">
     <table class="ficha"><tr>
@@ -166,16 +160,10 @@
           <td><strong>{{ capa.titulo_corto }}</strong> <span class="tipo tipo-{{ capa.tipo }}">{{ "Determinista" if capa.tipo == "determinista" else "Probabilístico" }}</span></td>
           <td class="derecha">{% if capa.disponible %}<span class="nivel nivel-{{ capa.banda.clase }}">{{ capa.banda.nombre }} · {{ capa.nivel }} %</span>{% else %}<span class="nivel nivel-nd">No disponible</span>{% endif %}</td>
         </tr></table>
-        <p class="que-reviso"><strong>Qué revisó:</strong> {{ capa.que_mira }}</p>
         {% if capa.disponible %}
-          <p><strong>Qué encontró:</strong> {{ capa.texto }}</p>
+          <p>{{ capa.texto }}</p>
           {% if capa.principales %}
           <ul class="hallazgos">{% for hallazgo in capa.principales %}<li>{{ hallazgo }}</li>{% endfor %}</ul>
-          {% endif %}
-          {% if capa.datos %}
-          <table class="datos-tecnica">
-            {% for fila in capa.datos %}<tr><td>{{ fila.campo }}</td><td>{{ fila.valor }}</td></tr>{% endfor %}
-          </table>
           {% endif %}
           {% if capa.imagen and capa.nivel %}
           <figure class="mapa">
@@ -193,23 +181,32 @@
   {% endfor %}
 
   {% if informe.verificacion %}
-  <h2>Verificación de este informe</h2>
-  <table class="verificacion"><tr>
-    <td class="qr"><img src="{{ informe.verificacion.qr }}" alt="Código QR de verificación"></td>
-    <td>
-      <p>Para comprobar que este PDF no fue modificado, escaneá el código o entrá a
-        <strong>{{ informe.verificacion.pagina }}</strong> e ingresá el código
-        <strong class="codigo">{{ informe.verificacion.codigo }}</strong>.</p>
-      <p class="nota">La página compara la huella SHA-256 del archivo con la registrada al generarlo, que además queda sellada en la red pública Hedera. Si el PDF cambió aunque sea en un carácter, la huella no coincide.</p>
-    </td>
-  </tr></table>
+  <h2>Más detalle y verificación</h2>
+  {% if informe.detalle %}
+  <div class="qr-bloque">
+    <h3>1. Análisis detallado</h3>
+    <table class="verificacion"><tr>
+      <td class="qr"><img src="{{ informe.detalle.qr }}" alt="Código QR del análisis detallado"></td>
+      <td class="enlace">
+        <p>Qué revisó cada técnica, los datos que encontró y por qué llegó a cada nivel, en
+          <strong>{{ informe.detalle.url }}</strong>.</p>
+        <p class="nota">Se abre con una cuenta que tenga acceso a este {{ informe.rubro.objeto | lower }}.</p>
+      </td>
+    </tr></table>
+  </div>
+  {% endif %}
+  <div class="qr-bloque">
+    <h3>{{ "2. " if informe.detalle else "" }}Verificar este PDF</h3>
+    <table class="verificacion"><tr>
+      <td class="qr"><img src="{{ informe.verificacion.qr }}" alt="Código QR de verificación"></td>
+      <td class="enlace">
+        <p>Entrá a <strong>{{ informe.verificacion.pagina }}</strong> con el código
+          <strong class="codigo">{{ informe.verificacion.codigo }}</strong>. Si el archivo cambió aunque sea en un carácter, no coincide.</p>
+        <p class="nota">Sin cuenta. La huella del PDF queda sellada en una red pública.</p>
+      </td>
+    </tr></table>
+  </div>
   {% endif %}
 
-  <div class="aviso">
-    <p>Este informe presenta <strong>indicios técnicos</strong> obtenidos de forma automatizada.
-      <strong>No emite veredictos</strong> sobre la autenticidad de las imágenes y no reemplaza un
-      dictamen pericial. Ante cualquier duda, consultá con un perito especializado en informática forense.</p>
-    <p><strong>Descargo.</strong> {{ informe.descargo }}</p>
-  </div>
 </body>
 </html>

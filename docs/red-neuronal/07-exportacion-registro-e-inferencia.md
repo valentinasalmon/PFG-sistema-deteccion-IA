@@ -132,3 +132,9 @@ Las pruebas del backend usan un **ONNX diminuto** (`backend/pruebas/modelo_dimin
 ### En producción
 
 `generar_entorno.sh` copia del Parameter Store `MODELO_RED_NEURONAL_REGISTRO`, `MODELO_RED_NEURONAL_VERSION` y `HF_TOKEN`, y fija `CARPETA_MODELOS_ONNX=/opt/plataforma/modelos_onnx`, fuera de cada versión desplegada, para no volver a bajar el modelo en cada despliegue. La guía para activarlo está en [despliegue-aws.md](../guias/despliegue-aws.md#capa-4-modelo-de-la-red-neuronal-funcionalidad-012).
+
+### Cómo se suma al resto del sistema (037)
+
+Desde la 037 cada capa se describe sola: `CapaRedNeuronal` declara `titulo`, `que_significa` y `tipo_de_resultado = "probabilistico"`, y está en `crear_capas()` y en `CLASES_DE_CAPAS` (`backend/app/analisis/registro.py`). La pantalla del análisis toma el título y la explicación de la API; la prueba `test_analisis_registro.py` falla si una capa activa no los tiene.
+
+Queda un paso para cuando la capa funcione en producción (T08): quitar `proximamente: true` de la mirada «Imagen con IA» en `frontend/src/paginas/PaginaPortada.jsx` y la frase «se suma próximamente» de los términos. No se quita antes para no anunciar una capa que todavía aparece como «No disponible».
