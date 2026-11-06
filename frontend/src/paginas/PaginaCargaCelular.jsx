@@ -31,7 +31,7 @@ import { formatearDia } from '../utilidades/fechas.js'
 const TIPOS_ACEPTADOS = 'image/jpeg,image/png,image/heic,image/heif,.jpg,.jpeg,.png,.heic,.heif'
 
 function horaLocal(venceEn) {
-  return new Date(`${venceEn}Z`).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
+  return new Date(`${venceEn}Z`).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
 }
 
 /** Sube los archivos de a uno y devuelve el resultado de cada uno. */

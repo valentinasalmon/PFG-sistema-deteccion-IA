@@ -32,6 +32,7 @@ import { IlustracionCarpeta } from '../componentes/Ilustraciones.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { textosDelRubro } from '../utilidades/lenguaje.js'
+import { useRubro } from '../hooks/useRubro.js'
 import { OPCIONES_ESTADO } from '../utilidades/casos.js'
 import { formatearFecha } from '../utilidades/fechas.js'
 
@@ -122,7 +123,7 @@ function SeguiDonde({ casos }) {
           {[caso.lugar, `actualizado el ${formatearFecha(caso.actualizado_en)}`].filter(Boolean).join(' · ')}
         </p>
       </div>
-      <Link to={`/casos/${caso.id}`} className="boton">
+      <Link to={`/casos/${caso.id}`} className="boton boton--oscuro">
         {paso.accion}
         <Icono nombre="derecha" tamanio={18} />
       </Link>
@@ -132,19 +133,20 @@ function SeguiDonde({ casos }) {
 
 /** Bienvenida para quien todavía no tiene casos: los tres pasos y la acción. */
 function PrimerCaso() {
+  const rubro = useRubro()
   return (
     <section className="seccion primer-caso" aria-labelledby="titulo-primer-caso">
       <IlustracionCarpeta clase="primer-caso__ilustracion" />
       <div className="primer-caso__texto">
-        <h2 id="titulo-primer-caso">Tu primer caso</h2>
+        <h2 id="titulo-primer-caso">Tu primer {rubro.caso}</h2>
         <ol className="primer-caso__pasos">
-          <li>Creá el caso con la fecha y el lugar del hecho.</li>
+          <li>Creá el {rubro.caso} con la fecha y el lugar del hecho.</li>
           <li>Cargá las fotos o pedíselas a la persona afectada.</li>
           <li>Analizalas y descargá el informe.</li>
         </ol>
         <Link to="/casos/nuevo" className="boton">
           <Icono nombre="mas" tamanio={18} />
-          Crear mi primer caso
+          Crear mi primer {rubro.caso}
         </Link>
       </div>
     </section>
@@ -188,7 +190,7 @@ function AnalisisEnCurso({ analisis }) {
       <ul className="lista-panel">
         {analisis.map((item) => (
           <li key={item.id}>
-            <EnlaceCaso caso={item.caso} />: {item.cantidad_imagenes} imagen(es),{' '}
+            <EnlaceCaso caso={item.caso} />: {item.cantidad_imagenes} {item.cantidad_imagenes === 1 ? 'imagen' : 'imágenes'},{' '}
             {item.estado === 'en_cola' ? 'en cola' : 'en proceso'}.
           </li>
         ))}
@@ -214,21 +216,22 @@ function Compartidos({ compartidos }) {
 }
 
 function Recientes({ casos }) {
+  const rubro = useRubro()
   return (
     <Seccion
       id="titulo-recientes"
-      titulo="Casos recientes"
+      titulo={rubro.recientes}
       accion={
         <Link to="/casos" className="boton boton--fantasma boton--chico">
-          Ver todos los casos
+          {rubro.verTodos}
         </Link>
       }
     >
       {casos.length === 0 ? (
-        <EstadoVacio Ilustracion={IlustracionCarpeta} titulo="Todavía no tenés casos recientes.">
+        <EstadoVacio Ilustracion={IlustracionCarpeta} titulo={rubro.vacio}>
           <Link to="/casos/nuevo" className="boton">
             <Icono nombre="mas" tamanio={18} />
-            Nuevo caso
+            {rubro.nuevo}
           </Link>
         </EstadoVacio>
       ) : (

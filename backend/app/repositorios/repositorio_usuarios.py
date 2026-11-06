@@ -1,6 +1,6 @@
 """Acceso a datos de los usuarios (patrón Repository)."""
 from app.extensiones import db
-from app.modelos.usuario import Usuario
+from app.modelos.usuario import ROL_ADMINISTRADOR, Usuario
 
 
 class RepositorioUsuarios:
@@ -17,6 +17,10 @@ class RepositorioUsuarios:
     def obtener_por_google(self, sub):
         """Devuelve el usuario vinculado a esa cuenta de Google, o None (RF52)."""
         return Usuario.query.filter_by(google_sub=sub).first()
+
+    def administradores(self):
+        """Cuentas con rol de Administrador, para avisarles lo que espera su revisión."""
+        return Usuario.query.filter_by(rol=ROL_ADMINISTRADOR).order_by(Usuario.id).all()
 
     def existe_correo(self, correo):
         """True si el correo ya pertenece a alguna cuenta."""

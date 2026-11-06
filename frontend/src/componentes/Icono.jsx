@@ -116,6 +116,7 @@ const TRAZOS = {
     </>
   ),
   marca: <path d="M5 12l5 5L20 7" />,
+  cerrar: <path d="M6 6l12 12M18 6L6 18" />,
   // Funcionalidad 033: portada.
   capas: (
     <>

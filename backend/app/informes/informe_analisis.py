@@ -105,6 +105,7 @@ QUE_MIRA = {
 TEXTOS_RUBRO = {
     "abogado": {
         "titulo": "Informe técnico de imágenes",
+        "objeto": "Caso",
         "etiqueta_referencia": "Expediente",
         "intro": (
             "Resultado del análisis automatizado de las imágenes del caso, para evaluar si "
@@ -113,6 +114,7 @@ TEXTOS_RUBRO = {
     },
     "aseguradora": {
         "titulo": "Informe de verificación de fotos del siniestro",
+        "objeto": "Siniestro",
         "etiqueta_referencia": "N.° de siniestro",
         "intro": (
             "Resultado del análisis automatizado de las fotos presentadas en el siniestro, "

@@ -1,0 +1,8 @@
+Hola, {{ nombre }}:
+
+{{ organizacion }}{% if cuit %} (CUIT {{ cuit }}){% endif %} se registró, pagó su plan y espera tu aprobación.
+
+Antes de aprobarla, comprobá que la persona que la registró trabaje en la aseguradora. Si la rechazás, el pago se devuelve.
+
+Revisala en Administración:
+{{ enlace }}

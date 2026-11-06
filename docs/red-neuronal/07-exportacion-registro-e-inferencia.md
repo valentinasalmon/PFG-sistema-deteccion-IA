@@ -92,3 +92,23 @@ Solo `numpy`, `Pillow` y `onnxruntime`. Nada de PyTorch ni GPU. En AWS el modelo
 ## Cómo se ve en el informe (funcionalidad 012)
 
 La capa 4 aparece como una probabilidad con la versión del modelo y la leyenda de que es un indicio. Nunca se combina con las otras capas en un puntaje único (RN27).
+
+## Cómo se suma la red al sistema sin tocar lo anterior (037, 2026-11-05)
+
+El motor de análisis está preparado para que la red entre como **una capa más**, igual que las tres que ya funcionan. Solo hace falta:
+
+1. **Una clase** `CapaRedNeuronal` en `backend/app/analisis/`, que herede de `CapaAnalisis` y declare:
+   - `nombre = "red_neuronal"` (es el nombre que ya esperan el informe y la tabla de tipos);
+   - `titulo` (por ejemplo, «Imagen generada con IA (red neuronal)»);
+   - `que_significa`: qué mira, en lenguaje común, y sus límites;
+   - `tipo_de_resultado = "probabilistico"`;
+   - `version()` y `analizar()`, que usa el paquete `inferencia` (numpy, Pillow y onnxruntime) y devuelve un `ResultadoCapa` con nivel de 0 a 100 y conclusión sin veredictos (RN27).
+2. **Agregarla** a `crear_capas()` y a `CLASES_DE_CAPAS` en `backend/app/analisis/registro.py`.
+3. **Quitar** `proximamente: true` de la mirada «Imagen con IA» en `frontend/src/paginas/PaginaPortada.jsx` y la frase «se suma próximamente» de los términos.
+
+Lo demás ya funciona solo:
+- la pantalla del análisis toma el título y la explicación de la API (`titulo`, `que_significa`, `tipo`);
+- el informe PDF tiene la descripción de `red_neuronal` en `QUE_MIRA` y `TIPO_DE_RESULTADO`;
+- el progreso, el historial, el resumen por imagen y la escala son genéricos.
+
+La prueba `pruebas/unitarias/test_analisis_registro.py` falla si una capa activa no tiene título, explicación o tipo.

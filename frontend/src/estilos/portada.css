@@ -414,7 +414,93 @@
   font-size: 0.96rem;
 }
 
-/* --- Para quién --- */
+/* --- Para quién: una tarjeta por perfil (037) --- */
+.portada-perfiles {
+  width: min(72rem, 100%);
+  margin: 0 auto;
+  padding: 4.5rem clamp(1rem, 4vw, 2rem) 0;
+}
+
+.portada-perfiles__grilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.portada-perfil {
+  display: grid;
+  align-content: start;
+  gap: 0.6rem;
+  padding: 1.75rem 1.75rem 1.5rem;
+  border: 1px solid var(--linea);
+  border-radius: 24px;
+  background: var(--superficie);
+}
+
+.portada-perfil:last-child {
+  border-color: var(--p-bosque);
+  background: var(--p-bosque);
+  color: #fff;
+}
+
+.portada-perfil h3 {
+  font-size: 1.45rem;
+  letter-spacing: -0.02em;
+}
+
+.portada-perfil p {
+  margin: 0;
+  color: var(--tinta-2);
+}
+
+.portada-perfil:last-child h3 {
+  color: #fff;
+}
+
+.portada-perfil:last-child p {
+  color: #c4d3c9;
+}
+
+.portada-perfil__enlace {
+  justify-self: start;
+  margin-top: 0.4rem;
+  color: var(--p-verde);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.portada-perfil:last-child .portada-perfil__enlace {
+  color: var(--p-lima);
+}
+
+.portada-perfil__enlace:hover {
+  text-decoration: underline;
+}
+
+.portada-mirada__pronto {
+  margin-left: 0.5rem;
+  padding: 0.12rem 0.55rem;
+  border-radius: 999px;
+  background: var(--p-lima-suave);
+  color: var(--p-verde);
+  font: 700 0.7rem var(--fuente-texto, inherit);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  vertical-align: 0.2rem;
+}
+
+@media (width <= 48rem) {
+  .portada-perfiles {
+    padding-top: 3rem;
+  }
+
+  .portada-perfiles__grilla {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* --- Tres pasos --- */
 .portada-pasos {

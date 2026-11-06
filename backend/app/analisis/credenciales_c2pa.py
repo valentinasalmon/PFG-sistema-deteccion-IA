@@ -252,7 +252,14 @@ class CapaC2PA(CapaAnalisis):
     """Verifica las credenciales de contenido C2PA de la imagen (capa 2)."""
 
     nombre = "c2pa"
-    titulo = "Credenciales de contenido"
+    titulo = "Credenciales de contenido (C2PA)"
+    que_significa = (
+        "Comprueba si la imagen trae credenciales de contenido firmadas (C2PA) que declaren "
+        "quién la hizo y con qué herramienta. Si la firma es confiable y declara inteligencia "
+        "artificial, es el indicio más fuerte de la plataforma. No tener credenciales es lo más"
+        " habitual."
+    )
+    tipo_de_resultado = "determinista"
 
     def __init__(self, carpeta_confianza=CARPETA_CONFIANZA):
         self.carpeta_confianza = str(carpeta_confianza)

@@ -309,3 +309,18 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Medición provisoria**: 0,977 sin SUS. Valores: backend 97,5 %, frontend 92,4 %, pylint 10, ninguna función con complejidad mayor a 10, 0,1 % de duplicación.
 - **Hallazgo metodológico**: un índice dominado por métricas de código que ya están al máximo puede ocultar una mala usabilidad (con estos valores, alcanzaría un SUS de 23). Conviene informar el SUS y la tasa de éxito aparte, con sus propios objetivos.
 - **Prueba de usabilidad**: protocolo con 8 tareas del flujo principal, SUS en español (Brooke, 1996) y al menos 5 participantes del dominio (Nielsen y Landauer, 1993). Resultados pendientes.
+
+## Revisión integral de la interfaz (037, 2026-11-05)
+
+- **Método**: recorrido automatizado con capturas en dos anchos (1440 y 390 px), por perfil (abogado, aseguradora, administrador y visitante), más un script que detecta contenido fuera del ancho. Encontró 21 problemas; 17 se corrigieron y 4 quedaron como decisiones de la autora.
+- **Hallazgo de diseño**: el mismo motor sirve a dos rubros, pero el vocabulario era único («caso»). Para una aseguradora el objeto de trabajo es el *siniestro*; se resolvió con un diccionario por perfil, sin tocar los datos ni las direcciones.
+- **Hallazgo de coherencia**: la portada y el acceso tenían una identidad (verde bosque y lima) y el sistema otra (azul). Se unificaron con una maqueta previa de dos alternativas sobre las pantallas reales.
+- **Informe**: el descargo de que no emite veredictos estaba solo al final; pasó a la primera página, que es la que se lee siempre (ADR-0017).
+
+## Verificación visual automatizada (037, 2026-11-05)
+
+- **Problema**: al unificar el tamaño de las tarjetas de acceso (alto fijo, pedido de la autora), el agente verificó las pantallas que motivaron el cambio y no las demás que usan la misma tarjeta; el pago, la elección del plan y el resultado del pago quedaron cortados. Lo detectó la autora.
+- **Lección**: un estilo compartido es una dependencia: cambiarlo exige revisar a todos sus usuarios, igual que una función compartida exige correr las pruebas de quienes la llaman. Las pruebas unitarias de la interfaz (Vitest con jsdom) no ven la maquetación.
+- **Solución en el arnés**: un sensor de diseño con Playwright que mide, en 1440 y 390 px, desplazamiento horizontal, contenido cortado, contenido escondido en contenedores con desplazamiento propio y controles fuera de la pantalla, aplicado en cada captura de los recorridos de punta a punta. Se validó reintroduciendo el error: el sensor lo informa («muestra 672 px de 1308 px») y no marca nada con la corrección.
+- **Otras decisiones de la tanda**: el pago es una «caja» y usa la tarjeta a todo el ancho; la aseguradora se elige con un cuadro combinado accesible (WAI-ARIA combobox) en lugar de una lista de tarjetas; el Administrador recibe un correo cuando una aseguradora paga; el caso guía el siguiente paso (cargar → analizar → informe) con un cierre al pie del análisis.
+

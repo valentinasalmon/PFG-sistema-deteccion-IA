@@ -2,7 +2,7 @@
  * Pruebas del tamaño legible y de la descarga de archivos (funcionalidad 006).
  */
 import { describe, expect, it, vi } from 'vitest'
-import { abrirDescarga, formatearTamanio } from './archivos.js'
+import { abreviarHuella, abrirDescarga, formatearTamanio } from './archivos.js'
 
 describe('formatearTamanio', () => {
   it('usa B, KB o MB con coma decimal', () => {
@@ -20,5 +20,12 @@ describe('abrirDescarga', () => {
     expect(clic.mock.instances[0].getAttribute('href')).toBe('/api/archivos/token')
     expect(document.querySelector('a[href="/api/archivos/token"]')).toBeNull()
     clic.mockRestore()
+  })
+})
+
+describe('abreviarHuella', () => {
+  it('deja el principio y el final de una huella larga', () => {
+    expect(abreviarHuella('a'.repeat(12) + 'b'.repeat(44) + 'c'.repeat(8))).toBe(`${'a'.repeat(12)}…${'c'.repeat(8)}`)
+    expect(abreviarHuella('corta')).toBe('corta')
   })
 })
