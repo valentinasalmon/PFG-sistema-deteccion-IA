@@ -829,3 +829,148 @@
     text-align: center;
   }
 }
+
+/*
+ * --- Páginas legales a lo ancho (038) ---
+ * Índice de secciones a la izquierda, fijo al desplazarse, y el texto a la
+ * derecha con un largo de línea cómodo. Todo alineado a la izquierda.
+ */
+.legal__indice {
+  display: none;
+}
+
+@media (width > 60rem) {
+  .legal {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 1fr);
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .legal__indice {
+    position: sticky;
+    top: 1.5rem;
+    display: block;
+    padding-right: 1.5rem;
+    border-right: 1px solid var(--linea);
+  }
+
+  .legal__indice-titulo {
+    margin: 0 0 0.75rem;
+    color: var(--tinta-2);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .legal__indice ol {
+    display: grid;
+    gap: 0.15rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .legal__indice a {
+    display: block;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    color: var(--tinta-2);
+    font-size: 0.875rem;
+    line-height: 1.35;
+    text-decoration: none;
+  }
+
+  .legal__indice a:hover,
+  .legal__indice a:focus-visible {
+    background: var(--fondo-2);
+    color: var(--tinta);
+  }
+
+  .acceso.acceso--completo .legal .texto-legal {
+    max-width: none;
+    text-align: left;
+  }
+
+  .acceso.acceso--completo .legal .texto-legal h1,
+  .acceso.acceso--completo .legal .texto-legal h1 + *,
+  .acceso.acceso--completo .legal .pagina-legal__bajada {
+    text-align: left;
+  }
+
+  .legal .texto-legal p,
+  .legal .texto-legal li {
+    max-width: 72ch;
+  }
+
+  .legal .texto-legal h2 {
+    scroll-margin-top: 1.5rem;
+  }
+
+  /* Privacidad: los cuatro pilares en una fila y el detalle técnico a todo el ancho. */
+  .legal .pilares {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .legal .medidas {
+    max-width: none;
+  }
+}
+
+/* El texto de cada pilar va pegado a su título, sin repartir el alto sobrante. */
+.pilares li {
+  align-content: start;
+}
+
+@media (width > 60rem) {
+  .legal .pilares li {
+    padding: 1.1rem 1.2rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+}
+
+/*
+ * --- Tarjetas de un solo formulario en dos columnas (038) ---
+ * Recuperar y restablecer la contraseña, verificar y confirmar el correo:
+ * en una tarjeta ancha, el campo y el botón estirados a 900 px se veían
+ * vacíos. En computadora, el título, la explicación y los avisos van a la
+ * izquierda y el formulario a la derecha. Todos los títulos de las tarjetas
+ * de cuenta se alinean a la izquierda, como el resto del texto.
+ */
+@media (width > 60rem) {
+  .acceso.acceso--completo .tarjeta-acceso h1 {
+    text-align: left;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso:has(> form.formulario) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    grid-auto-flow: row dense;
+    column-gap: 3.5rem;
+    row-gap: 0.75rem;
+    align-items: start;
+    padding: 2.75rem 3.5rem 2.5rem;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso:has(> form.formulario) > * {
+    grid-column: 1;
+    margin: 0;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso:has(> form.formulario) > form.formulario {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    align-self: center;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso:has(> form.formulario) > .enlaces-secundarios {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso:has(> form.formulario) > h1 {
+    align-self: end;
+  }
+}
