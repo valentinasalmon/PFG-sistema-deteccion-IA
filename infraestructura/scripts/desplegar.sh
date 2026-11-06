@@ -20,6 +20,8 @@ echo "$VERSION" > "$DESTINO/COMMIT"
 python3 -m venv "$DESTINO/venv"
 "$DESTINO/venv/bin/pip" install -q --upgrade pip
 "$DESTINO/venv/bin/pip" install -q -r "$DESTINO/backend/requirements.txt"
+# Clasificador de la capa 4 (funcionalidad 012): sin dependencias, para no instalar PyTorch.
+"$DESTINO/venv/bin/pip" install -q --no-deps "$DESTINO/red_neuronal"
 chown -R plataforma:plataforma "$DESTINO"
 
 echo "== Configuración del servidor de esta versión"
