@@ -58,10 +58,11 @@ export function DisposicionInterna() {
  * arriba y la tarjeta del formulario centrada, montada sobre la franja.
  */
 /**
- * Pantallas de cuenta que llevan el panel de marca a la izquierda (037): todas
- * comparten la misma tarjeta, así pasar de una a otra no cambia la identidad.
+ * Solo el inicio de sesión lleva el panel de marca a la izquierda (038, pedido
+ * de la autora). El registro, la recuperación, la verificación y las demás
+ * pantallas usan la tarjeta entera para el formulario, sin desplazarse.
  */
-const CON_PANEL = ['/iniciar-sesion', '/registro', '/recuperar-contrasenia', '/restablecer-contrasenia', '/verificar-correo', '/confirmar-correo', '/invitaciones/responder']
+const CON_PANEL = ['/iniciar-sesion']
 
 function PanelDeMarca() {
   return (
