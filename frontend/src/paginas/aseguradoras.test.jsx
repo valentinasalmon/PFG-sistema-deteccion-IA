@@ -130,7 +130,7 @@ describe('registro con la invitación de una aseguradora', () => {
   it('el enlace de la invitación de una aseguradora explica que se queda adentro al verificar', async () => {
     simularApi({ 'POST /api/invitaciones/consulta': { cuerpo: { invitacion: INVITACION } } })
     renderizarEn('/invitaciones/responder?token=tok')
-    expect(await screen.findByText(/al verificar tu correo vas a quedar dentro de la aseguradora/)).toBeInTheDocument()
+    expect(await screen.findByText(/al verificar tu correo quedás dentro de/)).toBeInTheDocument()
   })
 })
 

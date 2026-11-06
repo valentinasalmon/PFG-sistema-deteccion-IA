@@ -66,6 +66,8 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
             invitacion = self.organizaciones.invitacion_para_registro(
                 solicitud.token_invitacion, solicitud.correo
             )
+            # 038: al verificar el correo, queda dentro de esta organización.
+            invitacion.usada_para_registrarse = True
             if invitacion.organizacion.es_aseguradora:
                 solicitud.perfil = PERFIL_ASEGURADORA
                 solicitud.empresa = invitacion.organizacion.nombre

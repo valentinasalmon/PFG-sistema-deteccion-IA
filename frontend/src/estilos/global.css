@@ -6491,3 +6491,28 @@ h1.estado-vacio__titulo {
     grid-template-columns: minmax(0, 26rem);
   }
 }
+
+/* --- 038: invitar miembros a todo el ancho de la sección --- */
+.formulario.invitar,
+.invitar {
+  max-width: none;
+  padding: 1.25rem 1.5rem;
+}
+
+@media (width > 48rem) {
+  .invitar__fila {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr) auto;
+    gap: 1rem;
+  }
+}
+
+@media (width <= 48rem) {
+  .invitar__fila {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .invitar__boton {
+    width: 100%;
+    justify-content: center;
+  }
+}

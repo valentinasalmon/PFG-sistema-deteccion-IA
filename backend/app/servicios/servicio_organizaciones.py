@@ -724,19 +724,25 @@ class ServicioOrganizaciones:
         return bool(self.repositorio.invitaciones_pendientes_de_correo(correo, ahora_utc()))
 
     def incorporar_al_verificar(self, usuario):
-        """Acepta las invitaciones vigentes de aseguradoras al verificar el correo (CA11 de la 021).
+        """Acepta las invitaciones vigentes al verificar el correo (CA11 de la 021, 038).
 
-        Quien crea su cuenta desde la invitación de una aseguradora queda
-        dentro de ella sin otro paso. No confirma: la verificación del correo
-        confirma todo junto.
+        Quien crea su cuenta desde una invitación queda dentro de la
+        organización sin otro paso: una cuenta Aseguradora, en su aseguradora;
+        una cuenta Abogado, en el estudio cuyo enlace usó para registrarse (038,
+        pedido de la autora). No confirma: la verificación del correo confirma
+        todo junto.
 
         Returns:
             Las invitaciones aceptadas, para avisar a sus Referentes después de confirmar.
         """
+        def corresponde(invitacion):
+            if invitacion.organizacion.es_aseguradora:
+                return usuario.perfil == PERFIL_ASEGURADORA
+            # Un estudio, solo si la persona se registró desde el enlace de esa invitación.
+            return usuario.perfil != PERFIL_ASEGURADORA and invitacion.usada_para_registrarse
+
         aceptadas = [
-            invitacion for invitacion in self.pendientes_de(usuario)
-            if invitacion.organizacion.es_aseguradora
-            and usuario.perfil == PERFIL_ASEGURADORA
+            invitacion for invitacion in self.pendientes_de(usuario) if corresponde(invitacion)
         ]
         for invitacion in aceptadas:
             self._incorporar(invitacion, usuario)

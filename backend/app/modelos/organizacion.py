@@ -160,6 +160,11 @@ class Invitacion(db.Model):  # pylint: disable=too-few-public-methods
     creada_en = db.Column(db.DateTime, nullable=False, default=ahora_utc)
     vence_en = db.Column(db.DateTime, nullable=False)
     respondida_en = db.Column(db.DateTime, nullable=True)
+    # 038: la persona creó su cuenta desde el enlace de esta invitación; al
+    # verificar el correo queda dentro de la organización sin otro paso.
+    usada_para_registrarse = db.Column(
+        db.Boolean, nullable=False, default=False, server_default=db.false()
+    )
 
     organizacion = db.relationship("Organizacion", back_populates="invitaciones")
     invitante = db.relationship("Usuario")
