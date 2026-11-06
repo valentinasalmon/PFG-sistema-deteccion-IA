@@ -333,3 +333,10 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Pruebas sin red ni PyTorch.** Un ONNX diminuto con el mismo contrato que el real (sigmoide del brillo medio) permite probar la carga, la caché, las huellas y la capa en milisegundos.
 - **Hallazgo de despliegue.** El script que arma el `.env` del servidor copia solo las variables que nombra; sin agregarlas, los parámetros del Parameter Store nunca habrían llegado a la aplicación. Se detectó al escribir la guía de activación, no con las pruebas: refuerza la regla de probar las integraciones contra el servicio real.
 
+## Entrenamiento completo de la red (2026-11-05)
+
+- Con 35 000 imágenes de 210 generadores: **AUC de prueba 0,961, F1 0,904, ECE 0,02** (validación, tras calibrar). Cumple tanto el AUC ≥ 0,90 de la especificación como el F1 ≥ 0,85 del informe (CP-07).
+- **Generalización:** con la familia de Google que nunca vio (Imagen 4, Imagen 3, Nano Banana 2), AUC 0,938.
+- **Límite en condiciones reales:** con imágenes de choques generadas por la autora con ChatGPT, Gemini y Copilot, detecta 5 de 49 con el umbral 0,5. Es el resultado más importante para el informe: los detectores entrenados con conjuntos públicos rinden mucho peor con las herramientas comerciales actuales y con escenas que no vieron. Justifica la capa 4 como un indicio más y no un veredicto (RN27), y el ciclo de reentrenamiento (CA18).
+- Generadores más difíciles en la prueba: VQDiffusion y GigaGAN (AUC ~0,62-0,67), Midjourney 6 y FLUX 1.1 Pro (detecta el 54-68 %).
+

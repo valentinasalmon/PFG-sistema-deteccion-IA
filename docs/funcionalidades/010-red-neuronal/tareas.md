@@ -165,7 +165,7 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
 - [x] **T29** — Cuadernos de entrenamiento y de evaluación del conjunto propio, que solo orquestan las etapas. *Hecho el 2026-10-30 en un solo cuaderno, que saltea las etapas ya terminadas (`python -m clasificador estado`), guarda los datos preparados en Drive y evalúa el conjunto propio cuando aparece en Drive.*
   - Archivos: `red_neuronal/cuadernos/03_entrenamiento_completo_colab.ipynb`
   - Commit: `funcionalidad(clasificador): agregar cuadernos de entrenamiento y evaluacion`
-- [ ] **T30 (manual)** — Entrenamiento completo en Colab con la configuración v1. Si no alcanza AUC ≥ 0,90, analizar los errores por generador, ajustar la configuración (por ejemplo, comparar con ConvNeXt-Tiny) y repetir; cada intento queda en MLflow.
+- [x] **T30 (manual)** — Entrenamiento completo en Colab con la configuración v1. *Hecho el 2026-11-05: AUC de prueba 0,961 (capítulo 11 de `docs/red-neuronal/`).* Si no alcanza AUC ≥ 0,90, analizar los errores por generador, ajustar la configuración (por ejemplo, comparar con ConvNeXt-Tiny) y repetir; cada intento queda en MLflow.
   - Verificación: AUC ≥ 0,90 sobre la prueba de generadores conocidos (CA10).
 - [ ] **T31 (manual)** — Verificación de reproducibilidad: repetir el entrenamiento con la misma configuración, manifiesto y semilla.
   - Verificación: diferencia de AUC < 0,01 (CA7).

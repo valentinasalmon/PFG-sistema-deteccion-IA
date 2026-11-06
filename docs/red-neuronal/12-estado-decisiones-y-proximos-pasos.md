@@ -15,7 +15,8 @@
 | Receta v1 (T27) | ✔ `configuracion/v1.yaml`: 17 500 reales y 17 500 sintéticas depuradas, la familia de Google como no vista |
 | Datos en Drive (T28) | Pendiente: el cuaderno `03` los guarda solo |
 | Cuaderno de entrenamiento completo en Colab que saltee las etapas ya hechas (T29) | ✔ Hecho: `03_entrenamiento_completo_colab.ipynb` |
-| Entrenamiento completo, reproducibilidad y condiciones reales (T30 a T32) | Pendiente |
+| Entrenamiento completo (T30) | ✔ 2026-11-05: AUC de prueba 0,961, F1 0,904, no visto (Google) 0,938 (capítulo 11) |
+| Reproducibilidad y condiciones reales (T31, T32) | Pendiente. Primer dato del conjunto propio: detecta 5 de 49 imágenes de choques |
 | Repositorio de modelos en Hugging Face (E03) y publicación de `1.0.0` (T33) | Pendiente |
 | Integración en el backend y el informe (funcionalidad 012) | ✔ Código hecho el 2026-11-06 en `funcionalidad/012-capa-4-onnx` (capítulo 7). Falta publicar `1.0.0` y activarlo en producción con la [guía](../guias/despliegue-aws.md#capa-4-modelo-de-la-red-neuronal-funcionalidad-012) |
 
@@ -62,10 +63,8 @@ Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento com
 
 ## Próximos pasos, en orden
 
-1. **Pull Request** de `funcionalidad/010-red-neuronal` hacia `desarrollo` (autora).
-2. **Cuaderno 03 en Colab** (autora, GPU T4 o L4 con RAM amplia): obtener, validar, preparar y entrenar con la receta v1. Lleva unas 2 a 3 horas; si se corta, se vuelve a ejecutar y sigue desde donde quedó.
-3. **Conjunto propio** (autora): prioridad A en dos o tres herramientas, original y captura. El agente prepara la copia de una muestra de CarDD a Drive.
-4. **E03. Repositorio de modelos** en Hugging Face (autora).
-5. **Repetición** para la reproducibilidad, **evaluación en condiciones reales** y publicación de `1.0.0`.
-6. **Demostración de reentrenamiento:** sumar la familia de Google (y, si se puede leer, MLLM-Generated) y publicar `1.1.0`.
-7. **Funcionalidad 012:** integrar el modelo en el análisis y el informe.
+1. **Publicar la 1.0.0 en el registro local** (autora): ejecutar la celda de publicación y la sección 6 del cuaderno 03. Después, crear el repositorio de modelos en Hugging Face (E03) para la publicación definitiva.
+2. **Fotos reales de choques** en el conjunto propio (CarDD y fotos propias), para medir el AUC por escena; seguir con las demás escenas.
+3. **Repetición** del entrenamiento para la reproducibilidad (T31).
+4. **1.1.0:** sumar la familia de Google y, si se puede leer, MLLM-Generated, y comparar contra el conjunto propio.
+5. **Funcionalidad 012:** integrar el modelo en el análisis y el informe.
