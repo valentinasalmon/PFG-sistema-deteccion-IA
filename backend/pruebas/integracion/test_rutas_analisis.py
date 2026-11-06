@@ -17,8 +17,10 @@ from app.analisis.metadatos import CapaMetadatos
 from app.extensiones import db
 from app.modelos.analisis import Analisis
 from app.modelos.imagen import Imagen
+from app.integraciones.modelo_red_neuronal import vaciar_cache
 from app.utilidades.tiempo import ahora_utc
 from pruebas.conftest import crear_estudio, entradas_auditoria
+from pruebas.modelo_diminuto import armar_registro
 
 CASO = {
     "espacio": "personal", "tipo": "automovilistico", "fecha_hecho": "2026-09-01",
@@ -308,6 +310,47 @@ def test_analisis_de_otro_caso_no_se_encuentra(ana, caso):
     id_analisis = _analizar(ana, caso["id"], caso["imagenes"]).get_json()["analisis"]["id"]
     otro = ana.post("/api/casos", json=CASO).get_json()["caso"]["id"]
     assert ana.get(f"/api/casos/{otro}/analisis/{id_analisis}").status_code == 404
+
+
+# --- Capa 4, red neuronal (funcionalidad 012) ---
+
+def _resultado(cliente, id_caso, id_analisis, capa):
+    resultados = _detalle(cliente, id_caso, id_analisis)["imagenes"][0]["resultados"]
+    return next(r for r in resultados if r["capa"] == capa), resultados
+
+
+def test_sin_modelo_la_capa_4_no_esta_disponible_y_el_analisis_sigue(ana, caso):
+    """012 CA7 y RN26: sin modelo configurado, las otras tres capas se completan."""
+    id_analisis = _analizar(ana, caso["id"], caso["imagenes"]).get_json()["analisis"]["id"]
+
+    red, resultados = _resultado(ana, caso["id"], id_analisis, "red_neuronal")
+    assert red["estado"] == "no_disponible"
+    assert "todavía no está configurado" in red["motivo"]
+    assert [r["estado"] for r in resultados if r["capa"] != "red_neuronal"] == ["completado"] * 3
+    detalle = _detalle(ana, caso["id"], id_analisis)
+    assert detalle["estado"] == "finalizado"
+    assert "sin configurar" in detalle["versiones"]["red_neuronal"]
+
+
+def test_con_modelo_la_capa_4_informa_la_probabilidad(aplicacion, ana, caso, tmp_path):
+    """012 CA1 y CA6: probabilidad, nivel y versión del modelo en el resultado (RN29)."""
+    armar_registro(tmp_path / "registro", probabilidad=0.8)
+    aplicacion.config.update({
+        "MODELO_RED_NEURONAL_REGISTRO": f"local:{tmp_path / 'registro'}",
+        "MODELO_RED_NEURONAL_VERSION": "1.0.0",
+        "CARPETA_MODELOS_ONNX": str(tmp_path / "descargas"),
+    })
+    vaciar_cache()
+    try:
+        id_analisis = _analizar(ana, caso["id"], caso["imagenes"]).get_json()["analisis"]["id"]
+        red, _ = _resultado(ana, caso["id"], id_analisis, "red_neuronal")
+    finally:
+        vaciar_cache()
+    assert (red["estado"], red["nivel"]) == ("completado", 80)
+    assert red["detalle"]["modelo"]["version"] == "1.0.0"
+    assert _detalle(ana, caso["id"], id_analisis)["versiones"]["red_neuronal"].startswith(
+        "1.0 (modelo 1.0.0"
+    )
 
 
 # --- Capa ELA (funcionalidad 011) ---

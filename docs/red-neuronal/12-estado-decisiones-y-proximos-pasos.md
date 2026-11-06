@@ -17,7 +17,7 @@
 | Cuaderno de entrenamiento completo en Colab que saltee las etapas ya hechas (T29) | ✔ Hecho: `03_entrenamiento_completo_colab.ipynb` |
 | Entrenamiento completo, reproducibilidad y condiciones reales (T30 a T32) | Pendiente |
 | Repositorio de modelos en Hugging Face (E03) y publicación de `1.0.0` (T33) | Pendiente |
-| Integración en el backend y el informe (funcionalidad 012) | Pendiente |
+| Integración en el backend y el informe (funcionalidad 012) | ✔ Código hecho el 2026-11-06 en `funcionalidad/012-capa-4-onnx` (capítulo 7). Falta publicar `1.0.0` y activarlo en producción con la [guía](../guias/despliegue-aws.md#capa-4-modelo-de-la-red-neuronal-funcionalidad-012) |
 
 Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento completo.
 
