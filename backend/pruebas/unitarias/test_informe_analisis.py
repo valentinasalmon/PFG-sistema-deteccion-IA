@@ -216,3 +216,28 @@ def test_hora_de_argentina(valor, esperado):
 def test_bandas_de_indicio(nivel, banda):
     """Las bandas coinciden con describir_intensidad() de las capas."""
     assert informe_analisis.banda_de_indicio(nivel)["nombre"] == banda
+
+
+def test_capa_4_con_su_titulo_y_su_tabla():
+    """012 CA8: la red neuronal aparece como capa 4, probabilística, con la probabilidad."""
+    analisis = _analisis()
+    red = _resultado()
+    red.capa, red.nivel = "red_neuronal", 80
+    red.conclusion = (
+        "La red neuronal estima una probabilidad de 80 % de que la imagen haya sido generada "
+        "íntegramente con inteligencia artificial. Se recomienda consultar a un perito."
+    )
+    red.anomalias = [SimpleNamespace(severidad="fuerte", descripcion="Probabilidad alta.")]
+    red.detalle = {"tabla": [
+        {"campo": "Probabilidad estimada de imagen generada con IA", "valor": "80 %"},
+        {"campo": "Versión del modelo", "valor": "1.0.0"},
+    ]}
+    analisis.imagenes[0].resultados.append(red)
+    analisis.versiones["red_neuronal"] = "1.0 (modelo 1.0.0, ONNX Runtime 1.31.1)"
+
+    html = _html(analisis)
+
+    assert "<strong>Red neuronal</strong> <span class=\"tipo tipo-probabilistico\">" in html
+    assert "Probabilidad estimada de imagen generada con IA" in html and "80 %" in html
+    datos = informe_analisis.armar_datos(analisis, {}, "0.2.0")
+    assert datos["versiones"]["Capa 4 · Red neuronal"].startswith("1.0 (modelo 1.0.0")

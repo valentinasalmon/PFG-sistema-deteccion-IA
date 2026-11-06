@@ -37,6 +37,7 @@ TITULOS_CAPA = {
     "metadatos": "Capa 1 · Metadatos",
     "c2pa": "Capa 2 · Credenciales de contenido (C2PA)",
     "ela": "Capa 3 · Niveles de error (ELA)",
+    "red_neuronal": "Capa 4 · Red neuronal",
 }
 
 QUE_SIGNIFICA_GENERICO = (
@@ -71,6 +72,7 @@ TITULOS_CORTOS = {
     "metadatos": "Metadatos",
     "c2pa": "Credenciales de contenido",
     "ela": "Niveles de error",
+    "red_neuronal": "Red neuronal",
 }
 
 SEVERIDADES_RELEVANTES = ("directo", "fuerte", "moderado")
