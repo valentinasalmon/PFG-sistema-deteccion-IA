@@ -69,8 +69,8 @@ async function leerCuerpo(respuesta) {
   }
 }
 
-async function enviar(metodo, ruta, datos) {
-  const cabeceras = { Accept: 'application/json' }
+async function enviar(metodo, ruta, datos, extra = {}) {
+  const cabeceras = { Accept: 'application/json', ...extra }
   // Un FormData (archivos) lo arma el navegador, con su propio Content-Type.
   const esFormulario = datos instanceof FormData
   if (datos !== undefined && !esFormulario) cabeceras['Content-Type'] = 'application/json'
@@ -100,17 +100,19 @@ async function enviar(metodo, ruta, datos) {
  * @param {string} ruta por ejemplo, '/api/sesion'.
  * @param {Object | FormData} [datos] cuerpo a enviar como JSON, o un FormData
  *   con archivos.
+ * @param {Object} [cabeceras] cabeceras adicionales (por ejemplo, la clave del
+ *   celular al que quedó atado un QR, 038).
  * @returns {Promise<Object>} el cuerpo JSON de la respuesta.
  * @throws {ErrorApi} si la respuesta no es exitosa.
  */
-export async function solicitar(metodo, ruta, datos) {
-  let { respuesta, cuerpo } = await enviar(metodo, ruta, datos)
+export async function solicitar(metodo, ruta, datos, cabeceras = {}) {
+  let { respuesta, cuerpo } = await enviar(metodo, ruta, datos, cabeceras)
 
   // El token CSRF pudo vencer (por ejemplo, al cerrarse la sesión): se pide
   // uno nuevo y se reintenta una sola vez.
   if (respuesta.status === 400 && cuerpo.codigo === 'csrf_invalido') {
     tokenCsrf = null
-    ;({ respuesta, cuerpo } = await enviar(metodo, ruta, datos))
+    ;({ respuesta, cuerpo } = await enviar(metodo, ruta, datos, cabeceras))
   }
 
   if (!respuesta.ok) {

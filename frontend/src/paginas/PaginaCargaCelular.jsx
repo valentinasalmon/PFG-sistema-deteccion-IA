@@ -18,11 +18,11 @@
  */
 import { useCallback, useId, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import { cargarConEnlace, consultarEnlaceCarga } from '../api/cargaCelular.js'
+import { cargarConEnlace, consultarEnlaceCarga, terminarCargaConEnlace } from '../api/cargaCelular.js'
 import Aviso from '../componentes/Aviso.jsx'
 import Cargando from '../componentes/Cargando.jsx'
 import EstadoVacio from '../componentes/EstadoVacio.jsx'
-import { IlustracionRoto } from '../componentes/Ilustraciones.jsx'
+import { IlustracionCelular, IlustracionRoto } from '../componentes/Ilustraciones.jsx'
 import Icono from '../componentes/Icono.jsx'
 import { useDatos } from '../hooks/useDatos.js'
 import { formatearTamanio } from '../utilidades/archivos.js'
@@ -139,8 +139,41 @@ function ResultadosDeSubida({ subiendo, resultados, titulo }) {
 
 function CargaDesdeMiCelular({ token, datos, recargar }) {
   const { subiendo, resultados, subir } = useSubida(token, datos, recargar)
+  const [final, setFinal] = useState(null)
+  const [terminando, setTerminando] = useState(false)
+  const [errorFinal, setErrorFinal] = useState(null)
+  const subidas = resultados.filter((resultado) => resultado.ok).length
   const sinLugar = datos.restantes <= 0
   const deshabilitado = Boolean(subiendo) || sinLugar
+
+  // 038: «Terminar» cierra el QR; después ya no se puede volver a usar.
+  async function terminar() {
+    setTerminando(true)
+    setErrorFinal(null)
+    try {
+      setFinal(await terminarCargaConEnlace(token))
+    } catch (errorApi) {
+      setErrorFinal(errorApi.message)
+      setTerminando(false)
+    }
+  }
+
+  if (final) {
+    return (
+      <div className="carga-movil carga-movil--final" role="status">
+        <span className="visor carga-movil__listo" aria-hidden="true">
+          <Icono nombre="marca" tamanio={32} />
+        </span>
+        <h1>¡Listo!</h1>
+        <p>
+          {final.cargas === 1 ? 'Se cargó 1 foto' : `Se cargaron ${final.cargas} fotos`} al caso{' '}
+          {datos.numero} y ya aparecen en la computadora. Podés cerrar esta página: este código QR ya no
+          sirve para subir más fotos.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="carga-movil">
       <h1>Subir fotos al caso {datos.numero}</h1>
@@ -160,6 +193,12 @@ function CargaDesdeMiCelular({ token, datos, recargar }) {
         celulares quitan la ubicación.
       </p>
       <ResultadosDeSubida subiendo={subiendo} resultados={resultados} titulo="Fotos subidas" />
+      {errorFinal && <Aviso tipo="error">{errorFinal}</Aviso>}
+      {subidas > 0 && !subiendo && (
+        <button type="button" className="boton boton--ancho" onClick={terminar} disabled={terminando}>
+          {terminando ? 'Terminando…' : 'Terminar'}
+        </button>
+      )}
     </div>
   )
 }
@@ -242,10 +281,17 @@ export default function PaginaCargaCelular() {
   const { datos, error, cargando, recargar } = useDatos(consultar)
 
   if (cargando) return <Cargando texto="Abriendo el enlace…" />
+  // 038: un QR usado no es un error del sistema: se explica cómo seguir.
+  const usado = error?.codigo === 'enlace_usado'
   if (error) {
     return (
       <>
-        <EstadoVacio Ilustracion={IlustracionRoto} titulo="No se puede usar este enlace" texto={error.message} encabezado>
+        <EstadoVacio
+          Ilustracion={usado ? IlustracionCelular : IlustracionRoto}
+          titulo={usado ? 'Este código QR ya se usó' : 'No se puede usar este enlace'}
+          texto={usado ? 'Para subir más fotos, mostrá un QR nuevo desde la computadora y escanealo.' : error.message}
+          encabezado
+        >
           <Link to="/" className="boton boton--secundario">
             Ir a evidentIA
           </Link>

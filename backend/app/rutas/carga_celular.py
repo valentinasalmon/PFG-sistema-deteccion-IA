@@ -55,6 +55,13 @@ def crear(id_caso):
     }), 201
 
 
+@enlaces_carga_bp.get("/casos/<int:id_caso>/enlace-carga")
+@login_required
+def estado(id_caso):
+    """Si el QR sigue abierto o el celular ya terminó, con las fotos cargadas (038)."""
+    return jsonify({"enlace": _servicio().estado(id_caso, usuario_actual())})
+
+
 @enlaces_carga_bp.delete("/casos/<int:id_caso>/enlace-carga")
 @login_required
 def cancelar(id_caso):
@@ -108,10 +115,15 @@ def anular(id_caso, id_enlace):
     return jsonify({"mensaje": "El enlace se anuló: ya no sirve para subir fotos."})
 
 
+def _clave():
+    """Clave del dispositivo al que quedó atado el QR (038), si la manda."""
+    return request.headers.get("X-Clave-Dispositivo")
+
+
 @carga_celular_bp.get("/<token>")
 def consultar(token):
     """Vencimiento, fotos que todavía se pueden cargar y, según el tipo, caso o solicitante."""
-    datos = _servicio().consultar(token)
+    datos = _servicio().consultar(token, _clave())
     return jsonify({**datos, "tamanio_maximo": current_app.config["TAMANIO_MAXIMO_IMAGEN"]})
 
 
@@ -122,8 +134,19 @@ def cargar(token):
     nombre = archivo.filename if archivo else None
     contenido = archivo.read() if archivo else b""
     declaracion = request.form.get("declaracion") == "true"
-    imagen = _servicio().cargar(token, nombre, contenido, declaracion)
-    return jsonify({
+    imagen, clave = _servicio().cargar(token, nombre, contenido, declaracion, _clave())
+    respuesta = {
         "imagen": {"nombre": imagen.nombre_original, "huella": imagen.huella},
         "mensaje": f"Se cargó «{imagen.nombre_original}».",
-    }), 201
+    }
+    if clave:
+        respuesta["clave_dispositivo"] = clave
+    return jsonify(respuesta), 201
+
+
+@carga_celular_bp.post("/<token>/fin")
+def terminar(token):
+    """El celular terminó de subir fotos: el QR se cierra y no sirve más (038)."""
+    cargas = _servicio().terminar(token, _clave())
+    texto = "se cargó 1 foto" if cargas == 1 else f"se cargaron {cargas} fotos"
+    return jsonify({"cargas": cargas, "mensaje": f"Listo: {texto}."})

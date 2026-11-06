@@ -21,8 +21,12 @@ function formatearRestante(segundos) {
 }
 
 /** Panel con el código QR, los pasos y el tiempo que le queda al enlace. */
-export default function CargaDesdeCelular({ enlace, error, restante, abrir, cerrar }) {
-  if (!enlace) return error ? <Aviso tipo="error">{error}</Aviso> : null
+export default function CargaDesdeCelular({ enlace, error, aviso, restante, abrir, cerrar }) {
+  if (!enlace) {
+    if (error) return <Aviso tipo="error">{error}</Aviso>
+    // 038: el celular tocó «Terminar»: el QR se cerró y ya no sirve.
+    return aviso ? <Aviso tipo="info" flotante={false}>{aviso}</Aviso> : null
+  }
   return (
     <section className="panel-carga carga-celular" aria-labelledby="titulo-carga-celular">
       <h3 id="titulo-carga-celular">Cargar desde el celular</h3>

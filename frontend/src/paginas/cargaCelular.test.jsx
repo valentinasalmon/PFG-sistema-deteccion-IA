@@ -219,4 +219,39 @@ describe('página del celular (RF53 CA2 a CA4)', () => {
 
     expect(await screen.findByText('El enlace venció o ya no es válido.')).toBeInTheDocument()
   })
+
+  it('«Terminar» cierra el QR y lo confirma (038)', async () => {
+    const { solicitudes } = simularApi({
+      'GET /api/carga/token-fin': {
+        cuerpo: {
+          numero: 'CASO-2026-000123', vence_en: '2099-01-01T12:15:00', restantes: 30,
+          tamanio_maximo: 20 * 1024 * 1024,
+        },
+      },
+      'POST /api/carga/token-fin': {
+        estado: 201,
+        cuerpo: { imagen: { nombre: 'a.jpg' }, mensaje: 'Se cargó.', clave_dispositivo: 'clave-del-celular' },
+      },
+      'POST /api/carga/token-fin/fin': { cuerpo: { cargas: 1, mensaje: 'Listo: se cargó 1 foto.' } },
+    })
+    const { usuario } = renderizarEn('/cargar/token-fin')
+    await usuario.upload(await screen.findByLabelText('Elegir de la galería'), [archivo('a.jpg')])
+    await usuario.click(await screen.findByRole('button', { name: 'Terminar' }))
+
+    expect(await screen.findByRole('heading', { name: '¡Listo!' })).toBeInTheDocument()
+    expect(screen.getByText(/Se cargó 1 foto al caso/)).toBeInTheDocument()
+    expect(solicitudes.some((s) => s.ruta === '/api/carga/token-fin/fin')).toBe(true)
+  })
+
+  it('un QR ya usado lo dice (038)', async () => {
+    simularApi({
+      'GET /api/carga/usado': {
+        estado: 404,
+        cuerpo: { codigo: 'enlace_usado', mensaje: 'Este código QR ya se usó. Para subir más fotos, generá uno nuevo desde la computadora.' },
+      },
+    })
+    renderizarEn('/cargar/usado')
+
+    expect(await screen.findByRole('heading', { name: 'Este código QR ya se usó' })).toBeInTheDocument()
+  })
 })
