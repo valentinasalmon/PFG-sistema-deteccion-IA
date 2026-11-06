@@ -6516,3 +6516,52 @@ h1.estado-vacio__titulo {
     justify-content: center;
   }
 }
+
+/*
+ * --- 038: secciones con formulario en dos columnas en computadora ---
+ * Mi perfil, la organización y las demás secciones internas: a la izquierda
+ * el título y la explicación, a la derecha los campos, que ocupan su
+ * columna entera. En el celular, todo en una columna.
+ */
+@media (width > 64rem) {
+  .disposicion--interna .seccion:has(> h2):has(> form.formulario):not(.zona-riesgo) {
+    display: grid;
+    grid-template-columns: minmax(12rem, 18rem) minmax(0, 1fr);
+    grid-auto-flow: row dense;
+    column-gap: 3rem;
+    align-items: start;
+  }
+
+  .disposicion--interna .seccion:has(> h2):has(> form.formulario):not(.zona-riesgo) > * {
+    grid-column: 1;
+  }
+
+  .disposicion--interna .seccion:has(> h2):has(> form.formulario):not(.zona-riesgo) > form.formulario {
+    grid-column: 2;
+    grid-row: 1 / span 6;
+    max-width: 44rem;
+    margin: 0;
+  }
+
+  /* Nuevo caso: el formulario ocupa toda su tarjeta. */
+  .disposicion--interna .formulario-caso,
+  .disposicion--interna .nuevo-caso .formulario {
+    max-width: none;
+  }
+}
+
+/* Las pestañas se desplazan de costado sin mostrar flechas ni barra. */
+.pestanias {
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.pestanias::-webkit-scrollbar {
+  display: none;
+}
+
+@media (width > 64rem) {
+  .disposicion--interna .dos-columnas__principal > .formulario {
+    max-width: none;
+  }
+}
