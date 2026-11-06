@@ -25,8 +25,10 @@ Lo que se sabe del modelo también marca sus límites. Con las imágenes de choq
 - El modelo se carga **una sola vez por proceso de trabajo** (RF42 CA3) y se usa una **versión fija**, configurada, con la huella SHA-256 verificada antes de usarlo.
 
 **Nivel de indicio y conclusión (RF43)**
-- El nivel de indicio es la probabilidad expresada en porcentaje, con un máximo de 90 %: el 100 % se reserva para una declaración de IA con firma C2PA confiable (RN28).
-- Los umbrales son públicos y se muestran en el resultado (ADR-0017): menos de 50 % no se informa como anomalía; de 50 % a 70 %, indicio débil; de 70 % a 90 %, indicio moderado; 90 % o más, indicio fuerte. Son una propuesta para validar con los tutores.
+- La probabilidad se muestra siempre, con sus umbrales, que son públicos (ADR-0017).
+- **Nivel de indicio:** si la probabilidad es menor que 50 %, el nivel es 0 (sin indicios de esta capa); si es de 50 % o más, el nivel es la probabilidad en porcentaje, con un máximo de 90 %. El 100 % se reserva para una declaración de IA con firma C2PA confiable (RN28).
+- Se lee con la misma escala que las otras capas y el informe: de 45 % a 69 %, indicios moderados; de 70 % en adelante, indicios fuertes. Por debajo de 50 % la capa no aporta indicios, pero eso no significa que la foto sea real.
+- Los umbrales (50 % para considerar la imagen, y la escala común) son una propuesta para validar con los tutores.
 - La conclusión sale del catálogo de textos versionado (RNF23 CA3), habla de indicios y recomienda consultar a un profesional (RN27). Nunca usa términos de veredicto.
 - La conclusión aclara siempre (RF42 CA2) que:
   - el modelo no detecta ediciones parciales (para eso están las capas 1 a 3);
@@ -57,7 +59,7 @@ Lo que se sabe del modelo también marca sus límites. Con las imágenes de choq
 - [ ] **CA1**: Dada una imagen, cuando se analiza, entonces la capa 4 informa la probabilidad de que sea sintética y la versión del modelo (RF42 CA1).
 - [ ] **CA2**: Para la misma imagen, la probabilidad del backend es igual a la de la evaluación del modelo (mismo preprocesamiento, ADR-0015).
 - [ ] **CA3**: El modelo se carga una sola vez por proceso de trabajo: analizar varias imágenes no lo vuelve a cargar (RF42 CA3).
-- [ ] **CA4**: El nivel de indicio es la probabilidad en porcentaje con un máximo de 90 %, y las anomalías siguen los umbrales publicados (50, 70 y 90 %), que se muestran en el resultado.
+- [ ] **CA4**: Con una probabilidad menor que 50 %, el nivel es 0; con 50 % o más, el nivel es la probabilidad en porcentaje con un máximo de 90 %, leída con la escala común (moderados desde 45 %, fuertes desde 70 %). El resultado muestra la probabilidad y los umbrales.
 - [ ] **CA5**: La conclusión es un indicio con la recomendación de consultar a un profesional, sin términos de veredicto (RN27). Aclara que el modelo no detecta ediciones parciales, que puede fallar con generadores que no vio y que una probabilidad baja no indica que la foto sea real (RF42 CA2).
 - [ ] **CA6**: El resultado y el informe registran la versión del modelo, su huella, la huella del conjunto de entrenamiento y la versión de ONNX Runtime (RN29, RNF24 CA4).
 - [ ] **CA7**: Si el modelo no está configurado, no se puede obtener o su huella no coincide, la capa queda «No disponible» con el motivo, y las otras tres capas se presentan normalmente (RN26, RF43 CA3).
@@ -67,5 +69,5 @@ Lo que se sabe del modelo también marca sus límites. Con las imágenes de choq
 
 ## Preguntas abiertas
 
-- **Umbrales del nivel de indicio (50, 70 y 90 %):** propuesta para validar con los tutores, igual que los de ELA. Se basan en la calibración del modelo (una probabilidad de 0,8 corresponde, en promedio, a un 80 % de imágenes sintéticas en la validación).
+- **Umbrales del nivel de indicio (50 % y la escala común de 45 y 70 %):** propuesta para validar con los tutores, igual que los de ELA. Se apoyan en la calibración del modelo: una probabilidad de 0,8 corresponde, en promedio, a un 80 % de imágenes sintéticas en la validación.
 - **Dónde se aloja el modelo en producción:** ADR-0014 prevé un repositorio privado de Hugging Face (tarea E03 de la 010, a cargo de la autora). Mientras no exista, la capa queda «No disponible» con un motivo claro, sin detener el análisis (CA7). No bloquea esta funcionalidad.
