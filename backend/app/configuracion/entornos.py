@@ -30,6 +30,14 @@ Variables de entorno:
     CARPETA_CONFIANZA_C2PA  Carpeta con la lista de confianza de C2PA (por defecto,
                          ``recursos/confianza_c2pa`` del backend).
     COLA_ANALISIS        "hilo" (desarrollo), "rq" (producción) o "sincronica".
+    MODELO_RED_NEURONAL_REGISTRO  De dónde sale el modelo de la capa 4:
+                         "hugging_face:<usuario/repositorio>" o "local:<carpeta>"
+                         (funcionalidad 012). Vacío: la capa queda "No disponible".
+    MODELO_RED_NEURONAL_VERSION   Versión fija del modelo (por ejemplo, 1.0.0).
+    CARPETA_MODELOS_ONNX  Dónde se guarda el modelo descargado (por defecto,
+                         ``modelos_onnx`` del backend, fuera de Git).
+    HF_TOKEN             Token de lectura del registro privado de Hugging Face; solo
+                         por el entorno (SSM en producción), nunca en el repositorio.
     PROXIES_DE_CONFIANZA Cantidad de proxies delante de la aplicación (Nginx en
                          producción: 1), para leer la IP real del cliente.
 
@@ -47,6 +55,8 @@ from cachelib import SimpleCache
 # al repositorio (constitución: nada de imágenes de casos reales).
 DIRECTORIO_ALMACENAMIENTO_LOCAL = Path(__file__).resolve().parents[2] / "almacenamiento_local"
 CARPETA_CONFIANZA = Path(__file__).resolve().parents[2] / "recursos" / "confianza_c2pa"
+# Modelo de la capa 4 descargado del registro (en .gitignore: nunca se sube).
+CARPETA_MODELOS_ONNX = Path(__file__).resolve().parents[2] / "modelos_onnx"
 # desplegar.sh escribe el commit desplegado en la raíz de la versión (funcionalidad 029).
 ARCHIVO_COMMIT = Path(__file__).resolve().parents[3] / "COMMIT"
 
@@ -198,6 +208,13 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
             CARPETA_CONFIANZA
         )
         self.COLA_ANALISIS = os.getenv("COLA_ANALISIS", "hilo")
+        # Capa 4 (funcionalidad 012, ADR-0014): registro y versión fija del modelo. Sin
+        # configurar, la capa queda "No disponible" y el resto del análisis sigue (RN26).
+        self.MODELO_RED_NEURONAL_REGISTRO = os.getenv("MODELO_RED_NEURONAL_REGISTRO", "")
+        self.MODELO_RED_NEURONAL_VERSION = os.getenv("MODELO_RED_NEURONAL_VERSION", "")
+        self.CARPETA_MODELOS_ONNX = os.getenv("CARPETA_MODELOS_ONNX", "") or str(
+            CARPETA_MODELOS_ONNX
+        )
         # Sello de tiempo en Hedera (funcionalidad 023, ADR-0018): hedera | simulado | desactivado.
         # En producción no se simula nunca: sin configurar, queda desactivado.
         self.SELLO_TIEMPO = os.getenv(
@@ -280,6 +297,9 @@ class ConfiguracionPruebas(ConfiguracionBase):  # pylint: disable=too-many-insta
         self.ALMACENAMIENTO = "local"
         self.COLA_ANALISIS = "sincronica"
         self.DIRECTORIO_ALMACENAMIENTO = tempfile.mkdtemp(prefix="almacenamiento-pruebas-")
+        # Las pruebas que usan la capa 4 configuran un registro local con un modelo diminuto.
+        self.MODELO_RED_NEURONAL_REGISTRO = ""
+        self.MODELO_RED_NEURONAL_VERSION = ""
 
 
 class ConfiguracionProduccion(ConfiguracionBase):

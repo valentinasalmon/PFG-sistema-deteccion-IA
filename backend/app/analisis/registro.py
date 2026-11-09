@@ -8,6 +8,7 @@ Realiza: RF39; RNF18 (CA1).
 from app.analisis.credenciales_c2pa import CapaC2PA
 from app.analisis.ela import CapaELA
 from app.analisis.metadatos import CapaMetadatos
+from app.analisis.red_neuronal import CapaRedNeuronal
 
 
 def crear_capas(configuracion):
@@ -16,11 +17,12 @@ def crear_capas(configuracion):
         CapaMetadatos(configuracion["RUTA_EXIFTOOL"]),
         CapaC2PA(configuracion["CARPETA_CONFIANZA_C2PA"]),
         CapaELA(),
+        CapaRedNeuronal(configuracion),
     ]
 
 
 # Clases de las capas activas: describen cada capa sin crear instancias (037).
-CLASES_DE_CAPAS = (CapaMetadatos, CapaC2PA, CapaELA)
+CLASES_DE_CAPAS = (CapaMetadatos, CapaC2PA, CapaELA, CapaRedNeuronal)
 
 
 def describir_capa(nombre):

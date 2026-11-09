@@ -69,3 +69,10 @@ La autora notó que en la lista maestra se repetían los modelos de auto (12 mod
 - El conjunto propio está en la carpeta del proyecto compartida por el tutor (`PFG 2026 - Valentina/RED NEURONAL`). El cuaderno 03 lo busca ahí. Se registró CP-40 sobre dónde guardar las fotos reales de personas.
 - Segundo intento del cuaderno 03: `No module named 'onnx'`, esta vez dentro del comando aparte. La causa real era que **al cuaderno 03 le faltaba la celda de instalación del paquete** (al armarlo se copiaron las celdas de credenciales y clonado, pero no la de `pip install`). Se agregó, con una verificación en un proceso aparte que detiene el cuaderno con un mensaje claro si falta alguna biblioteca. Lección: los cuadernos también se revisan contra una ejecución real, no solo su sintaxis.
 
+## 2026-11-05: entrenamiento completo
+
+- La autora corrió el cuaderno 03 (con la instalación corregida). Preparar tardó 48 minutos; el entrenamiento llegó a las 15 épocas, con la mejor en la 12 (AUC de validación 0,948).
+- Resultados (capítulo 11): **AUC de prueba 0,961, F1 0,904** (cumple los dos criterios de CP-07), familia de Google no vista con AUC 0,938, ONNX fiel y 22,9 ms por imagen.
+- **Hallazgo:** en el conjunto propio (49 choques generados con ChatGPT, Gemini y Copilot) detecta solo 5. Falta sumar fotos reales de choques para medir el AUC por escena.
+- El resumen que pegó la autora se había generado antes del entrenamiento; los resultados se leyeron directamente de los archivos que el cuaderno respaldó en Drive. No se ejecutó la publicación.
+
