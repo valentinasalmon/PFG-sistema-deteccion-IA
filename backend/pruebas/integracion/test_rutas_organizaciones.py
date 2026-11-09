@@ -11,7 +11,14 @@ import pytest
 from app.extensiones import db
 from app.modelos.organizacion import Invitacion, Membresia
 from app.utilidades.tiempo import ahora_utc
-from pruebas.conftest import entradas_auditoria, extraer_token, pagar
+from pruebas.conftest import (
+    CONTRASENIA_VALIDA,
+    aprobar_organizacion,
+    datos_registro,
+    entradas_auditoria,
+    extraer_token,
+    pagar,
+)
 
 ORGANIZACION = {"nombre": "Estudio Pérez", "tipo": "estudio_juridico", "telefono": "11 5555-0000"}
 
@@ -32,7 +39,9 @@ def _crear_organizacion(cliente, **cambios):
     respuesta = cliente.post("/api/organizaciones", json={**ORGANIZACION, **cambios})
     assert respuesta.status_code == 201, respuesta.get_json()
     pagar(cliente, respuesta)
-    return respuesta.get_json()["organizacion"]["id"]
+    id_organizacion = respuesta.get_json()["organizacion"]["id"]
+    aprobar_organizacion(cliente, id_organizacion)
+    return id_organizacion
 
 
 def _invitar(cliente, id_org, correo, cargo=None):
@@ -353,6 +362,32 @@ def test_mis_invitaciones_pendientes(aplicacion, ana, cuenta):
     assert carla.get(f"/api/organizaciones/{id_org}").get_json()["organizacion"]["mi_rol"] == (
         "miembro"
     )
+
+
+def test_registrarse_desde_la_invitacion_de_un_estudio_lo_suma(aplicacion, ana, correos):
+    """038: quien crea su cuenta desde el enlace de un estudio queda dentro al verificar."""
+    id_org = _crear_organizacion(ana)
+    _invitar(ana, id_org, "carla@ejemplo.com")
+    _invitar(ana, _crear_organizacion(ana, nombre="Otra"), "carla@ejemplo.com")
+    token = extraer_token(next(
+        c for c in correos if c.destinatario == "carla@ejemplo.com"
+        and "Estudio Pérez" in c.texto
+    ))
+    carla = aplicacion.test_client()
+    registro = carla.post("/api/cuentas/registro", json=datos_registro(
+        correo="carla@ejemplo.com", nombre="Carla", token_invitacion=token,
+    ))
+    assert registro.status_code == 201, registro.get_json()
+    verificacion = extraer_token(next(
+        c for c in reversed(correos) if c.destinatario == "carla@ejemplo.com"
+    ))
+    carla.post("/api/cuentas/verificacion", json={"token": verificacion})
+    carla.post(
+        "/api/sesion", json={"correo": "carla@ejemplo.com", "contrasenia": CONTRASENIA_VALIDA}
+    )
+    nombres = [o["nombre"] for o in carla.get("/api/organizaciones").get_json()["organizaciones"]]
+    assert nombres == ["Estudio Pérez"]  # la otra invitación sigue pendiente para que elija
+    assert len(carla.get("/api/invitaciones").get_json()["invitaciones"]) == 1
 
 
 def test_responder_una_invitacion_inexistente(beto):

@@ -1,6 +1,6 @@
 Hola, {{ nombre }}:
 
-El Administrador de la plataforma aprobó el registro de {{ organizacion }}. Ya podés invitar a tu equipo para que trabaje dentro de la aseguradora.
+El Administrador de la plataforma aprobó el registro de {{ organizacion }}. Ya podés invitar a tu equipo para que trabaje dentro {% if es_aseguradora %}de la aseguradora{% else %}del estudio{% endif %}.
 
 Ingresá a la organización en:
 {{ enlace }}

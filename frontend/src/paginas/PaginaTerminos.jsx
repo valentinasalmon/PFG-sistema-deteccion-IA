@@ -7,10 +7,11 @@
  * Realiza: RF01 (CA2) y RN27.
  */
 import AvisoProvisorio from '../componentes/AvisoProvisorio.jsx'
+import DisposicionLegal from '../componentes/DisposicionLegal.jsx'
 
 export default function PaginaTerminos() {
   return (
-    <article className="texto-legal">
+    <DisposicionLegal>
       <h1>Términos de Uso</h1>
       <AvisoProvisorio />
 
@@ -69,6 +70,6 @@ export default function PaginaTerminos() {
         Si estos términos cambian, se publicará una versión nueva y se te pedirá aceptarla para
         seguir usando la plataforma.
       </p>
-    </article>
+    </DisposicionLegal>
   )
 }

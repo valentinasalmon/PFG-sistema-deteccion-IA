@@ -150,7 +150,7 @@ class SolicitudRechazo(EsquemaBase):
 
 
 def aseguradora_pendiente_a_dict(organizacion, referente):
-    """Aseguradora pendiente tal como la ve el Administrador (CA7 de la 021).
+    """Organización pendiente tal como la ve el Administrador (CA7 de la 021, 038).
 
     Incluye el plan pagado: desde la 032 solo llega al Administrador con el
     pago acreditado.
@@ -159,6 +159,7 @@ def aseguradora_pendiente_a_dict(organizacion, referente):
     return {
         "id": organizacion.id,
         "nombre": organizacion.nombre,
+        "tipo": organizacion.tipo,
         "cuit": organizacion.cuit,
         "plan": organizacion.plan,
         "creada_en": _fecha(organizacion.creada_en),

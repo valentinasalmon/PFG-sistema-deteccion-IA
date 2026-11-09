@@ -36,18 +36,57 @@ export function anularEnlacePersonaAfectada(idCaso, idEnlace) {
   return solicitar('DELETE', `/api/casos/${idCaso}/enlaces-persona-afectada/${idEnlace}`)
 }
 
+/**
+ * Clave del celular al que quedó atado el QR (038): el servidor la da con la
+ * primera foto que sube y este celular la presenta en cada paso.
+ * Se guarda solo durante la pestaña.
+ */
+function claveDe(token) {
+  try {
+    return sessionStorage.getItem(`evidentia.carga.${token}`)
+  } catch {
+    return null
+  }
+}
+
+function guardarClave(token, clave) {
+  try {
+    sessionStorage.setItem(`evidentia.carga.${token}`, clave)
+  } catch {
+    // Sin almacenamiento: el enlace se puede usar mientras la página siga abierta.
+  }
+}
+
+function cabecerasDe(token) {
+  const clave = claveDe(token)
+  return clave ? { 'X-Clave-Dispositivo': clave } : {}
+}
+
 /** Datos para la página del enlace: tipo, vencimiento, fotos restantes y caso o solicitante. */
 export function consultarEnlaceCarga(token) {
-  return solicitar('GET', `/api/carga/${encodeURIComponent(token)}`)
+  return solicitar('GET', `/api/carga/${encodeURIComponent(token)}`, undefined, cabecerasDe(token))
+}
+
+/** El celular terminó de subir fotos: el QR se cierra (038). */
+export function terminarCargaConEnlace(token) {
+  return solicitar('POST', `/api/carga/${encodeURIComponent(token)}/fin`, undefined, cabecerasDe(token))
+}
+
+/** Si el QR del caso sigue abierto o el celular ya terminó (038). */
+export async function estadoEnlaceCarga(idCaso) {
+  const { enlace } = await solicitar('GET', `/api/casos/${idCaso}/enlace-carga`)
+  return enlace
 }
 
 /**
  * Sube una foto con el enlace; cada archivo va en su propia solicitud. La
  * persona afectada envía además que aceptó la declaración (CP-32).
  */
-export function cargarConEnlace(token, archivo, declaracion = false) {
+export async function cargarConEnlace(token, archivo, declaracion = false) {
   const formulario = new FormData()
   formulario.append('archivo', archivo)
   if (declaracion) formulario.append('declaracion', 'true')
-  return solicitar('POST', `/api/carga/${encodeURIComponent(token)}`, formulario)
+  const respuesta = await solicitar('POST', `/api/carga/${encodeURIComponent(token)}`, formulario, cabecerasDe(token))
+  if (respuesta.clave_dispositivo) guardarClave(token, respuesta.clave_dispositivo)
+  return respuesta
 }

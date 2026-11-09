@@ -9,6 +9,8 @@
  * Realiza: RF52; RNF10 (texto visible y foco del enlace).
  */
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router'
+import { guardarDestino } from '../utilidades/destino.js'
 import { googleHabilitado, urlInicioGoogle } from '../api/google.js'
 
 /** Logo de Google con sus colores, tal como lo pide su guía de marca. */
@@ -25,6 +27,7 @@ function LogoGoogle() {
 
 export default function BotonGoogle({ invitacion }) {
   const [habilitado, setHabilitado] = useState(false)
+  const { state } = useLocation()
 
   useEffect(() => {
     let activo = true
@@ -39,7 +42,11 @@ export default function BotonGoogle({ invitacion }) {
   if (!habilitado) return null
   return (
     <div className="acceso-google">
-      <a className="boton boton--secundario boton-google" href={urlInicioGoogle(invitacion)}>
+      <a
+        className="boton boton--secundario boton-google"
+        href={urlInicioGoogle(invitacion)}
+        onClick={() => guardarDestino(state?.desde)}
+      >
         <LogoGoogle />
         Continuar con Google
       </a>

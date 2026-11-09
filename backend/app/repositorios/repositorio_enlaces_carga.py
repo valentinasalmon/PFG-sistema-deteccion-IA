@@ -24,6 +24,14 @@ class RepositorioEnlacesCarga(RepositorioBase):
             id_caso=id_caso, id_usuario=id_usuario, revocado_en=None, tipo=TIPO_CELULAR
         ).all()
 
+    def ultimo_del_celular(self, id_caso, id_usuario):
+        """El último enlace del celular que el usuario generó para el caso, o None (038)."""
+        return (
+            EnlaceCarga.query.filter_by(id_caso=id_caso, id_usuario=id_usuario, tipo=TIPO_CELULAR)
+            .order_by(EnlaceCarga.creado_en.desc(), EnlaceCarga.id.desc())
+            .first()
+        )
+
     def vigentes_para_persona_afectada(self, id_caso, ahora):
         """Enlaces para la persona afectada del caso que no vencieron ni se anularon (028)."""
         return EnlaceCarga.query.filter(
