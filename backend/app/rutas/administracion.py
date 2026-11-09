@@ -37,14 +37,18 @@ def _servicio():
 @administracion_bp.get("/aseguradoras-pendientes")
 @login_required
 def aseguradoras_pendientes():
-    """Aseguradoras que esperan aprobación, con su Referente y su identidad (021, 035)."""
+    """Organizaciones que esperan aprobación, con su Referente y su identidad (021, 035, 038).
+
+    La verificación de identidad se exige solo a las aseguradoras (RN41).
+    """
     pendientes = _servicio().pendientes_de_aprobacion(usuario_actual())
     identidad = crear_servicio_identidad(current_app.config, origen_de_la_solicitud())
     estados = identidad.estados_de([o.id for o, _ in pendientes])
     return jsonify({
         "verificacion_identidad": identidad.activa,
         "aseguradoras": [
-            {**aseguradora_pendiente_a_dict(o, r), "identidad": estados[o.id]}
+            {**aseguradora_pendiente_a_dict(o, r), "identidad": estados[o.id],
+             "exige_identidad": identidad.activa and o.es_aseguradora}
             for o, r in pendientes
         ],
     })
@@ -53,7 +57,7 @@ def aseguradoras_pendientes():
 @administracion_bp.post("/organizaciones/<int:id_organizacion>/aprobacion")
 @login_required
 def aprobar(id_organizacion):
-    """Aprueba una aseguradora pendiente (CA8 de la 021)."""
+    """Aprueba una organización pendiente (CA8 de la 021, 038)."""
     organizacion = _servicio().aprobar(usuario_actual(), id_organizacion)
     return jsonify({"mensaje": f"{organizacion.nombre} fue aprobada."})
 
@@ -61,10 +65,10 @@ def aprobar(id_organizacion):
 @administracion_bp.post("/organizaciones/<int:id_organizacion>/rechazo")
 @login_required
 def rechazar(id_organizacion):
-    """Rechaza una aseguradora pendiente indicando el motivo (CA9 de la 021)."""
+    """Rechaza una organización pendiente indicando el motivo (CA9 de la 021, 038)."""
     solicitud = validar(SolicitudRechazo, request.get_json(silent=True))
     _servicio().rechazar(usuario_actual(), id_organizacion, solicitud.motivo)
-    return jsonify({"mensaje": "La aseguradora fue rechazada y se avisó a quien la registró."})
+    return jsonify({"mensaje": "La organización fue rechazada y se avisó a quien la registró."})
 
 
 def _pagina():

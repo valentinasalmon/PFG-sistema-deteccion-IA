@@ -109,6 +109,8 @@ function Carga({ idCaso, tamanioMaximo, alTerminar, alCargar }) {
     if (archivos.length && !cargando) cargar(archivos)
   }
 
+  const qrVisible = panel === 'celular' && Boolean(celular.enlace)
+
   async function mostrarCelular() {
     setPanel('celular')
     await celular.abrir()
@@ -166,10 +168,11 @@ function Carga({ idCaso, tamanioMaximo, alTerminar, alCargar }) {
           <button
             type="button"
             className="boton boton--secundario"
-            aria-expanded={panel === 'celular'}
-            onClick={() => (panel === 'celular' ? elegirPanel(null) : mostrarCelular())}
+            aria-expanded={qrVisible}
+            onClick={() => (qrVisible ? elegirPanel(null) : mostrarCelular())}
           >
-            {panel === 'celular' ? 'Ocultar el QR' : 'Mostrar el QR'}
+            {/* 038: cuando el celular termina, el QR se cierra y se puede mostrar uno nuevo. */}
+            {qrVisible ? 'Ocultar el QR' : 'Mostrar el QR'}
           </button>
         </OpcionDeCarga>
         <OpcionDeCarga

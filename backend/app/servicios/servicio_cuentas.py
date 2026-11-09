@@ -14,7 +14,7 @@ RF52 (CA1, CA2) de la 027.
 """
 import secrets
 
-from app.modelos.organizacion import TIPO_ASEGURADORA, TIPO_ESTUDIO_JURIDICO
+from app.modelos.organizacion import ORGANIZACION_ACTIVA, TIPO_ASEGURADORA, TIPO_ESTUDIO_JURIDICO
 from app.modelos.usuario import (
     PERFIL_ABOGADO,
     PERFIL_ASEGURADORA,
@@ -66,6 +66,8 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
             invitacion = self.organizaciones.invitacion_para_registro(
                 solicitud.token_invitacion, solicitud.correo
             )
+            # 038: al verificar el correo, queda dentro de esta organización.
+            invitacion.usada_para_registrarse = True
             if invitacion.organizacion.es_aseguradora:
                 solicitud.perfil = PERFIL_ASEGURADORA
                 solicitud.empresa = invitacion.organizacion.nombre
@@ -443,11 +445,15 @@ class ServicioCuentas:  # pylint: disable=too-many-instance-attributes
         usuario.rol = ROL_ADMINISTRADOR if administradora else ROL_USUARIO
         self.repositorio.guardar(usuario)
         if not self.organizaciones.listar(usuario):
-            _, token = self.organizaciones.crear(
+            organizacion, token = self.organizaciones.crear(
                 usuario, {"nombre": estudio, "tipo": "estudio_juridico"}
             )
-            # La cuenta de prueba no pasa por la pantalla de pago: se acredita en el momento.
+            # La cuenta de prueba no pasa por la pantalla de pago ni por la aprobación del
+            # Administrador (038): se acredita y se aprueba en el momento.
             self.organizaciones.pagos.simular_acreditacion(token)
+            organizacion.estado = ORGANIZACION_ACTIVA
+            organizacion.aprobada_en = ahora_utc()
+            self.organizaciones.repositorio.confirmar()
         return usuario
 
     def promover_administrador(self, correo):

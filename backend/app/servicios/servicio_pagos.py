@@ -5,12 +5,13 @@ El plan de un estudio jurídico o de una aseguradora se paga al registrarlos
 un ``Cobro``: una transferencia que se espera a un CVU con una referencia,
 como cobra Cresium. Al acreditarse:
 
-- un alta deja el estudio activo y la aseguradora pendiente de aprobación;
+- un alta deja la organización (estudio o aseguradora) pendiente de la
+  aprobación del Administrador (038, decisión de la autora);
 - un cambio de plan aplica el plan nuevo.
 
 Si el Administrador rechaza una aseguradora pagada, su cobro se devuelve.
-Cuando una aseguradora queda pendiente, se avisa por correo a cada
-Administrador para que la revise (funcionalidad 037).
+Cuando una organización queda pendiente, se avisa por correo a cada
+Administrador para que la revise (funcionalidades 037 y 038).
 
 Mientras no esté la API de Cresium, la acreditación se simula (CP-34) y queda
 en la auditoría como simulada.
@@ -32,7 +33,6 @@ from app.modelos.cobro import (
     Cobro,
 )
 from app.modelos.organizacion import (
-    ORGANIZACION_ACTIVA,
     ORGANIZACION_PAGO_PENDIENTE,
     ORGANIZACION_PENDIENTE,
 )
@@ -169,7 +169,7 @@ class ServicioPagos:
         """Efecto del pago sobre la organización: activarla o cambiar su plan.
 
         Returns:
-            La aseguradora que quedó esperando aprobación, o None.
+            La organización que quedó esperando aprobación, o None.
         """
         organizacion = cobro.organizacion
         if organizacion is None:
@@ -178,15 +178,13 @@ class ServicioPagos:
             organizacion.plan = cobro.plan
         elif organizacion.estado == ORGANIZACION_PAGO_PENDIENTE:
             organizacion.plan = cobro.plan
-            organizacion.estado = (
-                ORGANIZACION_PENDIENTE if organizacion.es_aseguradora else ORGANIZACION_ACTIVA
-            )
-            if organizacion.es_aseguradora:
-                return organizacion
+            # 038: también los estudios esperan la aprobación del Administrador.
+            organizacion.estado = ORGANIZACION_PENDIENTE
+            return organizacion
         return None
 
     def _avisar_administradores(self, aseguradora):
-        """Correo a cada Administrador: hay una aseguradora para revisar (037)."""
+        """Correo a cada Administrador: hay una organización para revisar (037, 038)."""
         if self.correos is None or self.usuarios is None:
             return
         for administrador in self.usuarios.administradores():

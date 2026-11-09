@@ -13,6 +13,7 @@ from app.modelos.organizacion import Organizacion
 from pruebas.conftest import (
     CONTRASENIA_VALIDA,
     ID_SEGUROS_GALICIA,
+    aprobar_organizacion,
     datos_registro,
     entradas_auditoria,
     extraer_token,
@@ -48,7 +49,7 @@ def test_el_independiente_no_paga(cliente):
 
 
 def test_estudio_en_el_registro_con_plan_y_pago(aplicacion, cliente, correos):
-    """CA3 y CA4: el estudio espera el pago y queda activo al acreditarse."""
+    """CA3 y CA4: el estudio espera el pago y, acreditado, la aprobación (038)."""
     respuesta = _registrar(cliente, nombre_estudio="Estudio Salmón", plan="profesional")
     token = respuesta.get_json()["pago"]["token"]
 
@@ -72,6 +73,9 @@ def test_estudio_en_el_registro_con_plan_y_pago(aplicacion, cliente, correos):
 
     acreditado = pagar(cliente, respuesta)
     assert acreditado["estado"] == "acreditado" and acreditado["acreditado_en"]
+    # 038: el estudio pagado espera la aprobación del Administrador.
+    assert _organizacion(cliente)["estado"] == "pendiente"
+    aprobar_organizacion(cliente, organizacion["id"])
     assert _organizacion(cliente)["estado"] == "activa"
     plan = cliente.get(f"/api/organizaciones/{organizacion['id']}/plan").get_json()["plan"]
     assert plan["codigo"] == "profesional"
@@ -173,7 +177,7 @@ def test_crear_el_estudio_desde_el_perfil_y_retomar_el_pago(ana):
     assert ana.get(f"/api/pagos/{viejo}").status_code == 404  # solo vale el último enlace
     pagar(ana, retomado)
     plan = ana.get(f"/api/organizaciones/{id_org}/plan").get_json()["plan"]
-    assert plan["codigo"] == "profesional" and plan["estado_organizacion"] == "activa"
+    assert plan["codigo"] == "profesional" and plan["estado_organizacion"] == "pendiente"
     otra_vez = ana.post(f"/api/organizaciones/{id_org}/cobro")
     assert otra_vez.status_code == 409 and otra_vez.get_json()["codigo"] == "sin_pago"
 
@@ -204,3 +208,58 @@ def test_cuenta_de_prueba_queda_con_el_estudio_activo(aplicacion):
     ).exit_code == 0
     with aplicacion.app_context():
         assert db.session.query(Organizacion).one().estado == "activa"
+
+
+def _administrador(aplicacion, correos):
+    admin = aplicacion.test_client()
+    _registrar(admin, correo="admin@plataforma.com")
+    _entrar(admin, correos, "admin@plataforma.com")
+    aplicacion.test_cli_runner().invoke(args=["administracion", "promover", "admin@plataforma.com"])
+    admin.post(
+        "/api/sesion", json={"correo": "admin@plataforma.com", "contrasenia": CONTRASENIA_VALIDA}
+    )
+    return admin
+
+
+def test_el_administrador_aprueba_un_estudio(aplicacion, correos, ana):
+    """038: el estudio pagado llega al Administrador, sin verificación de identidad."""
+    respuesta = ana.post(
+        "/api/organizaciones", json={"nombre": "Estudio Pérez", "tipo": "estudio_juridico"}
+    )
+    id_org = respuesta.get_json()["organizacion"]["id"]
+    admin = _administrador(aplicacion, correos)
+    pagar(ana, respuesta)
+    assert any(
+        "espera tu aprobación" in c.asunto
+        for c in correos if c.destinatario == "admin@plataforma.com"
+    )
+
+    pendientes = admin.get("/api/administracion/aseguradoras-pendientes").get_json()
+    pendiente = pendientes["aseguradoras"][0]
+    assert pendiente["tipo"] == "estudio_juridico" and pendiente["exige_identidad"] is False
+    aprobacion = admin.post(f"/api/administracion/organizaciones/{id_org}/aprobacion")
+    assert aprobacion.status_code == 200
+    organizacion = ana.get(f"/api/organizaciones/{id_org}").get_json()["organizacion"]
+    assert organizacion["estado"] == "activa"
+    aviso = next(c for c in reversed(correos) if c.destinatario == "ana@ejemplo.com")
+    assert "ya está aprobada" in aviso.asunto and "del estudio" in aviso.texto
+
+
+def test_rechazar_un_estudio_no_desactiva_la_cuenta(aplicacion, correos, ana):
+    """038: rechazado el estudio, se devuelve el pago y la abogada sigue con su cuenta."""
+    respuesta = ana.post(
+        "/api/organizaciones", json={"nombre": "Estudio Pérez", "tipo": "estudio_juridico"}
+    )
+    id_org = respuesta.get_json()["organizacion"]["id"]
+    admin = _administrador(aplicacion, correos)
+    pagar(ana, respuesta)
+    rechazo = admin.post(
+        f"/api/administracion/organizaciones/{id_org}/rechazo",
+        json={"motivo": "Matrícula no válida."},
+    )
+    assert rechazo.status_code == 200
+    assert ana.get("/api/sesion").status_code == 200  # la cuenta sigue activa
+    aviso = next(c for c in reversed(correos) if c.destinatario == "ana@ejemplo.com")
+    assert "Tu cuenta sigue activa" in aviso.texto and "Matrícula no válida." in aviso.texto
+    with aplicacion.app_context():
+        assert Cobro.query.one().estado == "devuelto"

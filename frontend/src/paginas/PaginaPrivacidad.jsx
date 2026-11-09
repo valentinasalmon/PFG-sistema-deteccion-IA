@@ -13,6 +13,7 @@
  * Realiza: RF01 (CA2); RNF01, RNF02, RNF06, RNF08; RN27.
  */
 import AvisoProvisorio from '../componentes/AvisoProvisorio.jsx'
+import DisposicionLegal from '../componentes/DisposicionLegal.jsx'
 
 const PILARES = [
   {
@@ -69,7 +70,7 @@ const MEDIDAS = [
 
 export default function PaginaPrivacidad() {
   return (
-    <article className="texto-legal pagina-legal">
+    <DisposicionLegal className="pagina-legal">
       <h1>Política de Privacidad</h1>
       <AvisoProvisorio />
       <p className="pagina-legal__bajada">
@@ -198,6 +199,6 @@ export default function PaginaPrivacidad() {
         antes tenés que transferir o eliminar los casos a tu cargo y designar otro Referente en
         las organizaciones que administrás.
       </p>
-    </article>
+    </DisposicionLegal>
   )
 }

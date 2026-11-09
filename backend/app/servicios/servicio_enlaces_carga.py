@@ -16,6 +16,13 @@ admite además como máximo ``MAXIMO_CARGAS`` fotos, como resguardo.
 
 El token es aleatorio (192 bits) y en la base solo se guarda su huella SHA-256.
 
+Desde la funcionalidad 038 el QR del celular es de un solo uso (pedido de la
+autora): el primer dispositivo que sube una foto recibe una clave y solo él
+puede seguir usándolo; si se escanea desde otro, se avisa que ya se usó. Se
+ata con la primera foto y no al abrir la página, para que una consulta
+repetida (un reintento del navegador) no deje afuera al propio celular. Cuando la
+persona toca «Terminar», el enlace se cierra y la computadora lo nota.
+
 Desde la funcionalidad 028 hay además un enlace para la persona afectada
 (CP-32, decidido por la autora el 2026-10-28): quien lleva el caso se lo
 manda por WhatsApp o por correo y ella sube sus propias fotos. Ese enlace:
@@ -43,6 +50,9 @@ VIGENCIA = timedelta(minutes=15)
 MAXIMO_CARGAS = 30
 MENSAJE_INVALIDO = (
     "El enlace venció o ya no es válido. Pedí uno nuevo desde la computadora."
+)
+MENSAJE_YA_USADO = (
+    "Este código QR ya se usó. Para subir más fotos, generá uno nuevo desde la computadora."
 )
 MENSAJE_INVALIDO_PERSONA_AFECTADA = (
     "Este enlace venció o fue anulado. Pedile uno nuevo a quien te lo mandó."
@@ -185,8 +195,16 @@ class ServicioEnlacesCarga:
 
     # --- Uso del enlace, sin sesión ---
 
-    def _vigente(self, token):
+    def _vigente(self, token, clave=None):
+        """El enlace vigente del token; el del celular, solo desde su dispositivo (038)."""
         enlace = self.repositorio.por_huella(huella_de(token or ""))
+        if enlace is not None and enlace.tipo == TIPO_CELULAR and (
+            enlace.terminado_en is not None or (
+                enlace.huella_dispositivo is not None
+                and enlace.huella_dispositivo != huella_de(clave or "")
+            )
+        ):
+            raise NoEncontrado(MENSAJE_YA_USADO, codigo="enlace_usado")
         if enlace is None or not enlace.vigente(ahora_utc()):
             mensaje = (
                 MENSAJE_INVALIDO_PERSONA_AFECTADA
@@ -196,14 +214,14 @@ class ServicioEnlacesCarga:
             raise NoEncontrado(mensaje, codigo="enlace_invalido")
         return enlace
 
-    def consultar(self, token):
+    def consultar(self, token, clave=None):
         """Datos que muestra la página del enlace.
 
         Para el celular: caso, vencimiento y fotos restantes. Para la persona
         afectada no hay ningún dato del caso: solo quién pide las fotos y la
         declaración que tiene que aceptar.
         """
-        enlace = self._vigente(token)
+        enlace = self._vigente(token, clave)
         datos = {
             "tipo": enlace.tipo,
             "vence_en": enlace.vence_en.isoformat(timespec="seconds"),
@@ -241,19 +259,26 @@ class ServicioEnlacesCarga:
              "id_enlace": enlace.id, "version": VERSION_DECLARACION},
         )
 
-    def cargar(self, token, nombre, contenido, declaracion=False):
+    def cargar(  # pylint: disable=too-many-arguments
+        self, token, nombre, contenido, declaracion=False, clave=None
+    ):
         """Carga una foto con el enlace, a nombre de quien lo generó (RF53 CA2).
 
         Con el enlace de la persona afectada, ``declaracion`` tiene que ser
         True: la persona aceptó la declaración en la página (CP-32).
 
+        Returns:
+            ``(imagen, clave)``: la clave del dispositivo solo con la primera
+            foto del QR del celular (038); si no, None.
+
         Raises:
-            NoEncontrado: si el enlace no existe, venció o se canceló.
+            NoEncontrado: si el enlace no existe, venció, se canceló o ya lo
+                usa otro dispositivo.
             ErrorValidacion: si falta aceptar la declaración.
             ConflictoDatos: si la persona afectada ya cargó el máximo de fotos con
                 este enlace, o si el caso llegó al límite de imágenes del plan (RN15).
         """
-        enlace = self._vigente(token)
+        enlace = self._vigente(token, clave)
         es_persona_afectada = enlace.tipo == TIPO_PERSONA_AFECTADA
         if es_persona_afectada and not declaracion:
             raise ErrorValidacion(
@@ -274,5 +299,48 @@ class ServicioEnlacesCarga:
             enlace.id_caso, enlace.usuario, nombre, contenido, origen=origen
         )
         enlace.cargas += 1
+        clave_nueva = None
+        if enlace.tipo == TIPO_CELULAR and enlace.huella_dispositivo is None:
+            # Primera foto con este QR: queda atado a este celular (038).
+            clave_nueva = secrets.token_urlsafe(24)
+            enlace.huella_dispositivo = huella_de(clave_nueva)
         self.repositorio.confirmar()
-        return imagen
+        return imagen, clave_nueva
+
+    def terminar(self, token, clave=None):
+        """Cierra el enlace del celular cuando la persona termina de subir fotos (038).
+
+        Returns:
+            Cuántas fotos se cargaron con el enlace.
+
+        Raises:
+            NoEncontrado: si el enlace no es válido o se usa desde otro dispositivo.
+        """
+        enlace = self._vigente(token, clave)
+        if enlace.tipo != TIPO_CELULAR:
+            raise NoEncontrado(MENSAJE_INVALIDO, codigo="enlace_invalido")
+        ahora = ahora_utc()
+        enlace.terminado_en = ahora
+        enlace.revocado_en = ahora
+        self.registro.registrar_en_caso(
+            auditoria.IMAGEN_ENLACE_CARGA, auditoria.EXITOSO, enlace.usuario, enlace.caso,
+            {"operacion": "terminar", "id_enlace": enlace.id, "cargas": enlace.cargas},
+        )
+        self.repositorio.confirmar()
+        return enlace.cargas
+
+    def estado(self, id_caso, usuario):
+        """Estado del último QR del usuario en el caso, para la computadora (038).
+
+        Returns:
+            ``{"abierto", "terminado", "cargas"}``; sin enlaces, todo en falso o cero.
+        """
+        caso = self.imagenes.caso_para_cargar(id_caso, usuario, auditoria.IMAGEN_ENLACE_CARGA)
+        enlace = self.repositorio.ultimo_del_celular(caso.id, usuario.id)
+        if enlace is None:
+            return {"abierto": False, "terminado": False, "cargas": 0}
+        return {
+            "abierto": enlace.vigente(ahora_utc()),
+            "terminado": enlace.terminado_en is not None,
+            "cargas": enlace.cargas,
+        }

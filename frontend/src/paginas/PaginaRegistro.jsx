@@ -408,27 +408,30 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
 
         {paso === 'cuenta' && (
           <>
-            <CampoTexto
-              etiqueta="Correo electrónico"
-              nombre="correo"
-              tipo="email"
-              autoComplete="email"
-              value={valores.correo}
-              onChange={cambiar}
-              error={errores.correo}
-              readOnly={Boolean(invitacion)}
-              ayuda={invitacion ? 'Es el correo al que llegó la invitación.' : undefined}
-              required
-            />
-            <CampoContrasenia
-              etiqueta="Contraseña"
-              nombre="contrasenia"
-              autoComplete="new-password"
-              value={valores.contrasenia}
-              onChange={cambiar}
-              error={errores.contrasenia}
-              required
-            />
+            {/* 038: correo y contraseña lado a lado en computadora, para que el paso entre en una pantalla. */}
+            <div className="campos-en-fila campos-en-fila--arriba">
+              <CampoTexto
+                etiqueta="Correo electrónico"
+                nombre="correo"
+                tipo="email"
+                autoComplete="email"
+                value={valores.correo}
+                onChange={cambiar}
+                error={errores.correo}
+                readOnly={Boolean(invitacion)}
+                ayuda={invitacion ? 'Es el correo al que llegó la invitación.' : undefined}
+                required
+              />
+              <CampoContrasenia
+                etiqueta="Contraseña"
+                nombre="contrasenia"
+                autoComplete="new-password"
+                value={valores.contrasenia}
+                onChange={cambiar}
+                error={errores.contrasenia}
+                required
+              />
+            </div>
             <ReglasContrasenia contrasenia={valores.contrasenia} id="reglas-contrasenia" />
 
             <AceptacionTerminos
@@ -440,6 +443,12 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
         )}
 
         <div className="pasos__acciones">
+          {/* 038: en el primer paso, el enlace a iniciar sesión va en la misma fila que «Siguiente». */}
+          {indice === 0 && (
+            <span className="pasos__cuenta">
+              ¿Ya tenés cuenta? <Link to="/iniciar-sesion">Iniciá sesión</Link>
+            </span>
+          )}
           {indice > 0 && (
             <button type="button" className="boton boton--secundario" onClick={volver}>
               Atrás
@@ -461,11 +470,13 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
         </div>
       </form>
 
-      <p className="enlaces-secundarios">
-        <span>
-          ¿Ya tenés cuenta? <Link to="/iniciar-sesion">Iniciá sesión</Link>
-        </span>
-      </p>
+      {indice > 0 && (
+        <p className="enlaces-secundarios">
+          <span>
+            ¿Ya tenés cuenta? <Link to="/iniciar-sesion">Iniciá sesión</Link>
+          </span>
+        </p>
+      )}
     </div>
   )
 }

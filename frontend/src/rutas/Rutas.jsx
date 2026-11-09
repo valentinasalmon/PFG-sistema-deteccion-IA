@@ -12,6 +12,8 @@
  *
  * Realiza: CA12 y CA22 de la funcionalidad 002; CA1 de la 033.
  */
+import { useEffect } from 'react'
+import { leerDestino, olvidarDestino } from '../utilidades/destino.js'
 import { Navigate, Outlet, useLocation } from 'react-router'
 import { useSesion } from '../hooks/useSesion.js'
 import Cargando from '../componentes/Cargando.jsx'
@@ -37,7 +39,8 @@ export function RutaProtegida() {
     // cuenta se vuelve al inicio; si no, a la pantalla pedida.
     const estado = SALIDAS_AL_INICIO.has(motivoSalida)
       ? { mensaje: MENSAJES_SALIDA[motivoSalida] }
-      : { desde: ubicacion.pathname, mensaje: MENSAJES_SALIDA[motivoSalida] }
+      : // 038: con la consulta incluida, así el QR del PDF vuelve al análisis detallado (?etapa=analisis).
+        { desde: `${ubicacion.pathname}${ubicacion.search}`, mensaje: MENSAJES_SALIDA[motivoSalida] }
     return <Navigate to="/iniciar-sesion" replace state={estado} />
   }
   return <Outlet />
@@ -45,12 +48,18 @@ export function RutaProtegida() {
 
 export function RutaPortada() {
   const { usuario, cargando, motivoSalida } = useSesion()
+  // Al volver de Google se llega al inicio: se retoma la pantalla pedida (038).
+  const destino = usuario ? leerDestino() : null
+  useEffect(() => {
+    if (destino) olvidarDestino()
+  }, [destino])
   if (cargando) return <Cargando texto="Verificando la sesión…" />
   // Recién cerrada la sesión, el aviso de salida se muestra en el inicio de sesión.
   if (!usuario && motivoSalida) {
     return <Navigate to="/iniciar-sesion" replace state={{ mensaje: MENSAJES_SALIDA[motivoSalida] }} />
   }
   if (!usuario) return <PaginaPortada />
+  if (destino) return <Navigate to={destino} replace />
   return <Outlet />
 }
 

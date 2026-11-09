@@ -3,5 +3,5 @@
 <p>Hola, {{ nombre }}:</p>
 <p>El Administrador de la plataforma no aprobó el registro de <strong>{{ organizacion }}</strong>.</p>
 <p><strong>Motivo:</strong> {{ motivo }}</p>
-<p>Tu cuenta quedó desactivada. Si trabajás en esa aseguradora, pedile a la persona que la administre que la registre o que te invite.</p>
+<p>{% if desactivada %}Tu cuenta quedó desactivada. Si trabajás en esa aseguradora, pedile a la persona que la administre que la registre o que te invite.{% else %}Lo que pagaste se devuelve. Tu cuenta sigue activa: podés seguir trabajando con tus casos personales.{% endif %}</p>
 {% endblock %}

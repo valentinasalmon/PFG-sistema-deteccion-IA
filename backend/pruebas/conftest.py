@@ -177,14 +177,31 @@ def pagar(cliente_web, respuesta):
     return acreditacion.get_json()["cobro"]
 
 
+def aprobar_organizacion(cliente_web, id_organizacion):
+    """Deja activa una organización pendiente, como si el Administrador la aprobara (038).
+
+    Atajo para las pruebas que no tratan sobre la aprobación; la aprobación por
+    el Administrador se prueba en ``test_aseguradoras.py`` y ``test_pagos.py``.
+    """
+    # pylint: disable=import-outside-toplevel
+    from app.modelos.organizacion import ORGANIZACION_ACTIVA, Organizacion
+
+    with cliente_web.application.app_context():
+        organizacion = db.session.get(Organizacion, id_organizacion)
+        organizacion.estado = ORGANIZACION_ACTIVA
+        db.session.commit()
+
+
 def crear_estudio_pagado(cliente_web, nombre="Estudio Pérez", **datos):
-    """Crea un estudio jurídico, simula el pago de su plan y devuelve su id."""
+    """Crea un estudio jurídico, simula el pago, lo aprueba y devuelve su id."""
     respuesta = cliente_web.post(
         "/api/organizaciones", json={"nombre": nombre, "tipo": "estudio_juridico", **datos}
     )
     assert respuesta.status_code == 201, respuesta.get_json()
     pagar(cliente_web, respuesta)
-    return respuesta.get_json()["organizacion"]["id"]
+    id_organizacion = respuesta.get_json()["organizacion"]["id"]
+    aprobar_organizacion(cliente_web, id_organizacion)
+    return id_organizacion
 
 
 def crear_estudio(referente, miembro, correo_miembro, nombre="Estudio Pérez"):

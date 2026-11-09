@@ -48,6 +48,9 @@ class EnlaceCarga(db.Model):  # pylint: disable=too-few-public-methods
     destinatario = db.Column(db.String(100), nullable=True)
     # Cuándo la persona afectada aceptó la declaración sobre sus fotos (028, CP-32).
     declaracion_aceptada_en = db.Column(db.DateTime, nullable=True)
+    # 038: el QR del celular sirve para un solo dispositivo y se termina desde él.
+    huella_dispositivo = db.Column(db.String(64), nullable=True)
+    terminado_en = db.Column(db.DateTime, nullable=True)
 
     caso = db.relationship("Caso", back_populates="enlaces_carga")
     usuario = db.relationship("Usuario")

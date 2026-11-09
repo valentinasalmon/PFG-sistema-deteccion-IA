@@ -724,19 +724,25 @@ class ServicioOrganizaciones:
         return bool(self.repositorio.invitaciones_pendientes_de_correo(correo, ahora_utc()))
 
     def incorporar_al_verificar(self, usuario):
-        """Acepta las invitaciones vigentes de aseguradoras al verificar el correo (CA11 de la 021).
+        """Acepta las invitaciones vigentes al verificar el correo (CA11 de la 021, 038).
 
-        Quien crea su cuenta desde la invitación de una aseguradora queda
-        dentro de ella sin otro paso. No confirma: la verificación del correo
-        confirma todo junto.
+        Quien crea su cuenta desde una invitación queda dentro de la
+        organización sin otro paso: una cuenta Aseguradora, en su aseguradora;
+        una cuenta Abogado, en el estudio cuyo enlace usó para registrarse (038,
+        pedido de la autora). No confirma: la verificación del correo confirma
+        todo junto.
 
         Returns:
             Las invitaciones aceptadas, para avisar a sus Referentes después de confirmar.
         """
+        def corresponde(invitacion):
+            if invitacion.organizacion.es_aseguradora:
+                return usuario.perfil == PERFIL_ASEGURADORA
+            # Un estudio, solo si la persona se registró desde el enlace de esa invitación.
+            return usuario.perfil != PERFIL_ASEGURADORA and invitacion.usada_para_registrarse
+
         aceptadas = [
-            invitacion for invitacion in self.pendientes_de(usuario)
-            if invitacion.organizacion.es_aseguradora
-            and usuario.perfil == PERFIL_ASEGURADORA
+            invitacion for invitacion in self.pendientes_de(usuario) if corresponde(invitacion)
         ]
         for invitacion in aceptadas:
             self._incorporar(invitacion, usuario)
@@ -817,7 +823,7 @@ class ServicioOrganizaciones:
             raise AccesoDenegado(MENSAJE_SOLO_ADMINISTRADOR)
 
     def pendientes_de_aprobacion(self, usuario):
-        """Aseguradoras pendientes con su Referente (CA7 de la 021). Solo el Administrador."""
+        """Organizaciones pendientes con su Referente (021, 038). Solo el Administrador."""
         self._exigir_administrador(usuario)
         return [
             (organizacion, self.repositorio.referente(organizacion.id))
@@ -827,14 +833,14 @@ class ServicioOrganizaciones:
     def _pendiente(self, id_organizacion):
         organizacion = self.repositorio.obtener(id_organizacion)
         if organizacion is None or not organizacion.pendiente:
-            raise NoEncontrado("La aseguradora no existe o ya fue revisada.")
+            raise NoEncontrado("La organización no existe o ya fue revisada.")
         return organizacion
 
     def aprobar(self, usuario, id_organizacion):
-        """Aprueba una aseguradora pendiente y avisa a su Referente (CA8 de la 021)."""
+        """Aprueba una organización pendiente y avisa a su Referente (CA8 de la 021, 038)."""
         self._exigir_administrador(usuario)
         organizacion = self._pendiente(id_organizacion)
-        if self.identidad is not None:
+        if self.identidad is not None and organizacion.es_aseguradora:
             # RN41: con la verificación activa, solo con la identidad del Referente aprobada.
             self.identidad.exigir_aprobada(organizacion)
         organizacion.estado = ORGANIZACION_ACTIVA
@@ -849,10 +855,11 @@ class ServicioOrganizaciones:
         return organizacion
 
     def rechazar(self, usuario, id_organizacion, motivo):
-        """Rechaza una aseguradora pendiente: se elimina y su Referente se desactiva (CA9).
+        """Rechaza una organización pendiente: se elimina y se devuelve lo pagado (CA9, 038).
 
-        Se avisa al Referente con el motivo. Así la empresa queda libre para
-        que la registre quien corresponda.
+        Si es una aseguradora, su Referente se desactiva (RN39) y la empresa
+        queda libre para que la registre quien corresponda; si es un estudio,
+        la cuenta del abogado sigue activa. Se avisa al Referente con el motivo.
         """
         self._exigir_administrador(usuario)
         organizacion = self._pendiente(id_organizacion)
@@ -865,4 +872,7 @@ class ServicioOrganizaciones:
         # Lo pagado se devuelve (simulado) antes de eliminarla (CA6 de la 032).
         self.pagos.devolver_cobros(organizacion, usuario)
         self._eliminar(organizacion, usuario, avisar=False, motivo="rechazo")
-        self.correos.enviar_aviso_aseguradora_rechazada(referente, nombre, motivo)
+        self.correos.enviar_aviso_aseguradora_rechazada(
+            referente, nombre, motivo,
+            es_aseguradora=organizacion.es_aseguradora, desactivada=not referente.activo,
+        )
