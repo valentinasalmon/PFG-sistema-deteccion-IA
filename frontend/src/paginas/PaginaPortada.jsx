@@ -88,8 +88,6 @@ const MIRADAS = [
     codigo: 'RED NEURONAL',
     titulo: 'Imagen con IA',
     texto: 'Qué tan probable es que la haya creado una IA.',
-    // Decisión de la autora (037): se muestra como «Próximamente» hasta integrar la 012.
-    proximamente: true,
   },
 ]
 

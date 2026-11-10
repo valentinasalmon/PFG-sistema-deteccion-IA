@@ -32,7 +32,7 @@ Orden: dependencias y configuración → integración del modelo → capa → re
   - Archivos: `frontend/src/componentes/SeccionAnalisis.jsx` y su prueba
   - Verificación: `npm run lint && npm run test`; captura de la sección.
   - Commit: `funcionalidad(012): capa 4 en la pantalla del analisis`
-- [ ] **T08 (manual, autora)** — Publicar el modelo 1.0.0 en el repositorio privado de Hugging Face (E03 de la 010), cargar `HF_TOKEN` de lectura y `MODELO_RED_NEURONAL_*` en Parameter Store, y analizar un caso en producción.
+- [x] **T08 (manual, autora)** — Publicar el modelo 1.0.0 en el repositorio privado de Hugging Face (E03 de la 010), cargar `HF_TOKEN` de lectura y `MODELO_RED_NEURONAL_*` en Parameter Store, y analizar un caso en producción.
   - Verificación: la capa 4 aparece con su probabilidad y la versión 1.0.0 en la pantalla y en el PDF.
 - [x] **T09** — Documentación: capítulo 7 de `docs/red-neuronal/` (cómo lo usa el backend), guía de la autora para T08, bitácora, insumos, Trello.
   - Commit: `documentacion(012): ...`

@@ -137,4 +137,4 @@ Las pruebas del backend usan un **ONNX diminuto** (`backend/pruebas/modelo_dimin
 
 Desde la 037 cada capa se describe sola: `CapaRedNeuronal` declara `titulo`, `que_significa` y `tipo_de_resultado = "probabilistico"`, y está en `crear_capas()` y en `CLASES_DE_CAPAS` (`backend/app/analisis/registro.py`). La pantalla del análisis toma el título y la explicación de la API; la prueba `test_analisis_registro.py` falla si una capa activa no los tiene.
 
-Queda un paso para cuando la capa funcione en producción (T08): quitar `proximamente: true` de la mirada «Imagen con IA» en `frontend/src/paginas/PaginaPortada.jsx` y la frase «se suma próximamente» de los términos. No se quita antes para no anunciar una capa que todavía aparece como «No disponible».
+Con la capa activa en producción (2026-11-10), la portada dejó de mostrar «Próximamente» en «Imagen con IA» y los términos describen las cuatro técnicas.

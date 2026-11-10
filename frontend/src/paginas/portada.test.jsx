@@ -56,7 +56,9 @@ describe('portada pública', () => {
     expect(screen.queryByRole('link', { name: 'Para quién' })).not.toBeInTheDocument()
     expect(document.querySelector('img[src="/portada/ojo.jpg"]')).toBeNull()
     expect(screen.getByRole('link', { name: /Registrar mi aseguradora/ })).toHaveAttribute('href', '/registro?tipo=aseguradora')
-    expect(screen.getByText('Próximamente')).toBeInTheDocument()
+    // 012 activa en producción (2026-11-10): la red neuronal ya no figura como «Próximamente».
+    expect(screen.getByText('Imagen con IA')).toBeInTheDocument()
+    expect(screen.queryByText('Próximamente')).not.toBeInTheDocument()
   })
 
   it('con sesión, la raíz sigue siendo el Inicio (CA1)', async () => {

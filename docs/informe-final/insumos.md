@@ -347,3 +347,9 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **QR de un solo uso**: atar el enlace al primer dispositivo al abrir la página falló en la prueba porque el navegador puede repetir la consulta; se ata con la primera foto subida. Lección: los controles de un solo uso tienen que tolerar repeticiones.
 - **Diseño**: agrandar un contenedor no alcanza; el contenido tiene que reorganizarse (dos columnas, índice, largo de línea). Se registró como criterio de revisión visual.
 
+## Capa 4 en producción: primera prueba real (012, 2026-11-10)
+
+- La autora publicó el modelo `1.0.0` en el repositorio privado de Hugging Face, cargó los parámetros en Parameter Store y desplegó: la capa 4 funciona en producción.
+- En su primera prueba, con una imagen del conjunto propio, la capa dio una probabilidad cercana a 0 %. Es coherente con lo medido en la 010: el modelo detecta bien los generadores que conoce (AUC 0,961) pero solo el 10 % de las imágenes de choques hechas con ChatGPT, Copilot y Gemini. Las herramientas comerciales actuales quedan fuera de lo que vio al entrenar.
+- Para el informe: confirma por qué la conclusión aclara siempre que una probabilidad baja no indica que la foto sea real, y por qué la red es una capa más y no un detector único. Motiva la versión `1.1.0` con generadores comerciales recientes en el entrenamiento.
+

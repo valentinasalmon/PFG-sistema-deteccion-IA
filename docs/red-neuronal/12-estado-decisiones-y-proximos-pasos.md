@@ -17,8 +17,8 @@
 | Cuaderno de entrenamiento completo en Colab que saltee las etapas ya hechas (T29) | ✔ Hecho: `03_entrenamiento_completo_colab.ipynb` |
 | Entrenamiento completo (T30) | ✔ 2026-11-05: AUC de prueba 0,961, F1 0,904, no visto (Google) 0,938 (capítulo 11) |
 | Reproducibilidad y condiciones reales (T31, T32) | Pendiente. Primer dato del conjunto propio: detecta 5 de 49 imágenes de choques |
-| Repositorio de modelos en Hugging Face (E03) y publicación de `1.0.0` (T33) | Pendiente |
-| Integración en el backend y el informe (funcionalidad 012) | ✔ Código hecho el 2026-11-06 en `funcionalidad/012-capa-4-onnx` (capítulo 7). Falta publicar `1.0.0` y activarlo en producción con la [guía](../guias/despliegue-aws.md#capa-4-modelo-de-la-red-neuronal-funcionalidad-012) |
+| Repositorio de modelos en Hugging Face (E03) y publicación de `1.0.0` (T33) | ✔ Hecho por la autora (2026-11-10) |
+| Integración en el backend y el informe (funcionalidad 012) | ✔ Activa en producción desde el 2026-11-10 con el modelo `1.0.0` (capítulo 7) |
 
 Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento completo.
 
@@ -63,8 +63,8 @@ Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento com
 
 ## Próximos pasos, en orden
 
-1. **Publicar la 1.0.0 en el registro local** (autora): ejecutar la celda de publicación y la sección 6 del cuaderno 03. Después, crear el repositorio de modelos en Hugging Face (E03) para la publicación definitiva.
+1. ~~Publicar la 1.0.0 en Hugging Face (E03, T33)~~ ✔ 2026-11-10.
 2. **Fotos reales de choques** en el conjunto propio (CarDD y fotos propias), para medir el AUC por escena; seguir con las demás escenas.
 3. **Repetición** del entrenamiento para la reproducibilidad (T31).
 4. **1.1.0:** sumar la familia de Google y, si se puede leer, MLLM-Generated, y comparar contra el conjunto propio.
-5. **Funcionalidad 012:** integrar el modelo en el análisis y el informe.
+5. ~~**Funcionalidad 012:** integrar el modelo en el análisis y el informe~~ ✔ activa en producción el 2026-11-10. Primera prueba de la autora: probabilidad cercana a 0 % en una foto del conjunto propio, coherente con el 10 % de detección medido en esas imágenes (capítulo 11). Es el motivo principal de la 1.1.0.

@@ -37,7 +37,7 @@ implementación siguiendo tareas.md, con pruebas
 | 009 | Capa 2 (C2PA) | 5 | RF40 | Completado |
 | 010 | [Red neuronal: ciclo de vida, entrenamiento y exportación](010-red-neuronal/especificacion.md) (pista paralela) | 2 – 5 | RNF24 | En curso |
 | 011 | [Capa 3 (ELA)](011-capa-ela/especificacion.md) | 5 | RF41 | Completado |
-| 012 | [Capa 4 (red neuronal con ONNX)](012-capa-4-onnx/especificacion.md) | 5 | RF42 | Implementada; se activa cuando la autora publique el modelo 1.0.0 (T08) |
+| 012 | [Capa 4 (red neuronal con ONNX)](012-capa-4-onnx/especificacion.md) | 5 | RF42 | Completado (activa en producción desde el 2026-11-10, modelo 1.0.0) |
 | 013 | [Notificaciones y panel principal](013-panel-y-notificaciones/especificacion.md) | 6 | RF47, RF48 | Completado |
 | 014 | [Planes y tablero de administración](014-planes-y-tablero/especificacion.md) | 6 | RF19 – RF22 | Completado |
 | 015 | [Retención y destrucción de datos](015-retencion/especificacion.md) | 7 | RF49 – RF51 | Completado |
