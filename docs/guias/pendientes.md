@@ -30,14 +30,14 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 | P1 | **Integrar la 037** (Pull Request hacia `desarrollo` y después a `main`) y probar en producción: login con Google, siniestros, PDF breve con QR al detalle | Revisión de la autora | Autora |
 | P1 | **Probar en Safari (iPhone) y Firefox**: en el entorno del agente solo hay Chromium; los recorridos de punta a punta pasaron en Chromium de computadora y en un iPhone 13 emulado | — | Autora, con `frontend/e2e/` y la guía de usuario |
 | P1 | **CP-43**: ¿el enlace al análisis detallado del PDF se abre sin cuenta? Hoy exige una cuenta con acceso | Autora y tutor | Autora |
-| P2 | Sumar los recorridos de `frontend/e2e/` y el sensor de diseño a la integración continua (hoy se corren a mano contra el entorno local, y son obligatorios antes de dar por terminado un cambio de interfaz) | Servicios de prueba en GitHub Actions | Agente |
-| P2 | Los correos todavía dicen «caso» también a las aseguradoras (los textos de la pantalla y el PDF ya dicen «siniestro») | — | Agente |
+| ~~P2~~ | ~~Sumar los recorridos de `frontend/e2e/` y el sensor de diseño a la integración continua~~ — hecho en la 039 (trabajo «Interfaz») | — | Agente |
+| ~~P2~~ | ~~Los correos todavía dicen «caso» también a las aseguradoras~~ — hecho en la 039 | — | Agente |
 
 ## Infraestructura y puesta en producción
 
 | Prioridad | Tarea | Depende de | Quién |
 |---|---|---|---|
-| P1 | **Comprar el dominio** y configurarlo (Terraform, HTTPS, correo) | Compra | Autora compra, agente configura |
+| P1 | **Comprar el dominio** y configurarlo (Terraform, HTTPS, correo): pasos completos en `docs/guias/despliegue-aws.md`, «Cuando compres el dominio» | Compra | Autora, con la guía |
 | P1 | **Sacar SES del modo de prueba**, para que cualquiera reciba los correos y se pueda registrar | Dominio | Autora pide a AWS |
 | P1 | **Pasar Hedera a la red real (*mainnet*)** antes de la defensa: cuenta nueva, unos US$ 10 de HBAR, tema nuevo (CP-26) | Compra de HBAR | Autora compra, agente guía |
 | P2 | Probar la restauración de la copia de seguridad de la base (pendiente de la 017) | — | Autora, con la guía |
@@ -52,7 +52,7 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 | P1 | **Pruebas de usabilidad** con 3 a 5 abogados o liquidadores: guion, tareas, cuestionario SUS y conclusiones | Participantes | Agente arma, autora conduce |
 | P1 | **Índice de calidad (QI ≥ 0,75)**: definir la fórmula y medir (cobertura, análisis estático, pruebas, usabilidad) | CP-04 (tutor) | Agente mide, tutor valida |
 | ✓ | Revisión de seguridad (030, hecha: `docs/arquitectura/seguridad.md`) | — | Agente |
-| ~~P2~~ | ~~Guía de uso para la persona usuaria~~ — hecha en `docs/guias/guia-de-usuario.md` (018); actualizarla con la 037 (siniestros, PDF breve, «Datos y gestión») | — | Agente |
+| ~~P2~~ | ~~Guía de uso para la persona usuaria~~ — hecha en `docs/guias/guia-de-usuario.md` (018); actualizada con la 037 y la 038 en la 039 | — | Agente |
 
 ## Documento final del proyecto (informe para la facultad)
 

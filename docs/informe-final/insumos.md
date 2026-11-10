@@ -347,3 +347,10 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **QR de un solo uso**: atar el enlace al primer dispositivo al abrir la página falló en la prueba porque el navegador puede repetir la consulta; se ata con la primera foto subida. Lección: los controles de un solo uso tienen que tolerar repeticiones.
 - **Diseño**: agrandar un contenedor no alcanza; el contenido tiene que reorganizarse (dos columnas, índice, largo de línea). Se registró como criterio de revisión visual.
 
+
+## Correcciones de producción (039, 2026-11-10)
+
+- **Probar en producción encuentra lo que el entorno local no**: el flujo de aprobación de estudios funcionaba en local, pero en producción el correo dependía de SES en modo de prueba (solo entrega a direcciones verificadas). Lección: las integraciones externas se validan contra el servicio real, como pide el arnés.
+- **Un enlace tiene que cumplir lo que su rótulo promete**: el QR «Análisis detallado» llevaba al análisis plegado; se agregó un parámetro que lo despliega entero.
+- **Vocabulario por destinatario**: los correos usan «caso» o «siniestro» según el perfil de quien los recibe.
+- **Verificación visual automatizada**: el sensor de diseño y los recorridos de punta a punta pasaron a la integración continua, con un entorno completo (base, Redis, backend y frontend) levantado en GitHub Actions; deja de depender de que alguien los corra a mano.
