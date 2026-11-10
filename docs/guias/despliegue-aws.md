@@ -322,6 +322,15 @@ Hasta comprarlo, la plataforma funciona en `https://<ip>.sslip.io`. Con el domin
 
 Elegí un nombre corto y sin guiones (por ejemplo, `evidentia.com.ar`) y comprobá que esté libre antes de pagar.
 
+### Un dominio con tu nombre y un subdominio por aplicación
+
+Si comprás un dominio propio (por ejemplo, `tunombre.com.ar`) para alojar varias aplicaciones, cada una vive en un **subdominio**: `evidentia.tunombre.com.ar`, `otra-app.tunombre.com.ar`, etc. La plataforma funciona igual: en todos los pasos de abajo, donde dice `tu-dominio.com.ar` va el subdominio completo, con dos diferencias:
+
+- En el DNS, el registro **A** se llama `evidentia` (no `@`), con la `ip_publica` de este servidor. Cada aplicación tiene su propio registro A apuntando a su servidor; la raíz `@` queda libre para otra cosa (por ejemplo, una página personal).
+- En SES conviene verificar el **dominio raíz** (`tunombre.com.ar`): una sola verificación sirve para mandar correos desde cualquier subdominio y desde cualquier aplicación (`notificaciones@tunombre.com.ar` o `notificaciones@evidentia.tunombre.com.ar`).
+
+El certificado HTTPS se pide para el subdominio y no hay que tocar nada más. No uses un registro comodín (`*`): cada subdominio, su registro.
+
 ### 2. Apuntar el dominio al servidor (DNS)
 
 1. Averiguá la IP fija del servidor: `terraform output ip_publica` (desde `infraestructura/terraform/principal`).
