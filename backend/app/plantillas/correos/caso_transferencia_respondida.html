@@ -1,5 +1,5 @@
 {% extends "base.html" %}
 {% block contenido %}
 <p>Hola, {{ nombre }}:</p>
-<p>{% if aceptada %}{{ receptor }} aceptó el caso <strong>{{ numero }}</strong> y ahora es su Responsable.{% else %}{{ receptor }} rechazó la transferencia del caso <strong>{{ numero }}</strong>. Seguís siendo su Responsable.{% endif %}</p>
+<p>{% if aceptada %}{{ receptor }} aceptó el {{ palabra }} <strong>{{ numero }}</strong> y ahora es su Responsable.{% else %}{{ receptor }} rechazó la transferencia del {{ palabra }} <strong>{{ numero }}</strong>. Seguís siendo su Responsable.{% endif %}</p>
 {% endblock %}
