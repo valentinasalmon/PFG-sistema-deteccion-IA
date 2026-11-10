@@ -28,6 +28,7 @@
  * 007; CA6 de la 008; CA7 de la 009; CA4 de la 011; RNF10.
  */
 import { useCallback, useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router'
 import { listarAnalisis, obtenerAnalisis } from '../api/analisis.js'
 import { listarImagenes } from '../api/imagenes.js'
 import { descargarInforme, regenerarInforme } from '../api/informes.js'
@@ -183,7 +184,7 @@ function sinDescargo(texto) {
     .trim()
 }
 
-function ResultadoDeCapa({ resultado, imagen, original }) {
+function ResultadoDeCapa({ resultado, imagen, original, completo = false }) {
   // Cada capa se describe sola desde el backend (037): título y explicación.
   const titulo = resultado.titulo ?? resultado.capa
   if (resultado.estado === 'no_disponible') {
@@ -250,7 +251,7 @@ function ResultadoDeCapa({ resultado, imagen, original }) {
         </figure>
       )}
       {/* 037: lo explicativo y lo técnico, juntos y plegados, para que la pantalla se lea rápido. */}
-      <details className="mas-detalle">
+      <details className="mas-detalle" open={completo}>
         <summary>Qué significa y datos técnicos</summary>
         <p>{resultado.que_significa || 'Esta técnica busca señales de edición o de generación artificial.'}</p>
         {resultado.detalle?.tabla?.length > 0 && (
@@ -300,12 +301,13 @@ export function ResumenDeImagen({ imagen }) {
 }
 
 /** Resultados por imagen en filas desplegables: el resumen a la vista y el detalle al abrir (028). */
-function Resultados({ analisis, miniaturas }) {
+function Resultados({ analisis, miniaturas, completo = false }) {
   return analisis.imagenes.map((imagen, indice) => (
     <details
       key={`${imagen.id_imagen}-${imagen.huella}`}
       className="resultado-imagen"
-      open={analisis.imagenes.length === 1 || indice === 0}
+      // 038: desde el QR del PDF («Análisis detallado») se abre todo.
+      open={completo || analisis.imagenes.length === 1 || indice === 0}
     >
       <summary className="resultado-imagen__cabecera">
         <h3>{imagen.nombre}</h3>
@@ -336,6 +338,7 @@ function Resultados({ analisis, miniaturas }) {
             resultado={resultado}
             imagen={imagen}
             original={miniaturas[imagen.id_imagen]}
+            completo={completo}
           />
         ))
       )}
@@ -428,7 +431,7 @@ function AccionesDelInforme({ idCaso, analisis, puedeGenerar, alGenerar, alVerIn
   )
 }
 
-function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar, alVerInforme }) {
+function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar, alVerInforme, completo = false }) {
   const cargar = useCallback(() => obtenerAnalisis(idCaso, idAnalisis), [idCaso, idAnalisis])
   const { datos: analisis, error, recargar } = useDatos(cargar)
   const enCurso = Boolean(analisis?.en_curso)
@@ -475,7 +478,7 @@ function Detalle({ idCaso, idAnalisis, puedeGenerar, alTerminar, alVerInforme })
       )}
       {analisis.estado === 'finalizado' && (
         <>
-          <Resultados analisis={analisis} miniaturas={miniaturas} />
+          <Resultados analisis={analisis} miniaturas={miniaturas} completo={completo} />
           <AccionesDelInforme
             idCaso={idCaso}
             analisis={analisis}
@@ -501,6 +504,9 @@ export default function SeccionAnalisis({
 }) {
   const cargar = useCallback(() => listarAnalisis(idCaso), [idCaso])
   const { datos: historial, error } = useDatos(cargar)
+  // 038: el QR «Análisis detallado» del PDF llega con ?detalle=completo y abre todo.
+  const [parametros] = useSearchParams()
+  const completo = parametros.get('detalle') === 'completo'
   const [elegido, setElegido] = useState(null)
 
   if (error) {
@@ -565,6 +571,7 @@ export default function SeccionAnalisis({
         puedeGenerar={puedeGenerar}
         alTerminar={alTerminar}
         alVerInforme={alVerInforme}
+        completo={completo}
       />
     </section>
   )
