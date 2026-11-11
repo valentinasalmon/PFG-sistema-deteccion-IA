@@ -10,7 +10,7 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 
 | Prioridad | Tarea | Depende de | Quién |
 |---|---|---|---|
-| P1 | **Red neuronal (010 y 012)**: terminar el entrenamiento, exportar a ONNX y conectarla como capa 4 probabilística. El sistema ya está preparado: es una clase y una línea en el registro (ver `docs/red-neuronal/07`); al integrarla, quitar el «Próximamente» de la portada y de los términos | Modelo de la autora; conjunto de datos y desempeño mínimo (CP-07) | Autora entrena, agente integra |
+| P1 | **Red neuronal: publicar el modelo 1.0.0 y activar la capa 4 en producción** (el clasificador ONNX ya está integrado en el backend desde la 012; al activarla, quitar el «Próximamente» de la portada y de los términos) | Modelo final de la autora (CP-07) | Autora publica, agente activa |
 | ✓ | Mejoras de interfaz (028 y 034): implementadas en cuatro tandas; falta la revisión final de la autora | Revisión | Autora |
 | P1 | **Revisión de la 034 pantalla por pantalla** (CA1, CA3, CA4, CA6, CA9) | PR de la tercera y la cuarta tanda | Autora revisa, agente corrige |
 | P2 | **Cobro real con Cresium**: proveedor, aviso firmado y conciliación (ver `docs/investigacion/2026-11-02-integracion-cresium.md`) | Precios (CP-38) y cuenta de Cresium con entorno de pruebas | Autora abre la cuenta, agente integra |
@@ -27,7 +27,7 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 
 | Prioridad | Tarea | Depende de | Quién |
 |---|---|---|---|
-| P1 | **Integrar la 037** (Pull Request hacia `desarrollo` y después a `main`) y probar en producción: login con Google, siniestros, PDF breve con QR al detalle | Revisión de la autora | Autora |
+| ✓ | Integrar la 037 y la 038 (en `main` desde el 2026-11-09); falta probar en producción el inicio con Google | — | Autora |
 | P1 | **Probar en Safari (iPhone) y Firefox**: en el entorno del agente solo hay Chromium; los recorridos de punta a punta pasaron en Chromium de computadora y en un iPhone 13 emulado | — | Autora, con `frontend/e2e/` y la guía de usuario |
 | P1 | **CP-43**: ¿el enlace al análisis detallado del PDF se abre sin cuenta? Hoy exige una cuenta con acceso | Autora y tutor | Autora |
 | ~~P2~~ | ~~Sumar los recorridos de `frontend/e2e/` y el sensor de diseño a la integración continua~~ — hecho en la 039 (trabajo «Interfaz») | — | Agente |
