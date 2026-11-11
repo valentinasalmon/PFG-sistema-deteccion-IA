@@ -38,7 +38,7 @@ Fuente única de datos verificados para redactar el informe. Si un dato del info
 | Capa 1: metadatos EXIF/XMP | Implementado | Funcionalidad 007 |
 | Capa 2: C2PA con verificación de firma | Implementado | Funcionalidad 009 |
 | Capa 3: ELA por bloques, con mapa | Implementado | Funcionalidad 011 |
-| Capa 4: clasificador de redes neuronales (ONNX) | **En curso**: datos y entrenamiento (010); integración pendiente (012) | `docs/red-neuronal/` |
+| Capa 4: clasificador de redes neuronales (ONNX) | Integrada en el código (012); se activa cuando se publique el modelo 1.0.0, que depende del entrenamiento (010) | `docs/red-neuronal/` |
 | Informe PDF por rubro, unas 4 páginas, verificable con QR | Implementado | Funcionalidades 008, 025 y 026 |
 | Notificaciones, panel y tablero de administración | Implementado | Funcionalidades 013 y 014 |
 | Planes y cobro con Cresium | Implementado con **proveedor simulado**; precios a confirmar (CP-38) | Funcionalidad 032; ADR-0020 |
@@ -78,19 +78,19 @@ Están en `docs/arquitectura/diagramas/`; ver su `README.md`. Se regeneran con `
 
 ## 6. Cifras del proceso
 
-Se recalculan antes de cada entrega. Valores al 2026-11-05 (commit 69819cb):
+Se recalculan antes de cada entrega. Valores al 2026-11-11 (commit d3f5b7d):
 
 | Indicador | Valor |
 |---|---|
-| Commits (sin integraciones) | 332 |
-| Commits con coautoría de IA | 301 (90,7 %) |
-| Pull requests integrados | 73 |
-| Pruebas automatizadas | 754 (489 del backend y 265 de la interfaz) |
-| Funcionalidades en el plan | 36 (35 con especificación) |
+| Commits (sin integraciones) | 395 |
+| Commits con coautoría de IA | 364 (92,2 %) |
+| Pull requests integrados | 77 |
+| Pruebas automatizadas | 810 (534 del backend y 276 de la interfaz) |
+| Funcionalidades en el plan | 39 (las 39 con especificación) |
 | ADR | 21 |
-| Entradas de bitácora | 58 |
-| Requisitos | 56 RF, 24 RNF, 41 RN, 32 casos de uso |
-| Cuestiones abiertas registradas | 42 |
+| Entradas de bitácora | 62 |
+| Requisitos | 56 RF, 24 RNF, 41 RN, 38 casos de uso |
+| Cuestiones abiertas registradas | 43 |
 | Cobertura del backend / frontend | 97,5 % / 92,4 % (índice de calidad, 018) |
 
 ## 7. Cuestiones que el informe no puede dar por cerradas

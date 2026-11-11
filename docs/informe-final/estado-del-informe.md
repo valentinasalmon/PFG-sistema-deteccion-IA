@@ -2,7 +2,7 @@
 
 Tablero vivo de lo que falta para entregar. Se actualiza después de cada `/revisar-informe`; el detalle con los textos de corrección está en la última revisión de [revisiones/](revisiones/).
 
-Última revisión: [2026-11-05](revisiones/2026-11-05.md). Entrega del desarrollo: antes del 19/11/2026; defensa: febrero de 2027.
+Última revisión: [2026-11-11](revisiones/2026-11-11.md); el documento no cambió desde la del 5/11, así que todas sus correcciones siguen pendientes. Entrega del desarrollo: antes del 19/11/2026; defensa: febrero de 2027.
 
 ## Por capítulo
 
@@ -24,7 +24,7 @@ Tablero vivo de lo que falta para entregar. Se actualiza después de cada `/revi
 | XIII. Entregables | **Parcial** | Versiones 2 y 3 con mapas de empatía (pendientes de hacer con interesados) |
 | Conclusiones | **Vacío** | Texto en el chat del 2026-11-03; completar con OE4 y OE5 |
 | Bibliografía | Casi listo | Orden alfabético y entradas que faltan |
-| Anexos | Casi listo | D (renombrar), E, G (actualizar), K (diagramas), M (INPI), N (mapas de empatía), declaración de uso de IA |
+| Anexos | **Desactualizados** | D (segundo «B»), E (aclaración), F, G y H (reemplazar por el repositorio), K (diagramas actuales), M (captura del INPI), N (mapas de empatía), O (declaración de uso de IA), P (plan de negocios, recomendado) |
 
 ## Fuera del documento, pero necesario para la nota
 
@@ -39,7 +39,7 @@ Tablero vivo de lo que falta para entregar. Se actualiza después de cada `/revi
   - CP-37: retiro de Clarity;
   - CP-38: precios.
 - **Sistema:**
-  - integrar el clasificador (010 y 012);
+  - entrenar y publicar el modelo 1.0.0 (010); la capa 4 ya está integrada en el código (012);
   - dominio propio y salida de SES del modo de prueba;
   - Hedera en *mainnet* (CP-26);
   - etiqueta `v1`.

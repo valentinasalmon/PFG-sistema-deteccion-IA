@@ -8,5 +8,5 @@
 - [x] T6. Comandos `/redactar-informe`, `/revisar-informe` y `/generar-diagramas`.
 - [x] T7. Guía de redacción, hechos del sistema, trabajo con IA, plan de negocios, estado del informe y README.
 - [x] T8. CU33 a CU38 en la especificación, por lo implementado en 024, 026, 028, 032 y 035.
-- [x] T9. Primera revisión de evaluador del documento (`revisiones/2026-11-05.md`); CP-34 reabierta por pedido de la autora.
+- [x] T9. Primera revisión de evaluador del documento (2026-11-05); CP-34 reabierta por pedido de la autora. Reemplazada por la del 2026-11-11 (`revisiones/2026-11-11.md`), con anexos, referencias y figuras.
 - [x] T10. Cierre: bitácora, insumos, registro del arnés, CLAUDE.md, mapa del arnés, plan de funcionalidades y Trello.
