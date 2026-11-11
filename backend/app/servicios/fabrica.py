@@ -111,11 +111,16 @@ def _archivos(almacenamiento):
     )
 
 
-def crear_servicio_pagos(configuracion, origen=None):
-    """Cobro del plan por transferencia, hoy simulado con la forma de Cresium (032)."""
+def crear_servicio_pagos(configuracion, origen=None, enviador=None):
+    """Cobro del plan por transferencia, hoy simulado con la forma de Cresium (032).
+
+    Con ``enviador``, avisa al Administrador cuando una aseguradora queda pendiente (037).
+    """
     return ServicioPagos(
         RepositorioCobros(), crear_proveedor_pagos(configuracion), configuracion,
         crear_servicio_auditoria(origen),
+        correos=_correos(configuracion, enviador) if enviador else None,
+        usuarios=RepositorioUsuarios(),
     )
 
 

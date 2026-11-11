@@ -31,7 +31,7 @@ TEXTOS_DE_ACTIVIDAD = {
     auditoria.CASO_TRANSFERENCIA: "transfirió el caso {numero}",
     auditoria.IMAGEN_CARGA: "cargó la imagen «{nombre}» en {numero}",
     auditoria.IMAGEN_ELIMINACION: "eliminó la imagen «{nombre}» de {numero}",
-    auditoria.ANALISIS_SOLICITUD: "pidió el análisis de {imagenes} imagen(es) de {numero}",
+    auditoria.ANALISIS_SOLICITUD: "pidió el análisis de {imagenes} de {numero}",
     # Eventos del sistema: se redactan sin sujeto.
     auditoria.ANALISIS_FINALIZACION: "Terminó el análisis de {numero}",
     auditoria.ANALISIS_FALLA: "No se pudo completar el análisis de {numero}",
@@ -76,6 +76,13 @@ VERBOS_EN_SEGUNDA_PERSONA = {
 }
 
 
+def _cantidad_de_imagenes(cantidad):
+    """«1 imagen», «3 imágenes» o «las imágenes» si no se registró la cantidad (037)."""
+    if cantidad in (None, ""):
+        return "las imágenes"
+    return f"{cantidad} imagen" if str(cantidad) == "1" else f"{cantidad} imágenes"
+
+
 def redactar_actividad(entrada, usuario, id_lector=None):
     """Texto de un evento de la actividad reciente, en lenguaje común (RF48 CA2).
 
@@ -87,7 +94,7 @@ def redactar_actividad(entrada, usuario, id_lector=None):
     detalle = entrada.detalle or {}
     texto = _plantilla(entrada).format(
         numero=detalle.get("numero", ""), nombre=detalle.get("nombre", "sin nombre"),
-        imagenes=detalle.get("imagenes", ""),
+        imagenes=_cantidad_de_imagenes(detalle.get("imagenes")),
     )
     if entrada.accion in ACCIONES_DEL_SISTEMA:
         return texto

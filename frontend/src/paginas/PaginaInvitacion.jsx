@@ -115,9 +115,9 @@ function Acciones({ invitacion, token }) {
         </Link>
       </div>
       <p className="nota">
-        {invitacion.organizacion.tipo === 'aseguradora'
-          ? 'Si creás una cuenta, al verificar tu correo vas a quedar dentro de la aseguradora.'
-          : 'Si creás una cuenta, después de verificar tu correo vas a encontrar la invitación en la sección Organizaciones.'}
+        {/* 038: con el enlace de la invitación, al verificar el correo queda dentro (estudio o aseguradora). */}
+        Si creás una cuenta desde este enlace, al verificar tu correo quedás dentro de{' '}
+        {invitacion.organizacion.nombre}. Si ya tenés cuenta, iniciá sesión y aceptala con un clic.
       </p>
     </>
   )

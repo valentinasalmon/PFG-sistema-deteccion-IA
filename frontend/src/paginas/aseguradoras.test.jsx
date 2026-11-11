@@ -130,7 +130,7 @@ describe('registro con la invitación de una aseguradora', () => {
   it('el enlace de la invitación de una aseguradora explica que se queda adentro al verificar', async () => {
     simularApi({ 'POST /api/invitaciones/consulta': { cuerpo: { invitacion: INVITACION } } })
     renderizarEn('/invitaciones/responder?token=tok')
-    expect(await screen.findByText(/al verificar tu correo vas a quedar dentro de la aseguradora/)).toBeInTheDocument()
+    expect(await screen.findByText(/al verificar tu correo quedás dentro de/)).toBeInTheDocument()
   })
 })
 
@@ -236,7 +236,9 @@ describe('administración', () => {
     })
     renderizarEn('/administracion')
     expect(await screen.findAllByText('SEGUROS GALICIA S.A.')).toHaveLength(2)
-    expect(screen.getAllByText(/CUIT 30500000127 · Registrada el 16\/10\/2026/)).toHaveLength(2)
+    expect(screen.getAllByText(/Registrada el 16\/10\/2026/)).toHaveLength(2)
+    expect(screen.getAllByText('30500000127')).toHaveLength(2)
+    expect(screen.getAllByText('Ver detalle')).toHaveLength(2)
     expect(screen.getByText(/correo sin verificar/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Administración' })).toBeInTheDocument()
   })
@@ -244,7 +246,7 @@ describe('administración', () => {
   it('sin pendientes lo indica', async () => {
     simularApi({ ...CON_SESION_ADMINISTRADOR, 'GET /api/administracion/aseguradoras-pendientes': { cuerpo: { aseguradoras: [] } } })
     renderizarEn('/administracion')
-    expect(await screen.findByText('No hay aseguradoras esperando aprobación.')).toBeInTheDocument()
+    expect(await screen.findByText('No hay organizaciones esperando aprobación.')).toBeInTheDocument()
   })
 
   it('si la lista no carga, muestra el error', async () => {
@@ -270,7 +272,7 @@ describe('administración', () => {
     await usuario.click(await screen.findByRole('button', { name: 'Aprobar' }))
     await usuario.click(within(screen.getByRole('dialog', { name: /¿Aprobar/ })).getByRole('button', { name: 'Aprobar' }))
     expect(await screen.findByText('SEGUROS GALICIA S.A. fue aprobada.')).toBeInTheDocument()
-    expect(screen.getByText('No hay aseguradoras esperando aprobación.')).toBeInTheDocument()
+    expect(screen.getByText('No hay organizaciones esperando aprobación.')).toBeInTheDocument()
     expect(solicitudes.some((s) => s.ruta.endsWith('/aprobacion'))).toBe(true)
   })
 
@@ -345,5 +347,15 @@ describe('tablero del Administrador (funcionalidad 014)', () => {
     expect(solicitudes.some((s) => s.ruta.startsWith(`/api/administracion/tablero?desde=${anio}-01-01`))).toBe(true)
 
     expect(screen.getByRole('tab', { name: 'Cuentas' })).toHaveAttribute('aria-selected', 'true')
+  })
+})
+
+describe('Administrador diferenciado (037)', () => {
+  it('su menú dice «Admin» y no muestra el rubro de una cuenta de trabajo', async () => {
+    simularApi({ ...CON_SESION_ADMINISTRADOR, 'GET /api/administracion/aseguradoras-pendientes': { cuerpo: { aseguradoras: [] } } })
+    renderizarEn('/administracion')
+    expect(await screen.findByText('Admin')).toBeInTheDocument()
+    expect(screen.queryByText('Legal')).not.toBeInTheDocument()
+    expect(document.querySelector('.lateral--admin')).not.toBeNull()
   })
 })

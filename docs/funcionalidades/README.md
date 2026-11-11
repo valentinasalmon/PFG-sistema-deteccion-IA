@@ -37,7 +37,7 @@ implementación siguiendo tareas.md, con pruebas
 | 009 | Capa 2 (C2PA) | 5 | RF40 | Completado |
 | 010 | [Red neuronal: ciclo de vida, entrenamiento y exportación](010-red-neuronal/especificacion.md) (pista paralela) | 2 – 5 | RNF24 | En curso |
 | 011 | [Capa 3 (ELA)](011-capa-ela/especificacion.md) | 5 | RF41 | Completado |
-| 012 | Capa 4 (ONNX) | 5 | RF42 | Pendiente |
+| 012 | [Capa 4 (red neuronal con ONNX)](012-capa-4-onnx/especificacion.md) | 5 | RF42 | Implementada; se activa cuando la autora publique el modelo 1.0.0 (T08) |
 | 013 | [Notificaciones y panel principal](013-panel-y-notificaciones/especificacion.md) | 6 | RF47, RF48 | Completado |
 | 014 | [Planes y tablero de administración](014-planes-y-tablero/especificacion.md) | 6 | RF19 – RF22 | Completado |
 | 015 | [Retención y destrucción de datos](015-retencion/especificacion.md) | 7 | RF49 – RF51 | Completado |
@@ -61,6 +61,8 @@ implementación siguiendo tareas.md, con pruebas
 | 033 | [Portada pública con los planes](033-portada/especificacion.md) | 10 | RF19, RF20, RNF10 | Implementada (primera versión; se puede seguir enriqueciendo el diseño) |
 | 034 | [Pulido de UX/UI de todo el sistema](034-pulido-ux/especificacion.md) | 10 | RNF10 | Implementada en cuatro tandas (la tercera y la cuarta, en revisión); falta la revisión final con la autora (CA1, CA3, CA4, CA6, CA9) |
 | 035 | [Verificación de identidad de aseguradoras](035-identidad-aseguradoras/especificacion.md) | 10 | RN36, RN41, RF01 | Implementada con proveedor simulado; falta conectar Identik (CP-41) |
+| 038 | [Acceso compacto, pantallas a lo ancho y detalles de flujo](038-acceso-compacto/especificacion.md) | 10 | RNF10, RN38, RF53 | Implementada (2026-11-06) |
+| 037 | [Revisión integral: acceso, pantallas, siniestros e informe breve](037-acceso-y-pantallas/especificacion.md) | 10 | RNF10, RNF12, RF44 | En curso: aplicado lo pedido por la autora el 2026-11-05; quedan la presentación y la integración |
 | 036 | [Arnés para el trabajo asistido por IA](036-arnes/especificacion.md) | 10 | RNF02, RNF17, RNF19 | Implementada (ganchos, `/cerrar-etapa`, mapa y registro del arnés, ADR-0021) |
 | 039 | [Arnés del informe final: guías, revisor, cifras y diagramas desde el código](039-arnes-del-informe/especificacion.md) | 10 | RNF17, RNF19 | Implementada (comandos `/redactar-informe`, `/revisar-informe` y `/generar-diagramas`) |
 

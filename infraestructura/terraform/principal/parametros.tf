@@ -4,6 +4,9 @@
 # Excepción: la clave privada de Hedera (HEDERA_CLAVE) la carga la autora a mano
 # como SecureString, para que no quede en el estado de Terraform. Lo mismo el
 # secreto del cliente de Google (GOOGLE_SECRETO_CLIENTE, funcionalidad 027).
+# Y el token de lectura del registro de modelos (HF_TOKEN, funcionalidad 012), junto con
+# MODELO_RED_NEURONAL_REGISTRO y MODELO_RED_NEURONAL_VERSION: sin ellos, la capa 4
+# queda "No disponible" y el resto del análisis sigue.
 
 resource "random_password" "clave_secreta" {
   length  = 64

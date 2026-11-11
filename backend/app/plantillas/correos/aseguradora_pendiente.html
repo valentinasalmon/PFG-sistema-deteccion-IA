@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p><strong>{{ organizacion }}</strong>{% if cuit %} (CUIT {{ cuit }}){% endif %} se registró, pagó su plan y espera tu aprobación.</p>
+<p>{% if es_aseguradora %}Antes de aprobarla, comprobá que la persona que la registró trabaje en la aseguradora.{% else %}Antes de aprobarlo, comprobá la matrícula de la persona que lo registró.{% endif %} Si {% if es_aseguradora %}la rechazás{% else %}lo rechazás{% endif %}, el pago se devuelve.</p>
+{% with texto_boton = "Revisar en Administración" %}{% include "_boton.html" %}{% endwith %}
+{% endblock %}

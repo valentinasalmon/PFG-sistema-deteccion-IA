@@ -41,6 +41,12 @@ export default function PaginaPago() {
   return (
     <div className="registro-ancho">
       <PanelPago token={token} alAcreditar={setAcreditado} />
+      {/* 037: con sesión, se puede volver sin pagar todavía; el pago se retoma desde la organización. */}
+      {usuario && (
+        <p className="enlaces-secundarios">
+          <Link to="/organizaciones">Volver a mis organizaciones</Link>
+        </p>
+      )}
     </div>
   )
 }

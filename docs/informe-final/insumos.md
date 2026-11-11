@@ -325,3 +325,41 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
   - monotributo al inicio y luego SAS (la factura A importa para vender a aseguradoras);
   - Ley 27.506;
   - inscripción de la base ante la AAIP y contrato de encargado del tratamiento.
+
+## Revisión integral de la interfaz (037, 2026-11-05)
+
+- **Método**: recorrido automatizado con capturas en dos anchos (1440 y 390 px), por perfil (abogado, aseguradora, administrador y visitante), más un script que detecta contenido fuera del ancho. Encontró 21 problemas; 17 se corrigieron y 4 quedaron como decisiones de la autora.
+- **Hallazgo de diseño**: el mismo motor sirve a dos rubros, pero el vocabulario era único («caso»). Para una aseguradora el objeto de trabajo es el *siniestro*; se resolvió con un diccionario por perfil, sin tocar los datos ni las direcciones.
+- **Hallazgo de coherencia**: la portada y el acceso tenían una identidad (verde bosque y lima) y el sistema otra (azul). Se unificaron con una maqueta previa de dos alternativas sobre las pantallas reales.
+- **Informe**: el descargo de que no emite veredictos estaba solo al final; pasó a la primera página, que es la que se lee siempre (ADR-0017).
+
+## Verificación visual automatizada (037, 2026-11-05)
+
+- **Problema**: al unificar el tamaño de las tarjetas de acceso (alto fijo, pedido de la autora), el agente verificó las pantallas que motivaron el cambio y no las demás que usan la misma tarjeta; el pago, la elección del plan y el resultado del pago quedaron cortados. Lo detectó la autora.
+- **Lección**: un estilo compartido es una dependencia: cambiarlo exige revisar a todos sus usuarios, igual que una función compartida exige correr las pruebas de quienes la llaman. Las pruebas unitarias de la interfaz (Vitest con jsdom) no ven la maquetación.
+- **Solución en el arnés**: un sensor de diseño con Playwright que mide, en 1440 y 390 px, desplazamiento horizontal, contenido cortado, contenido escondido en contenedores con desplazamiento propio y controles fuera de la pantalla, aplicado en cada captura de los recorridos de punta a punta. Se validó reintroduciendo el error: el sensor lo informa («muestra 672 px de 1308 px») y no marca nada con la corrección.
+- **Otras decisiones de la tanda**: el pago es una «caja» y usa la tarjeta a todo el ancho; la aseguradora se elige con un cuadro combinado accesible (WAI-ARIA combobox) en lugar de una lista de tarjetas; el Administrador recibe un correo cuando una aseguradora paga; el caso guía el siguiente paso (cargar → analizar → informe) con un cierre al pie del análisis.
+
+## Capa 4 en el análisis: el clasificador ONNX en el backend (012, 2026-11-06)
+
+- **Mismo código en la evaluación y en producción.** El backend instala el paquete `clasificador` sin dependencias y usa su `PredictorOnnx`: no hay una segunda implementación del preprocesamiento que pueda desviarse. Una prueba automática verifica que la probabilidad del backend es igual a la de la evaluación (ADR-0015). El servidor no instala PyTorch ni usa GPU.
+- **Lectura publicada de la probabilidad (ADR-0017).** Por debajo de 50 % la capa no aporta indicios; desde ahí el nivel es la probabilidad calibrada, con tope de 90 (el 100 queda para C2PA, RN28). La conclusión aclara siempre tres limitaciones: no detecta ediciones parciales, puede fallar con generadores que no vio y una probabilidad baja no indica que la foto sea real. Es la traducción directa de los resultados de la 010: AUC 0,961 con generadores conocidos, 0,938 con la familia de Google no vista y solo 10 % de detección en el conjunto propio de choques.
+- **Integridad y reproducibilidad del modelo.** Versión fija, huella SHA-256 verificada antes de usarlo (ADR-0014) y, en cada resultado, versión, huella del ONNX, huella del manifiesto de entrenamiento, commit y versión de ONNX Runtime (RN29). Cambiar de versión es cambiar un parámetro; los análisis anteriores conservan la suya.
+- **Tolerancia a fallas (RN26).** Sin modelo configurado, con el registro caído o con un archivo alterado, la capa queda «No disponible» con el motivo y las otras tres se presentan igual. Por eso la funcionalidad se pudo integrar antes de publicar el modelo.
+- **Pruebas sin red ni PyTorch.** Un ONNX diminuto con el mismo contrato que el real (sigmoide del brillo medio) permite probar la carga, la caché, las huellas y la capa en milisegundos.
+- **Hallazgo de despliegue.** El script que arma el `.env` del servidor copia solo las variables que nombra; sin agregarlas, los parámetros del Parameter Store nunca habrían llegado a la aplicación. Se detectó al escribir la guía de activación, no con las pruebas: refuerza la regla de probar las integraciones contra el servicio real.
+
+## Entrenamiento completo de la red (2026-11-05)
+
+- Con 35 000 imágenes de 210 generadores: **AUC de prueba 0,961, F1 0,904, ECE 0,02** (validación, tras calibrar). Cumple tanto el AUC ≥ 0,90 de la especificación como el F1 ≥ 0,85 del informe (CP-07).
+- **Generalización:** con la familia de Google que nunca vio (Imagen 4, Imagen 3, Nano Banana 2), AUC 0,938.
+- **Límite en condiciones reales:** con imágenes de choques generadas por la autora con ChatGPT, Gemini y Copilot, detecta 5 de 49 con el umbral 0,5. Es el resultado más importante para el informe: los detectores entrenados con conjuntos públicos rinden mucho peor con las herramientas comerciales actuales y con escenas que no vieron. Justifica la capa 4 como un indicio más y no un veredicto (RN27), y el ciclo de reentrenamiento (CA18).
+- Generadores más difíciles en la prueba: VQDiffusion y GigaGAN (AUC ~0,62-0,67), Midjourney 6 y FLUX 1.1 Pro (detecta el 54-68 %).
+
+## Flujos del día a día (038, 2026-11-06)
+
+- **Aprobación de estudios**: la autora decidió que ninguna organización se presenta como activa antes de la revisión del Administrador; se extendió RN38 a los estudios jurídicos sin exigirles la verificación de identidad de las aseguradoras.
+- **Redirección después de iniciar sesión**: un enlace con consulta (`?etapa=analisis`) perdía la consulta al pasar por el inicio de sesión. Es un error típico de las rutas protegidas en aplicaciones de una sola página; se corrigió conservando la dirección completa y, para Google (que sale del sistema), guardándola en el navegador.
+- **QR de un solo uso**: atar el enlace al primer dispositivo al abrir la página falló en la prueba porque el navegador puede repetir la consulta; se ata con la primera foto subida. Lección: los controles de un solo uso tienen que tolerar repeticiones.
+- **Diseño**: agrandar un contenedor no alcanza; el contenido tiene que reorganizarse (dos columnas, índice, largo de línea). Se registró como criterio de revisión visual.
+

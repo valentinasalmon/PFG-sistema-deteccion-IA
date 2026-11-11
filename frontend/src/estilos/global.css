@@ -2938,6 +2938,8 @@ select.campo__control {
 }
 
 .invitar {
+  /* 037: ocupa el ancho de su tarjeta; con el máximo de los formularios quedaba suelto. */
+  max-width: none;
   margin-top: 1.25rem;
   padding: 1rem;
   border: 1px solid var(--linea-suave);
@@ -3319,17 +3321,14 @@ select.campo__control {
 
 /* Barra fija al pie con el pedido de análisis */
 .barra-analisis {
-  position: sticky;
-  bottom: 1rem;
-  z-index: 5;
   justify-content: space-between;
   gap: 0.75rem 1rem;
-  margin: 1rem 0 0;
-  padding: 0.875rem 1rem 0.875rem 1.25rem;
-  border-radius: var(--radio);
-  background: var(--bosque);
-  color: #fff;
-  box-shadow: var(--sombra-flotante);
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.75rem 0.75rem 1.1rem;
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  background: var(--fondo-2);
+  color: var(--tinta);
 }
 
 .barra-analisis__texto {
@@ -3341,7 +3340,7 @@ select.campo__control {
 
 .barra-analisis .nota {
   margin: 0;
-  color: #cfd9d3;
+  color: var(--tinta-2);
 }
 
 .barra-analisis__eleccion {
@@ -4920,9 +4919,99 @@ body:has(.dialogo-velo) {
   }
 }
 
-/* --- El caso como flujo vertical (034) --- */
+/* --- El caso como flujo de pasos (034; horizontal desde la 037) --- */
 .flujo-caso {
   display: grid;
+  gap: 1.25rem;
+}
+
+/* «Datos y gestión» es una vista aparte que se abre desde la cabecera (037). */
+.flujo-caso {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.vista-gestion {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.vista-gestion__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.vista-gestion__cabecera h2 {
+  margin: 0;
+}
+
+.flujo-caso__cuerpo {
+  grid-column: 1 / -1;
+}
+
+.flujo-caso__gestion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1.1rem;
+  border: 1px dashed var(--linea-control);
+  border-radius: 16px;
+  color: var(--tinta-2);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.flujo-caso__gestion:hover,
+.flujo-caso__gestion--activa {
+  border-style: solid;
+  border-color: var(--bosque);
+  color: var(--tinta);
+}
+
+.flujo-caso__gestion--activa {
+  box-shadow: 0 0 0 3px rgb(164 203 62 / 45%);
+}
+
+/* Datos y gestión: datos a la izquierda, estado, permisos y transferencia a la derecha. */
+.gestion-caso {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.gestion-caso__columna {
+  display: grid;
+  gap: 1rem;
+}
+
+.gestion-caso .seccion {
+  margin: 0;
+}
+
+@media (width <= 60rem) {
+  .flujo-caso {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .flujo-caso__gestion {
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .gestion-caso {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Pasos en horizontal (037): tres columnas unidas por una línea. */
+.flujo-caso__pasos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -4930,39 +5019,49 @@ body:has(.dialogo-velo) {
 
 .flujo-caso__paso {
   position: relative;
-  display: grid;
-  grid-template-columns: 44px minmax(0, 1fr);
-  column-gap: 1rem;
-  padding-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--linea);
+  border-radius: 16px;
+  background: var(--superficie);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
-.flujo-caso__paso:not(:last-child)::before {
+/* Línea que une cada paso con el siguiente. */
+.flujo-caso__paso:not(:last-child)::after {
   content: '';
   position: absolute;
-  left: 20px;
-  top: 44px;
-  bottom: 0;
-  width: 3px;
-  border-radius: 3px;
+  top: 50%;
+  right: -0.75rem;
+  width: 0.75rem;
+  height: 3px;
   background: var(--linea);
 }
 
-.flujo-caso__paso--hecho:not(:last-child)::before {
+.flujo-caso__paso--hecho:not(:last-child)::after {
   background: var(--verde);
 }
 
-.flujo-caso__paso--actual:not(:last-child)::before {
-  background: linear-gradient(var(--azul), var(--linea));
+.flujo-caso__paso:has(a):hover {
+  border-color: var(--linea-control);
+}
+
+.flujo-caso__paso--actual {
+  border-color: var(--bosque);
+  box-shadow: 0 0 0 3px rgb(164 203 62 / 45%);
 }
 
 .flujo-caso__nodo {
-  position: relative;
-  z-index: 1;
   display: grid;
+  flex: none;
   place-items: center;
-  width: 44px;
-  height: 44px;
-  border: 2.5px solid var(--linea-control);
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--linea-control);
   border-radius: 50%;
   background: var(--superficie);
   color: var(--tinta-2);
@@ -4975,69 +5074,62 @@ body:has(.dialogo-velo) {
 }
 
 .flujo-caso__paso--actual .flujo-caso__nodo {
-  border-color: var(--azul);
-  color: var(--azul);
-  box-shadow: 0 0 0 6px rgb(47 93 168 / 14%);
-  animation: flujo-latido 2s ease-in-out infinite;
-}
-
-@keyframes flujo-latido {
-  50% {
-    box-shadow: 0 0 0 10px rgb(47 93 168 / 6%);
-  }
+  border-color: var(--bosque);
+  background: var(--bosque);
+  color: var(--lima);
 }
 
 .flujo-caso__cabecera {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem 0.75rem;
-  min-height: 44px;
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
 }
 
 .flujo-caso__titulo {
   font-family: var(--fuente-titulos);
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 700;
+  line-height: 1.3;
   color: var(--tinta);
   text-decoration: none;
 }
 
-a.flujo-caso__titulo:hover {
-  color: var(--azul);
+/* Todo el paso se puede tocar. */
+a.flujo-caso__titulo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+a.flujo-caso__titulo:focus-visible {
+  outline: none;
+}
+
+.flujo-caso__paso:has(a.flujo-caso__titulo:focus-visible) {
+  outline: 3px solid var(--bosque);
+  outline-offset: 2px;
 }
 
 .flujo-caso__paso--pendiente .flujo-caso__titulo {
   color: var(--tinta-2);
 }
 
-.flujo-caso__chip {
-  padding: 0.15rem 0.6rem;
-  border-radius: 999px;
-  background: var(--azul-suave);
-  color: var(--info);
-  font-size: 0.75rem;
+.flujo-caso__resumen {
+  overflow: hidden;
+  color: var(--tinta-2);
+  font-size: 0.85rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flujo-caso__paso--actual .flujo-caso__resumen {
+  color: var(--verde);
   font-weight: 700;
 }
 
-.flujo-caso__chip--listo {
-  background: #e3f1e8;
-  color: #1d5a3a;
-}
-
-.flujo-caso__resumen {
-  color: var(--tinta-2);
-  font-size: 0.9rem;
-}
-
-.flujo-caso__cabecera .boton {
-  margin-left: auto;
-}
-
 .flujo-caso__cuerpo {
-  grid-column: 2;
   min-width: 0;
-  margin-top: 0.5rem;
 }
 
 .flujo-caso__cuerpo > .seccion:first-child,
@@ -5045,15 +5137,22 @@ a.flujo-caso__titulo:hover {
   margin-top: 0;
 }
 
+/* En el celular: los tres pasos siguen en fila, solo con el ícono y el título. */
 @media (width <= 48rem) {
-  .flujo-caso__paso {
-    grid-template-columns: 34px minmax(0, 1fr);
-    column-gap: 0.7rem;
+  .flujo-caso__pasos {
+    gap: 0.4rem;
   }
 
-  .flujo-caso__paso:not(:last-child)::before {
-    left: 15px;
-    top: 34px;
+  .flujo-caso__paso {
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.7rem 0.4rem;
+    text-align: center;
+  }
+
+  .flujo-caso__paso:not(:last-child)::after {
+    right: -0.4rem;
+    width: 0.4rem;
   }
 
   .flujo-caso__nodo {
@@ -5061,16 +5160,12 @@ a.flujo-caso__titulo:hover {
     height: 34px;
   }
 
-  .flujo-caso__cabecera {
-    min-height: 34px;
+  .flujo-caso__titulo {
+    font-size: 0.8rem;
   }
 
-  .flujo-caso__cabecera .boton {
-    margin-left: 0;
-  }
-
-  .flujo-caso__paso {
-    column-gap: 0.55rem;
+  .flujo-caso__resumen {
+    display: none;
   }
 }
 
@@ -5134,8 +5229,8 @@ a.flujo-caso__titulo:hover {
 }
 
 .contador--cerrado .contador__icono {
-  background: var(--bosque);
-  color: var(--lima);
+  background: var(--fondo);
+  color: var(--tinta-2);
 }
 
 .retomar {
@@ -5664,5 +5759,898 @@ h1.estado-vacio__titulo {
     content: attr(data-etiqueta) ': ';
     color: var(--tinta-2);
     font-size: 0.85rem;
+  }
+}
+
+/*
+ * --- Ajustes del celular (funcionalidad 037) ---
+ * La revisión a 390 px encontró cosas cortadas o apretadas: la cuarta
+ * pestaña del perfil, los contadores del Inicio pegados al borde, el informe
+ * del caso con cuatro niveles de márgenes (los nombres de cada mirada en
+ * tres renglones) y el botón «Ver» de los pasos fuera de lugar. El celular
+ * tiene su propia disposición; la computadora no cambia.
+ */
+@media (width <= 48rem) {
+  /* Contadores del Inicio: grilla de dos columnas en lugar de una fila que se desliza. */
+  .contadores {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-inline: 0;
+    padding-inline: 0;
+    overflow: visible;
+  }
+
+  .contadores li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  /* Pestañas: botones que llenan cada fila (ninguno queda solo y suelto), todos a la vista. */
+  .pestanias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    border-bottom: 0;
+    overflow: visible;
+  }
+
+  .pestanias__pestania {
+    flex: 1 1 auto;
+    min-height: 44px;
+    padding: 0 0.75rem;
+    border: 1px solid var(--linea);
+    border-radius: 999px;
+    margin: 0;
+    background: var(--superficie);
+    white-space: normal;
+  }
+
+  .pestanias__pestania[aria-selected='true'] {
+    border-color: var(--tinta);
+    background: var(--tinta);
+    color: #fff;
+  }
+
+  .flujo-caso__cuerpo .seccion,
+  .flujo-caso__cuerpo article {
+    padding: 1rem 0.85rem;
+  }
+
+  .resumen-informe__imagen {
+    padding: 0.75rem;
+  }
+
+  .resumen-capas__item {
+    flex-wrap: wrap;
+  }
+
+  .resumen-capas__capa {
+    flex: 1 1 8rem;
+    min-width: 0;
+  }
+
+  /* Bloque del PDF: datos arriba y botón a todo el ancho. */
+  .informe-pdf {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .informe-pdf > .boton {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .seccion--filtros {
+    padding: 1rem;
+  }
+
+  /* La acción de la cabecera va debajo del título, alineada con el resto, no suelta a la derecha. */
+  .cabecera-caso__accion {
+    margin-left: 0;
+  }
+}
+
+/* Huella abreviada con botón para copiarla entera (037). */
+.huella-corta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+}
+
+.huella-corta code {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.8125rem;
+}
+
+/*
+ * ==========================================================================
+ * Paleta de la portada en las pantallas internas (funcionalidad 037,
+ * opción A elegida por la autora el 2026-11-04)
+ * --------------------------------------------------------------------------
+ * Antes, por dentro el sistema era azul y la portada y el acceso eran verde
+ * bosque y lima: parecían dos productos. Ahora el menú lateral es verde
+ * bosque, la acción principal es una píldora lima y los enlaces y lo activo
+ * son verdes. Se redefinen los tokens «azul» para no tocar cada regla.
+ * ==========================================================================
+ */
+:root {
+  --azul: #3e6110;
+  --azul-hover: #2f4a0c;
+  --azul-oscuro: #17291f;
+  --azul-suave: #eef5dc;
+  --info: #2f4a0c;
+  --info-fondo: #eef5dc;
+  --color-foco: #17291f;
+}
+
+/* Acción principal: píldora lima con texto verde bosque. */
+.boton:not(.boton--secundario, .boton--fantasma, .boton--peligro, .boton--secundario-peligro, .boton-enlace) {
+  border-color: var(--lima);
+  border-radius: 999px;
+  background: var(--lima);
+  color: var(--bosque);
+  font-weight: 800;
+  box-shadow: none;
+}
+
+.boton:not(.boton--secundario, .boton--fantasma, .boton--peligro, .boton--secundario-peligro, .boton-enlace):hover:not(:disabled) {
+  border-color: #b5d65a;
+  background: #b5d65a;
+  color: var(--bosque);
+}
+
+.boton--secundario,
+.boton--secundario-peligro {
+  border-radius: 999px;
+}
+
+.boton--secundario {
+  border-color: var(--bosque);
+  color: var(--bosque);
+}
+
+/* Acción oscura: verde bosque con texto blanco (por ejemplo, «Ver los resultados»). */
+.boton.boton--oscuro {
+  border-color: var(--bosque);
+  background: var(--bosque);
+  color: #fff;
+}
+
+.boton.boton--oscuro:hover:not(:disabled) {
+  border-color: #24402f;
+  background: #24402f;
+  color: #fff;
+}
+
+/* --- Menú lateral verde bosque --- */
+.lateral {
+  border-right-color: var(--bosque);
+  background:
+    radial-gradient(ellipse at 50% 0, #1e3b2b 0, transparent 60%),
+    var(--bosque);
+  color: #fff;
+}
+
+/* El rubro (Legal o Seguros) en una píldora blanca, para que se distinga. */
+.lateral__servicio {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--bosque);
+  font-weight: 800;
+}
+
+.lateral .encabezado__navegacion a {
+  color: #c4d3c9;
+}
+
+.lateral .encabezado__navegacion a:hover {
+  background: rgb(255 255 255 / 7%);
+  color: #fff;
+}
+
+.lateral .encabezado__navegacion a.active {
+  background: rgb(255 255 255 / 9%);
+  color: #fff;
+  box-shadow: inset 3px 0 0 var(--lima);
+}
+
+.lateral .encabezado__usuario {
+  border-top-color: rgb(255 255 255 / 12%);
+}
+
+.lateral .encabezado__nombre small {
+  color: #a9bbb0;
+}
+
+.lateral .lateral__salir {
+  color: #c4d3c9;
+}
+
+.lateral .lateral__salir:hover {
+  background: rgb(255 255 255 / 7%);
+  color: #fff;
+}
+
+.lateral .lateral__alternar {
+  border-color: rgb(255 255 255 / 30%);
+  background: transparent;
+  color: #fff;
+}
+
+@media (width <= 60rem) {
+  .lateral {
+    border-bottom-color: var(--bosque);
+  }
+}
+
+/* En computadora el buscador se abre con Ctrl K, sin botón en la barra. */
+@media (width > 60rem) {
+  .lateral .buscador-rapido__abrir {
+    display: none;
+  }
+}
+
+/* --- «Seguí donde lo dejaste» sin fondo de color --- */
+.retomar {
+  background: var(--superficie);
+}
+
+/* Enlaces del contenido en verde. */
+.disposicion--interna main a:not(.boton, .boton-enlace, .flujo-caso__titulo, .contador) {
+  color: var(--verde);
+}
+
+/* Informe dentro del caso: un nivel menos de tarjetas (037, «muchas tarjetas»). */
+.flujo-caso__cuerpo .informe-reciente {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/*
+ * --- Administración (037) ---
+ * El Administrador de la plataforma no trabaja con casos: su menú es grafito
+ * con el acento lima y la píldora dice «Admin», para que nunca se confunda con
+ * una cuenta de abogado o de aseguradora.
+ */
+.lateral.lateral--admin {
+  border-right-color: #1d2228;
+  background:
+    radial-gradient(ellipse at 50% 0, #2c333c 0, transparent 60%),
+    #15191e;
+}
+
+.lateral--admin .lateral__servicio {
+  background: var(--lima);
+  color: #15191e;
+}
+
+@media (width <= 60rem) {
+  .lateral.lateral--admin {
+    border-bottom-color: #15191e;
+  }
+}
+
+/*
+ * --- Notificaciones que no tapan el sistema (037) ---
+ * Arriba a la derecha tapaban los botones de la cabecera («Datos y gestión»,
+ * «Editar los datos»). Van abajo a la derecha, angostas; en el celular, abajo
+ * a todo el ancho, sobre la barra del sistema. Se cierran solas o con la X.
+ */
+.avisos-flotantes {
+  top: auto;
+  right: max(1.5rem, env(safe-area-inset-right, 0px));
+  bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+  max-width: min(24rem, calc(100vw - 2rem));
+}
+
+.aviso--flotante {
+  animation-name: aviso-subir;
+}
+
+@keyframes aviso-subir {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+@media (width <= 48rem) {
+  .avisos-flotantes {
+    right: 1rem;
+    left: 1rem;
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+    align-items: stretch;
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aviso--flotante {
+    animation: none;
+  }
+}
+
+/* --- Administración: pendientes compactas con «Ver detalle» (037) --- */
+.pendiente__resumen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+}
+
+.pendiente__detalle {
+  margin-top: 0.35rem;
+}
+
+.pendiente__detalle > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--bosque);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pendiente__detalle > summary:focus-visible {
+  outline: 2px solid var(--lima);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.pendiente__datos {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.3rem 1rem;
+  margin: 0.25rem 0 0.75rem;
+  font-size: 0.875rem;
+}
+
+.pendiente__datos dt {
+  color: var(--tinta-2);
+  font-weight: 600;
+}
+
+.pendiente__datos dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (width <= 40rem) {
+  .pendiente__datos {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.1rem;
+  }
+
+  .pendiente__datos dd {
+    margin-bottom: 0.4rem;
+  }
+}
+
+.pendiente__detalle > summary {
+  list-style: none;
+  gap: 0.35rem;
+}
+
+.pendiente__detalle > summary::-webkit-details-marker {
+  display: none;
+}
+
+.pendiente__detalle > summary::after {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 2px solid currentcolor;
+  border-bottom: 2px solid currentcolor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+.pendiente__detalle[open] > summary::after {
+  transform: translateY(2px) rotate(-135deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pendiente__detalle > summary::after {
+    transition: none;
+  }
+}
+
+/* --- 037: siguiente paso destacado (imágenes → análisis → informe) --- */
+.barra-analisis--siguiente {
+  border-color: var(--lima);
+  box-shadow: 0 0 0 3px rgb(164 203 62 / 25%);
+}
+
+.barra-analisis__paso {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-basis: 100%;
+  color: var(--exito);
+  font-weight: 600;
+}
+
+.cierre-etapa {
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.5rem 0 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--lima);
+  border-radius: 14px;
+  background: var(--fondo-2);
+}
+
+.cierre-etapa__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+@media (width <= 40rem) {
+  .cierre-etapa .acciones-en-linea,
+  .cierre-etapa .acciones-en-linea .boton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.barra-analisis--siguiente .barra-analisis__texto {
+  flex: 1 1 20rem;
+  min-width: 0;
+}
+
+/* --- 037: el pago se acomoda al ancho de su tarjeta, no al de la pantalla --- */
+.pago {
+  container-type: inline-size;
+}
+
+@container (width < 40rem) {
+  .pago__cuerpo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@container (width < 26rem) {
+  .pago__dato {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .pago__dato dt {
+    grid-column: 1 / -1;
+  }
+}
+
+@container (width < 26rem) {
+  .pago__acciones,
+  .pago__acciones .boton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* --- 037: selector de aseguradora como lista desplegable (combobox) --- */
+.combo {
+  position: relative;
+}
+
+.combo__lupa {
+  position: absolute;
+  top: 50%;
+  left: 0.9rem;
+  display: flex;
+  color: var(--tinta-2);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.combo input.campo__control.combo__control {
+  width: 100%;
+  padding-left: 2.75rem;
+  padding-right: 3rem;
+}
+
+.combo__limpiar {
+  position: absolute;
+  top: 50%;
+  right: 0.25rem;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--tinta-2);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.combo__limpiar:hover {
+  color: var(--tinta);
+}
+
+.combo__limpiar:focus-visible {
+  outline: 2px solid var(--lima);
+  outline-offset: -2px;
+}
+
+.combo__lista {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  max-height: min(18rem, 50vh);
+  margin: 0;
+  padding: 0.35rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+  background: var(--superficie, #fff);
+  box-shadow: 0 12px 32px rgb(16 32 24 / 16%);
+}
+
+.combo__lista[hidden] {
+  display: none;
+}
+
+.combo__opcion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.combo__opcion--activa {
+  background: var(--fondo-2);
+}
+
+.combo__opcion[aria-selected='true'] .combo__nombre {
+  color: var(--exito);
+}
+
+.combo__nombre {
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.combo__detalle {
+  color: var(--tinta-2);
+  font-size: 0.8rem;
+}
+
+.combo__elegida {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  color: var(--exito);
+  font-weight: 600;
+}
+
+.combo__elegida .icono {
+  flex: none;
+  margin-top: 0.15rem;
+}
+
+.combo {
+  scroll-margin-top: 1rem;
+}
+
+/* --- 037: resultado del pago parejo (pasos en línea de avance y formulario a lo ancho) --- */
+.resultado-pago__orden {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  width: 100%;
+  max-width: 40rem;
+  margin: 0.75rem 0 0.5rem;
+  counter-reset: orden;
+}
+
+.resultado-pago__orden li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* La línea que une los pasos, detrás de cada número. */
+.resultado-pago__orden li:not(:first-child)::after {
+  content: '';
+  position: absolute;
+  top: 0.875rem;
+  right: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--linea);
+  z-index: 0;
+}
+
+.resultado-pago__orden li.resultado-pago__paso--hecho::after,
+.resultado-pago__orden li.resultado-pago__paso--actual::after {
+  background: var(--exito);
+}
+
+.resultado-pago__orden li::before,
+.resultado-pago__paso--hecho::before {
+  content: counter(orden) !important;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 2px solid var(--linea);
+  border-radius: 50%;
+  background: var(--superficie);
+  color: var(--tinta-2);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.resultado-pago__orden li.resultado-pago__paso--hecho::before {
+  content: '✓' !important;
+  border-color: var(--exito);
+  background: var(--exito);
+  color: #fff;
+}
+
+.resultado-pago__orden li.resultado-pago__paso--actual::before {
+  border-color: var(--exito);
+  color: var(--exito);
+}
+
+.resultado-pago > .aviso,
+.resultado-pago > form,
+.resultado-pago > .formulario {
+  width: 100%;
+  max-width: 30rem;
+  text-align: left;
+}
+
+@media (width <= 30rem) {
+  .resultado-pago__orden {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+    justify-items: start;
+  }
+
+  .resultado-pago__orden li {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .resultado-pago__orden li:not(:first-child)::after {
+    display: none;
+  }
+}
+
+/* 037: los valores del resumen nunca se salen de la tarjeta; el nombre de la organización va debajo. */
+.pago__resumen dd {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pago__resumen dl > .pago__fila-apilada {
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pago__resumen .pago__fila-apilada dd {
+  font-size: 0.9rem;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.aviso > .aviso__texto {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+@media (width <= 30rem) {
+  .resultado-pago__orden {
+    width: auto;
+  }
+}
+
+/* 037: una sola opción de plan no se estira a todo el ancho. */
+.selector-plan {
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 26rem));
+}
+
+/* --- 038: los planes van uno al lado del otro en computadora --- */
+.formulario:has(.selector-plan) {
+  max-width: 56rem;
+}
+
+@media (width > 48rem) {
+  fieldset.selector-plan,
+  .selector-plan {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-inline-size: 0;
+  }
+
+  /* Una sola opción (cambio de plan) no se estira a todo el ancho. */
+  .selector-plan:has(> :only-child) {
+    grid-template-columns: minmax(0, 26rem);
+  }
+}
+
+/* --- 038: invitar miembros a todo el ancho de la sección --- */
+.formulario.invitar,
+.invitar {
+  max-width: none;
+  padding: 1.25rem 1.5rem;
+}
+
+@media (width > 48rem) {
+  .invitar__fila {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr) auto;
+    gap: 1rem;
+  }
+}
+
+@media (width <= 48rem) {
+  .invitar__fila {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .invitar__boton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/*
+ * --- 038: secciones con formulario en dos columnas en computadora ---
+ * Mi perfil, la organización y las demás secciones internas: a la izquierda
+ * el título y la explicación, a la derecha los campos, que ocupan su
+ * columna entera. En el celular, todo en una columna.
+ */
+@media (width > 64rem) {
+  .disposicion--interna .seccion:has(> h2):has(> form.formulario):not(.zona-riesgo) {
+    display: grid;
+    grid-template-columns: minmax(12rem, 18rem) minmax(0, 1fr);
+    grid-auto-flow: row dense;
+    column-gap: 3rem;
+    align-items: start;
+  }
+
+  .disposicion--interna .seccion:has(> h2):has(> form.formulario):not(.zona-riesgo) > * {
+    grid-column: 1;
+  }
+
+  .disposicion--interna .seccion:has(> h2):has(> form.formulario):not(.zona-riesgo) > form.formulario {
+    grid-column: 2;
+    grid-row: 1 / span 6;
+    max-width: 44rem;
+    margin: 0;
+  }
+
+  /* Nuevo caso: el formulario ocupa toda su tarjeta. */
+  .disposicion--interna .formulario-caso,
+  .disposicion--interna .nuevo-caso .formulario {
+    max-width: none;
+  }
+}
+
+/* Las pestañas se desplazan de costado sin mostrar flechas ni barra. */
+.pestanias {
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.pestanias::-webkit-scrollbar {
+  display: none;
+}
+
+@media (width > 64rem) {
+  .disposicion--interna .dos-columnas__principal > .formulario {
+    max-width: none;
+  }
+}
+
+/* --- 038: enlace para la persona afectada alineado --- */
+.enlace-afectada__formulario {
+  margin-top: 1rem;
+}
+
+@media (width > 48rem) {
+  .enlace-afectada__formulario {
+    align-items: start;
+  }
+
+  /* El botón a la altura de los campos, debajo de la línea de las etiquetas. */
+  .enlace-afectada__formulario > .boton {
+    margin-top: 1.85rem;
+  }
+}
+
+/* --- 038: imagen elegida sin borde grueso ni esquinas; la que queda afuera, atenuada --- */
+.tarjeta-imagen--elegida {
+  border-color: var(--linea);
+  box-shadow: none;
+}
+
+.tarjeta-imagen--elegida .tarjeta-imagen__vista {
+  background-image: none;
+}
+
+.tarjeta-imagen:not(.tarjeta-imagen--elegida) .tarjeta-imagen__vista img {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+  transition: opacity 0.15s ease, filter 0.15s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta-imagen:not(.tarjeta-imagen--elegida) .tarjeta-imagen__vista img {
+    transition: none;
+  }
+}
+
+/* --- 038: casos recientes sin textos amontonados --- */
+.fila-caso--compacta .fila-caso__principal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.fila-caso--compacta .fila-caso__lugar {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fila-caso__fecha {
+  color: var(--tinta-2);
+  font-size: 0.8rem;
+}
+
+/* --- 038: en el celular, nada queda solo en una fila --- */
+@media (width <= 48rem) {
+  /* Contadores del inicio: una fila de cinco que se desplaza de costado. */
+  .contadores {
+    display: flex;
+    gap: 0.6rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 0.25rem;
+  }
+
+  .contadores::-webkit-scrollbar {
+    display: none;
+  }
+
+  .contadores > li {
+    flex: 0 0 8.5rem;
+    scroll-snap-align: start;
+  }
+
+  /* Pestañas: si no entran en una fila, en dos columnas parejas. */
+  .pestanias:has(> :nth-child(4)) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pestanias:has(> :nth-child(4)) > * {
+    width: 100%;
   }
 }

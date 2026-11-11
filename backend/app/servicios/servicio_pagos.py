@@ -5,10 +5,14 @@ El plan de un estudio jurídico o de una aseguradora se paga al registrarlos
 un ``Cobro``: una transferencia que se espera a un CVU con una referencia,
 como cobra Cresium. Al acreditarse:
 
-- un alta deja el estudio activo y la aseguradora pendiente de aprobación;
+- un alta deja la organización (estudio o aseguradora) pendiente de la
+  aprobación del Administrador (038, decisión de la autora);
 - un cambio de plan aplica el plan nuevo.
 
 Si el Administrador rechaza una aseguradora pagada, su cobro se devuelve.
+Cuando una organización queda pendiente, se avisa por correo a cada
+Administrador para que la revise (funcionalidades 037 y 038).
+
 Mientras no esté la API de Cresium, la acreditación se simula (CP-34) y queda
 en la auditoría como simulada.
 
@@ -29,7 +33,6 @@ from app.modelos.cobro import (
     Cobro,
 )
 from app.modelos.organizacion import (
-    ORGANIZACION_ACTIVA,
     ORGANIZACION_PAGO_PENDIENTE,
     ORGANIZACION_PENDIENTE,
 )
@@ -49,17 +52,23 @@ def huella_de(token):
 class ServicioPagos:
     """Crea, consulta, acredita y devuelve los cobros del plan."""
 
-    def __init__(self, repositorio, proveedor, configuracion, registro):
+    def __init__(  # pylint: disable=too-many-arguments
+        self, repositorio, proveedor, configuracion, registro, *, correos=None, usuarios=None
+    ):
         """
         Args:
             repositorio: ``RepositorioCobros``.
             proveedor: proveedor de pagos (hoy, ``ProveedorPagosSimulado``).
             registro: ``ServicioAuditoria``.
+            correos: ``ServicioCorreos`` para avisar al Administrador; None no avisa.
+            usuarios: ``RepositorioUsuarios``, para saber a quién avisar.
         """
         self.repositorio = repositorio
         self.proveedor = proveedor
         self.configuracion = configuracion
         self.registro = registro
+        self.correos = correos
+        self.usuarios = usuarios
 
     def exigir_plan(self, codigo):
         """Rechaza un plan que no existe (Básico o Profesional).
@@ -157,17 +166,29 @@ class ServicioPagos:
         return self.a_dict(self._por_token(token))
 
     def _aplicar(self, cobro):
-        """Efecto del pago sobre la organización: activarla o cambiar su plan."""
+        """Efecto del pago sobre la organización: activarla o cambiar su plan.
+
+        Returns:
+            La organización que quedó esperando aprobación, o None.
+        """
         organizacion = cobro.organizacion
         if organizacion is None:
-            return
+            return None
         if cobro.motivo == MOTIVO_CAMBIO_PLAN:
             organizacion.plan = cobro.plan
         elif organizacion.estado == ORGANIZACION_PAGO_PENDIENTE:
             organizacion.plan = cobro.plan
-            organizacion.estado = (
-                ORGANIZACION_PENDIENTE if organizacion.es_aseguradora else ORGANIZACION_ACTIVA
-            )
+            # 038: también los estudios esperan la aprobación del Administrador.
+            organizacion.estado = ORGANIZACION_PENDIENTE
+            return organizacion
+        return None
+
+    def _avisar_administradores(self, aseguradora):
+        """Correo a cada Administrador: hay una organización para revisar (037, 038)."""
+        if self.correos is None or self.usuarios is None:
+            return
+        for administrador in self.usuarios.administradores():
+            self.correos.enviar_aviso_aseguradora_pendiente(administrador, aseguradora)
 
     def simular_acreditacion(self, token):
         """Acredita el cobro como si hubiera llegado el aviso de Cresium (simulado).
@@ -184,7 +205,7 @@ class ServicioPagos:
         if cobro.estado == COBRO_PENDIENTE:
             cobro.estado = COBRO_ACREDITADO
             cobro.acreditado_en = ahora_utc()
-            self._aplicar(cobro)
+            pendiente = self._aplicar(cobro)
             if cobro.id_organizacion is not None:
                 self.registro.registrar(
                     auditoria.ORGANIZACION_COBRO, auditoria.EXITOSO,
@@ -193,6 +214,8 @@ class ServicioPagos:
                              "plan": cobro.plan, "motivo": cobro.motivo, "simulado": True},
                 )
             self.repositorio.confirmar()
+            if pendiente is not None:
+                self._avisar_administradores(pendiente)
         return self.a_dict(cobro)
 
     def devolver_cobros(self, organizacion, usuario):

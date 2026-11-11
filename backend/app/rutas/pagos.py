@@ -20,7 +20,9 @@ proteccion_csrf.exempt(pagos_bp)
 
 
 def _servicio():
-    return crear_servicio_pagos(current_app.config, origen_de_la_solicitud())
+    return crear_servicio_pagos(
+        current_app.config, origen_de_la_solicitud(), current_app.extensions["enviador_correo"]
+    )
 
 
 @pagos_bp.get("/<token>")

@@ -374,3 +374,603 @@
 .buscar-codigo .nota {
   margin: 0;
 }
+
+/*
+ * --- Tamaños más generosos (funcionalidad 037) ---
+ * En computadora la tarjeta del inicio de sesión medía 28rem y la del
+ * registro 40rem: quedaban chicas en una pantalla ancha y los textos de las
+ * opciones se cortaban en cuatro renglones. Se agrandan la tarjeta, los
+ * campos, las etiquetas y los espacios. En el celular la tarjeta ocupa todo
+ * el ancho, sin márgenes laterales, para que no quede apretada.
+ */
+/* Columna explícita: sin ella la tarjeta se achicaba al ancho de su contenido. */
+.acceso.acceso--completo .acceso__formulario {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.acceso.acceso--completo .tarjeta-acceso {
+  max-width: 34rem;
+  padding: 3rem 3.25rem 2.75rem;
+}
+
+.acceso.acceso--completo:has(.registro-ancho) .tarjeta-acceso {
+  max-width: 56rem;
+  padding: 3rem 3.5rem 2.75rem;
+}
+
+.acceso.acceso--completo .tarjeta-acceso h1 {
+  font-size: clamp(1.9rem, 3vw, 2.5rem);
+}
+
+.acceso.acceso--completo .formulario {
+  max-width: none;
+  gap: 1.5rem;
+}
+
+.acceso.acceso--completo .campo {
+  gap: 0.5rem;
+}
+
+.acceso.acceso--completo .campo__etiqueta {
+  font-size: 1rem;
+}
+
+.acceso.acceso--completo .campo__control {
+  min-height: 56px;
+  padding-inline: 1.1rem;
+  font-size: 1.0625rem;
+}
+
+.acceso.acceso--completo .boton {
+  min-height: 56px;
+  font-size: 1.05rem;
+}
+
+@media (width <= 48rem) {
+  /* La tarjeta llega hasta el pie: sin franja gris entre los dos. */
+  .acceso.acceso--completo {
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .acceso.acceso--completo .acceso__formulario {
+    place-items: stretch;
+    padding: 0.5rem 0 0;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso,
+  .acceso.acceso--completo:has(.registro-ancho) .tarjeta-acceso {
+    max-width: none;
+    padding: 2rem 1.25rem 2.25rem;
+    border-radius: 24px 24px 0 0;
+    box-shadow: none;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso h1 {
+    font-size: 1.75rem;
+  }
+
+  .acceso.acceso--completo .campo__control,
+  .acceso.acceso--completo .boton {
+    min-height: 54px;
+  }
+
+  .acceso.acceso--completo .pie {
+    padding-inline: 1.25rem;
+    background: var(--superficie);
+  }
+}
+
+/* --- Inicio de sesión en dos columnas en computadora (037) --- */
+.acceso.acceso--completo:has(.inicio-dividido) .tarjeta-acceso {
+  max-width: 60rem;
+  padding: 0;
+  overflow: hidden;
+}
+
+.inicio-dividido {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+}
+
+.inicio-dividido__panel {
+  display: grid;
+  align-content: center;
+  gap: 1.1rem;
+  padding: 3rem 2.75rem;
+  background:
+    radial-gradient(ellipse at 20% 0, #1e3b2b 0, transparent 70%),
+    var(--a-bosque);
+  color: #c4d3c9;
+}
+
+.inicio-dividido__eti {
+  margin: 0;
+  color: var(--a-lima);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.inicio-dividido__tesis {
+  margin: 0;
+  color: #fff;
+  font-family: var(--fuente-titulos);
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.inicio-dividido__panel ul {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.inicio-dividido__panel li {
+  position: relative;
+  padding-left: 1.6rem;
+}
+
+.inicio-dividido__panel li::before {
+  content: '';
+  position: absolute;
+  top: 0.5rem;
+  left: 0;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: var(--a-lima);
+}
+
+.inicio-dividido__formulario {
+  padding: 3rem 3rem 2.75rem;
+}
+
+@media (width <= 60rem) {
+  .acceso.acceso--completo:has(.inicio-dividido) .tarjeta-acceso {
+    max-width: 34rem;
+  }
+
+  .inicio-dividido {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .inicio-dividido__panel {
+    display: none;
+  }
+}
+
+@media (width <= 48rem) {
+  .acceso.acceso--completo:has(.inicio-dividido) .tarjeta-acceso {
+    max-width: none;
+  }
+
+  .inicio-dividido__formulario {
+    padding: 2rem 1.25rem 2.25rem;
+  }
+}
+
+/* --- Registro: opciones del primer paso más espaciadas (037) --- */
+.acceso.acceso--completo .selector-camino {
+  gap: 1.1rem;
+}
+
+.acceso.acceso--completo .camino {
+  padding: 1.5rem 1.4rem;
+  gap: 0.75rem;
+}
+
+/*
+ * --- Una sola tarjeta para todo el acceso (037, pedido de la autora) ---
+ * Inicio de sesión, registro, recuperación, pago, verificación y páginas
+ * públicas usan la misma tarjeta en computadora: mismo ancho y mismo margen
+ * interno, para que pasar de una pantalla a otra no cambie la identidad.
+ * El inicio de sesión suma su panel dentro de esa misma tarjeta. En el
+ * celular, todas ocupan el ancho completo (ver los bloques para 48rem).
+ */
+@media (width > 60rem) {
+  .acceso.acceso--completo .tarjeta-acceso,
+  .acceso.acceso--completo:has(.registro-ancho) .tarjeta-acceso,
+  .acceso.acceso--completo:has(.pagina-legal) .tarjeta-acceso,
+  .acceso.acceso--completo:has(.inicio-dividido) .tarjeta-acceso {
+    max-width: 60rem;
+    min-height: 34rem;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso:not(:has(.inicio-dividido)) {
+    padding: 3rem 3.5rem 2.75rem;
+  }
+
+  .acceso.acceso--completo:has(.inicio-dividido) .tarjeta-acceso {
+    padding: 0;
+  }
+
+  .inicio-dividido {
+    min-height: 34rem;
+  }
+}
+
+/* En la tarjeta dividida, las opciones del registro van una debajo de otra (037). */
+.acceso.acceso--completo .inicio-dividido .selector-camino {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.inicio-dividido__formulario .registro-ancho {
+  max-width: none;
+}
+
+/* Opción del registro en la tarjeta dividida: ícono a la izquierda, texto a la derecha. */
+.acceso.acceso--completo .inicio-dividido .camino {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  grid-template-areas:
+    'icono titulo'
+    'icono descripcion';
+  column-gap: 1rem;
+  row-gap: 0.2rem;
+  align-items: start;
+  padding: 1rem 2.75rem 1rem 1.1rem;
+}
+
+.acceso.acceso--completo .inicio-dividido .camino__icono {
+  grid-area: icono;
+}
+
+.acceso.acceso--completo .inicio-dividido .camino__titulo {
+  grid-area: titulo;
+}
+
+.acceso.acceso--completo .inicio-dividido .camino__descripcion {
+  grid-area: descripcion;
+}
+
+/* «Continuar con Google» con aire propio, separado del formulario (037). */
+.acceso.acceso--completo .acceso-google {
+  display: grid;
+  gap: 1rem;
+  margin: 1.25rem 0 1.75rem;
+}
+
+/*
+ * --- Acceso compacto: todo en una pantalla (038, pedido de la autora) ---
+ * Solo el inicio de sesión lleva el panel de marca; las demás pantallas usan
+ * la tarjeta entera para el formulario. En computadora la tarjeta mide lo
+ * mismo de ancho para todas (60rem), toma el alto de su contenido (sin
+ * desplazamiento interno) y los espacios verticales se ajustan para que
+ * entre entera en una pantalla de 1366 × 768. Las páginas legales, que son
+ * para leer, son más anchas.
+ */
+@media (width > 60rem) {
+  .acceso.acceso--completo .acceso__formulario {
+    padding-top: 0.5rem;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso,
+  .acceso.acceso--completo:has(.registro-ancho) .tarjeta-acceso,
+  .acceso.acceso--completo:has(.inicio-dividido) .tarjeta-acceso {
+    max-width: 60rem;
+    min-height: 0;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso:not(:has(.inicio-dividido)) {
+    padding: 2rem 3rem 1.75rem;
+  }
+
+  .acceso.acceso--completo:has(.texto-legal) .tarjeta-acceso {
+    max-width: 76rem;
+    padding: 2.5rem 4rem 2.25rem;
+  }
+
+  .inicio-dividido {
+    min-height: 0;
+  }
+
+  .inicio-dividido__formulario {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem 3rem 1.75rem;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso h1 {
+    margin-bottom: 0.25rem;
+    font-size: 2rem;
+  }
+
+  .acceso.acceso--completo .formulario {
+    gap: 1rem;
+  }
+
+  .acceso.acceso--completo .campo {
+    gap: 0.35rem;
+  }
+
+  .acceso.acceso--completo .campo__etiqueta {
+    font-size: 0.9375rem;
+  }
+
+  .acceso.acceso--completo .campo__control {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+
+  .acceso.acceso--completo .boton {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+
+  .acceso.acceso--completo .acceso-google {
+    gap: 0.75rem;
+    margin: 0.75rem 0 1rem;
+  }
+
+  .acceso.acceso--completo .aviso {
+    margin-block: 0.5rem;
+  }
+
+  .acceso.acceso--completo .indicador-pasos {
+    margin-bottom: 0.25rem;
+  }
+
+  .acceso.acceso--completo .pasos__titulo {
+    margin: 0.25rem 0 0.5rem;
+  }
+
+  /* Opciones del registro en tres columnas, como tarjetas compactas. */
+  .acceso.acceso--completo .selector-camino {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+
+  .acceso.acceso--completo .camino {
+    padding: 1.1rem 1.1rem 1rem;
+  }
+
+  /* Correo y contraseña lado a lado; las reglas de la contraseña, en dos columnas. */
+  .campos-en-fila--arriba {
+    align-items: start;
+  }
+
+  .acceso.acceso--completo .reglas {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 0.15rem 2rem;
+    margin: -0.25rem 0 0;
+  }
+}
+
+/* En el celular, correo y contraseña uno debajo del otro. */
+@media (width <= 60rem) {
+  .campos-en-fila--arriba {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+.pasos__cuenta {
+  align-self: center;
+  color: var(--tinta-2);
+  font-size: 0.9375rem;
+}
+
+@media (width > 60rem) {
+  /* El título del paso no queda pegado a la barra de avance. */
+  .acceso.acceso--completo .pasos__titulo {
+    margin: 0.9rem 0 0.75rem;
+  }
+
+  /* Opción del registro: ícono al lado del título y la descripción debajo. */
+  .acceso.acceso--completo .camino {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    grid-template-areas:
+      'icono titulo'
+      'descripcion descripcion';
+    align-items: center;
+    column-gap: 0.75rem;
+    row-gap: 0.5rem;
+    padding: 1rem 2.5rem 1rem 1rem;
+  }
+
+  .acceso.acceso--completo .camino__icono {
+    grid-area: icono;
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .acceso.acceso--completo .camino__titulo {
+    grid-area: titulo;
+    line-height: 1.25;
+  }
+
+  .acceso.acceso--completo .camino__descripcion {
+    grid-area: descripcion;
+  }
+}
+
+/* En el celular, la opción del registro también lleva el ícono al lado del título (038). */
+@media (width <= 60rem) {
+  .acceso.acceso--completo .camino {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    grid-template-areas:
+      'icono titulo'
+      'descripcion descripcion';
+    align-items: center;
+    column-gap: 0.75rem;
+    row-gap: 0.4rem;
+    padding: 0.9rem 2.75rem 0.9rem 1rem;
+  }
+
+  .acceso.acceso--completo .camino__icono {
+    grid-area: icono;
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .acceso.acceso--completo .camino__titulo {
+    grid-area: titulo;
+    line-height: 1.25;
+  }
+
+  .acceso.acceso--completo .camino__descripcion {
+    grid-area: descripcion;
+  }
+
+  .acceso.acceso--completo .selector-camino {
+    gap: 0.75rem;
+  }
+
+  .pasos__cuenta {
+    text-align: center;
+  }
+}
+
+/*
+ * --- Páginas legales a lo ancho (038) ---
+ * Índice de secciones a la izquierda, fijo al desplazarse, y el texto a la
+ * derecha con un largo de línea cómodo. Todo alineado a la izquierda.
+ */
+.legal__indice {
+  display: none;
+}
+
+@media (width > 60rem) {
+  .legal {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 1fr);
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .legal__indice {
+    position: sticky;
+    top: 1.5rem;
+    display: block;
+    padding-right: 1.5rem;
+    border-right: 1px solid var(--linea);
+  }
+
+  .legal__indice-titulo {
+    margin: 0 0 0.75rem;
+    color: var(--tinta-2);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .legal__indice ol {
+    display: grid;
+    gap: 0.15rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .legal__indice a {
+    display: block;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    color: var(--tinta-2);
+    font-size: 0.875rem;
+    line-height: 1.35;
+    text-decoration: none;
+  }
+
+  .legal__indice a:hover,
+  .legal__indice a:focus-visible {
+    background: var(--fondo-2);
+    color: var(--tinta);
+  }
+
+  .acceso.acceso--completo .legal .texto-legal {
+    max-width: none;
+    text-align: left;
+  }
+
+  .acceso.acceso--completo .legal .texto-legal h1,
+  .acceso.acceso--completo .legal .texto-legal h1 + *,
+  .acceso.acceso--completo .legal .pagina-legal__bajada {
+    text-align: left;
+  }
+
+  .legal .texto-legal p,
+  .legal .texto-legal li {
+    max-width: 72ch;
+  }
+
+  .legal .texto-legal h2 {
+    scroll-margin-top: 1.5rem;
+  }
+
+  /* Privacidad: los cuatro pilares en una fila y el detalle técnico a todo el ancho. */
+  .legal .pilares {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .legal .medidas {
+    max-width: none;
+  }
+}
+
+/* El texto de cada pilar va pegado a su título, sin repartir el alto sobrante. */
+.pilares li {
+  align-content: start;
+}
+
+@media (width > 60rem) {
+  .legal .pilares li {
+    padding: 1.1rem 1.2rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+}
+
+/*
+ * --- Tarjetas de un solo formulario en dos columnas (038) ---
+ * Recuperar y restablecer la contraseña, verificar y confirmar el correo:
+ * en una tarjeta ancha, el campo y el botón estirados a 900 px se veían
+ * vacíos. En computadora, el título, la explicación y los avisos van a la
+ * izquierda y el formulario a la derecha. Todos los títulos de las tarjetas
+ * de cuenta se alinean a la izquierda, como el resto del texto.
+ */
+@media (width > 60rem) {
+  .acceso.acceso--completo .tarjeta-acceso h1 {
+    text-align: left;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso:has(> form.formulario) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    grid-auto-flow: row dense;
+    column-gap: 3.5rem;
+    row-gap: 0.75rem;
+    align-items: start;
+    padding: 2.75rem 3.5rem 2.5rem;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso:has(> form.formulario) > * {
+    grid-column: 1;
+    margin: 0;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso:has(> form.formulario) > form.formulario {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    align-self: center;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso:has(> form.formulario) > .enlaces-secundarios {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .acceso.acceso--completo .tarjeta-acceso:has(> form.formulario) > h1 {
+    align-self: end;
+  }
+}

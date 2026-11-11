@@ -85,3 +85,25 @@ def test_detras_de_nginx_se_usa_la_ip_real_del_cliente(monkeypatch):
 
     # Solo se toma la última dirección agregada por el proxy de confianza.
     assert respuesta.get_json() == {"ip": "203.0.113.7", "esquema": "https"}
+
+
+def test_modelo_de_la_capa_4_sin_valores_por_defecto(monkeypatch):
+    """012 (T02): sin variables, el modelo no está configurado y la capa queda no disponible."""
+    monkeypatch.delenv("MODELO_RED_NEURONAL_REGISTRO", raising=False)
+    monkeypatch.delenv("MODELO_RED_NEURONAL_VERSION", raising=False)
+    monkeypatch.delenv("CARPETA_MODELOS_ONNX", raising=False)
+    monkeypatch.setenv("URL_BASE_DATOS", "postgresql+psycopg://u:c@localhost/bd")
+    configuracion = obtener_configuracion("desarrollo")
+    assert configuracion.MODELO_RED_NEURONAL_REGISTRO == ""
+    assert configuracion.MODELO_RED_NEURONAL_VERSION == ""
+    assert configuracion.CARPETA_MODELOS_ONNX.endswith("modelos_onnx")
+
+
+def test_modelo_de_la_capa_4_desde_el_entorno(monkeypatch):
+    """012 (T02): registro y versión fija salen del entorno (Parameter Store en producción)."""
+    monkeypatch.setenv("MODELO_RED_NEURONAL_REGISTRO", "hugging_face:autora/evidentia-clasificador")
+    monkeypatch.setenv("MODELO_RED_NEURONAL_VERSION", "1.0.0")
+    monkeypatch.setenv("URL_BASE_DATOS", "postgresql+psycopg://u:c@localhost/bd")
+    configuracion = obtener_configuracion("desarrollo")
+    assert configuracion.MODELO_RED_NEURONAL_REGISTRO.startswith("hugging_face:")
+    assert configuracion.MODELO_RED_NEURONAL_VERSION == "1.0.0"

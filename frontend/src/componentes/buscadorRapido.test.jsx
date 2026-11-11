@@ -51,7 +51,7 @@ describe('buscador rápido', () => {
     const { usuario } = renderizarEn('/')
     await screen.findByRole('heading', { name: /Hola/ })
 
-    await usuario.click(screen.getByRole('button', { name: /Buscar o ir a/ }))
+    await usuario.keyboard('{Control>}k{/Control}')
     await usuario.type(screen.getByRole('combobox'), 'perf')
     const opciones = screen.getAllByRole('option')
     expect(opciones).toHaveLength(1)

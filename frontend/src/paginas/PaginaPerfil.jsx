@@ -41,6 +41,7 @@ import { useFormulario } from '../hooks/useFormulario.js'
 import { usePestaniaElegida } from '../hooks/usePestaniaElegida.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { formatearFecha } from '../utilidades/fechas.js'
+import { useRubro } from '../hooks/useRubro.js'
 
 const NOMBRES_PERFIL = { abogado: 'Abogado o abogada', aseguradora: 'Aseguradora' }
 
@@ -299,11 +300,12 @@ function cantidadDeCasos(cantidad) {
 }
 
 function Pendientes({ situacion }) {
+  const rubro = useRubro()
   return (
     <>
       {situacion.casos.length > 0 && (
         <>
-          <h3>Casos a tu cargo</h3>
+          <h3>{rubro.Casos} a tu cargo</h3>
           <p className="nota">Transferí o eliminá cada caso desde su pantalla.</p>
           <ul className="lista-simple">
             {situacion.casos.map((caso) => (

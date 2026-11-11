@@ -313,7 +313,7 @@ describe('pantalla del caso', () => {
         },
       },
     })
-    const { usuario } = renderizarEn('/casos/7')
+    const { usuario } = renderizarEn('/casos/7?etapa=gestion')
 
     await usuario.click(await screen.findByRole('button', { name: 'Editar los datos' }))
     const lugar = await screen.findByLabelText('Lugar del hecho')
@@ -338,7 +338,7 @@ describe('pantalla del caso', () => {
       },
       accesos: [{ ...ACCESO, usuario: { id: USUARIO.id, nombre: 'Ana López', correo: 'ana@ejemplo.com' } }],
     })
-    renderizarEn('/casos/7')
+    renderizarEn('/casos/7?etapa=gestion')
 
     expect(await screen.findByText('Av. Corrientes 1234')).toBeInTheDocument()
     expect(screen.getByText('Beto Paz')).toBeInTheDocument()
@@ -367,7 +367,7 @@ describe('pantalla del caso', () => {
         },
       },
     })
-    const { usuario } = renderizarEn('/casos/7')
+    const { usuario } = renderizarEn('/casos/7?etapa=gestion')
 
     await usuario.click(await screen.findByRole('button', { name: 'Cerrar el caso' }))
     await usuario.click(screen.getByRole('button', { name: 'Cerrar' }))
@@ -388,7 +388,7 @@ describe('pantalla del caso', () => {
         'DELETE /api/casos/7/accesos/11': { cuerpo: { caso: CASO, accesos: [], mensaje: 'Se revocó el acceso.' } },
       },
     })
-    const { usuario } = renderizarEn('/casos/7')
+    const { usuario } = renderizarEn('/casos/7?etapa=gestion')
 
     const conQuien = await screen.findByLabelText('Con quién')
     expect(within(conQuien).queryByRole('option', { name: 'Ana López' })).not.toBeInTheDocument()
@@ -412,7 +412,7 @@ describe('pantalla del caso', () => {
       accesos: [],
       extra: { 'POST /api/casos/7/accesos': { cuerpo: { caso: CASO, accesos: [], mensaje: 'Compartiste el caso.' } } },
     })
-    const { usuario } = renderizarEn('/casos/7')
+    const { usuario } = renderizarEn('/casos/7?etapa=gestion')
 
     expect(await screen.findByText('Solo el Responsable tiene acceso a este caso.')).toBeInTheDocument()
     await usuario.click(screen.getByRole('button', { name: 'Compartir el caso' }))
@@ -425,7 +425,7 @@ describe('pantalla del caso', () => {
     const { solicitudes } = apiDeCaso({
       extra: { 'POST /api/casos/7/transferencia': { cuerpo: { caso: CASO, accesos: [], mensaje: 'Transferiste el caso.' } } },
     })
-    const { usuario } = renderizarEn('/casos/7')
+    const { usuario } = renderizarEn('/casos/7?etapa=gestion')
 
     await usuario.selectOptions(await screen.findByLabelText('Nuevo Responsable'), '2')
     await usuario.click(screen.getByRole('checkbox', { name: 'Conservar el permiso de Colaboración' }))
@@ -451,7 +451,7 @@ describe('pantalla del caso', () => {
         },
       },
     })
-    const { usuario } = renderizarEn('/casos/7')
+    const { usuario } = renderizarEn('/casos/7?etapa=gestion')
 
     expect(await screen.findByRole('heading', { name: 'Transferir' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Accesos' })).not.toBeInTheDocument()
@@ -476,7 +476,7 @@ describe('pantalla del caso', () => {
         'GET /api/organizaciones': { cuerpo: { organizaciones: [] } },
       },
     })
-    const { usuario } = renderizarEn('/casos/7')
+    const { usuario } = renderizarEn('/casos/7?etapa=gestion')
 
     const boton = await screen.findByRole('button', { name: 'Eliminar el caso' })
     expect(boton).toBeDisabled()
@@ -493,7 +493,7 @@ describe('pantalla del caso', () => {
     apiDeCaso({
       extra: { 'DELETE /api/casos/7': { estado: 409, cuerpo: { mensaje: 'El caso está en análisis.' } } },
     })
-    const { usuario } = renderizarEn('/casos/7')
+    const { usuario } = renderizarEn('/casos/7?etapa=gestion')
 
     await usuario.type(await screen.findByLabelText(/escribí el número/), 'CASO-2026-000007')
     await usuario.click(screen.getByRole('button', { name: 'Eliminar el caso' }))
@@ -503,7 +503,7 @@ describe('pantalla del caso', () => {
 
   it('muestra un caso inexistente o sin permiso como no encontrado (RNF05)', async () => {
     simularApi({ ...CON_SESION, 'GET /api/casos/99': { estado: 404, cuerpo: { mensaje: 'No encontramos el caso.' } } })
-    renderizarEn('/casos/99')
+    renderizarEn('/casos/99?etapa=gestion')
 
     expect(await screen.findByText('No encontramos el caso.')).toBeInTheDocument()
   })
@@ -512,7 +512,7 @@ describe('pantalla del caso', () => {
     apiDeCaso({
       extra: { 'POST /api/casos/7/estado': { estado: 409, cuerpo: { mensaje: 'No se puede cerrar en este estado.' } } },
     })
-    const { usuario } = renderizarEn('/casos/7')
+    const { usuario } = renderizarEn('/casos/7?etapa=gestion')
 
     await usuario.click(await screen.findByRole('button', { name: 'Cerrar el caso' }))
     await usuario.click(screen.getByRole('button', { name: 'Cerrar' }))
@@ -538,7 +538,7 @@ describe('retención (funcionalidad 015)', () => {
         },
       },
     })
-    const { usuario } = renderizarEn('/casos/7')
+    const { usuario } = renderizarEn('/casos/7?etapa=gestion')
 
     await usuario.click(await screen.findByRole('button', { name: 'Prorrogar 1 año' }))
     await usuario.click(screen.getByRole('button', { name: 'Prorrogar' }))
@@ -549,5 +549,18 @@ describe('retención (funcionalidad 015)', () => {
 
     expect(await screen.findByText('Listo: el caso se conserva hasta el 01/11/2027.')).toBeInTheDocument()
     expect(solicitudes.find((s) => s.ruta === '/api/casos/7/prorroga').cuerpo).toEqual({ motivo: 'Juicio en trámite' })
+  })
+})
+
+describe('pantalla del caso reorganizada (037)', () => {
+  it('los datos y la gestión se abren desde la cabecera como una vista aparte', async () => {
+    apiDeCaso()
+    const { usuario } = renderizarEn('/casos/7')
+    await usuario.click(await screen.findByRole('button', { name: 'Datos y gestión' }))
+    expect(await screen.findByRole('heading', { name: 'Datos del caso' })).toBeInTheDocument()
+    // Mientras se ve la gestión, el flujo se oculta y hay una forma clara de volver.
+    expect(screen.queryByRole('list', { name: 'Etapas del caso' })).not.toBeInTheDocument()
+    await usuario.click(screen.getByRole('button', { name: /Volver a las imágenes/ }))
+    expect(await screen.findByRole('list', { name: 'Etapas del caso' })).toBeInTheDocument()
   })
 })

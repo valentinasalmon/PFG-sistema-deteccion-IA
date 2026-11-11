@@ -66,6 +66,13 @@ describe('inicio de sesión', () => {
     expect(await screen.findByRole('heading', { name: 'Mi perfil' })).toBeInTheDocument()
   })
 
+  it('vuelve con la consulta incluida, como el QR del análisis detallado (038)', async () => {
+    simularApi({ 'POST /api/sesion': { cuerpo: { usuario: USUARIO, csrf: 't' } } })
+    const { usuario } = renderizarEn('/perfil?seccion=seguridad')
+    await completarInicioDeSesion(usuario)
+    expect(await screen.findByRole('heading', { name: 'Contraseña' })).toBeInTheDocument()
+  })
+
   it('con credenciales inválidas muestra el mensaje genérico (CA8)', async () => {
     simularApi({ 'POST /api/sesion': ERROR_CREDENCIALES })
     const { usuario } = renderizarEn('/iniciar-sesion')
@@ -263,7 +270,8 @@ describe('registro por pasos', () => {
     expect(screen.getByText('1 resultado.')).toBeInTheDocument()
     await usuario.clear(busqueda)
     await usuario.type(busqueda, '30500039')
-    expect(screen.getByRole('radio', { name: /EL SURCO/ })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: /EL SURCO/ })).toBeInTheDocument()
+    expect(busqueda).toHaveAttribute('aria-expanded', 'true')
     await usuario.clear(busqueda)
     await usuario.type(busqueda, 'zzz')
     expect(screen.getByText(/No encontramos ninguna aseguradora/)).toBeInTheDocument()
@@ -298,9 +306,11 @@ describe('registro por pasos', () => {
     await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
     await usuario.type(screen.getByLabelText('Apellido'), 'López')
     await usuario.type(await screen.findByLabelText('Buscá tu aseguradora'), 'gali')
-    await usuario.click(screen.getByRole('radio', { name: /SEGUROS GALICIA/ }))
-    await usuario.clear(screen.getByLabelText('Buscá tu aseguradora'))
-    expect(screen.getByRole('radio', { name: /SEGUROS GALICIA/ })).toBeChecked()
+    await usuario.click(screen.getByRole('option', { name: /SEGUROS GALICIA/ }))
+    // 037: al elegir, la lista se cierra y el campo muestra la aseguradora elegida.
+    expect(screen.getByLabelText('Buscá tu aseguradora')).toHaveValue('SEGUROS GALICIA S.A.')
+    expect(screen.getByLabelText('Buscá tu aseguradora')).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.getByText(/Elegiste SEGUROS GALICIA/)).toBeInTheDocument()
     await siguiente(usuario)
     expect(await screen.findByRole('heading', { name: 'Elegí el plan de tu aseguradora' })).toBeInTheDocument()
     await usuario.click(await screen.findByRole('radio', { name: /Organización Profesional/ }))
@@ -329,8 +339,8 @@ describe('registro por pasos', () => {
     for (let i = 0; i < 2; i += 1) await usuario.click(screen.getByRole('button', { name: 'Atrás' }))
     await usuario.click(screen.getByLabelText(/^Aseguradora/))
     await siguiente(usuario)
-    await usuario.type(await screen.findByLabelText('Buscá tu aseguradora'), 'surco')
-    await usuario.click(screen.getByRole('radio', { name: /EL SURCO/ }))
+    // Con el teclado: flecha abajo y Enter eligen la primera opción.
+    await usuario.type(await screen.findByLabelText('Buscá tu aseguradora'), 'surco{ArrowDown}{Enter}')
     await siguiente(usuario)
     await siguiente(usuario)
     await completarCuenta(usuario)
@@ -508,7 +518,7 @@ describe('registro con pago del plan (032)', () => {
     expect(screen.getByText('Esperando la transferencia…')).toBeInTheDocument()
 
     await usuario.click(screen.getByRole('button', { name: 'Simular la transferencia' }))
-    expect(await screen.findByRole('heading', { name: '¡Listo! Tu estudio ya está activo' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Pago recibido: falta la aprobación' })).toBeInTheDocument()
     expect(screen.getByText(/confirmá tu correo/)).toBeInTheDocument()
   })
 

@@ -31,11 +31,15 @@ def _token(respuesta):
     return respuesta.get_json()["enlace"]["url"].rsplit("/", 1)[-1]
 
 
-def _subir(cliente, token, contenido, nombre="IMG_0001.jpg"):
+def _subir(cliente, token, contenido, nombre="IMG_0001.jpg", clave=None):
     return cliente.post(
         f"/api/carga/{token}", data={"archivo": (io.BytesIO(contenido), nombre)},
-        content_type="multipart/form-data",
+        content_type="multipart/form-data", headers=_cabecera(clave),
     )
+
+
+def _cabecera(clave):
+    return {"X-Clave-Dispositivo": clave} if clave else {}
 
 
 @pytest.fixture
@@ -65,12 +69,14 @@ def test_qr_y_carga_sin_sesion(aplicacion, ana, caso):
 
     subida = _subir(celular, token, _foto())
     assert subida.status_code == 201, subida.get_json()
+    clave = subida.get_json()["clave_dispositivo"]  # 038: con la primera foto, atado a este celular
     assert "huella" in subida.get_json()["imagen"] and "id" not in subida.get_json()["imagen"]
     imagenes = ana.get(f"/api/casos/{caso['id']}/imagenes").get_json()["imagenes"]
     assert [i["cargada_por"] for i in imagenes] == ["Ana López"]
     carga = entradas_auditoria(aplicacion, "imagen.carga")[-1]
     assert carga["detalle"]["origen"] == "celular"
-    assert celular.get(f"/api/carga/{token}").get_json()["restantes"] == 19
+    vuelta = celular.get(f"/api/carga/{token}", headers=_cabecera(clave)).get_json()
+    assert vuelta["restantes"] == 19 and "clave_dispositivo" not in vuelta
     with aplicacion.app_context():
         assert token not in {e.huella_token for e in EnlaceCarga.query.all()}
 
@@ -105,10 +111,45 @@ def test_sin_tope_por_enlace_solo_el_limite_del_plan(aplicacion, ana, caso):
     token = _token(ana.post(f"/api/casos/{caso['id']}/enlace-carga"))
     celular = aplicacion.test_client()
     assert _subir(celular, token, b"no es una imagen", "texto.jpg").status_code == 400
-    for color in ((1, 1, 1), (2, 2, 2), (3, 3, 3)):
-        assert _subir(celular, token, _foto(color)).status_code == 201
-    assert celular.get(f"/api/carga/{token}").get_json()["restantes"] == 0
-    assert _subir(celular, token, _foto((4, 4, 4))).status_code == 409
+    clave = _subir(celular, token, _foto((1, 1, 1))).get_json()["clave_dispositivo"]
+    for color in ((2, 2, 2), (3, 3, 3)):
+        assert _subir(celular, token, _foto(color), clave=clave).status_code == 201
+    restantes = celular.get(f"/api/carga/{token}", headers=_cabecera(clave)).get_json()
+    assert restantes["restantes"] == 0
+    assert _subir(celular, token, _foto((4, 4, 4)), clave=clave).status_code == 409
+
+
+def test_el_qr_sirve_para_un_solo_celular(aplicacion, ana, caso):
+    """038: otro dispositivo que escanea el mismo QR ve que ya se usó."""
+    token = _token(ana.post(f"/api/casos/{caso['id']}/enlace-carga"))
+    primero = aplicacion.test_client()
+    assert primero.get(f"/api/carga/{token}").status_code == 200
+    assert primero.get(f"/api/carga/{token}").status_code == 200  # abrirlo dos veces no lo ata
+    clave = _subir(primero, token, _foto()).get_json()["clave_dispositivo"]
+    otro = aplicacion.test_client()
+    respuesta = otro.get(f"/api/carga/{token}")
+    assert respuesta.status_code == 404 and respuesta.get_json()["codigo"] == "enlace_usado"
+    assert _subir(otro, token, _foto()).status_code == 404
+    assert _subir(primero, token, _foto((9, 9, 9)), clave=clave).status_code == 201
+
+
+def test_terminar_cierra_el_qr_y_la_computadora_lo_ve(aplicacion, ana, caso):
+    """038: «Terminar» en el celular cierra el enlace; la computadora ve que terminó."""
+    ruta = f"/api/casos/{caso['id']}/enlace-carga"
+    assert ana.get(ruta).get_json()["enlace"] == {"abierto": False, "terminado": False, "cargas": 0}
+    token = _token(ana.post(ruta))
+    celular = aplicacion.test_client()
+    clave = _subir(celular, token, _foto()).get_json()["clave_dispositivo"]
+    assert ana.get(ruta).get_json()["enlace"] == {"abierto": True, "terminado": False, "cargas": 1}
+
+    fin = celular.post(f"/api/carga/{token}/fin", headers=_cabecera(clave))
+    assert fin.status_code == 200 and fin.get_json()["mensaje"] == "Listo: se cargó 1 foto."
+    assert ana.get(ruta).get_json()["enlace"] == {"abierto": False, "terminado": True, "cargas": 1}
+    otra_vez = celular.get(f"/api/carga/{token}", headers=_cabecera(clave))
+    assert otra_vez.status_code == 404 and otra_vez.get_json()["codigo"] == "enlace_usado"
+    assert entradas_auditoria(aplicacion, "imagen.enlace_carga")[-1]["detalle"]["operacion"] == (
+        "terminar"
+    )
 
 
 def test_solo_quien_puede_cargar_genera_el_enlace(aplicacion, ana, caso, cuenta):

@@ -13,6 +13,7 @@
  * Realiza: RF01 (CA2); RNF01, RNF02, RNF06, RNF08; RN27.
  */
 import AvisoProvisorio from '../componentes/AvisoProvisorio.jsx'
+import DisposicionLegal from '../componentes/DisposicionLegal.jsx'
 
 const PILARES = [
   {
@@ -69,7 +70,7 @@ const MEDIDAS = [
 
 export default function PaginaPrivacidad() {
   return (
-    <article className="texto-legal pagina-legal">
+    <DisposicionLegal className="pagina-legal">
       <h1>Política de Privacidad</h1>
       <AvisoProvisorio />
       <p className="pagina-legal__bajada">
@@ -98,14 +99,43 @@ export default function PaginaPrivacidad() {
       <h2>1. Qué datos se tratan</h2>
       <p>
         Los datos de tu cuenta (nombre, apellido, correo electrónico, perfil y, si los indicás,
-        colegio de abogados o empresa), las imágenes que cargás en tus casos y los resultados de
-        los análisis.
+        colegio de abogados o empresa), las imágenes que cargás en tus casos o siniestros y los
+        resultados de los análisis.
       </p>
+      <ul>
+        <li>
+          <strong>Si entrás con Google</strong>, recibimos de Google solo tu nombre, tu correo y la
+          confirmación de que está verificado. No vemos tu contraseña ni otros datos de tu cuenta
+          de Google.
+        </li>
+        <li>
+          <strong>Si pagás un plan</strong>, guardamos el plan, el importe, la referencia y el
+          estado del pago. Los datos de la cuenta bancaria desde la que transferís los trata el
+          proveedor de cobros, no la plataforma.
+        </li>
+        <li>
+          <strong>Si sos Referente de una aseguradora</strong> y la verificación de identidad está
+          activa, un proveedor especializado te pide fotos de tu DNI y un video corto de tu rostro.
+          La plataforma guarda solo el resultado (aprobada o rechazada) y una referencia;{' '}
+          <strong>nunca tu DNI, tus fotos ni tus datos biométricos</strong>.
+        </li>
+        <li>
+          <strong>Las fotos pueden mostrar a otras personas</strong> (por ejemplo, el asegurado o
+          un tercero). Quien las carga, o quien pide que las suba la persona afectada con un
+          enlace, es responsable de tener derecho a usarlas para el caso o el siniestro.
+        </li>
+      </ul>
 
       <h2>2. Para qué se usan</h2>
       <p>
         Para identificarte, proteger el acceso a tus casos, realizar los análisis que solicitás y
-        enviarte los correos necesarios para el funcionamiento de la cuenta.
+        enviarte los correos necesarios para el funcionamiento de la cuenta. No se venden ni se
+        ceden a terceros con fines comerciales, y las imágenes no se usan para entrenar modelos.
+      </p>
+      <p>
+        Dentro de una organización (un estudio jurídico o una aseguradora), los demás miembros ven
+        tu nombre y los casos o siniestros del espacio de la organización, según los permisos que
+        les dé su Referente.
       </p>
 
       <h2>3. Cuánto tiempo se conservan</h2>
@@ -148,7 +178,16 @@ export default function PaginaPrivacidad() {
         terceros en tu navegador.
       </p>
 
-      <h2>7. Tus derechos</h2>
+      <h2>7. Quién trata tus datos</h2>
+      <p>
+        evidentIA es responsable del tratamiento. Para prestar el servicio usa proveedores que
+        tratan datos por cuenta de la plataforma: el alojamiento en la Unión Europea, el envío de
+        correos, el cobro de los planes, la verificación de identidad de las aseguradoras y, solo
+        con la huella de los archivos, la red pública Hedera. Ninguno puede usar los datos para
+        fines propios.
+      </p>
+
+      <h2>8. Tus derechos</h2>
       <p>
         Podés acceder a tus datos, rectificarlos y solicitar su supresión, conforme a la Ley N.°
         25.326 de Protección de los Datos Personales. La Agencia de Acceso a la Información
@@ -160,6 +199,6 @@ export default function PaginaPrivacidad() {
         antes tenés que transferir o eliminar los casos a tu cargo y designar otro Referente en
         las organizaciones que administrás.
       </p>
-    </article>
+    </DisposicionLegal>
   )
 }

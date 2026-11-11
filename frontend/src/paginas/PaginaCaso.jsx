@@ -38,9 +38,11 @@ import CampoAreaTexto from '../componentes/CampoAreaTexto.jsx'
 import CampoSeleccion from '../componentes/CampoSeleccion.jsx'
 import CampoTexto from '../componentes/CampoTexto.jsx'
 import Cargando from '../componentes/Cargando.jsx'
+import EstadoVacio from '../componentes/EstadoVacio.jsx'
 import Etiqueta from '../componentes/Etiqueta.jsx'
 import EtiquetaEstado from '../componentes/EtiquetaEstado.jsx'
 import Icono from '../componentes/Icono.jsx'
+import { IlustracionCarpeta } from '../componentes/Ilustraciones.jsx'
 import SeccionAnalisis from '../componentes/SeccionAnalisis.jsx'
 import SeccionImagenes from '../componentes/SeccionImagenes.jsx'
 import SeccionInformes from '../componentes/SeccionInformes.jsx'
@@ -50,6 +52,7 @@ import { useSesion } from '../hooks/useSesion.js'
 import { OPCIONES_NIVEL, OPCIONES_TIPO } from '../utilidades/casos.js'
 import { textosDelRubro } from '../utilidades/lenguaje.js'
 import { formatearDia, formatearFecha, hoyIso } from '../utilidades/fechas.js'
+import { useRubro } from '../hooks/useRubro.js'
 
 async function cargarCaso(id) {
   const datos = await obtenerCaso(id)
@@ -61,6 +64,7 @@ async function cargarCaso(id) {
 }
 
 function SeccionDatos({ caso, alGuardar }) {
+  const rubro = useRubro()
   const [editando, setEditando] = useState(false)
   const { usuario } = useSesion()
   const referencia = textosDelRubro(usuario.perfil).etiquetaReferencia
@@ -83,7 +87,7 @@ function SeccionDatos({ caso, alGuardar }) {
 
   return (
     <section className="seccion" aria-labelledby="titulo-datos-caso">
-      <h2 id="titulo-datos-caso">Datos del caso</h2>
+      <h2 id="titulo-datos-caso">Datos del {rubro.caso}</h2>
       <dl className="datos-fijos">
         <dt>Responsable</dt>
         <dd>{caso.responsable.nombre}</dd>
@@ -244,6 +248,7 @@ function Plegable({ id, titulo, resumen, abierto = false, children }) {
 }
 
 function SeccionEstado({ caso, ejecutar }) {
+  const rubro = useRubro()
   const { acciones } = caso
   if (!acciones.cerrar && !acciones.archivar && !acciones.desarchivar && !acciones.reabrir) return null
   const vence = caso.retencion_vence ? new Date(caso.retencion_vence) : null
@@ -256,7 +261,7 @@ function SeccionEstado({ caso, ejecutar }) {
       abierto={diasRestantes !== null && diasRestantes <= 30}
     >
       <p className="nota">
-        Cerrar deja el caso en solo lectura y comienza el plazo de retención de 5 años; al reabrirlo, el plazo
+        Cerrar deja el {rubro.caso} en solo lectura y comienza el plazo de retención de 5 años; al reabrirlo, el plazo
         se detiene.
       </p>
       {vence && (
@@ -271,8 +276,8 @@ function SeccionEstado({ caso, ejecutar }) {
       <div className="acciones-en-linea">
         {acciones.cerrar && (
           <BotonConfirmar
-            texto="Cerrar el caso"
-            pregunta="¿Cerrar el caso? Queda en solo lectura y comienza el plazo de retención."
+            texto={`Cerrar el ${rubro.caso}`}
+            pregunta={`¿Cerrar el ${rubro.caso}? Queda en solo lectura y comienza el plazo de retención.`}
             textoConfirmar="Cerrar"
             onConfirmar={() => ejecutar(() => cambiarEstadoCaso(caso.id, 'cerrar'))}
           />
@@ -280,7 +285,7 @@ function SeccionEstado({ caso, ejecutar }) {
         {acciones.archivar && (
           <BotonConfirmar
             texto="Archivar"
-            pregunta="¿Archivar el caso? Deja de aparecer en el listado por defecto."
+            pregunta={`¿Archivar el ${rubro.caso}? Deja de aparecer en el listado por defecto.`}
             textoConfirmar="Archivar"
             onConfirmar={() => ejecutar(() => cambiarEstadoCaso(caso.id, 'archivar'))}
           />
@@ -288,7 +293,7 @@ function SeccionEstado({ caso, ejecutar }) {
         {acciones.desarchivar && (
           <BotonConfirmar
             texto="Desarchivar"
-            pregunta="¿Desarchivar el caso? Vuelve a Cerrado."
+            pregunta={`¿Desarchivar el ${rubro.caso}? Vuelve a Cerrado.`}
             textoConfirmar="Desarchivar"
             onConfirmar={() => ejecutar(() => cambiarEstadoCaso(caso.id, 'desarchivar'))}
           />
@@ -296,7 +301,7 @@ function SeccionEstado({ caso, ejecutar }) {
         {acciones.reabrir && (
           <BotonConfirmar
             texto="Reabrir"
-            pregunta="¿Reabrir el caso? Se detiene el plazo de retención."
+            pregunta={`¿Reabrir el ${rubro.caso}? Se detiene el plazo de retención.`}
             textoConfirmar="Reabrir"
             onConfirmar={() => ejecutar(() => cambiarEstadoCaso(caso.id, 'reabrir'))}
           />
@@ -307,6 +312,7 @@ function SeccionEstado({ caso, ejecutar }) {
 }
 
 function SeccionAccesos({ caso, accesos, miembros, ejecutar }) {
+  const rubro = useRubro()
   const [destino, setDestino] = useState('organizacion')
   const [nivel, setNivel] = useState('lectura')
   const puedeCompartir = caso.acciones.compartir
@@ -396,7 +402,7 @@ function SeccionAccesos({ caso, accesos, miembros, ejecutar }) {
             />
           </div>
           <button type="submit" className="boton">
-            Compartir el caso
+            Compartir el {rubro.caso}
           </button>
         </form>
       )}
@@ -488,6 +494,7 @@ function SeccionTransferir({ caso, miembros, ejecutar }) {
 }
 
 function SeccionEliminar({ caso }) {
+  const rubro = useRubro()
   const navegar = useNavigate()
   const [confirmacion, setConfirmacion] = useState('')
   const [error, setError] = useState(null)
@@ -509,9 +516,9 @@ function SeccionEliminar({ caso }) {
 
   return (
     <section className="seccion zona-riesgo" aria-labelledby="titulo-eliminar">
-      <h2 id="titulo-eliminar">Eliminar el caso</h2>
+      <h2 id="titulo-eliminar">Eliminar el {rubro.caso}</h2>
       <p>
-        Se eliminan el caso y sus datos de forma definitiva, y se avisa a quienes tenían acceso. No se puede
+        Se eliminan el {rubro.caso} y sus datos de forma definitiva, y se avisa a quienes tenían acceso. No se puede
         deshacer.
       </p>
       {error && <Aviso tipo="error">{error}</Aviso>}
@@ -524,7 +531,7 @@ function SeccionEliminar({ caso }) {
           autoComplete="off"
         />
         <button type="submit" className="boton boton--peligro" disabled={!coincide || enviando}>
-          Eliminar el caso
+          Eliminar el {rubro.caso}
         </button>
       </form>
     </section>
@@ -583,8 +590,10 @@ function resumirEtapas(caso) {
         caso.estado === 'en_analisis'
           ? 'En curso'
           : analizado
-            ? 'Listo · revisá los indicios'
-            : 'Se habilita cuando cargues las fotos',
+            ? 'revisá los indicios'
+            : conImagenes
+              ? 'Elegí las fotos y pedilo'
+              : 'Se habilita cuando cargues las fotos',
       disponible: conImagenes,
     },
     informe: {
@@ -598,61 +607,61 @@ function resumirEtapas(caso) {
 }
 
 /**
- * El caso como un flujo vertical continuo (034): Imágenes → Análisis →
- * Informe unidos por una línea. El paso abierto muestra su contenido; los
- * terminados quedan plegados en verde con su resumen; los pendientes dicen
- * cuándo se habilitan. Cada título es un enlace (``?etapa=``) para abrirlo.
+ * El caso como un flujo de tres pasos (034): Imágenes → Análisis → Informe.
+ *
+ * Desde la funcionalidad 037 los pasos van en horizontal, unidos por una
+ * línea, y el contenido del paso abierto va debajo, a todo el ancho. Cada
+ * paso es un enlace (``?etapa=``) que se puede tocar entero; los terminados
+ * quedan en verde con su resumen y los pendientes dicen cuándo se habilitan.
  */
 function FlujoDelCaso({ caso, actual, alElegir, children }) {
   const etapas = describirEtapas(caso)
   const resumenes = resumirEtapas(caso)
   return (
-    <ol className="flujo-caso" aria-label="Etapas del caso">
-      {ETAPAS.map((etapa) => {
-        const { texto, hecha } = etapas[etapa]
-        const { resumen, disponible } = resumenes[etapa]
-        const abierta = etapa === actual
-        const estado = abierta ? 'actual' : hecha ? 'hecho' : 'pendiente'
-        const abrir = (evento) => {
-          evento.preventDefault()
-          alElegir(etapa)
-        }
-        return (
-          <li key={etapa} className={`flujo-caso__paso flujo-caso__paso--${estado}`}>
-            <span className="flujo-caso__nodo" aria-hidden="true">
-              <Icono nombre={hecha && !abierta ? 'marca' : ICONO_DE_ETAPA[etapa]} tamanio={20} />
-            </span>
-            <div className="flujo-caso__cabecera">
-              {disponible || abierta ? (
-                <a
-                  href={`?etapa=${etapa}`}
-                  className="flujo-caso__titulo"
-                  aria-current={abierta ? 'page' : undefined}
-                  onClick={abrir}
-                >
-                  {texto}
-                </a>
-              ) : (
-                <span className="flujo-caso__titulo">{texto}</span>
-              )}
-              {hecha && !abierta && <span className="flujo-caso__chip flujo-caso__chip--listo">Listo</span>}
-              {abierta && <span className="flujo-caso__chip">Abierto</span>}
-              {!abierta && <span className="flujo-caso__resumen">{resumen}</span>}
-              {!abierta && disponible && (
-                <button type="button" className="boton boton--fantasma boton--chico" onClick={abrir}>
-                  {hecha ? 'Ver' : 'Abrir'}
-                </button>
-              )}
-            </div>
-            {abierta && <div className="flujo-caso__cuerpo">{children}</div>}
-          </li>
-        )
-      })}
-    </ol>
+    <div className="flujo-caso">
+      <ol className="flujo-caso__pasos" aria-label="Etapas del caso">
+        {ETAPAS.map((etapa) => {
+          const { texto, hecha } = etapas[etapa]
+          const { resumen, disponible } = resumenes[etapa]
+          const abierta = etapa === actual
+          const estado = abierta ? 'actual' : hecha ? 'hecho' : 'pendiente'
+          const abrir = (evento) => {
+            evento.preventDefault()
+            alElegir(etapa)
+          }
+          return (
+            <li key={etapa} className={`flujo-caso__paso flujo-caso__paso--${estado}`}>
+              <span className="flujo-caso__nodo" aria-hidden="true">
+                <Icono nombre={hecha && !abierta ? 'marca' : ICONO_DE_ETAPA[etapa]} tamanio={20} />
+              </span>
+              <div className="flujo-caso__cabecera">
+                {disponible || abierta ? (
+                  <a
+                    href={`?etapa=${etapa}`}
+                    className="flujo-caso__titulo"
+                    aria-current={abierta ? 'page' : undefined}
+                    onClick={abrir}
+                  >
+                    {texto}
+                  </a>
+                ) : (
+                  <span className="flujo-caso__titulo">{texto}</span>
+                )}
+                <span className="flujo-caso__resumen">
+                  {abierta ? 'Viendo ahora' : hecha ? `Listo · ${resumen}` : resumen}
+                </span>
+              </div>
+            </li>
+          )
+        })}
+      </ol>
+      <div className="flujo-caso__cuerpo">{children}</div>
+    </div>
   )
 }
 
 export default function PaginaCaso() {
+  const rubro = useRubro()
   const { id } = useParams()
   const { state } = useLocation()
   const cargar = useCallback(() => cargarCaso(id), [id])
@@ -676,24 +685,27 @@ export default function PaginaCaso() {
     [recargar],
   )
 
-  if (cargando) return <Cargando texto="Cargando el caso…" />
+  if (cargando) return <Cargando texto={`Cargando el ${rubro.caso}…`} />
+  // Sin el caso, un estado vacío con salida en lugar de un aviso suelto (037).
   if (error) {
     return (
-      <>
-        <h1>Caso</h1>
-        <Aviso tipo="error">{error.message}</Aviso>
-      </>
+      <EstadoVacio Ilustracion={IlustracionCarpeta} titulo={`No pudimos abrir el ${rubro.caso}`} texto={error.message} encabezado>
+        <Link to="/casos" className="boton">
+          Volver a {rubro.Casos.toLowerCase()}
+        </Link>
+      </EstadoVacio>
     )
   }
 
   const { caso, accesos, miembros } = datos
   const pedida = parametros.get('etapa')
-  const etapa = ETAPAS.includes(pedida) ? pedida : etapaPorDefecto(caso)
+  // 037: «gestion» reúne los datos, el estado, los permisos y la transferencia, fuera del flujo.
+  const etapa = pedida === 'gestion' || ETAPAS.includes(pedida) ? pedida : etapaPorDefecto(caso)
   return (
     <>
       <Link to="/casos" className="volver">
         <Icono nombre="derecha" tamanio={16} />
-        Casos
+        {rubro.Casos}
       </Link>
       <header className="cabecera-caso">
         <div className="cabecera-caso__titulo">
@@ -702,6 +714,17 @@ export default function PaginaCaso() {
             <EtiquetaEstado estado={caso.estado}>{caso.estado_nombre}</EtiquetaEstado>
             <Etiqueta>{caso.mi_permiso_nombre}</Etiqueta>
           </div>
+          {/* 037: los datos y la gestión se abren desde la cabecera, como una vista aparte. */}
+          {etapa !== 'gestion' && (
+            <button
+              type="button"
+              className="boton boton--secundario boton--chico cabecera-caso__accion"
+              onClick={() => elegirEtapa('gestion')}
+            >
+              <Icono nombre="lapiz" tamanio={16} />
+              Datos y gestión
+            </button>
+          )}
         </div>
         <p className="cabecera-caso__lugar">{caso.lugar}</p>
         <p className="subtitulo">
@@ -710,41 +733,16 @@ export default function PaginaCaso() {
       </header>
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
 
-      <div className="dos-columnas dos-columnas--caso">
-        <div className="dos-columnas__principal">
-          <FlujoDelCaso caso={caso} actual={etapa} alElegir={elegirEtapa}>
-            {/* Se vuelven a montar al cambiar el estado: cerrar o reabrir cambia qué se puede hacer. */}
-            {etapa === 'imagenes' && (
-              <SeccionImagenes
-                key={caso.estado}
-                idCaso={caso.id}
-                alCambiar={recargar}
-                alSolicitarAnalisis={async () => {
-                  await recargar()
-                  elegirEtapa('analisis')
-                }}
-              />
-            )}
-            {etapa === 'analisis' && (
-              <SeccionAnalisis
-                key={`analisis-${caso.estado}`}
-                idCaso={caso.id}
-                puedeGenerar={caso.acciones.editar}
-                alTerminar={recargar}
-                alVerInforme={() => elegirEtapa('informe')}
-                alCargarImagenes={() => elegirEtapa('imagenes')}
-              />
-            )}
-            {etapa === 'informe' && (
-              <SeccionInformes
-                key={`informes-${caso.actualizado_en}`}
-                idCaso={caso.id}
-                alVerAnalisis={() => elegirEtapa('analisis')}
-              />
-            )}
-          </FlujoDelCaso>
-        </div>
-        <div className="dos-columnas__lateral">
+      {etapa === 'gestion' ? (
+        <section className="vista-gestion" aria-labelledby="titulo-gestion">
+          <div className="vista-gestion__cabecera">
+            <h2 id="titulo-gestion">Datos y gestión</h2>
+            <button type="button" className="boton boton--secundario boton--chico" onClick={() => elegirEtapa(etapaPorDefecto(caso))}>
+              <Icono nombre="izquierda" tamanio={16} />
+              Volver a las imágenes, el análisis y el informe
+            </button>
+          </div>
+          <div className="gestion-caso">
           <SeccionDatos
             key={`${caso.actualizado_en}-${caso.estado}`}
             caso={caso}
@@ -753,25 +751,60 @@ export default function PaginaCaso() {
               await recargar()
             }}
           />
-          <SeccionEstado caso={caso} ejecutar={ejecutar} />
-          {caso.espacio.tipo === 'organizacion' && (
-            <SeccionAccesos caso={caso} accesos={accesos} miembros={miembros} ejecutar={ejecutar} />
-          )}
-          {(caso.acciones.transferir || caso.acciones.eliminar) && (
-            <details className="plegable plegable--peligro" open={Boolean(caso.transferencia_pendiente)}>
-              <summary>
-                <span className="plegable__titulo">Transferir o eliminar el caso</span>
-              </summary>
-              <div className="plegable__cuerpo">
-                {caso.acciones.transferir && (
-                  <SeccionTransferir caso={caso} miembros={miembros} ejecutar={ejecutar} />
-                )}
-                {caso.acciones.eliminar && <SeccionEliminar caso={caso} />}
-              </div>
-            </details>
-          )}
+          <div className="gestion-caso__columna">
+            <SeccionEstado caso={caso} ejecutar={ejecutar} />
+            {caso.espacio.tipo === 'organizacion' && (
+              <SeccionAccesos caso={caso} accesos={accesos} miembros={miembros} ejecutar={ejecutar} />
+            )}
+            {(caso.acciones.transferir || caso.acciones.eliminar) && (
+              <details className="plegable plegable--peligro" open={Boolean(caso.transferencia_pendiente)}>
+                <summary>
+                  <span className="plegable__titulo">Transferir o eliminar el {rubro.caso}</span>
+                </summary>
+                <div className="plegable__cuerpo">
+                  {caso.acciones.transferir && (
+                    <SeccionTransferir caso={caso} miembros={miembros} ejecutar={ejecutar} />
+                  )}
+                  {caso.acciones.eliminar && <SeccionEliminar caso={caso} />}
+                </div>
+              </details>
+            )}
+          </div>
         </div>
-      </div>
+        </section>
+      ) : (
+      <FlujoDelCaso caso={caso} actual={etapa} alElegir={elegirEtapa}>
+        {/* Se vuelven a montar al cambiar el estado: cerrar o reabrir cambia qué se puede hacer. */}
+        {etapa === 'imagenes' && (
+          <SeccionImagenes
+            key={caso.estado}
+            idCaso={caso.id}
+            alCambiar={recargar}
+            alSolicitarAnalisis={async () => {
+              await recargar()
+              elegirEtapa('analisis')
+            }}
+          />
+        )}
+        {etapa === 'analisis' && (
+          <SeccionAnalisis
+            key={`analisis-${caso.estado}`}
+            idCaso={caso.id}
+            puedeGenerar={caso.acciones.editar}
+            alTerminar={recargar}
+            alVerInforme={() => elegirEtapa('informe')}
+            alCargarImagenes={() => elegirEtapa('imagenes')}
+          />
+        )}
+        {etapa === 'informe' && (
+          <SeccionInformes
+            key={`informes-${caso.actualizado_en}`}
+            idCaso={caso.id}
+            alVerAnalisis={() => elegirEtapa('analisis')}
+          />
+        )}
+      </FlujoDelCaso>
+      )}
     </>
   )
 }

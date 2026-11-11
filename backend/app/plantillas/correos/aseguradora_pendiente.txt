@@ -1,0 +1,8 @@
+Hola, {{ nombre }}:
+
+{{ organizacion }}{% if cuit %} (CUIT {{ cuit }}){% endif %} se registró, pagó su plan y espera tu aprobación.
+
+{% if es_aseguradora %}Antes de aprobarla, comprobá que la persona que la registró trabaje en la aseguradora.{% else %}Antes de aprobarlo, comprobá la matrícula de la persona que lo registró.{% endif %} Si {% if es_aseguradora %}la rechazás{% else %}lo rechazás{% endif %}, el pago se devuelve.
+
+Revisala en Administración:
+{{ enlace }}

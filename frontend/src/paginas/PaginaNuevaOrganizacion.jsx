@@ -5,7 +5,7 @@
  *
  * Desde la funcionalidad 032 (frame 10e) son tres pasos: los datos del
  * estudio, el plan (Básico o Profesional) y el pago. Al crearlo, el usuario
- * queda como Referente y pasa a la página de pago; el estudio queda activo
+ * queda como Referente y pasa a la página de pago; el estudio queda pendiente de la aprobación del Administrador (038)
  * cuando el pago se acredita.
  *
  * Realiza: RF10; CA1 de la funcionalidad 004; CA9 de la 032.
@@ -138,7 +138,7 @@ export default function PaginaNuevaOrganizacion() {
               </h2>
               <PasoPlan valor={valores.plan} cambiar={cambiar} error={errores.plan} />
               <Aviso tipo="info">
-                Después del pago el estudio queda activo y en el menú aparece «Organizaciones».
+                Después del pago, un Administrador revisa el estudio y te avisamos por correo cuando esté activo.
               </Aviso>
             </>
           )}

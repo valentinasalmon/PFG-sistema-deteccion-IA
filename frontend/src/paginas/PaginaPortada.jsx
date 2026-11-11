@@ -88,13 +88,33 @@ const MIRADAS = [
     codigo: 'RED NEURONAL',
     titulo: 'Imagen con IA',
     texto: 'Qué tan probable es que la haya creado una IA.',
+    // Decisión de la autora (037): se muestra como «Próximamente» hasta integrar la 012.
+    proximamente: true,
   },
 ]
 
 const PASOS = [
-  { titulo: 'Creá el caso', texto: 'Con la fecha y el lugar del hecho.' },
-  { titulo: 'Subí o pedí las fotos', texto: 'Desde tu compu, tu celular o el de tu cliente.' },
+  { titulo: 'Creá el caso o el siniestro', texto: 'Con la fecha y el lugar del hecho.' },
+  { titulo: 'Subí o pedí las fotos', texto: 'Desde tu compu, tu celular o el de tu cliente o asegurado.' },
   { titulo: 'Descargá el informe', texto: 'Sellado y con un código para verificarlo.' },
+]
+
+/** Para quién es: una tarjeta por perfil (decisión de la autora, 037). */
+const PERFILES = [
+  {
+    etiqueta: 'Abogados y estudios',
+    titulo: 'Tus casos, con prueba revisada',
+    texto: 'Antes de ofrecer una foto como prueba, sabé si conviene presentarla o pedir una pericia. Cuenta personal gratis; tu estudio, con un plan.',
+    ruta: '/registro?tipo=independiente',
+    accion: 'Crear cuenta de abogado',
+  },
+  {
+    etiqueta: 'Aseguradoras',
+    titulo: 'Tus siniestros, verificados antes de liquidar',
+    texto: 'Revisá las fotos de cada denuncia y decidí si liquidar o derivar a verificación. Tu equipo entra por invitación.',
+    ruta: '/registro?tipo=aseguradora',
+    accion: 'Registrar mi aseguradora',
+  },
 ]
 
 const ORGANIZACIONES = [
@@ -269,8 +289,8 @@ export default function PaginaPortada() {
             <span className="portada-recuadro">minutos</span>.
           </h1>
           <p className="portada-heroe__bajada">
-            Subí las fotos de tu caso y evidentIA te muestra, capa por capa, si hay señales de edición o de
-            imagen hecha con IA. Con un informe claro para presentar.
+            Subí las fotos de un caso o de un siniestro y evidentIA te muestra, capa por capa, si hay señales
+            de edición o de imagen hecha con IA. Con un informe claro para presentar o para decidir.
           </p>
           <div className="portada-ctas">
             <Link to="/registro?tipo=independiente" className="portada-pill portada-pill--lima">
@@ -301,6 +321,22 @@ export default function PaginaPortada() {
           </div>
         </header>
 
+        <section className="portada-perfiles" aria-labelledby="titulo-perfiles">
+          <h2 id="titulo-perfiles" className="solo-lectores">Para quién es</h2>
+          <ul className="portada-perfiles__grilla">
+            {PERFILES.map((perfil) => (
+              <li key={perfil.titulo} className="portada-perfil" data-aparecer>
+                <span className="portada-etq">{perfil.etiqueta}</span>
+                <h3>{perfil.titulo}</h3>
+                <p>{perfil.texto}</p>
+                <Link to={perfil.ruta} className="portada-perfil__enlace">
+                  {perfil.accion} <span aria-hidden="true">→</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         <section id="como-funciona" className="portada-miradas" aria-labelledby="titulo-miradas">
           <div className="portada-cab portada-cab--izquierda" data-aparecer>
             <span className="portada-etq">Qué miramos</span>
@@ -315,7 +351,10 @@ export default function PaginaPortada() {
                 </span>
                 <span className="portada-mirada__texto">
                   <code>{mirada.codigo}</code>
-                  <h3>{mirada.titulo}</h3>
+                  <h3>
+                    {mirada.titulo}
+                    {mirada.proximamente && <span className="portada-mirada__pronto">Próximamente</span>}
+                  </h3>
                   <p>{mirada.texto}</p>
                 </span>
               </li>
@@ -343,7 +382,7 @@ export default function PaginaPortada() {
             <img
               src="/portada/buscador.jpg"
               width="640"
-              height="490"
+              height="409"
               loading="lazy"
               alt="Buscador de evidentIA: escribiendo parte de una dirección aparecen los casos que coinciden"
             />

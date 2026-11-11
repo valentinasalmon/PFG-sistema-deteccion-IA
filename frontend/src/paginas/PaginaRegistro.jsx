@@ -315,6 +315,9 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
   }
 
   const esPasoDeCuenta = paso === 'cuenta'
+  // 037: si el mensaje ya se muestra junto a su campo, no se repite arriba.
+  const errorGeneral =
+    error && !Object.values(error.errores ?? {}).includes(error.message) ? error.message : null
 
   return (
     <div className="registro-ancho">
@@ -343,7 +346,7 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
       <h2 id="titulo-paso" ref={refTitulo} tabIndex={-1} className="pasos__titulo">
         {tituloDelPaso(paso, valores, esEmpleado)}
       </h2>
-      {error && <Aviso tipo="error">{error.message}</Aviso>}
+      {errorGeneral && <Aviso tipo="error">{errorGeneral}</Aviso>}
 
       <form onSubmit={esPasoDeCuenta ? crearCuenta : avanzar} className="formulario" noValidate>
         {paso === 'perfil' && (
@@ -405,27 +408,30 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
 
         {paso === 'cuenta' && (
           <>
-            <CampoTexto
-              etiqueta="Correo electrónico"
-              nombre="correo"
-              tipo="email"
-              autoComplete="email"
-              value={valores.correo}
-              onChange={cambiar}
-              error={errores.correo}
-              readOnly={Boolean(invitacion)}
-              ayuda={invitacion ? 'Es el correo al que llegó la invitación.' : undefined}
-              required
-            />
-            <CampoContrasenia
-              etiqueta="Contraseña"
-              nombre="contrasenia"
-              autoComplete="new-password"
-              value={valores.contrasenia}
-              onChange={cambiar}
-              error={errores.contrasenia}
-              required
-            />
+            {/* 038: correo y contraseña lado a lado en computadora, para que el paso entre en una pantalla. */}
+            <div className="campos-en-fila campos-en-fila--arriba">
+              <CampoTexto
+                etiqueta="Correo electrónico"
+                nombre="correo"
+                tipo="email"
+                autoComplete="email"
+                value={valores.correo}
+                onChange={cambiar}
+                error={errores.correo}
+                readOnly={Boolean(invitacion)}
+                ayuda={invitacion ? 'Es el correo al que llegó la invitación.' : undefined}
+                required
+              />
+              <CampoContrasenia
+                etiqueta="Contraseña"
+                nombre="contrasenia"
+                autoComplete="new-password"
+                value={valores.contrasenia}
+                onChange={cambiar}
+                error={errores.contrasenia}
+                required
+              />
+            </div>
             <ReglasContrasenia contrasenia={valores.contrasenia} id="reglas-contrasenia" />
 
             <AceptacionTerminos
@@ -437,6 +443,12 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
         )}
 
         <div className="pasos__acciones">
+          {/* 038: en el primer paso, el enlace a iniciar sesión va en la misma fila que «Siguiente». */}
+          {indice === 0 && (
+            <span className="pasos__cuenta">
+              ¿Ya tenés cuenta? <Link to="/iniciar-sesion">Iniciá sesión</Link>
+            </span>
+          )}
           {indice > 0 && (
             <button type="button" className="boton boton--secundario" onClick={volver}>
               Atrás
@@ -458,11 +470,13 @@ function FormularioRegistro({ invitacion, token, caminoPedido, planPedido }) {
         </div>
       </form>
 
-      <p className="enlaces-secundarios">
-        <span>
-          ¿Ya tenés cuenta? <Link to="/iniciar-sesion">Iniciá sesión</Link>
-        </span>
-      </p>
+      {indice > 0 && (
+        <p className="enlaces-secundarios">
+          <span>
+            ¿Ya tenés cuenta? <Link to="/iniciar-sesion">Iniciá sesión</Link>
+          </span>
+        </p>
+      )}
     </div>
   )
 }

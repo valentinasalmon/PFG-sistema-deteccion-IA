@@ -170,19 +170,37 @@ class ServicioCorreos:  # pylint: disable=too-many-public-methods
     # --- Aseguradoras (funcionalidad 021) ---
 
     def enviar_aviso_aseguradora_aprobada(self, usuario, organizacion):
-        """Aviso al Referente de que el Administrador aprobó su aseguradora (CA8 de la 021)."""
+        """Aviso al Referente de que el Administrador aprobó su organización (021, 038)."""
         return self._enviar(
             usuario.correo, f"{organizacion.nombre} ya está aprobada", "aseguradora_aprobada",
             nombre=usuario.nombre, organizacion=organizacion.nombre,
+            es_aseguradora=organizacion.es_aseguradora,
             enlace=self._enlace_organizacion(organizacion),
         )
 
-    def enviar_aviso_aseguradora_rechazada(self, usuario, nombre_organizacion, motivo):
-        """Aviso al Referente de que su aseguradora fue rechazada, con el motivo (CA9)."""
+    def enviar_aviso_aseguradora_pendiente(self, administrador, organizacion):
+        """Aviso al Administrador: una organización pagó y espera su aprobación (037, 038)."""
+        return self._enviar(
+            administrador.correo, f"{organizacion.nombre} espera tu aprobación",
+            "aseguradora_pendiente",
+            nombre=administrador.nombre, organizacion=organizacion.nombre,
+            cuit=organizacion.cuit, es_aseguradora=organizacion.es_aseguradora,
+            enlace=f"{self.url_frontend}/administracion",
+        )
+
+    def enviar_aviso_aseguradora_rechazada(  # pylint: disable=too-many-arguments
+        self, usuario, nombre_organizacion, motivo, *, es_aseguradora=True, desactivada=True
+    ):
+        """Aviso al Referente de que su organización fue rechazada, con el motivo (CA9, 038).
+
+        Args:
+            desactivada: si la cuenta quedó desactivada (solo el perfil Aseguradora).
+        """
         return self._enviar(
             usuario.correo, f"No se aprobó el registro de {nombre_organizacion}",
             "aseguradora_rechazada",
             nombre=usuario.nombre, organizacion=nombre_organizacion, motivo=motivo,
+            es_aseguradora=es_aseguradora, desactivada=desactivada,
         )
 
     # --- Casos (funcionalidad 005) ---
