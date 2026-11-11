@@ -46,6 +46,7 @@ Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento com
 | 2026-11-04 | La familia de Google (Imagen 4, Imagen 3, Nano Banana 2) como generadores no vistos | Es lo que usa Gemini; está en OpenFake y permite la demostración de reentrenamiento planificada | Capítulo 4 |
 | 2026-11-04 | Depuración: sin generadores que no hacen fotos, sin imágenes de menos de 256 px y sin agrandar al normalizar | Las reales son fotos; las ilustraciones y la interpolación serían atajos | Capítulo 4 |
 | 2026-11-04 | Búfer de mezcla por fuente y borrado de las imágenes crudas después de preparar | Las reales de OpenFake pesan ~4 MB: memoria y disco de Colab | Capítulos 4 y 8 |
+| 2026-11-11 | **Mejora continua por versiones** (decisión de la autora): el conjunto propio se divide en evaluación fija (nunca entrena) y ajuste (puede entrenar), por prompt y con una regla reproducible; cada reentrenamiento es una MINOR que se publica solo si pasa la compuerta (AUC de prueba ≥ 0,90, mejora en la evaluación fija y sin empeorar en no vistos); corte para el informe el 16/11 | La `1.0.0` detecta solo el 10 % de las imágenes de las herramientas comerciales; así puede aprender de ellas sin inflar la medición. Reemplaza «el conjunto propio nunca se usa para entrenar». Las fotos reales de la parte de ajuste pueden entrenar porque tienen sintéticas de las mismas escenas | [ADR-0022](../arquitectura/decisiones/0022-mejora-continua-de-la-red-por-versiones.md), capítulo 4 |
 | 2026-10-30 | Plan de entrenamientos: 2 obligatorios (completo y repetición), 1 o 2 de ajuste y 1 o 2 de la demostración de reentrenamiento | Explicado a la autora | Capítulo 8 |
 
 ## Riesgos y cómo se mitigan
@@ -57,14 +58,20 @@ Todo vive en la rama `funcionalidad/010-red-neuronal` hasta el entrenamiento com
 | Cortes de sesión en Colab | Respaldo por etapa en Drive, puntos de control por época y opción de Kaggle en segundo plano |
 | Un conjunto exige aceptar condiciones o deja de estar disponible | Verificación en la exploración (T25); las fuentes son intercambiables |
 | Licencias solo para investigación | Registradas en la ficha; reentrenar con datos compatibles si se comercializa |
-| Fuga de datos del conjunto propio | Drive privado; nunca se usa para entrenar ni se sube al repositorio |
+| Fuga de datos del conjunto propio | Drive privado; nunca se sube al repositorio |
+| Fuga entre la evaluación fija y el ajuste (la misma escena en los dos lados) | Se asigna por prompt, no por archivo: todas las herramientas y variantes de un prompt van juntas; la tabla fija y la regla tienen pruebas automáticas (ADR-0022) |
+| Una versión nueva «mejora» por casualidad o empeora con fotos reales | Compuerta MINOR con la evaluación fija, la `1.0.0` reevaluada sobre lo mismo y la tasa de falsos positivos; sin fotos reales en la evaluación fija, la mejora en falsos positivos no se puede medir y se declara |
+| Términos de uso de las herramientas generativas al entrenar con la parte de ajuste | Uso académico, no comercial; herramienta y fecha en la ficha (CP-45) |
 | Credenciales expuestas | Solo como secretos; el cuaderno nunca las muestra |
 | Umbral distinto entre el informe (F1 ≥ 0,85) y la especificación (AUC ≥ 0,90) | Validar con los tutores |
 
 ## Próximos pasos, en orden
 
-1. **Publicar la 1.0.0 en el registro local** (autora): ejecutar la celda de publicación y la sección 6 del cuaderno 03. Después, crear el repositorio de modelos en Hugging Face (E03) para la publicación definitiva.
-2. **Fotos reales de choques** en el conjunto propio (CarDD y fotos propias), para medir el AUC por escena; seguir con las demás escenas.
-3. **Repetición** del entrenamiento para la reproducibilidad (T31).
-4. **1.1.0:** sumar la familia de Google y, si se puede leer, MLLM-Generated, y comparar contra el conjunto propio.
-5. **Funcionalidad 012:** integrar el modelo en el análisis y el informe.
+Desde el 2026-11-11 rige la mejora continua por versiones (ADR-0022). Corte para el informe: **16/11**.
+
+1. ~~Publicar la `1.0.0` en Hugging Face (E03, T33)~~ ✔ 2026-11-10. ~~Integrarla en el análisis (funcionalidad 012)~~ ✔ activa en producción. Primera prueba de la autora: cerca de 0 % en una imagen del conjunto propio, coherente con el 10 % de detección medido.
+2. **Repetición** del entrenamiento para la reproducibilidad (T31).
+3. ~~Separar el conjunto propio en evaluación fija y ajuste (T36)~~ ✔ 2026-11-11.
+4. **Evaluación fija** (T37): evaluar solo con ese lado y volver a evaluar la `1.0.0` sobre él.
+5. **`1.1.0`** (T38 a T40): familia de Google salvo Nano Banana 2 (CP-44) más la parte de ajuste, compuerta MINOR y comparación contra la `1.0.0`.
+6. **Fotos reales** de las mismas escenas (celular propio y CarDD), repartidas por la misma regla.

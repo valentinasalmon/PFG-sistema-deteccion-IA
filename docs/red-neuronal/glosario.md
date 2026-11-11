@@ -11,7 +11,7 @@
 | **CI · CT · CD** | Integración continua (probar el código en cada cambio), entrenamiento continuo (reentrenar a pedido) y entrega continua (exportar, verificar y publicar) |
 | **Clasificación binaria** | Problema con dos clases: 0 = real, 1 = sintética |
 | **Compuerta de promoción** | Verificación automática de cinco criterios antes de publicar un modelo |
-| **Conjunto propio** | Fotos reunidas por la autora (ChatGPT, Gemini, Copilot, reales, editadas) en tres variantes; solo para evaluar |
+| **Conjunto propio** | Fotos reunidas por la autora (ChatGPT, Gemini, Copilot, reales, editadas) en dos variantes (original y captura); se divide en **evaluación fija** (nunca entrena) y **ajuste** (puede entrenar), ADR-0022 |
 | **Convolución** | Filtro chico que recorre la imagen buscando patrones; base de las redes para imágenes |
 | **Cuaderno (notebook)** | Archivo `.ipynb` de Colab o Kaggle que ejecuta las etapas; no contiene lógica propia |
 | **Cuota por generador** | Máximo de imágenes sintéticas que aporta un mismo generador, para que ninguno domine y las métricas por generador tengan sentido |

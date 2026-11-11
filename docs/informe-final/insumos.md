@@ -354,3 +354,16 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Un enlace tiene que cumplir lo que su rótulo promete**: el QR «Análisis detallado» llevaba al análisis plegado; se agregó un parámetro que lo despliega entero.
 - **Vocabulario por destinatario**: los correos usan «caso» o «siniestro» según el perfil de quien los recibe.
 - **Verificación visual automatizada**: el sensor de diseño y los recorridos de punta a punta pasaron a la integración continua, con un entorno completo (base, Redis, backend y frontend) levantado en GitHub Actions; deja de depender de que alguien los corra a mano.
+
+## Mejora continua de la red, medida sin trampa (ADR-0022, 2026-11-11)
+
+- **Problema:** la `1.0.0` detecta bien los generadores de los conjuntos públicos (AUC 0,961) pero solo el 10 % de las imágenes hechas con ChatGPT, Copilot y Gemini. Si el conjunto propio solo evalúa, el modelo nunca aprende de esas herramientas. Si se entrena con todo, ya no hay con qué medir la mejora.
+- **Decisión de la autora:** dividir el conjunto propio en una **evaluación fija**, que nunca entrena, y una parte de **ajuste**, que sí. Cada reentrenamiento es una versión MINOR que se publica solo si mejora en la evaluación fija sin empeorar en los generadores no vistos y mantiene AUC ≥ 0,90 en la prueba.
+- **Hallazgo metodológico:** la unidad de separación tiene que ser el **prompt** y no el archivo. El mismo prompt hecho con tres herramientas, y su captura de pantalla, comparten la escena. Separarlos por archivo filtraría la escena del entrenamiento a la evaluación e inflaría la mejora.
+- **Reproducibilidad:** tabla fija para la lista maestra (mitad y mitad por escena y por tono de piel) y huellas SHA-256 con semilla para lo que se sume. Una imagen nunca cambia de lado.
+- **Para el informe:** la precisión puede mejorar con datos nuevos y se mide sin trampa. Corte el 16/11: la versión publicada a esa fecha y sus cifras van al informe; las posteriores, a la defensa como evolución del modelo.
+- **Limitaciones declaradas:**
+  - sin fotos reales en la evaluación fija, la mejora en falsos positivos no se puede medir;
+  - las imágenes de Gemini de la parte de ajuste pueden ser de la misma familia que el generador reservado como no visto (CP-44);
+  - los términos de uso de las herramientas para entrenar un detector quedan registrados en la ficha (CP-45).
+

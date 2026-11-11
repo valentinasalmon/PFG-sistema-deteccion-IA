@@ -171,10 +171,20 @@ Todos los comandos de verificación se ejecutan desde `red_neuronal/` con el ent
   - Verificación: diferencia de AUC < 0,01 (CA7).
 - [ ] **T32 (manual)** — Evaluación en condiciones reales: conjunto propio por herramienta, por escena y por variante (original y captura; WhatsApp se quitó el 2026-10-30) y fotos editadas (CA12, CA13), y generadores no vistos.
   - Verificación: `metricas.json` con todos los grupos; gráficos respaldados en Drive.
-- [ ] **T33 (manual)** — Exportar, generar la ficha y publicar la versión `1.0.0` en Hugging Face a través de la compuerta. Copiar la ficha al repositorio.
+- [x] **T33 (manual)** — Exportar, generar la ficha y publicar la versión `1.0.0` en Hugging Face a través de la compuerta. Copiar la ficha al repositorio.
   - Archivos: `red_neuronal/informes/1.0.0/ficha.md` (y gráficos `.png` livianos)
   - Verificación: la etiqueta `v1.0.0` existe en el repositorio de Hugging Face; `RegistroHuggingFace.obtener("1.0.0")` descarga y verifica la huella; la ficha cumple CA17.
   - Commit: `documentacion(clasificador): agregar ficha del modelo 1.0.0`
+
+## Fase L2 — Mejora continua por versiones (ADR-0022, decisión de la autora del 2026-11-11)
+
+- [x] **T36** — Separar el conjunto propio en evaluación fija y ajuste, por prompt, con una regla reproducible y una tabla fija para la lista maestra.
+  - Archivos: `red_neuronal/clasificador/datos/particion_propia.py`, `red_neuronal/configuracion/particion_conjunto_propio.csv`, `red_neuronal/pruebas/datos/test_particion_propia.py`
+  - Commit: `funcionalidad(clasificador): separar el conjunto propio en evaluacion fija y ajuste`
+- [ ] **T37** — Evaluar solo con la evaluación fija (reales y sintéticas), por herramienta, escena y variante, y volver a evaluar la `1.0.0` sobre ella.
+- [ ] **T38** — Sumar la parte de ajuste al entrenamiento, con repetición configurable en la receta, y la familia de Google salvo Nano Banana 2 (CP-44): receta `v1.1.yaml`.
+- [ ] **T39** — Compuerta MINOR: AUC de prueba ≥ 0,90, mejora frente a la versión anterior en la evaluación fija y sin empeorar en no vistos; si rechaza, se registra y se descarta.
+- [ ] **T40 (manual, autora)** — Entrenar la `1.1.0` en Colab y publicarla si pasa la compuerta. Corte para el informe: 16/11.
 
 ## Fase M — Documentación
 

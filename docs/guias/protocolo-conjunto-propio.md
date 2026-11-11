@@ -4,7 +4,7 @@ Guía para que la autora genere y reúna las imágenes del **conjunto propio**. 
 
 > **Cómo hacerlo, paso a paso:** la [guía paso a paso del conjunto propio](guia-paso-a-paso-conjunto-propio.md) tiene la **lista maestra de 90 prompts ya armados y numerados**, las versiones de cada prompt, las carpetas, la rutina con cada imagen, las fotos reales a sacar y cómo buscar conjuntos de datos. Este protocolo tiene las reglas.
 
-> **Estas imágenes nunca se usan para entrenar ni se suben al repositorio.** Se guardan en una carpeta privada de Google Drive y solo se usan para evaluar.
+> **Estas imágenes nunca se suben al repositorio.** Se guardan en una carpeta privada de Google Drive. Desde el 2026-11-11 ([ADR-0022](../arquitectura/decisiones/0022-mejora-continua-de-la-red-por-versiones.md)) se dividen en dos lados: la **evaluación fija**, que nunca se usa para entrenar, y el **ajuste**, que puede sumarse al entrenamiento de una versión nueva. El lado lo fija el número del prompt (columna «Lado» de la planilla) y nunca cambia.
 
 ## Regla de oro: misma escena, misma diversidad
 

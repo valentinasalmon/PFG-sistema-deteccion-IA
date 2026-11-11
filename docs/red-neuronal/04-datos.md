@@ -88,7 +88,7 @@ No se usan los conjuntos completos: se toma una muestra y se depura en cada etap
 
 Total: **17 500 reales y 17 500 sintéticas**, unas 3,5 veces la prueba de concepto. 15 épocas con paciencia 3.
 
-### Conjunto propio (para evaluar en condiciones reales)
+### Conjunto propio (evaluación fija y ajuste)
 
 Lo arma la autora siguiendo el [protocolo del conjunto propio](../guias/protocolo-conjunto-propio.md) (tarea T26): fotos generadas con **ChatGPT, Gemini, Copilot** (y Midjourney si hay acceso), **fotos reales propias** y **fotos reales editadas con IA**, de escenas de los dos tipos de caso del sistema: **automovilístico** (choques, rayones, vidrios rotos, lugar del siniestro) y **laboral** (lesiones, lugar del accidente de trabajo, herramientas y elementos de protección dañados). Cada una en dos versiones: **original y captura de pantalla**. La versión de WhatsApp se quitó el 2026-10-30 (decisión de la autora): las fotos de un caso las sube la persona afectada desde el enlace de carga, así que llegan como original, como captura o generadas con IA.
 
@@ -98,12 +98,24 @@ Lo arma la autora siguiendo el [protocolo del conjunto propio](../guias/protocol
 - **Cómo se genera:** la [guía paso a paso](../guias/guia-paso-a-paso-conjunto-propio.md) tiene una **lista maestra de 90 prompts numerados** (el mismo prompt en todas las herramientas, para comparar con el mismo contenido), versiones v1, v2 (suave, si la herramienta se niega) y v3 (más realista), 20 ediciones de fotos reales, la lista de fotos reales que saca la autora y cómo buscar conjuntos nuevos.
 - **Fotos reales de conjuntos públicos:** CarDD (autos dañados), SCIN (fotos de piel sacadas por las propias personas, con el tono de piel etiquetado) y MOCS (obras), en `real/cardd/`, `real/scin/` y `real/obras/`. Ver la investigación.
 - Se guarda en una carpeta **privada** de Google Drive (`evidentia/conjunto-propio/`), con la estructura `<clase>/<generador>/<variante>/`. Las carpetas se leen sin distinguir mayúsculas de minúsculas (`SINTETICA/GEMINI/ORIGINAL` = `sintetica/gemini/original`).
-- **Nunca** se usa para entrenar ni se sube al repositorio: solo para evaluar (CA12, CA13).
+- **Nunca** se sube al repositorio.
+- **Dos lados que nunca se mezclan** (decisión de la autora del 2026-11-11, [ADR-0022](../arquitectura/decisiones/0022-mejora-continua-de-la-red-por-versiones.md); reemplaza la regla anterior de no entrenar nunca con el conjunto propio):
+  - **evaluación fija**: nunca se usa para entrenar. Mide cada versión contra la anterior (CA12, CA13);
+  - **ajuste**: puede sumarse al entrenamiento de una versión nueva (`1.1.0` en adelante).
+- **La unidad es el prompt, no el archivo.** Las tres herramientas y las dos variantes de un mismo prompt van del mismo lado. Si no, el modelo vería al entrenar la escena con la que después se lo evalúa.
+- **Regla reproducible** (`clasificador/datos/particion_propia.py`), que no depende de las demás imágenes, así que sumar fotos no mueve a nadie de lado:
+
+  | Imágenes | Cómo se asigna el lado |
+  |---|---|
+  | Los 89 prompts de la lista maestra | Tabla fija `red_neuronal/configuracion/particion_conjunto_propio.csv`: mitad y mitad dentro de cada escena y de cada tono de piel (45 de evaluación, 44 de ajuste) |
+  | Ediciones (201 a 220) | Del lado de su foto de origen |
+  | Fotos reales (301 en adelante) y prompts nuevos | Huella SHA-256 de `escena-número` con semilla fija; la mitad a cada lado |
+  | Archivos sin el formato `<escena>-<número>` (por ejemplo, CarDD) | Huella SHA-256 del contenido |
 - Se evalúa **sin normalizar**, tal como llega, porque lo que se quiere medir es justamente el efecto de las capturas.
 
 ### Lo que nunca se usa
 
-Las fotos de los casos de los usuarios. Son confidenciales (RNF08) y no se reutilizan para entrenar.
+Las fotos de los casos de los usuarios. Son confidenciales (RNF08) y no se reutilizan para entrenar. Tampoco conjuntos sin licencia verificada (ADR-0022).
 
 ## El manifiesto: la identidad de un conjunto
 

@@ -281,6 +281,7 @@ Hoja de cálculo de Google `evidentia/planilla-conjunto-propio`, con estas colum
 | 05-lesion-041 | chatgpt | 41 | v2 | 05 | ChatGPT (GPT-image) | 2026-11-03 | trigueña | — | no | Se negó con v1 |
 | 01-choque-201 | gemini-edicion | E01 | — | 01 | Gemini | 2026-11-04 | — | 01-choque-301 | sí | |
 
+- **Lado** (desde el 2026-11-11, ADR-0022): `evaluacion` o `ajuste`. Para los prompts 1 a 90 sale de la tabla fija `red_neuronal/configuracion/particion_conjunto_propio.csv` (el agente la copia a la planilla). Todas las herramientas y las dos versiones de un mismo número van del mismo lado. Las ediciones van del lado de su foto de origen; las fotos reales, del que les asigna el agente. Nunca se cambia.
 - **Herramienta y modelo:** lo que diga la herramienta (por ejemplo, en Gemini aparece el nombre del modelo). Si no lo dice, solo la herramienta.
 - **Tono de piel:** el del prompt en las generadas; en las reales, el que veas, con las mismas seis palabras.
 
