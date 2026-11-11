@@ -8,7 +8,7 @@ Todos los diagramas del informe salen de aquí. **Representan el sistema real**:
 | `04b-modelo-de-datos-completo` | El mismo, con todas las columnas | **Generado** | Anexo K |
 | `05-secuencia-de-un-caso` | Secuencia UML 2.5: carga, análisis, informe y verificación pública | A mano, siguiendo los servicios que nombra el encabezado | Cap. IX, Diseño de solución |
 | `06-cronograma` | Gantt: planificado frente a real | A mano, desde la bitácora | Cap. V, Cronograma |
-| `07-despliegue-uml` | Despliegue UML 2.5: nodos, entornos de ejecución, artefactos y protocolos | A mano, **verificado** contra Terraform, systemd y Nginx | Cap. IX, Arquitectura |
+| `07-despliegue-uml` | Despliegue UML 2.5: nodos, entornos de ejecución, artefactos y protocolos | Dibujado con posiciones fijas (`diagrama_despliegue.py`, SVG) con los datos leídos de Terraform, systemd y Nginx; **verificado** | Cap. IX, Arquitectura |
 | `08-componentes-uml` | Componentes UML 2.5: capas, interfaces provistas y requeridas (Strategy) | **Generado** desde `app/integraciones` y `app/analisis` | Cap. IX, Diseño de solución |
 | `09-casos-de-uso-actores` | Actores y su generalización | **Generado** desde `docs/especificacion/05-casos-de-uso.md` | Cap. III, Catálogo de requisitos |
 | `09a` a `09e` | Casos de uso por módulo (cuentas; organizaciones, planes y aseguradoras; casos; imágenes, análisis e informes; retención) | **Generado** | Cap. III o Anexo F |
@@ -32,7 +32,8 @@ El revisor `diagramas_del_sistema.py verificar` controla automáticamente las re
    - sin proporciones mayores a 4 a 1 (A), y si hace falta, el diagrama se divide;
    - un diagrama, una idea: los casos de uso van por módulo y las relaciones entre módulos, en un diagrama aparte.
 4. **Color con significado.** Si un color se repite como código, va con su leyenda. Por ejemplo, en el de componentes: capa, implementación real, simulada y prevista.
-5. **Ortografía (A).** Las etiquetas van en español con tildes. Las únicas excepciones son los identificadores del código y de la base (nombres de clases, tablas y archivos).
+5. **Aspecto de diagrama hecho a mano, no generado** (pedido de la autora, 2026-11-11). Blanco y negro con un solo color de acento, líneas rectas (`linetype polyline`) en lugar de curvas, cajas alineadas en filas o columnas y ninguna línea en abanico. Las dependencias hacia un grupo de interfaces van al paquete y no una por interfaz. En los casos de uso, los actores se reparten a los dos lados del sistema para que las asociaciones no se crucen. Cuando la disposición automática no logra esto (el despliegue, con nodos anidados y muchas rutas hacia servicios externos), el diagrama se dibuja con posiciones fijas en SVG.
+6. **Ortografía (A).** Las etiquetas van en español con tildes. Las únicas excepciones son los identificadores del código y de la base (nombres de clases, tablas y archivos).
 
 ## Cómo se regeneran
 
@@ -43,10 +44,11 @@ python herramientas/diagramas_del_sistema.py er --compacto > ../docs/arquitectur
 python herramientas/diagramas_del_sistema.py er > ../docs/arquitectura/diagramas/04b-modelo-de-datos-completo.puml
 python herramientas/diagramas_del_sistema.py componentes > ../docs/arquitectura/diagramas/08-componentes-uml.puml
 python herramientas/diagramas_del_sistema.py casos-de-uso
+python herramientas/diagrama_despliegue.py
 python herramientas/diagramas_del_sistema.py renderizar
 python herramientas/diagramas_del_sistema.py verificar
 ```
 
-Para renderizar hacen falta Java y Graphviz (`dot`). La primera vez se descarga PlantUML 1.2024.7 desde Maven Central.
+Para renderizar hacen falta Java y Graphviz (`dot`) para los `.puml`, y Node con Playwright para los `.svg` (`herramientas/svg_a_png.cjs`). La primera vez se descarga PlantUML 1.2024.7 desde Maven Central.
 
 Las versiones descartadas no se guardan: si un diagrama se rehace, se reemplaza su archivo.

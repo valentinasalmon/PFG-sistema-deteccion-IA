@@ -2,108 +2,118 @@
 skinparam defaultFontName Arial
 skinparam defaultFontSize 13
 skinparam shadowing false
-skinparam ArrowColor #4E5B54
-skinparam nodesep 40
-skinparam ranksep 55
-left to right direction
+skinparam linetype polyline
+skinparam nodesep 28
+skinparam ranksep 48
+skinparam ArrowColor #333333
 skinparam componentStyle uml2
-skinparam componentBorderColor #2F5DA8
-skinparam componentBackgroundColor #EAF0F9
-skinparam interfaceBorderColor #2F5DA8
-skinparam interfaceBackgroundColor #FFFFFF
-skinparam databaseBackgroundColor #EAF0F9
-skinparam rectangleBorderColor #9AA5A0
-skinparam packageBorderColor #4E5B54
-skinparam packageStyle rectangle
-skinparam legendBackgroundColor #FFFFFF
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+}
+skinparam interface {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+}
+skinparam package {
+  BorderColor #777777
+  FontStyle bold
+}
+skinparam database {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+}
+skinparam legend {
+  BackgroundColor #FFFFFF
+  BorderColor #999999
+}
+top to bottom direction
 
 component "Interfaz React\n(navegador)" as spa
-package "Backend (Flask)" {
-  interface "API REST\n/api (JSON)" as iapi
+package "Backend (Flask)" as backend {
+  interface "API REST" as iapi
   component "Rutas\n(19 módulos)" as rutas
   component "Servicios\n(25 módulos)" as servicios
   component "Repositorios\n(15 módulos)" as repos
   component "Modelos\n(11 módulos)" as modelos
-  component "Motor de análisis\n(orquestador y reglas)" as motor
+  component "Motor de análisis" as motor
+  package "CapaAnalisis" as marco_capaanalisis {
+    interface "CapaAnalisis" as i_capaanalisis
+    component "CapaC2PA" as capac2pa #E6EFDC
+    component "CapaELA" as capaela #E6EFDC
+    component "CapaMetadatos" as capametadatos #E6EFDC
+    component "CapaRedNeuronal" as caparedneuronal #E6EFDC
+  }
+}
+package "Integraciones intercambiables" as integraciones {
   package "Almacenamiento" as marco_almacenamiento {
     interface "Almacenamiento" as i_almacenamiento
-    component "AlmacenamientoS3\n{usa: Amazon S3}" as almacenamientos3 #E8F1D2
-    component "AlmacenamientoLocal" as almacenamientolocal #F1F3F2
+    component "AlmacenamientoS3\n{usa: Amazon S3}" as almacenamientos3 #E6EFDC
+    component "AlmacenamientoLocal" as almacenamientolocal
   }
   package "Cola" as marco_cola {
     interface "Cola" as i_cola
-    component "ColaSincronica" as colasincronica #F1F3F2
-    component "ColaEnHilo" as colaenhilo #F1F3F2
-    component "ColaRQ\n{usa: Redis}" as colarq #E8F1D2
+    component "ColaSincronica" as colasincronica
+    component "ColaEnHilo" as colaenhilo
+    component "ColaRQ\n{usa: Redis}" as colarq #E6EFDC
   }
   package "Enviador de correo" as marco_enviadordecorreo {
     interface "Enviador de correo" as i_enviadordecorreo
-    component "EnviadorSMTP\n{usa: Amazon SES}" as enviadorsmtp #E8F1D2
-    component "EnviadorEnSegundoPlano" as enviadorensegundoplano #E8F1D2
-    component "EnviadorMemoria" as enviadormemoria #F1F3F2
+    component "EnviadorSMTP\n{usa: Amazon SES}" as enviadorsmtp #E6EFDC
+    component "EnviadorEnSegundoPlano" as enviadorensegundoplano #E6EFDC
+    component "EnviadorMemoria" as enviadormemoria
   }
   package "Sellador" as marco_sellador {
     interface "Sellador" as i_sellador
-    component "SelladorHedera\n{usa: Hedera}" as selladorhedera #E8F1D2
-    component "SelladorSimulado" as selladorsimulado #F1F3F2
+    component "SelladorHedera\n{usa: Hedera}" as selladorhedera #E6EFDC
+    component "SelladorSimulado" as selladorsimulado
   }
   package "ProveedorPagos" as marco_proveedorpagos {
     interface "ProveedorPagos" as i_proveedorpagos
-    component "ProveedorPagosSimulado" as proveedorpagossimulado #F1F3F2
+    component "ProveedorPagosSimulado" as proveedorpagossimulado
     component "Cresium\n(previsto)" as cresium #FFFFFF;line.dashed
   }
   package "ProveedorIdentidad" as marco_proveedoridentidad {
     interface "ProveedorIdentidad" as i_proveedoridentidad
-    component "ProveedorIdentidadSimulado" as proveedoridentidadsimulado #F1F3F2
+    component "ProveedorIdentidadSimulado" as proveedoridentidadsimulado
     component "Identik\n(previsto)" as identik #FFFFFF;line.dashed
-  }
-  package "CapaAnalisis" as marco_capaanalisis {
-    interface "CapaAnalisis" as i_capaanalisis
-    component "CapaC2PA" as capac2pa #E8F1D2
-    component "CapaELA" as capaela #E8F1D2
-    component "CapaMetadatos" as capametadatos #E8F1D2
-    component "CapaRedNeuronal" as caparedneuronal #E8F1D2
   }
 }
 database "PostgreSQL" as pg
-spa ..> iapi : usa
-rutas -up- iapi
-rutas ..> servicios : llama
-servicios ..> repos : consulta
-repos ..> modelos : mapea
+
+spa ..> iapi : HTTPS
+iapi - rutas
+rutas ..> servicios
+servicios ..> repos
+repos ..> modelos
 modelos ..> pg : SQL
-servicios ..> motor : analiza
-motor ..> i_capaanalisis : ejecuta
-servicios ..> i_almacenamiento
-i_almacenamiento -- almacenamientos3
-i_almacenamiento -- almacenamientolocal
-servicios ..> i_cola
-i_cola -- colasincronica
-i_cola -- colaenhilo
-i_cola -- colarq
-servicios ..> i_enviadordecorreo
-i_enviadordecorreo -- enviadorsmtp
-i_enviadordecorreo -- enviadorensegundoplano
-i_enviadordecorreo -- enviadormemoria
-servicios ..> i_sellador
-i_sellador -- selladorhedera
-i_sellador -- selladorsimulado
-servicios ..> i_proveedorpagos
-i_proveedorpagos -- proveedorpagossimulado
-i_proveedorpagos .. cresium
-servicios ..> i_proveedoridentidad
-i_proveedoridentidad -- proveedoridentidadsimulado
-i_proveedoridentidad .. identik
-i_capaanalisis -- capac2pa
-i_capaanalisis -- capaela
-i_capaanalisis -- capametadatos
-i_capaanalisis -- caparedneuronal
-legend right
-<back:#EAF0F9>      </back> Capas del backend
-<back:#E8F1D2>      </back> Implementación real ({usa: servicio externo})
-<back:#F1F3F2>      </back> Implementación simulada o de prueba
-<back:#FFFFFF>      </back> Proveedor previsto (borde punteado)
-Las interfaces son contratos del código: CapaAnalisis es una clase base;
-las demás, un conjunto común de métodos que cada implementación cumple.
+servicios ..> motor
+motor ..> i_capaanalisis
+servicios ..> integraciones
+almacenamientos3 -- i_almacenamiento
+almacenamientolocal -- i_almacenamiento
+colasincronica -- i_cola
+colaenhilo -- i_cola
+colarq -- i_cola
+enviadorsmtp -- i_enviadordecorreo
+enviadorensegundoplano -- i_enviadordecorreo
+enviadormemoria -- i_enviadordecorreo
+selladorhedera -- i_sellador
+selladorsimulado -- i_sellador
+proveedorpagossimulado -- i_proveedorpagos
+cresium .. i_proveedorpagos
+proveedoridentidadsimulado -- i_proveedoridentidad
+identik .. i_proveedoridentidad
+capac2pa -- i_capaanalisis
+capaela -- i_capaanalisis
+capametadatos -- i_capaanalisis
+caparedneuronal -- i_capaanalisis
+i_almacenamiento -[hidden]down- selladorhedera
+i_cola -[hidden]down- proveedorpagossimulado
+i_enviadordecorreo -[hidden]down- proveedoridentidadsimulado
+legend bottom right
+<back:#E6EFDC>      </back> Implementación real ({usa: servicio externo})
+<back:#FFFFFF>      </back> Implementación simulada o de prueba
+Borde punteado: proveedor previsto
 endlegend
 @enduml

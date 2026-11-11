@@ -5,48 +5,58 @@ skinparam shadowing false
 skinparam ArrowColor #4E5B54
 skinparam nodesep 40
 skinparam ranksep 55
+skinparam linetype polyline
+skinparam ArrowColor #333333
+skinparam actor {
+  BorderColor #222222
+  BackgroundColor #FFFFFF
+}
+skinparam usecase {
+  BorderColor #333333
+  BackgroundColor #FFFFFF
+}
+skinparam rectangle {
+  BorderColor #555555
+  FontStyle bold
+}
 left to right direction
-skinparam usecaseBackgroundColor #F7F9FC
-skinparam usecaseBorderColor #2F5DA8
-skinparam actorBorderColor #17291F
-skinparam packageStyle rectangle
 
-actor "Administrador" as administrador #F6E3C8
-actor "Miembro" as miembro #E8F1D2
-actor "Referente" as referente #E8F1D2
-actor "Usuario" as usuario #DCE6F5
-actor "Visitante" as visitante #DDE3E0
+actor "Referente" as referente
+actor "Usuario" as usuario
+actor "Administrador" as administrador
+actor "Miembro" as miembro
+actor "Visitante" as visitante
 rectangle "evidentIA: organizaciones, planes y aseguradoras" {
-  usecase "Crear organización\n(CU08)" as CU08
   usecase "Editar datos de la organización\n(CU09)" as CU09
   usecase "Invitar miembro\n(CU10)" as CU10
-  usecase "Responder invitación\n(CU11)" as CU11
   usecase "Gestionar miembros\n(CU12)" as CU12
-  usecase "Consultar miembros\n(CU13)" as CU13
   usecase "Abandonar organización\n(CU14)" as CU14
   usecase "Eliminar organización\n(CU15)" as CU15
   usecase "Consultar plan y consumo\n(CU16)" as CU16
-  usecase "Consultar tablero de administración\n(CU17)" as CU17
   usecase "Pagar el plan de la organización\n(CU36)" as CU36
   usecase "Verificar la identidad del Referente\n(CU37)" as CU37
+  usecase "Crear organización\n(CU08)" as CU08
+  usecase "Responder invitación\n(CU11)" as CU11
+  usecase "Consultar tablero de administración\n(CU17)" as CU17
   usecase "Aprobar o rechazar una aseguradora\n(CU38)" as CU38
+  usecase "Consultar miembros\n(CU13)" as CU13
 }
-usuario -- CU08
 referente -- CU09
 referente -- CU10
-visitante -- CU11
-usuario -- CU11
 referente -- CU12
-miembro -- CU13
-miembro -- CU14
+CU14 -- miembro
 referente -- CU14
 referente -- CU15
-usuario -- CU16
+CU16 -- usuario
 referente -- CU16
-administrador -- CU17
 referente -- CU36
 referente -- CU37
+CU08 -- usuario
+visitante -- CU11
+CU11 -- usuario
+administrador -- CU17
 administrador -- CU38
+CU13 -- miembro
 CU15 .> CU14 : <<extend>>
 CU36 .> CU08 : <<extend>>
 @enduml

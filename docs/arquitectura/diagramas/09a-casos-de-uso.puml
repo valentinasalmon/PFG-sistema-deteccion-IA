@@ -5,28 +5,38 @@ skinparam shadowing false
 skinparam ArrowColor #4E5B54
 skinparam nodesep 40
 skinparam ranksep 55
+skinparam linetype polyline
+skinparam ArrowColor #333333
+skinparam actor {
+  BorderColor #222222
+  BackgroundColor #FFFFFF
+}
+skinparam usecase {
+  BorderColor #333333
+  BackgroundColor #FFFFFF
+}
+skinparam rectangle {
+  BorderColor #555555
+  FontStyle bold
+}
 left to right direction
-skinparam usecaseBackgroundColor #F7F9FC
-skinparam usecaseBorderColor #2F5DA8
-skinparam actorBorderColor #17291F
-skinparam packageStyle rectangle
 
-actor "Usuario" as usuario #DCE6F5
-actor "Visitante" as visitante #DDE3E0
+actor "Usuario" as usuario
+actor "Visitante" as visitante
 rectangle "evidentIA: cuentas" {
-  usecase "Registrarse\n(CU01)" as CU01
-  usecase "Iniciar sesión\n(CU02)" as CU02
   usecase "Cerrar sesión\n(CU03)" as CU03
-  usecase "Recuperar contraseña\n(CU04)" as CU04
   usecase "Gestionar perfil propio\n(CU05)" as CU05
   usecase "Eliminar cuenta propia\n(CU06)" as CU06
   usecase "Solicitar copia de datos personales\n(CU07)" as CU07
+  usecase "Registrarse\n(CU01)" as CU01
+  usecase "Iniciar sesión\n(CU02)" as CU02
+  usecase "Recuperar contraseña\n(CU04)" as CU04
 }
-visitante -- CU01
-visitante -- CU02
 usuario -- CU03
-visitante -- CU04
 usuario -- CU05
 usuario -- CU06
 usuario -- CU07
+CU01 -- visitante
+CU02 -- visitante
+CU04 -- visitante
 @enduml

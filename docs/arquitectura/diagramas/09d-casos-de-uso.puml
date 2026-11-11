@@ -5,44 +5,54 @@ skinparam shadowing false
 skinparam ArrowColor #4E5B54
 skinparam nodesep 40
 skinparam ranksep 55
+skinparam linetype polyline
+skinparam ArrowColor #333333
+skinparam actor {
+  BorderColor #222222
+  BackgroundColor #FFFFFF
+}
+skinparam usecase {
+  BorderColor #333333
+  BackgroundColor #FFFFFF
+}
+skinparam rectangle {
+  BorderColor #555555
+  FontStyle bold
+}
 left to right direction
-skinparam usecaseBackgroundColor #F7F9FC
-skinparam usecaseBorderColor #2F5DA8
-skinparam actorBorderColor #17291F
-skinparam packageStyle rectangle
 
-actor "Colaborador" as colaborador #E8F1D2
-actor "Lector" as lector #E8F1D2
-actor "Persona afectada" as personaafectada #E8F1D2
-actor "Responsable" as responsable #E8F1D2
-actor "Sistema\n(procesos automáticos)" as sistema #E4E7E5
-actor "Usuario" as usuario #DCE6F5
-actor "Visitante" as visitante #DDE3E0
+actor "Colaborador" as colaborador
+actor "Responsable" as responsable
+actor "Lector" as lector
+actor "Persona afectada" as personaafectada
+actor "Sistema\n(procesos automáticos)" as sistema
+actor "Usuario" as usuario
+actor "Visitante" as visitante
 rectangle "evidentIA: imágenes, análisis e informes" {
   usecase "Cargar imágenes\n(CU25)" as CU25
   usecase "Eliminar imagen\n(CU26)" as CU26
   usecase "Analizar imágenes\n(CU27)" as CU27
-  usecase "Procesar análisis y generar informe\n(CU28)" as CU28
   usecase "Consultar y descargar informes\n(CU29)" as CU29
-  usecase "Consultar panel principal\n(CU30)" as CU30
   usecase "Cargar imágenes desde el celular\n(CU33)" as CU33
   usecase "Subir imágenes como persona afectada\n(CU34)" as CU34
+  usecase "Procesar análisis y generar informe\n(CU28)" as CU28
+  usecase "Consultar panel principal\n(CU30)" as CU30
   usecase "Verificar un informe\n(CU35)" as CU35
 }
-responsable -- CU25
+CU25 -- responsable
 colaborador -- CU25
-responsable -- CU26
+CU26 -- responsable
 colaborador -- CU26
-responsable -- CU27
+CU27 -- responsable
 colaborador -- CU27
-sistema -- CU28
-responsable -- CU29
+CU29 -- responsable
 colaborador -- CU29
 lector -- CU29
-usuario -- CU30
-responsable -- CU33
+CU33 -- responsable
 colaborador -- CU33
-personaafectada -- CU34
+CU34 -- personaafectada
+sistema -- CU28
+CU30 -- usuario
 visitante -- CU35
 CU33 .> CU25 : <<extend>>
 @enduml

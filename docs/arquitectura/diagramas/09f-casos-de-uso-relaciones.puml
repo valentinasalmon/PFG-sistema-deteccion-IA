@@ -5,9 +5,21 @@ skinparam shadowing false
 skinparam ArrowColor #4E5B54
 skinparam nodesep 40
 skinparam ranksep 55
+skinparam linetype polyline
+skinparam ArrowColor #333333
+skinparam actor {
+  BorderColor #222222
+  BackgroundColor #FFFFFF
+}
+skinparam usecase {
+  BorderColor #333333
+  BackgroundColor #FFFFFF
+}
+skinparam rectangle {
+  BorderColor #555555
+  FontStyle bold
+}
 top to bottom direction
-skinparam usecaseBackgroundColor #F7F9FC
-skinparam usecaseBorderColor #2F5DA8
 usecase "Registrarse\n(CU01)" as CU01
 usecase "Eliminar cuenta propia\n(CU06)" as CU06
 usecase "Crear organización\n(CU08)" as CU08

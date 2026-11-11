@@ -13,7 +13,7 @@ garantiza de tres formas:
 * ``verificar``: comprueba que el diagrama de despliegue mencione los datos
   reales de la infraestructura (tipo de instancia, región, sistema operativo,
   puertos y servicios de systemd), y que los diagramas generados estén al día.
-* ``renderizar``: exporta a PNG todos los ``.puml`` de la carpeta de diagramas
+* ``renderizar``: exporta a PNG todos los ``.puml`` y ``.svg`` de la carpeta de diagramas
   (necesita Java y Graphviz; descarga PlantUML la primera vez).
 
 Uso, desde ``backend/``::
@@ -29,6 +29,7 @@ Realiza: RNF19 (documentación fiel al sistema); funcionalidad 039.
 """
 import argparse
 import ast
+import html
 import os
 import re
 import shutil
@@ -51,6 +52,37 @@ skinparam shadowing false
 skinparam ArrowColor #4E5B54
 skinparam nodesep 40
 skinparam ranksep 55"""
+
+# Estilo de los diagramas de estructura: blanco y negro, líneas ortogonales y
+# un solo color de acento, como los diagramas UML de los libros de texto.
+ESTILO_SOBRIO = """skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam linetype polyline
+skinparam nodesep 28
+skinparam ranksep 48
+skinparam ArrowColor #333333
+skinparam componentStyle uml2
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+}
+skinparam interface {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+}
+skinparam package {
+  BorderColor #777777
+  FontStyle bold
+}
+skinparam database {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+}
+skinparam legend {
+  BackgroundColor #FFFFFF
+  BorderColor #999999
+}"""
 
 # Interfaz común (patrón Strategy) que implementa cada módulo de integraciones.
 INTERFACES = {
@@ -166,9 +198,10 @@ def _leer_columna(nombre, llamada):
 def generar_er(tablas, compacto=False):
     """Diagrama entidad-relación en PlantUML (notación de pata de gallo)."""
     nombre = "modelo-de-datos" if compacto else "modelo-de-datos-completo"
-    lineas = [f"@startuml {nombre}", ESTILO, "hide circle", "skinparam linetype ortho",
-              "skinparam classBackgroundColor #F7F9FC", "skinparam classBorderColor #2F5DA8",
-              ""]
+    lineas = [f"@startuml {nombre}", ESTILO, "hide circle", "skinparam linetype polyline",
+              "skinparam nodesep 60", "skinparam ranksep 70", "skinparam ArrowColor #333333",
+              "skinparam classBackgroundColor #FFFFFF", "skinparam classBorderColor #333333",
+              "skinparam classHeaderBackgroundColor #F2F2F2", ""]
     for tabla in tablas:
         lineas.append(f'entity "{tabla.nombre}" as {tabla.nombre} {{')
         claves = [c for c in tabla.columnas if c.primaria]
@@ -233,65 +266,75 @@ def _contar_modulos(carpeta):
     return len([p for p in (APP / carpeta).glob("*.py") if p.name != "__init__.py"])
 
 
+def _marco_de_interfaz(interfaz, implementaciones):
+    """Paquete de una interfaz con sus implementaciones, y sus líneas de realización."""
+    alias = "i_" + _alias(interfaz)
+    marco = [f'  package "{interfaz}" as marco_{_alias(interfaz)} {{',
+             f'    interface "{interfaz}" as {alias}']
+    relaciones = []
+    for implementacion in implementaciones:
+        nombre = _alias(implementacion)
+        simulada = re.search(r"Simulad|Memoria|Local|Sincronica|EnHilo", implementacion)
+        destino = next((e for c, e in EXTERNOS.items() if c in implementacion), "")
+        etiqueta = f"{implementacion}\\n{{usa: {destino}}}" if destino else implementacion
+        color = "" if simulada else " #E6EFDC"
+        marco.append(f'    component "{etiqueta}" as {nombre}{color}')
+        relaciones.append(f"{nombre} -- {alias}")
+    if interfaz in PREVISTOS:
+        previsto = _alias(PREVISTOS[interfaz])
+        marco.append(f'    component "{PREVISTOS[interfaz]}\\n(previsto)" as {previsto} '
+                     "#FFFFFF;line.dashed")
+        relaciones.append(f"{previsto} .. {alias}")
+    marco.append("  }")
+    return marco, relaciones
+
+
 def generar_componentes(estrategias):
     """Diagrama de componentes UML con interfaces provistas y requeridas.
 
-    Las capas del backend van en una columna; cada interfaz intercambiable
-    (patrón Strategy) va en su propio marco con sus implementaciones, y los
-    servicios externos se agrupan aparte. Los colores distinguen las capas
-    (azul), las implementaciones reales (verde), las simuladas o de prueba
-    (gris) y los sistemas externos (ámbar).
+    Se dibuja de arriba hacia abajo y con líneas ortogonales, como un
+    diagrama hecho a mano: las capas del backend en una columna, el motor
+    con las capas de análisis debajo y, al pie, una columna por interfaz
+    intercambiable (patrón Strategy) con sus implementaciones. Los servicios
+    dependen del paquete de integraciones completo, en lugar de una flecha
+    por interfaz. Colores: blanco para las capas y las implementaciones
+    simuladas, verde para las reales; borde punteado para lo previsto.
     """
-    lineas = ["@startuml componentes", ESTILO, "left to right direction",
-              "skinparam componentStyle uml2", "skinparam componentBorderColor #2F5DA8",
-              "skinparam componentBackgroundColor #EAF0F9",
-              "skinparam interfaceBorderColor #2F5DA8",
-              "skinparam interfaceBackgroundColor #FFFFFF",
-              "skinparam databaseBackgroundColor #EAF0F9", "skinparam rectangleBorderColor #9AA5A0",
-              "skinparam packageBorderColor #4E5B54", "skinparam packageStyle rectangle",
-              "skinparam legendBackgroundColor #FFFFFF", "",
+    lineas = ["@startuml componentes", ESTILO_SOBRIO, "top to bottom direction", "",
               'component "Interfaz React\\n(navegador)" as spa',
-              'package "Backend (Flask)" {',
-              '  interface "API REST\\n/api (JSON)" as iapi',
+              'package "Backend (Flask)" as backend {',
+              '  interface "API REST" as iapi',
               f'  component "Rutas\\n({_contar_modulos("rutas")} módulos)" as rutas',
               f'  component "Servicios\\n({_contar_modulos("servicios")} módulos)" as servicios',
               f'  component "Repositorios\\n({_contar_modulos("repositorios")} módulos)" as repos',
               f'  component "Modelos\\n({_contar_modulos("modelos")} módulos)" as modelos',
-              '  component "Motor de análisis\\n(orquestador y reglas)" as motor']
-    relaciones = ["spa ..> iapi : usa", "rutas -up- iapi", "rutas ..> servicios : llama",
-                  "servicios ..> repos : consulta", "repos ..> modelos : mapea",
-                  "modelos ..> pg : SQL", "servicios ..> motor : analiza",
-                  "motor ..> i_capaanalisis : ejecuta"]
+              '  component "Motor de análisis" as motor']
+    relaciones = ["spa ..> iapi : HTTPS", "iapi - rutas", "rutas ..> servicios",
+                  "servicios ..> repos", "repos ..> modelos", "modelos ..> pg : SQL",
+                  "servicios ..> motor", "motor ..> i_capaanalisis",
+                  "servicios ..> integraciones"]
+    marcos = []
     for interfaz, implementaciones in estrategias.items():
-        alias = "i_" + _alias(interfaz)
-        lineas.append(f'  package "{interfaz}" as marco_{_alias(interfaz)} {{')
-        lineas.append(f'    interface "{interfaz}" as {alias}')
-        if interfaz != "CapaAnalisis":
-            relaciones.append(f"servicios ..> {alias}")
-        for implementacion in implementaciones:
-            nombre = _alias(implementacion)
-            simulada = re.search(r"Simulad|Memoria|Local|Sincronica|EnHilo", implementacion)
-            destino = next((e for c, e in EXTERNOS.items() if c in implementacion), "")
-            etiqueta = f"{implementacion}\\n{{usa: {destino}}}" if destino else implementacion
-            color = "#F1F3F2" if simulada else "#E8F1D2"
-            lineas.append(f'    component "{etiqueta}" as {nombre} {color}')
-            relaciones.append(f"{alias} -- {nombre}")
-        if interfaz in PREVISTOS:
-            previsto = _alias(PREVISTOS[interfaz])
-            lineas.append(f'    component "{PREVISTOS[interfaz]}\\n(previsto)" as {previsto} '
-                          "#FFFFFF;line.dashed")
-            relaciones.append(f"{alias} .. {previsto}")
-        lineas.append("  }")
+        marco, enlaces = _marco_de_interfaz(interfaz, implementaciones)
+        relaciones += enlaces
+        if interfaz == "CapaAnalisis":
+            lineas += marco
+        else:
+            marcos += marco
     lineas.append("}")
+    lineas += ['package "Integraciones intercambiables" as integraciones {', *marcos, "}"]
+    # Grilla de tres columnas: cada marco se apoya debajo del de la fila anterior.
+    nombres = [n for n in estrategias if n != "CapaAnalisis"]
+    for arriba, abajo in zip(nombres, nombres[3:]):
+        primero = _alias(estrategias[abajo][0])
+        relaciones.append(f"i_{_alias(arriba)} -[hidden]down- {primero}")
     lineas.append('database "PostgreSQL" as pg')
-    leyenda = ["legend right", "<back:#EAF0F9>      </back> Capas del backend",
-               "<back:#E8F1D2>      </back> Implementación real ({usa: servicio externo})",
-               "<back:#F1F3F2>      </back> Implementación simulada o de prueba",
-               "<back:#FFFFFF>      </back> Proveedor previsto (borde punteado)",
-               "Las interfaces son contratos del código: CapaAnalisis es una clase base;",
-               "las demás, un conjunto común de métodos que cada implementación cumple.",
+    leyenda = ["legend bottom right",
+               "<back:#E6EFDC>      </back> Implementación real ({usa: servicio externo})",
+               "<back:#FFFFFF>      </back> Implementación simulada o de prueba",
+               "Borde punteado: proveedor previsto",
                "endlegend"]
-    return "\n".join(lineas + relaciones + leyenda + ["@enduml"]) + "\n"
+    return "\n".join(lineas + [""] + relaciones + leyenda + ["@enduml"]) + "\n"
 
 
 # Módulos de la especificación (casos de uso por número), uno por diagrama.
@@ -305,14 +348,26 @@ GRUPOS_CU = [
 # Nombre visible de los actores que la especificación nombra de forma abreviada.
 NOMBRE_ACTOR = {"Sistema": "Sistema\\n(procesos automáticos)"}
 ROLES_DE_USUARIO = ["Referente", "Miembro", "Responsable", "Colaborador", "Lector"]
-COLOR_ACTOR = {"Visitante": "#DDE3E0", "Usuario": "#DCE6F5", "Administrador": "#F6E3C8",
-               "Sistema": "#E4E7E5"}
+# Estilo de los casos de uso: actores y casos en blanco y negro, líneas rectas.
+ESTILO_CASOS = """skinparam linetype polyline
+skinparam ArrowColor #333333
+skinparam actor {
+  BorderColor #222222
+  BackgroundColor #FFFFFF
+}
+skinparam usecase {
+  BorderColor #333333
+  BackgroundColor #FFFFFF
+}
+skinparam rectangle {
+  BorderColor #555555
+  FontStyle bold
+}"""
 
 
 def _actor(actor):
-    """Declaración de un actor con el color de su tipo (los roles, en verde)."""
-    color = COLOR_ACTOR.get(actor, "#E8F1D2")
-    return f'actor "{NOMBRE_ACTOR.get(actor, actor)}" as {_alias(actor)} {color}'
+    """Declaración de un actor, con el nombre visible que le corresponde."""
+    return f'actor "{NOMBRE_ACTOR.get(actor, actor)}" as {_alias(actor)}'
 
 
 def leer_casos_de_uso(archivo=RAIZ / "docs" / "especificacion" / "05-casos-de-uso.md"):
@@ -345,8 +400,8 @@ def leer_casos_de_uso(archivo=RAIZ / "docs" / "especificacion" / "05-casos-de-us
 def generar_actores(casos):
     """Diagrama de actores: los roles son especializaciones del usuario registrado."""
     actores = _actores(casos)
-    lineas = ["@startuml casos-de-uso-actores", ESTILO, "left to right direction",
-              "skinparam actorBorderColor #17291F", ""]
+    lineas = ["@startuml casos-de-uso-actores", ESTILO, ESTILO_CASOS, "left to right direction",
+              ""]
     for actor in sorted(actores):
         lineas.append(_actor(actor))
     for rol in ROLES_DE_USUARIO:
@@ -364,17 +419,34 @@ def _actores(casos):
     return actores
 
 
+def _ubicar_actores(elegidos):
+    """Ordena los actores por cantidad de casos, elige los de la derecha y ordena los casos."""
+    usos = {}
+    for _, _, quien in elegidos:
+        for actor in quien.split("/"):
+            usos[actor.strip()] = usos.get(actor.strip(), 0) + 1
+    orden = sorted(usos, key=lambda a: (-usos[a], a))
+    posicion = {a: i for i, a in enumerate(orden)}
+    casos = sorted(elegidos, key=lambda c: (min(posicion[a.strip()] for a in c[2].split("/")),
+                                            c[0]))
+    return orden, set(orden[1::2]), casos
+
+
 def generar_casos_de_uso(casos, relaciones, grupo=None):
-    """Diagrama de casos de uso UML de un módulo (o de todos), con actores y relaciones."""
+    """Diagrama de casos de uso UML de un módulo (o de todos), con actores y relaciones.
+
+    Para que las asociaciones no se crucen, los actores se reparten a los dos
+    lados del sistema (el de más casos a la izquierda, el siguiente a la
+    derecha, y así) y los casos se ordenan por su primer actor.
+    """
     titulo, numeros = grupo or ("evidentIA", [int(c[0][2:]) for c in casos])
     elegidos = [c for c in casos if int(c[0][2:]) in numeros]
     codigos = {c[0] for c in elegidos}
     sufijo = f"-{_alias(titulo)}" if grupo else ""
-    lineas = [f"@startuml casos-de-uso{sufijo}", ESTILO, "left to right direction",
-              "skinparam usecaseBackgroundColor #F7F9FC", "skinparam usecaseBorderColor #2F5DA8",
-              "skinparam actorBorderColor #17291F", "skinparam packageStyle rectangle", ""]
-    for actor in sorted(_actores(elegidos)):
-        lineas.append(_actor(actor))
+    lineas = [f"@startuml casos-de-uso{sufijo}", ESTILO, ESTILO_CASOS,
+              "left to right direction", ""]
+    orden, derecha, elegidos = _ubicar_actores(elegidos)
+    lineas += [_actor(actor) for actor in orden]
     lineas.append(f'rectangle "evidentIA: {titulo.lower()}" {{' if grupo else
                   'rectangle "evidentIA" {')
     for codigo, nombre, _ in elegidos:
@@ -382,7 +454,9 @@ def generar_casos_de_uso(casos, relaciones, grupo=None):
     lineas.append("}")
     for codigo, _, quien in elegidos:
         for actor in quien.split("/"):
-            lineas.append(f"{_alias(actor.strip())} -- {codigo}")
+            actor = actor.strip()
+            lineas.append(f"{codigo} -- {_alias(actor)}" if actor in derecha
+                          else f"{_alias(actor)} -- {codigo}")
     for origen, destino, tipo in relaciones:
         if origen in codigos and destino in codigos:
             lineas.append(f"{origen} .> {destino} : <<{tipo}>>")
@@ -394,8 +468,8 @@ def generar_relaciones(casos, relaciones):
     """Relaciones «include» y «extend» entre casos de uso de distintos módulos."""
     nombres = {codigo: nombre for codigo, nombre, _ in casos}
     usados = sorted({c for o, d, _ in relaciones for c in (o, d)})
-    lineas = ["@startuml casos-de-uso-relaciones", ESTILO, "top to bottom direction",
-              "skinparam usecaseBackgroundColor #F7F9FC", "skinparam usecaseBorderColor #2F5DA8"]
+    lineas = ["@startuml casos-de-uso-relaciones", ESTILO, ESTILO_CASOS,
+              "top to bottom direction"]
     for codigo in usados:
         lineas.append(f'usecase "{nombres[codigo]}\\n({codigo})" as {codigo}')
     for origen, destino, tipo in relaciones:
@@ -448,14 +522,14 @@ def datos_de_infraestructura():
 def verificar(carpeta=DIAGRAMAS):
     """Lista lo que falta o está desactualizado en los diagramas."""
     problemas = []
-    despliegue = carpeta / "07-despliegue-uml.puml"
+    despliegue = carpeta / "07-despliegue-uml.svg"
     if despliegue.exists():
-        texto = despliegue.read_text(encoding="utf-8").lower()
+        texto = html.unescape(despliegue.read_text(encoding="utf-8")).lower()
         for nombre, valor in datos_de_infraestructura().items():
             if valor.lower() not in texto:
                 problemas.append(f"Despliegue: falta {nombre} «{valor}».")
     else:
-        problemas.append("No existe 07-despliegue-uml.puml.")
+        problemas.append("No existe 07-despliegue-uml.svg.")
     for archivo, esperado in (("04-modelo-de-datos.puml", generar_er(leer_modelos(), True)),
                               ("08-componentes-uml.puml",
                                generar_componentes(leer_estrategias())),
@@ -463,7 +537,7 @@ def verificar(carpeta=DIAGRAMAS):
         ruta = carpeta / archivo
         if not ruta.exists() or ruta.read_text(encoding="utf-8") != esperado:
             problemas.append(f"{archivo} no coincide con el código: volver a generarlo.")
-    for fuente in carpeta.glob("*.puml"):
+    for fuente in [*carpeta.glob("*.puml"), *carpeta.glob("*.svg")]:
         imagen = fuente.with_suffix(".png")
         if not imagen.exists() or imagen.stat().st_mtime < fuente.stat().st_mtime:
             problemas.append(f"{imagen.name} es anterior a su fuente: volver a renderizar.")
@@ -480,19 +554,29 @@ SIN_TILDE = {"analisis": "análisis", "imagenes": "imágenes", "informacion": "i
 LIMITE_PLANTUML = 12000
 
 
+def _etiquetas(fuente, texto):
+    """Textos visibles de un diagrama, para revisar su ortografía.
+
+    El modelo de datos muestra identificadores de la base, que van sin tilde.
+    """
+    if fuente.name.startswith("04"):
+        return []
+    if fuente.suffix == ".svg":
+        return [html.unescape(e) for e in re.findall(r">([^<>]+)</text>", texto)]
+    return re.findall(r'"([^"]+)"', texto)
+
+
 def revisar_calidad(carpeta=DIAGRAMAS):
     """Reglas de notación, ortografía y tamaño que todo diagrama del informe cumple."""
     problemas = []
-    for fuente in sorted(carpeta.glob("*.puml")):
+    for fuente in sorted([*carpeta.glob("*.puml"), *carpeta.glob("*.svg")]):
         texto = fuente.read_text(encoding="utf-8")
         nombre = fuente.name
-        # El modelo de datos muestra identificadores de la base, que van sin tilde.
-        etiquetas = [] if nombre.startswith("04") else re.findall(r'"([^"]+)"', texto)
-        for etiqueta in etiquetas:
+        for etiqueta in _etiquetas(fuente, texto):
             for palabra in re.findall(r"(?<![\w.\-])([a-záéíóúñ]+)(?![\w.\-])", etiqueta.lower()):
                 if palabra in SIN_TILDE:
                     problemas.append(f"{nombre}: «{palabra}» lleva tilde ({SIN_TILDE[palabra]}).")
-        if nombre.startswith("07"):
+        if nombre.startswith("07") and fuente.suffix == ".puml":
             problemas += _revisar_despliegue(nombre, texto)
         if nombre.startswith(("07", "08")) and re.search(r"^\s*rectangle ", texto, re.M):
             problemas.append(f"{nombre}: «rectangle» no es notación UML; usar node o package.")
@@ -536,7 +620,7 @@ def _revisar_tamanio(imagen):
 
 
 def renderizar(carpeta=DIAGRAMAS):
-    """Exporta a PNG cada .puml de la carpeta con PlantUML y Graphviz."""
+    """Exporta a PNG cada .puml (PlantUML y Graphviz) y cada .svg (Chromium) de la carpeta."""
     if not shutil.which("java") or not shutil.which("dot"):
         raise RuntimeError("Hacen falta Java y Graphviz (dot) para renderizar.")
     cache = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "plantuml"
@@ -553,6 +637,14 @@ def renderizar(carpeta=DIAGRAMAS):
         generada = carpeta / f"{nombre.group(1)}.png" if nombre else None
         if generada and generada.exists() and generada != fuente.with_suffix(".png"):
             generada.replace(fuente.with_suffix(".png"))
+    for fuente in carpeta.glob("*.svg"):
+        svg_a_png(fuente, fuente.with_suffix(".png"))
+
+
+def svg_a_png(fuente, destino, escala=2):
+    """Convierte un SVG dibujado a mano en PNG con el Chromium de Playwright."""
+    guion = Path(__file__).with_name("svg_a_png.cjs")
+    subprocess.run(["node", str(guion), str(fuente), str(destino), str(escala)], check=True)
 
 
 def main(argumentos=None):

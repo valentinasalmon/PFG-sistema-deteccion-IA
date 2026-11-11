@@ -6,9 +6,13 @@ skinparam ArrowColor #4E5B54
 skinparam nodesep 40
 skinparam ranksep 55
 hide circle
-skinparam linetype ortho
-skinparam classBackgroundColor #F7F9FC
-skinparam classBorderColor #2F5DA8
+skinparam linetype polyline
+skinparam nodesep 60
+skinparam ranksep 70
+skinparam ArrowColor #333333
+skinparam classBackgroundColor #FFFFFF
+skinparam classBorderColor #333333
+skinparam classHeaderBackgroundColor #F2F2F2
 
 entity "analisis" as analisis {
   * id : Integer <<PK>>

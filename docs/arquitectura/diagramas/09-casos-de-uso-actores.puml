@@ -5,19 +5,32 @@ skinparam shadowing false
 skinparam ArrowColor #4E5B54
 skinparam nodesep 40
 skinparam ranksep 55
+skinparam linetype polyline
+skinparam ArrowColor #333333
+skinparam actor {
+  BorderColor #222222
+  BackgroundColor #FFFFFF
+}
+skinparam usecase {
+  BorderColor #333333
+  BackgroundColor #FFFFFF
+}
+skinparam rectangle {
+  BorderColor #555555
+  FontStyle bold
+}
 left to right direction
-skinparam actorBorderColor #17291F
 
-actor "Administrador" as administrador #F6E3C8
-actor "Colaborador" as colaborador #E8F1D2
-actor "Lector" as lector #E8F1D2
-actor "Miembro" as miembro #E8F1D2
-actor "Persona afectada" as personaafectada #E8F1D2
-actor "Referente" as referente #E8F1D2
-actor "Responsable" as responsable #E8F1D2
-actor "Sistema\n(procesos automáticos)" as sistema #E4E7E5
-actor "Usuario" as usuario #DCE6F5
-actor "Visitante" as visitante #DDE3E0
+actor "Administrador" as administrador
+actor "Colaborador" as colaborador
+actor "Lector" as lector
+actor "Miembro" as miembro
+actor "Persona afectada" as personaafectada
+actor "Referente" as referente
+actor "Responsable" as responsable
+actor "Sistema\n(procesos automáticos)" as sistema
+actor "Usuario" as usuario
+actor "Visitante" as visitante
 usuario <|-- referente
 usuario <|-- miembro
 usuario <|-- responsable

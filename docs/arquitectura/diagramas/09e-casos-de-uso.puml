@@ -5,18 +5,28 @@ skinparam shadowing false
 skinparam ArrowColor #4E5B54
 skinparam nodesep 40
 skinparam ranksep 55
+skinparam linetype polyline
+skinparam ArrowColor #333333
+skinparam actor {
+  BorderColor #222222
+  BackgroundColor #FFFFFF
+}
+skinparam usecase {
+  BorderColor #333333
+  BackgroundColor #FFFFFF
+}
+skinparam rectangle {
+  BorderColor #555555
+  FontStyle bold
+}
 left to right direction
-skinparam usecaseBackgroundColor #F7F9FC
-skinparam usecaseBorderColor #2F5DA8
-skinparam actorBorderColor #17291F
-skinparam packageStyle rectangle
 
-actor "Responsable" as responsable #E8F1D2
-actor "Sistema\n(procesos automáticos)" as sistema #E4E7E5
+actor "Responsable" as responsable
+actor "Sistema\n(procesos automáticos)" as sistema
 rectangle "evidentIA: retención" {
   usecase "Prorrogar retención\n(CU31)" as CU31
   usecase "Aplicar política de retención\n(CU32)" as CU32
 }
 responsable -- CU31
-sistema -- CU32
+CU32 -- sistema
 @enduml

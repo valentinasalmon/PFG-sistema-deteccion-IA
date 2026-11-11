@@ -1,4 +1,5 @@
 """Pruebas del generador de diagramas desde el código (funcionalidad 039)."""
+from herramientas import diagrama_despliegue
 from herramientas import diagramas_del_sistema as diagramas
 
 MODELO = '''
@@ -76,7 +77,7 @@ def test_la_infraestructura_se_lee_de_los_archivos():
 
 def test_verificar_detecta_un_diagrama_desactualizado(tmp_path):
     """Un diagrama de despliegue sin los datos reales se informa."""
-    (tmp_path / "07-despliegue-uml.puml").write_text("@startuml x\n@enduml\n", encoding="utf-8")
+    (tmp_path / "07-despliegue-uml.svg").write_text("<svg></svg>", encoding="utf-8")
     problemas = diagramas.verificar(tmp_path)
     assert any("t3.small" in p for p in problemas)
     assert any("04-modelo-de-datos.puml" in p for p in problemas)
@@ -93,3 +94,22 @@ def test_revisar_calidad_detecta_notacion_y_ortografia(tmp_path):
     assert "sin estereotipo" in problemas and "sin protocolo" in problemas
     assert "imágenes" in problemas
     assert "no lleva flecha" in problemas and "include" in problemas
+
+
+def test_despliegue_dibuja_los_datos_de_la_infraestructura():
+    """El SVG del despliegue muestra la instancia, la región y los puertos reales."""
+    datos = {"tipo de instancia": "t3.medium", "región": "us-east-1",
+             "sistema operativo": "22.04", "puerto de Gunicorn": "9000", "puerto HTTPS": "443"}
+    svg = diagrama_despliegue.generar_despliegue(datos)
+    assert svg.startswith("<svg") and "Amazon EC2 t3.medium" in svg
+    assert "us-east-1" in svg and "127.0.0.1:9000" in svg and "Ubuntu Server 22.04" in svg
+    assert svg.count("«previsto» HTTPS") == 2
+
+
+def test_casos_de_uso_reparten_actores_a_los_dos_lados():
+    """El segundo actor con más casos va a la derecha para que las líneas no se crucen."""
+    casos = [("CU01", "Uno", "Responsable / Colaborador"), ("CU02", "Dos", "Responsable"),
+             ("CU03", "Tres", "Lector")]
+    texto = diagramas.generar_casos_de_uso(casos, [], ("Prueba", [1, 2, 3]))
+    assert "responsable -- CU01" in texto and "CU01 -- colaborador" in texto
+    assert "lector -- CU03" in texto

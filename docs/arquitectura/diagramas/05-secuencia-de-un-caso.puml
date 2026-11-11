@@ -5,17 +5,39 @@
 skinparam defaultFontName Arial
 skinparam defaultFontSize 13
 skinparam shadowing false
-skinparam ArrowColor #4E5B54
-skinparam sequenceParticipantBorderColor #2F5DA8
-skinparam sequenceParticipantBackgroundColor #F7F9FC
-skinparam sequenceLifeLineBorderColor #9AA5A0
-skinparam sequenceGroupBorderColor #4E5B54
-skinparam sequenceBoxBorderColor #C9D1CD
+skinparam ArrowColor #333333
+skinparam sequence {
+  ParticipantBorderColor #333333
+  ParticipantBackgroundColor #FFFFFF
+  ActorBorderColor #222222
+  ActorBackgroundColor #FFFFFF
+  QueueBorderColor #333333
+  QueueBackgroundColor #FFFFFF
+  DatabaseBorderColor #333333
+  DatabaseBackgroundColor #FFFFFF
+  LifeLineBorderColor #999999
+  GroupBorderColor #555555
+  BoxBorderColor #AAAAAA
+  DividerBackgroundColor #FFFFFF
+  DividerBorderColor #555555
+}
+skinparam database {
+  BorderColor #333333
+  BackgroundColor #FFFFFF
+}
+skinparam queue {
+  BorderColor #333333
+  BackgroundColor #FFFFFF
+}
+skinparam actor {
+  BorderColor #222222
+  BackgroundColor #FFFFFF
+}
 autonumber
 
 actor "Usuario" as usuario
 participant "Interfaz React" as spa
-box "Servidor (EC2)" #F7FAF2
+box "Servidor (EC2)" #F7F7F7
 participant "API Flask" as api
 queue "Cola\n(Redis)" as cola
 participant "Trabajador\n(RQ)" as trab

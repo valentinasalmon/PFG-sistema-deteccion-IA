@@ -16,3 +16,11 @@
 ## Pendiente
 
 - La autora aplica las correcciones en el documento; decisiones CP-34, CP-37 y CP-38; validaciones con personas.
+
+## Diagramas con aspecto de hechos a mano (pedido de la autora)
+
+- **Componentes (08):** de arriba hacia abajo, una sola dependencia de los servicios hacia el paquete de integraciones, interfaces al pie de cada paquete (la línea ya no pisa el nombre) y grilla de tres columnas.
+- **Despliegue (07):** pasa de PlantUML a un SVG con posiciones fijas (`backend/herramientas/diagrama_despliegue.py`). Rutas ortogonales sin cruces, servicios de AWS en una columna y sistemas externos en otra. Los datos siguen saliendo de Terraform, systemd y Nginx, y `verificar` los comprueba en el SVG.
+- **Casos de uso (09):** actores repartidos a los dos lados del sistema y casos ordenados por actor: el de imágenes y análisis pasa de una docena de cruces a ninguno.
+- **Modelo de datos (04) y secuencia (05):** líneas rectas en lugar de ortogonales superpuestas y estilo en blanco y negro.
+- Decisión: no se usó FigJam (Figma) porque no admite notación UML de despliegue, componentes ni casos de uso; sí puede servir para versiones editables de la secuencia, el modelo de datos o el cronograma si la autora lo pide.
