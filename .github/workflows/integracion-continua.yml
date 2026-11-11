@@ -144,6 +144,94 @@ jobs:
             sudo nginx -t
           done
 
+  interfaz:
+    # Sensor de diseño y recorrido de punta a punta del abogado, en computadora y
+    # celular, contra la aplicación levantada (039; regla de verificación visual
+    # del arnés, 038). Falla si un paso del recorrido falla o si el sensor
+    # encuentra contenido cortado, escondido o fuera de la pantalla.
+    name: Interfaz (sensor de diseño y recorrido de punta a punta)
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: plataforma
+          POSTGRES_PASSWORD: plataforma
+          POSTGRES_DB: plataforma
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U plataforma" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+    env:
+      URL_BASE_DATOS: postgresql+psycopg://plataforma:plataforma@localhost:5432/plataforma
+      CLAVE_SECRETA: solo-para-la-integracion-continua
+      URL_FRONTEND: http://localhost:5173
+      URL_REDIS: redis://localhost:6379/0
+      COLA_ANALISIS: hilo
+      SENSOR_CORREO: demo@evidentia.local
+      SENSOR_CLAVE: Recorrido-CI-2026
+      RECORRIDO_CORREO: demo@evidentia.local
+      RECORRIDO_CLAVE: Recorrido-CI-2026
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Bibliotecas del sistema (WeasyPrint y ExifTool)
+        run: sudo apt-get update && sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0 fonts-dejavu libimage-exiftool-perl
+      - name: Backend con la base y una abogada de demostración
+        working-directory: backend
+        run: |
+          pip install -r requirements.txt && pip install --no-deps ../red_neuronal
+          flask --app wsgi db upgrade
+          flask --app wsgi administracion cuenta-de-demostracion --contrasenia "$RECORRIDO_CLAVE"
+          nohup flask --app wsgi run --port 5000 > ../backend.log 2>&1 &
+      - name: Frontend y navegador del recorrido
+        working-directory: frontend
+        run: |
+          npm ci
+          npm install --no-save playwright@1.63.0
+          npx playwright install --with-deps chromium
+          nohup npx vite --port 5173 > ../frontend.log 2>&1 &
+          for _ in $(seq 1 60); do curl -fsS http://localhost:5000/api/salud >/dev/null && curl -fsS http://localhost:5173 >/dev/null && break; sleep 2; done
+      - name: Imágenes sintéticas para el recorrido
+        run: |
+          mkdir -p imagenes-recorrido capturas-recorrido
+          python - <<'PY'
+          from PIL import Image, ImageDraw
+          a = Image.new("RGB", (800, 600), (70, 110, 160))
+          ImageDraw.Draw(a).rectangle((200, 150, 600, 450), fill=(30, 30, 30))
+          a.save("imagenes-recorrido/frente.jpg", quality=92)
+          b = a.copy()
+          ImageDraw.Draw(b).ellipse((300, 200, 500, 400), fill=(200, 40, 40))
+          b.save("imagenes-recorrido/editada.jpg", quality=70)
+          PY
+      - name: Sensor de diseño (computadora y celular)
+        run: node frontend/e2e/sensor-diseno.cjs
+      - name: Recorrido del abogado en computadora
+        run: node frontend/e2e/recorrido-abogado.cjs capturas-recorrido imagenes-recorrido pc
+      - name: Recorrido del abogado en celular
+        run: node frontend/e2e/recorrido-abogado.cjs capturas-recorrido imagenes-recorrido cel
+      - name: Capturas y registros si algo falló
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: recorrido-interfaz
+          path: |
+            capturas-recorrido
+            backend.log
+            frontend.log
+
   desplegar:
     name: Despliegue en AWS
     needs: [backend, frontend, infraestructura, seguridad]

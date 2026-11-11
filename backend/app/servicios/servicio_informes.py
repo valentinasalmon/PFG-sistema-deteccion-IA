@@ -118,7 +118,8 @@ class ServicioInformes:
             "pagina": f"{self.url_frontend}/verificar",
         }
         # PDF breve con enlace al análisis completo en la plataforma (037, propuesta del tutor).
-        detalle = f"{self.url_frontend}/casos/{analisis.id_caso}?etapa=analisis"
+        # 038: el QR del PDF abre el análisis con todo desplegado («Análisis detallado»).
+        detalle = f"{self.url_frontend}/casos/{analisis.id_caso}?etapa=analisis&detalle=completo"
         datos["detalle"] = {"url": detalle, "qr": qr_svg(detalle)}
         contenido = informe_analisis.generar_pdf(datos, generado_en)
         informe = Informe(
