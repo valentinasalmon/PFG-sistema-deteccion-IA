@@ -62,6 +62,7 @@ package "Backend (Flask)" {
     component "CapaC2PA" as capac2pa #E8F1D2
     component "CapaELA" as capaela #E8F1D2
     component "CapaMetadatos" as capametadatos #E8F1D2
+    component "CapaRedNeuronal" as caparedneuronal #E8F1D2
   }
 }
 database "PostgreSQL" as pg
@@ -96,6 +97,7 @@ i_proveedoridentidad .. identik
 i_capaanalisis -- capac2pa
 i_capaanalisis -- capaela
 i_capaanalisis -- capametadatos
+i_capaanalisis -- caparedneuronal
 legend right
 <back:#EAF0F9>      </back> Capas del backend
 <back:#E8F1D2>      </back> Implementación real ({usa: servicio externo})

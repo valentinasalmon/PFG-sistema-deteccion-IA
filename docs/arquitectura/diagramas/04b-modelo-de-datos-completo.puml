@@ -117,6 +117,8 @@ entity "enlaces_carga" as enlaces_carga {
   * tipo : String(20)
   destinatario : String(100)
   declaracion_aceptada_en : DateTime
+  huella_dispositivo : String(64)
+  terminado_en : DateTime
 }
 entity "auditoria" as auditoria {
   * id : BigInteger <<PK>>
@@ -204,6 +206,7 @@ entity "invitaciones" as invitaciones {
   * creada_en : DateTime
   * vence_en : DateTime
   respondida_en : DateTime
+  * usada_para_registrarse : Boolean
 }
 entity "usuarios" as usuarios {
   * id : Integer <<PK>>
