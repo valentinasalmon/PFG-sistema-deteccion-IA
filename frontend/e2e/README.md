@@ -7,6 +7,10 @@ Scripts de Playwright que usan el sistema como una persona: hacen clic, completa
 | `recorrido-aseguradora.cjs <capturas> <buzón SMTP>` (con `ASEG=<parte del nombre>` de una aseguradora sin registrar) | Registro de una aseguradora → pago simulado → verificación del correo → ingreso pendiente → verificación de identidad → aprobación del Administrador → menú con «Siniestros» → alta de un siniestro |
 | `recorrido-abogado.cjs <capturas> <imágenes> [pc\|cel]` | Ingreso → caso nuevo → dos fotos → análisis → informe PDF descargado → verificación pública por código; `cel` emula un iPhone 13 |
 
+## En la integración continua (039)
+
+La verificación «Interfaz (sensor de diseño y recorrido de punta a punta)» levanta en GitHub Actions el backend (PostgreSQL y Redis como servicios), una abogada de demostración y el frontend, y corre el sensor de diseño y el recorrido del abogado en computadora y celular con dos imágenes sintéticas. El recorrido termina con error si falla un paso o si el sensor encuentra problemas; en ese caso se guardan las capturas y los registros como artefacto `recorrido-interfaz`. La cuenta del recorrido se elige con `RECORRIDO_CORREO` y `RECORRIDO_CLAVE` (por defecto, la cuenta de prueba local). El recorrido de la aseguradora queda manual: necesita leer los correos del servidor SMTP de prueba.
+
 ## Sensor de diseño
 
 `sensor-diseno.cjs [base] [pantallas.json]` recorre las pantallas en computadora (1440 px) y celular (390 px) y falla si encuentra desplazamiento horizontal, contenido cortado, contenido escondido en un contenedor con desplazamiento propio (como un pago dentro de una tarjeta de alto fijo) o controles fuera de la pantalla; avisa además los objetivos táctiles de menos de 40 px. Con `SENSOR_CORREO` y `SENSOR_CLAVE` revisa también las pantallas con sesión. Los dos recorridos lo aplican en cada captura y terminan con «Sin problemas de diseño» o con la lista de problemas.
