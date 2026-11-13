@@ -309,42 +309,35 @@ Clarity graba cómo se usa la plataforma (mapas de calor y recorridos) para que 
 - **Ver los datos:** en [clarity.microsoft.com](https://clarity.microsoft.com), proyecto evidentIA. Las primeras sesiones aparecen a las pocas horas del despliegue.
 - **Apagarlo:** cambiar `ID_PROYECTO` por `''` y desplegar.
 
-## Cuando compres el dominio
+## Dominio propio
 
-Hasta comprarlo, la plataforma funciona en `https://<ip>.sslip.io`. Con el dominio propio cambian la dirección, el certificado y, sobre todo, los correos: con el dominio verificado en SES dejan de caer en Spam y se puede pedir que cualquier persona los reciba.
+El dominio de la plataforma es **`evidentiaa.com.ar`** (comprado por la autora el 2026-11-13). Sin dominio, la plataforma funciona en `https://<ip>.sslip.io`; con él cambian la dirección, el certificado y, sobre todo, los correos: con el dominio verificado en SES dejan de caer en Spam y se puede pedir que cualquier persona los reciba.
 
-### 1. Elegir y comprar
+Desde la funcionalidad 040, **Terraform administra todo el DNS en Route 53** (`infraestructura/terraform/principal/dns.tf`): el registro A al servidor, las tres claves DKIM de SES y la política DMARC. No se carga ningún registro a mano. Route 53 cuesta US$ 0,50 por mes.
 
-| Opción | Costo aproximado | Qué tener en cuenta |
-|---|---|---|
-| **`.com.ar` en NIC Argentina** (recomendada para un producto argentino) | Bajo, en pesos, por año | Se registra con la clave fiscal (nivel 2 o más) en [nic.ar](https://nic.ar). NIC Argentina **no administra los registros DNS**: hay que delegarlo en un servicio de DNS (paso 2). |
-| **`.com` en Cloudflare, Porkbun o Namecheap** | Unos US$ 10 por año | Se paga con tarjeta y el DNS ya viene incluido. |
+### 1. Crear la zona y la identidad de correo
 
-Elegí un nombre corto y sin guiones (por ejemplo, `evidentia.com.ar`) y comprobá que esté libre antes de pagar.
+1. En `terraform.tfvars`, poné:
+   ```hcl
+   dominio          = "evidentiaa.com.ar"
+   correo_remitente = "notificaciones@evidentiaa.com.ar"
+   ```
+   El remitente del dominio no necesita verificarse aparte: lo cubre la identidad del dominio. Dejá en `correos_verificados` y `administradores` tus correos reales (Gmail, etc.).
+2. Desde `infraestructura/terraform/principal`, ejecutá `terraform apply` y confirmá con `yes`.
+3. Ejecutá `terraform output servidores_de_nombres`. Devuelve **cuatro** servidores, del estilo `ns-123.awsdns-45.com`.
 
-### Un dominio con tu nombre y un subdominio por aplicación
+### 2. Delegar el dominio en NIC Argentina
 
-Si comprás un dominio propio (por ejemplo, `tunombre.com.ar`) para alojar varias aplicaciones, cada una vive en un **subdominio**: `evidentia.tunombre.com.ar`, `otra-app.tunombre.com.ar`, etc. La plataforma funciona igual: en todos los pasos de abajo, donde dice `tu-dominio.com.ar` va el subdominio completo, con dos diferencias:
-
-- En el DNS, el registro **A** se llama `evidentia` (no `@`), con la `ip_publica` de este servidor. Cada aplicación tiene su propio registro A apuntando a su servidor; la raíz `@` queda libre para otra cosa (por ejemplo, una página personal).
-- En SES conviene verificar el **dominio raíz** (`tunombre.com.ar`): una sola verificación sirve para mandar correos desde cualquier subdominio y desde cualquier aplicación (`notificaciones@tunombre.com.ar` o `notificaciones@evidentia.tunombre.com.ar`).
-
-El certificado HTTPS se pide para el subdominio y no hay que tocar nada más. No uses un registro comodín (`*`): cada subdominio, su registro.
-
-### 2. Apuntar el dominio al servidor (DNS)
-
-1. Averiguá la IP fija del servidor: `terraform output ip_publica` (desde `infraestructura/terraform/principal`).
-2. Si compraste en NIC Argentina, creá una cuenta gratuita en [Cloudflare](https://dash.cloudflare.com), agregá el dominio (plan *Free*) y copiá los dos servidores de nombres que te da. En NIC Argentina, en el dominio, elegí **Delegar** y pegá esos dos servidores. La delegación tarda de minutos a unas horas.
-3. En el DNS (Cloudflare o el de tu proveedor), creá:
-   - un registro **A**, nombre `@`, con la `ip_publica`;
-   - un registro **A**, nombre `www`, con la misma IP (opcional).
-4. En Cloudflare, dejá esos registros en **solo DNS** (nube gris), no en proxy (nube naranja): el certificado lo pide el propio servidor.
-5. Comprobá que resuelve: `nslookup tu-dominio.com.ar` tiene que devolver la `ip_publica`.
+1. Entrá a [nic.ar](https://nic.ar) con tu clave fiscal (o al panel de la empresa donde compraste el dominio).
+2. En **Mis dominios**, elegí `evidentiaa.com.ar` y luego **Delegar** (en otras empresas: «Servidores DNS» o «Cambiar DNS»).
+3. Cargá los cuatro servidores de la salida anterior, **sin el punto final** si lo tienen, y confirmá.
+4. La delegación tarda de minutos a unas horas. Comprobala con `nslookup evidentiaa.com.ar`: tiene que devolver la `ip_publica` del servidor.
 
 ### 3. Pasar la plataforma al dominio
 
-1. En `terraform.tfvars`, poné `dominio = "tu-dominio.com.ar"` y ejecutá `terraform apply`. Eso actualiza la dirección de la plataforma en la configuración del servidor (Parameter Store).
-2. En la terminal de Session Manager del servidor, ejecutá:
+Cuando el paso anterior ya devuelve la IP:
+
+1. En la consola de AWS, **EC2**, el servidor, **Connect**, **Session Manager**, y ahí:
 
 ```bash
 sudo bash /opt/plataforma/servidor/scripts/generar_entorno.sh
@@ -352,24 +345,21 @@ sudo bash /opt/plataforma/servidor/scripts/pedir_certificado.sh
 sudo systemctl restart plataforma-web plataforma-trabajador
 ```
 
-3. Entrá a `https://tu-dominio.com.ar/estado`: todo tiene que estar en verde y el candado del navegador, sin avisos.
-4. Si activaste el inicio con Google, agregá en Google Cloud (*APIs y servicios*, *Credenciales*, el cliente OAuth) el origen `https://tu-dominio.com.ar` y el redireccionamiento `https://tu-dominio.com.ar/api/google/retorno`.
-5. Los informes que ya se generaron siguen apuntando a la dirección `sslip.io` en sus QR: siguen funcionando mientras esa dirección exista. Los nuevos usan el dominio.
+2. Entrá a `https://evidentiaa.com.ar/estado`: todo en verde y el candado sin avisos.
+3. Si usás el inicio con Google: en Google Cloud (*APIs y servicios*, *Credenciales*, el cliente OAuth) agregá el origen `https://evidentiaa.com.ar` y el redireccionamiento `https://evidentiaa.com.ar/api/google/retorno`. En la *pantalla de consentimiento*, agregá `evidentiaa.com.ar` como dominio autorizado.
+4. Los informes ya generados siguen apuntando a la dirección `sslip.io` en sus QR: funcionan mientras esa dirección exista (la IP es fija). Los nuevos usan el dominio.
 
-### 4. Correos desde el dominio (SES)
+### 4. Comprobar los correos
 
-1. En la consola de AWS, **SES** (región `eu-west-1`), *Identities*, **Create identity**, tipo **Domain**, con tu dominio. Dejá marcado **Easy DKIM** (RSA 2048).
-2. SES muestra **tres registros CNAME**. Creálos en el DNS tal cual (en Cloudflare, también en solo DNS). En unos minutos la identidad pasa a **Verified**.
-3. Agregá en el DNS un registro **TXT**, nombre `_dmarc`, valor `v=DMARC1; p=none;`. Ayuda a que los correos no caigan en Spam.
-4. En `terraform.tfvars`, cambiá `correo_remitente` por una dirección del dominio (por ejemplo, `notificaciones@tu-dominio.com.ar`), ejecutá `terraform apply` y repetí los tres comandos del paso 3.2. AWS manda a esa dirección un correo de verificación que nadie va a abrir: no hace falta, porque el dominio entero ya está verificado.
-5. Mandate un correo de prueba desde la plataforma (por ejemplo, «Recuperar la contraseña») y revisá que llegue a la bandeja de entrada.
+1. En **SES** (región `eu-west-1`), *Identities*: `evidentiaa.com.ar` tiene que figurar como **Verified** (unos minutos después de la delegación).
+2. Pedí «Recuperar la contraseña» desde la plataforma con un correo de `correos_verificados` y revisá que llegue a la bandeja de entrada, desde `notificaciones@evidentiaa.com.ar`.
 
 ### 5. Salir del modo de prueba de SES
 
 Mientras SES esté en modo de prueba, **solo reciben correos las direcciones de `correos_verificados`** que confirmaron el enlace de AWS. Eso incluye a la cuenta de Administrador: si su dirección no está en esa lista, no le llega el aviso de las organizaciones pendientes.
 
 1. En SES, **Account dashboard**, **Request production access**.
-2. Tipo de correo: **Transactional**. Sitio: `https://tu-dominio.com.ar`.
+2. Tipo de correo: **Transactional**. Sitio: `https://evidentiaa.com.ar`.
 3. Descripción del uso (se puede copiar):
 
 > evidentIA es una plataforma para abogados y aseguradoras que analiza fotos usadas como prueba. Envía solo correos transaccionales a personas que crearon una cuenta: verificación del correo, recuperación de la contraseña, invitaciones a una organización, aviso de fin de un análisis y avisos de la aprobación de una organización. No envía correos de marketing. Las direcciones se obtienen únicamente del registro en la plataforma, que exige confirmar el correo. Los rebotes y las quejas se atienden desactivando el envío a esa dirección. El volumen esperado es bajo (menos de 500 correos por día).

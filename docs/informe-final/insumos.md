@@ -354,3 +354,9 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Un enlace tiene que cumplir lo que su rótulo promete**: el QR «Análisis detallado» llevaba al análisis plegado; se agregó un parámetro que lo despliega entero.
 - **Vocabulario por destinatario**: los correos usan «caso» o «siniestro» según el perfil de quien los recibe.
 - **Verificación visual automatizada**: el sensor de diseño y los recorridos de punta a punta pasaron a la integración continua, con un entorno completo (base, Redis, backend y frontend) levantado en GitHub Actions; deja de depender de que alguien los corra a mano.
+
+## Dominio propio (040, 2026-11-13)
+
+- **Dominio**: `evidentiaa.com.ar`. `evidentia.com` estaba tomado y las variantes libres en `.com` eran dominios premium; el `.com.ar` era accesible y en pesos.
+- **DNS como código**: la zona de Route 53, los registros de DKIM y DMARC y el registro del servidor se crean con Terraform; la única acción manual es delegar el dominio en NIC Argentina. Evita errores al copiar registros largos y deja el DNS versionado.
+- **Correo**: verificar el dominio entero en SES (DKIM) en lugar de direcciones sueltas mejora la entrega y es requisito práctico para pedir la salida del modo de prueba.
