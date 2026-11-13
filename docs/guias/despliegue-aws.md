@@ -326,12 +326,15 @@ Desde la funcionalidad 040, **Terraform administra todo el DNS en Route 53** (`i
 2. Desde `infraestructura/terraform/principal`, ejecutá `terraform apply` y confirmá con `yes`.
 3. Ejecutá `terraform output servidores_de_nombres`. Devuelve **cuatro** servidores, del estilo `ns-123.awsdns-45.com`.
 
-### 2. Delegar el dominio en NIC Argentina
+### 2. Delegar el dominio en DonWeb
 
-1. Entrá a [nic.ar](https://nic.ar) con tu clave fiscal (o al panel de la empresa donde compraste el dominio).
-2. En **Mis dominios**, elegí `evidentiaa.com.ar` y luego **Delegar** (en otras empresas: «Servidores DNS» o «Cambiar DNS»).
-3. Cargá los cuatro servidores de la salida anterior, **sin el punto final** si lo tienen, y confirmá.
-4. La delegación tarda de minutos a unas horas. Comprobala con `nslookup evidentiaa.com.ar`: tiene que devolver la `ip_publica` del servidor.
+`evidentiaa.com.ar` se compró en **DonWeb**, que lo registra en NIC Argentina por la autora; la delegación se hace en el panel de DonWeb, no en nic.ar.
+
+1. Esperá a que DonWeb muestre el dominio como **activo** (tarda uno o dos días después de la compra).
+2. En el panel de DonWeb, en la sección de **Dominios**, elegí `evidentiaa.com.ar` y buscá la opción de **servidores DNS** (según la versión del panel: «Servidores DNS», «Cambiar DNS» o «Delegar»). Elegí usar servidores **propios o personalizados**, no los de DonWeb.
+3. Cargá los cuatro servidores de la salida anterior, **sin el punto final** si lo tienen, y guardá. Si el panel no tiene lugar para cuatro, cargá los que entren y avisá a soporte de DonWeb para sumar el resto.
+4. **No crees registros en la zona DNS de DonWeb**: deja de usarse en cuanto el dominio apunta a Route 53.
+5. La delegación tarda de minutos a unas horas. Comprobala con `nslookup evidentiaa.com.ar`: tiene que devolver la `ip_publica` del servidor.
 
 ### 3. Pasar la plataforma al dominio
 
