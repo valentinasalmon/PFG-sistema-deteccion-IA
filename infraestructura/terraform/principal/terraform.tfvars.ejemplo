@@ -8,7 +8,7 @@ correo_alertas      = "tu-correo@ejemplo.com"
 # Opcionales
 # presupuesto_mensual_usd = 30
 # tipo_instancia          = "t3.small"
-# dominio                 = "plataforma.com.ar"   # al comprar el dominio
+# dominio                 = "plataforma.com.ar"   # al comprar el dominio (crea el DNS en Route 53)
 
 # Sello de tiempo en Hedera (funcionalidad 023, ADR-0018). Con "hedera" hacen falta
 # la cuenta y el tema; la clave privada se carga aparte en SSM (ver docs/guias/despliegue-aws.md).

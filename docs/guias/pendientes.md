@@ -37,7 +37,7 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 
 | Prioridad | Tarea | Depende de | Quién |
 |---|---|---|---|
-| P1 | **Comprar el dominio** y configurarlo (Terraform, HTTPS, correo): pasos completos en `docs/guias/despliegue-aws.md`, «Cuando compres el dominio» | Compra | Autora, con la guía |
+| P1 | **Configurar el dominio `evidentiaa.com.ar`** (comprado el 2026-11-13): `terraform apply`, delegar en NIC Argentina, certificado y prueba de correos; pasos en `docs/guias/despliegue-aws.md`, «Dominio propio» (040) | — | Autora, con la guía |
 | P1 | **Sacar SES del modo de prueba**, para que cualquiera reciba los correos y se pueda registrar | Dominio | Autora pide a AWS |
 | P1 | **Pasar Hedera a la red real (*mainnet*)** en **febrero de 2027**, antes de la defensa (decisión de la autora, 2026-11-11): cuenta nueva, unos US$ 10 de HBAR, tema nuevo (CP-26). Hasta entonces sigue en *testnet* | Compra de HBAR | Autora compra, agente guía |
 | P2 | Probar la restauración de la copia de seguridad de la base (pendiente de la 017) | — | Autora, con la guía |

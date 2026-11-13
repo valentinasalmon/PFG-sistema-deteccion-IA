@@ -10,6 +10,11 @@ output "ip_publica" {
   value       = aws_eip.servidor.public_ip
 }
 
+output "servidores_de_nombres" {
+  description = "Servidores de nombres de Route 53: se cargan en NIC Argentina, en Delegar (vacío sin dominio propio)."
+  value       = local.dominio_propio ? aws_route53_zone.dominio[0].name_servers : []
+}
+
 output "id_instancia" {
   description = "EC2 del servidor (variable ID_INSTANCIA de GitHub)."
   value       = aws_instance.servidor.id

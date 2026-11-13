@@ -63,6 +63,7 @@ implementación siguiendo tareas.md, con pruebas
 | 035 | [Verificación de identidad de aseguradoras](035-identidad-aseguradoras/especificacion.md) | 10 | RN36, RN41, RF01 | Implementada con proveedor simulado; falta conectar Identik (CP-41) |
 | 038 | [Acceso compacto, pantallas a lo ancho y detalles de flujo](038-acceso-compacto/especificacion.md) | 10 | RNF10, RN38, RF53 | Implementada (2026-11-06) |
 | 039 | [Correcciones de producción](039-correcciones-produccion/especificacion.md) | 10 | RNF10, RN27 | Implementada (2026-11-10) |
+| 040 | [Dominio propio](040-dominio-propio/especificacion.md) | 10 | RF47, RNF03 | Implementada en el repositorio; falta aplicarla (2026-11-13) |
 | 037 | [Revisión integral: acceso, pantallas, siniestros e informe breve](037-acceso-y-pantallas/especificacion.md) | 10 | RNF10, RNF12, RF44 | En curso: aplicado lo pedido por la autora el 2026-11-05; quedan la presentación y la integración |
 | 036 | [Arnés para el trabajo asistido por IA](036-arnes/especificacion.md) | 10 | RNF02, RNF17, RNF19 | Implementada (ganchos, `/cerrar-etapa`, mapa y registro del arnés, ADR-0021) |
 
