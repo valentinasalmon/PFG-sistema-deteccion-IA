@@ -18,6 +18,7 @@ El arnés completo (guías, sensores, memoria y persona en el circuito) está de
   - El agente no pregunta por detalles que pueda resolver con la especificación y la constitución: decide, lo deja registrado en la bitácora con su justificación y avisa a la autora cuando una funcionalidad está lista para su Pull Request.
 - Ante una decisión importante (ver la lista anterior), el agente no la toma: la registra como cuestión abierta en `docs/especificacion/06-cuestiones-abiertas.md` con una propuesta provisoria y sigue con lo que no dependa de ella.
 - **Documentación de seguimiento a cargo del agente**: la entrada de bitácora, el marcado de casillas en `tareas.md` y `especificacion.md`, el estado de cada funcionalidad y la actualización de la especificación general ante decisiones nuevas.
+- **Una rama y un Pull Request por tanda** (pedido de la autora, 2026-11-16): el agente no abre una rama por cada arreglo chico. Acumula todo lo de la tanda (varias funcionalidades, correcciones y documentación) en una sola rama `funcionalidad/NNN-nombre` y le avisa a la autora cuando está lista para **un único** Pull Request hacia `desarrollo`. Solo se separa en otra rama algo que la autora tenga que poder integrar aparte. Mientras el Pull Request de una tanda no esté integrado, los cambios nuevos se suman a esa misma rama.
 - En cada mensaje se indica en qué rama debe estar la autora y si corresponde o no abrir un Pull Request.
 
 ## Reglas de código
