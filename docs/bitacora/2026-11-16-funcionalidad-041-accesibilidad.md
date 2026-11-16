@@ -27,6 +27,10 @@ Sensor de accesibilidad sin infracciones graves (14 pantallas en pc y celular, u
 - Autora: seguir el dominio (propagación en NIC Argentina, certificado y correos).
 - Autora: prueba de usabilidad con el protocolo actualizado.
 
+## Más tarde: 042, kit imprimible de la prueba de usabilidad
+
+- PDF A4 de cuatro hojas (`docs/calidad/usabilidad/kit-impresion.pdf`): consentimiento, guion con las consignas, planilla de registro y cuestionario SUS con las preguntas finales, con su fuente HTML para regenerarlo. Se renderizó cada página para comprobar que nada se pase de hoja (la planilla y el cuestionario desbordaban en la primera versión; las preguntas finales pasaron al cuestionario).
+- El PR #93 de la 041 falló en la verificación de mensajes de commit (un título de 109 caracteres; el máximo es 100). Como reescribir la rama de un Pull Request abierto no corresponde, los mismos cambios con el título corregido se subieron a `funcionalidad/041-accesibilidad-wcag` (PR #94, integrado). Lección: medir el largo del título antes de cada commit.
 ## Más tarde: 043, uso con teclado y plan B del DNS
 
 - **Sensor de uso con teclado**: 9 pantallas recorridas con Tab, foco siempre visible, sin trampas, e inicio de sesión solo con el teclado. Primera corrida con un falso positivo: el campo de fecha nativo usa Tab entre día, mes y año, y parecía una trampa; se toleran hasta cinco Tab en el mismo control. Se comprobó que el sensor falla al quitar el contorno de foco.
