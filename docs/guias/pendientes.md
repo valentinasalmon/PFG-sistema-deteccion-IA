@@ -10,7 +10,7 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 
 | Prioridad | Tarea | Depende de | Quién |
 |---|---|---|---|
-| P1 | **Red neuronal (010 y 012)**: terminar el entrenamiento, exportar a ONNX y conectarla como capa 4 probabilística. El sistema ya está preparado: es una clase y una línea en el registro (ver `docs/red-neuronal/07`); al integrarla, quitar el «Próximamente» de la portada y de los términos | Modelo de la autora; conjunto de datos y desempeño mínimo (CP-07) | Autora entrena, agente integra |
+| P1 | **Red neuronal: publicar el modelo 1.0.0 y activar la capa 4 en producción** (el clasificador ONNX ya está integrado en el backend desde la 012; al activarla, quitar el «Próximamente» de la portada y de los términos) | Modelo final de la autora (CP-07) | Autora publica, agente activa |
 | ✓ | Mejoras de interfaz (028 y 034): implementadas en cuatro tandas; falta la revisión final de la autora | Revisión | Autora |
 | P1 | **Revisión de la 034 pantalla por pantalla** (CA1, CA3, CA4, CA6, CA9) | PR de la tercera y la cuarta tanda | Autora revisa, agente corrige |
 | P2 | **Cobro real con Cresium**: proveedor, aviso firmado y conciliación (ver `docs/investigacion/2026-11-02-integracion-cresium.md`) | Precios (CP-38) y cuenta de Cresium con entorno de pruebas | Autora abre la cuenta, agente integra |
@@ -27,19 +27,19 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 
 | Prioridad | Tarea | Depende de | Quién |
 |---|---|---|---|
-| P1 | **Integrar la 037** (Pull Request hacia `desarrollo` y después a `main`) y probar en producción: login con Google, siniestros, PDF breve con QR al detalle | Revisión de la autora | Autora |
+| ✓ | Integrar la 037 y la 038 (en `main` desde el 2026-11-09); falta probar en producción el inicio con Google | — | Autora |
 | P1 | **Probar en Safari (iPhone) y Firefox**: en el entorno del agente solo hay Chromium; los recorridos de punta a punta pasaron en Chromium de computadora y en un iPhone 13 emulado | — | Autora, con `frontend/e2e/` y la guía de usuario |
 | P1 | **CP-43**: ¿el enlace al análisis detallado del PDF se abre sin cuenta? Hoy exige una cuenta con acceso | Autora y tutor | Autora |
-| P2 | Sumar los recorridos de `frontend/e2e/` y el sensor de diseño a la integración continua (hoy se corren a mano contra el entorno local, y son obligatorios antes de dar por terminado un cambio de interfaz) | Servicios de prueba en GitHub Actions | Agente |
-| P2 | Los correos todavía dicen «caso» también a las aseguradoras (los textos de la pantalla y el PDF ya dicen «siniestro») | — | Agente |
+| ~~P2~~ | ~~Sumar los recorridos de `frontend/e2e/` y el sensor de diseño a la integración continua~~ — hecho en la 039 (trabajo «Interfaz») | — | Agente |
+| ~~P2~~ | ~~Los correos todavía dicen «caso» también a las aseguradoras~~ — hecho en la 039 | — | Agente |
 
 ## Infraestructura y puesta en producción
 
 | Prioridad | Tarea | Depende de | Quién |
 |---|---|---|---|
-| P1 | **Comprar el dominio** y configurarlo (Terraform, HTTPS, correo) | Compra | Autora compra, agente configura |
+| P1 | **Configurar el dominio `evidentiaa.com.ar`** (comprado el 2026-11-13): `terraform apply`, delegar en NIC Argentina, certificado y prueba de correos; pasos en `docs/guias/despliegue-aws.md`, «Dominio propio» (040) | — | Autora, con la guía |
 | P1 | **Sacar SES del modo de prueba**, para que cualquiera reciba los correos y se pueda registrar | Dominio | Autora pide a AWS |
-| P1 | **Pasar Hedera a la red real (*mainnet*)** antes de la defensa: cuenta nueva, unos US$ 10 de HBAR, tema nuevo (CP-26) | Compra de HBAR | Autora compra, agente guía |
+| P1 | **Pasar Hedera a la red real (*mainnet*)** en **febrero de 2027**, antes de la defensa (decisión de la autora, 2026-11-11): cuenta nueva, unos US$ 10 de HBAR, tema nuevo (CP-26). Hasta entonces sigue en *testnet* | Compra de HBAR | Autora compra, agente guía |
 | P2 | Probar la restauración de la copia de seguridad de la base (pendiente de la 017) | — | Autora, con la guía |
 | P2 | Logo como foto del remitente de los correos | Dominio; según el proveedor, BIMI | Agente investiga |
 | ✓ | Limitar la cantidad de pedidos por minuto (030, hecho) | — | Agente |
@@ -49,10 +49,10 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 
 | Prioridad | Tarea | Depende de | Quién |
 |---|---|---|---|
-| P1 | **Pruebas de usabilidad** con 3 a 5 abogados o liquidadores: guion, tareas, cuestionario SUS y conclusiones | Participantes | Agente arma, autora conduce |
-| P1 | **Índice de calidad (QI ≥ 0,75)**: definir la fórmula y medir (cobertura, análisis estático, pruebas, usabilidad) | CP-04 (tutor) | Agente mide, tutor valida |
+| P1 | **Pruebas de usabilidad** con 3 a 5 abogados o liquidadores: protocolo listo y al día (`docs/guias/prueba-de-usabilidad.md`, 041) | Participantes | Autora conduce, agente calcula el SUS y el QI |
+| P1 | **Índice de calidad (QI ≥ 0,75)**: fórmula propuesta y medida (0,975 provisorio, 2026-11-16); falta el SUS y validar la fórmula (CP-04) | CP-04 (tutor) y prueba de usabilidad | Tutor valida, agente cierra la medición |
 | ✓ | Revisión de seguridad (030, hecha: `docs/arquitectura/seguridad.md`) | — | Agente |
-| ~~P2~~ | ~~Guía de uso para la persona usuaria~~ — hecha en `docs/guias/guia-de-usuario.md` (018); actualizarla con la 037 (siniestros, PDF breve, «Datos y gestión») | — | Agente |
+| ~~P2~~ | ~~Guía de uso para la persona usuaria~~ — hecha en `docs/guias/guia-de-usuario.md` (018); actualizada con la 037 y la 038 en la 039 | — | Agente |
 
 ## Documento final del proyecto (informe para la facultad)
 
@@ -77,7 +77,7 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 |---|---|---|
 | P1 | Catálogo de requisitos con trazabilidad al hallazgo y matriz hallazgo → requisito → componente | Agente |
 | P1 | Lienzo de modelo de negocio | Agente y autora |
-| P1 | Prototipo v1: etiqueta `v1`, README con instrucciones de ejecución y evidencia de la integración continua | Agente prepara, autora etiqueta |
+| P1 | Prototipo v1: README con instrucciones de ejecución y la insignia de la integración continua y `docs/versiones.md` listos (041); falta la etiqueta `v1.0` cuando se cumpla la lista de `docs/versiones.md` | Autora etiqueta |
 | P1 | Capítulos X (recursos), IX (diseño de solución, con diagrama de arquitectura actualizado y diagrama entidad-relación), VII (marketing), VIII (propiedad intelectual, búsqueda en el INPI), XII, XIII y conclusiones | Agente redacta, autora revisa |
 | P1 | Actualizar los Capítulos I a VI a lo construido (Hedera, React, organizaciones, HEIC, Google, cronograma real, columnas del tablero) | Agente |
 | P1 | Bitácora individual con la declaración de uso de IA y portafolio digital (instrumentos de la AE1 y la AE2, hoy sin hacer) | Autora, con apoyo del agente |

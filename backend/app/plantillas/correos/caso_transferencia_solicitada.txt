@@ -1,6 +1,6 @@
 Hola, {{ nombre }}:
 
-{{ solicitante }} quiere transferirte el caso {{ numero }}. Si lo aceptás, pasa a tu espacio personal y quedás como Responsable.
+{{ solicitante }} quiere transferirte el {{ palabra }} {{ numero }}. Si lo aceptás, pasa a tu espacio personal y quedás como Responsable.
 
-Podés aceptarlo o rechazarlo desde la lista de casos:
+Podés aceptarlo o rechazarlo desde la lista de {{ palabra }}s:
 {{ enlace }}

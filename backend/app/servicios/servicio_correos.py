@@ -11,6 +11,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from app.integraciones.correo import Correo
+from app.modelos.usuario import PERFIL_ASEGURADORA
 
 DIRECTORIO_PLANTILLAS = Path(__file__).resolve().parents[1] / "plantillas" / "correos"
 
@@ -208,6 +209,15 @@ class ServicioCorreos:  # pylint: disable=too-many-public-methods
     def _enlace_caso(self, caso):
         return f"{self.url_frontend}/casos/{caso.id}"
 
+    @staticmethod
+    def _palabra(usuario):
+        """«siniestro» para una cuenta de aseguradora y «caso» para las demás (039).
+
+        Es el mismo vocabulario que usa la interfaz según el perfil: los correos
+        de casos lo toman de quien los recibe.
+        """
+        return "siniestro" if getattr(usuario, "perfil", None) == PERFIL_ASEGURADORA else "caso"
+
     def enviar_aviso_acceso_caso(self, usuario, caso, cambio, nivel):
         """Aviso de un acceso a un caso otorgado, modificado o revocado (RF30 CA1, CU22).
 
@@ -215,36 +225,39 @@ class ServicioCorreos:  # pylint: disable=too-many-public-methods
             cambio: ``"otorgado"``, ``"modificado"`` o ``"revocado"``.
             nivel: ``"lectura"`` o ``"colaboracion"``; None si se revocó.
         """
+        palabra = self._palabra(usuario)
         asuntos = {
-            "otorgado": f"Te compartieron el caso {caso.numero}",
-            "modificado": f"Cambió tu permiso sobre el caso {caso.numero}",
-            "revocado": f"Ya no tenés acceso al caso {caso.numero}",
+            "otorgado": f"Te compartieron el {palabra} {caso.numero}",
+            "modificado": f"Cambió tu permiso sobre el {palabra} {caso.numero}",
+            "revocado": f"Ya no tenés acceso al {palabra} {caso.numero}",
         }
         return self._enviar(
             usuario.correo, asuntos[cambio], "caso_acceso",
-            nombre=usuario.nombre, numero=caso.numero, cambio=cambio,
+            nombre=usuario.nombre, palabra=palabra, numero=caso.numero, cambio=cambio,
             nivel={"lectura": "Lectura", "colaboracion": "Colaboración"}.get(nivel),
             enlace=self._enlace_caso(caso),
         )
 
     def enviar_aviso_transferencia_caso(self, usuario, caso, es_nuevo, otro):
         """Aviso de la transferencia de un caso al nuevo y al anterior Responsable (RF33 CA3)."""
+        palabra = self._palabra(usuario)
         asunto = (
-            f"Ahora sos Responsable del caso {caso.numero}" if es_nuevo
-            else f"Transferiste el caso {caso.numero}"
+            f"Ahora sos Responsable del {palabra} {caso.numero}" if es_nuevo
+            else f"Transferiste el {palabra} {caso.numero}"
         )
         return self._enviar(
             usuario.correo, asunto, "caso_transferido",
-            nombre=usuario.nombre, numero=caso.numero, es_nuevo=es_nuevo,
+            nombre=usuario.nombre, palabra=palabra, numero=caso.numero, es_nuevo=es_nuevo,
             otro=f"{otro.nombre} {otro.apellido}", enlace=self._enlace_caso(caso),
         )
 
     def enviar_solicitud_transferencia_caso(self, usuario, caso, solicitante):
         """Pedido de aceptar un caso personal transferido (RF33 CA2)."""
+        palabra = self._palabra(usuario)
         return self._enviar(
-            usuario.correo, f"Te quieren transferir el caso {caso.numero}",
+            usuario.correo, f"Te quieren transferir el {palabra} {caso.numero}",
             "caso_transferencia_solicitada",
-            nombre=usuario.nombre, numero=caso.numero,
+            nombre=usuario.nombre, palabra=palabra, numero=caso.numero,
             solicitante=f"{solicitante.nombre} {solicitante.apellido}",
             enlace=f"{self.url_frontend}/casos",
         )
@@ -252,26 +265,31 @@ class ServicioCorreos:  # pylint: disable=too-many-public-methods
     def enviar_respuesta_transferencia_caso(self, usuario, caso, destinatario, aceptada):
         """Aviso a quien pidió la transferencia de que fue aceptada o rechazada."""
         accion = "aceptó" if aceptada else "rechazó"
+        palabra = self._palabra(usuario)
         return self._enviar(
-            usuario.correo, f"{destinatario.nombre} {accion} el caso {caso.numero}",
+            usuario.correo, f"{destinatario.nombre} {accion} el {palabra} {caso.numero}",
             "caso_transferencia_respondida",
-            nombre=usuario.nombre, numero=caso.numero, aceptada=aceptada,
+            nombre=usuario.nombre, palabra=palabra, numero=caso.numero, aceptada=aceptada,
             receptor=f"{destinatario.nombre} {destinatario.apellido}",
         )
 
     def enviar_aviso_caso_eliminado(self, usuario, numero, responsable):
         """Aviso a quienes tenían acceso de que el caso fue eliminado (RF32 CA2)."""
+        palabra = self._palabra(usuario)
         return self._enviar(
-            usuario.correo, f"Se eliminó el caso {numero}", "caso_eliminado",
-            nombre=usuario.nombre, numero=numero,
+            usuario.correo, f"Se eliminó el {palabra} {numero}", "caso_eliminado",
+            nombre=usuario.nombre, palabra=palabra, numero=numero,
             responsable=f"{responsable.nombre} {responsable.apellido}",
         )
 
     def enviar_aviso_retencion(self, usuario, caso, vence):
         """Aviso al Responsable 30 días antes de destruir el caso (RF50, RN31)."""
+        palabra = self._palabra(usuario)
         return self._enviar(
-            usuario.correo, f"El caso {caso.numero} se elimina en 30 días", "retencion_aviso",
-            nombre=usuario.nombre, numero=caso.numero, vence=vence.strftime("%d/%m/%Y"),
+            usuario.correo, f"El {palabra} {caso.numero} se elimina en 30 días",
+            "retencion_aviso",
+            nombre=usuario.nombre, palabra=palabra, numero=caso.numero,
+            vence=vence.strftime("%d/%m/%Y"),
             enlace=f"{self.url_frontend}/casos/{caso.id}",
         )
 
@@ -294,17 +312,20 @@ class ServicioCorreos:  # pylint: disable=too-many-public-methods
 
     def enviar_aviso_analisis_finalizado(self, usuario, caso, cantidad, con_informe=True):
         """Aviso a quien pidió el análisis de que terminó y su informe está listo (RF44 CA3)."""
+        palabra = self._palabra(usuario)
         return self._enviar(
-            usuario.correo, f"Terminó el análisis del caso {caso.numero}", "analisis_finalizado",
-            nombre=usuario.nombre, numero=caso.numero, cantidad=cantidad,
+            usuario.correo, f"Terminó el análisis del {palabra} {caso.numero}",
+            "analisis_finalizado",
+            nombre=usuario.nombre, palabra=palabra, numero=caso.numero, cantidad=cantidad,
             con_informe=con_informe, enlace=self._enlace_caso(caso),
         )
 
     def enviar_aviso_analisis_fallido(self, usuario, caso, motivo):
         """Aviso a quien pidió el análisis de que no pudo completarse (RF46 CA2)."""
+        palabra = self._palabra(usuario)
         return self._enviar(
-            usuario.correo, f"No se pudo completar el análisis del caso {caso.numero}",
+            usuario.correo, f"No se pudo completar el análisis del {palabra} {caso.numero}",
             "analisis_fallido",
-            nombre=usuario.nombre, numero=caso.numero, motivo=motivo,
+            nombre=usuario.nombre, palabra=palabra, numero=caso.numero, motivo=motivo,
             enlace=self._enlace_caso(caso),
         )

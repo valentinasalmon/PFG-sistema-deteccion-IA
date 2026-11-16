@@ -255,6 +255,21 @@ describe('progreso y resultados', () => {
     expect(within(analisis).getByText('Sin credenciales de contenido.')).toBeInTheDocument()
   })
 
+  it('desde el QR del PDF el análisis se abre con todo el detalle (038)', async () => {
+    api({ historial: [RESUMEN] })
+    renderizarEn('/casos/7?etapa=analisis&detalle=completo')
+    const detalles = await screen.findAllByText('Qué significa y datos técnicos')
+    expect(detalles.length).toBeGreaterThan(0)
+    for (const resumen of detalles) expect(resumen.closest('details')).toHaveAttribute('open')
+  })
+
+  it('sin el QR, el detalle técnico empieza plegado', async () => {
+    api({ historial: [RESUMEN] })
+    renderizarEn('/casos/7?etapa=analisis')
+    const [resumen] = await screen.findAllByText('Qué significa y datos técnicos')
+    expect(resumen.closest('details')).not.toHaveAttribute('open')
+  })
+
   it('muestra el mapa de la capa ELA con su aclaración (011 CA4)', async () => {
     const ela = {
       ...RESULTADO,

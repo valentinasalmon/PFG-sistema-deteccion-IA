@@ -262,6 +262,24 @@ El cliente se crea con tu cuenta de Google en https://console.cloud.google.com. 
    - La segunda vez entra directo.
    - Con tu correo de administradora, se vincula a tu cuenta existente.
 
+### Abrirlo a cualquier persona (con el dominio, 2026-11-16)
+
+Mientras la aplicación está **En prueba**, solo entran con Google los usuarios de prueba. Para que entre cualquiera:
+
+1. **Clientes** → `evidentIA web`: en **Orígenes de JavaScript autorizados** agregá `https://evidentiaa.com.ar`; en **URIs de redireccionamiento autorizados**, `https://evidentiaa.com.ar/api/google/retorno`. **Guardar**. Dejá las de `sslip.io` y `localhost` hasta confirmar que todo anda.
+2. **Desarrollo de la marca** (o **Branding**):
+   - **Página principal de la aplicación**: `https://evidentiaa.com.ar`
+   - **Política de privacidad**: `https://evidentiaa.com.ar/privacidad`
+   - **Condiciones del servicio**: `https://evidentiaa.com.ar/terminos`
+   - **Dominios autorizados**: `evidentiaa.com.ar`
+   - **Sin logo**: con logo, Google exige una verificación de marca que tarda días.
+   **Guardar**.
+3. **Público** → **Publicar la aplicación** → **Confirmar**. El estado pasa a **En producción**.
+
+La plataforma pide solo `openid`, `email` y `profile`, que Google no considera sensibles: no hace falta la verificación de la aplicación. Puede aparecer el aviso de «verificación recomendada» sin bloquear a nadie.
+
+Para comprobarlo, entrá con «Continuar con Google» desde una cuenta que **no** esté en la lista de usuarios de prueba (por ejemplo, la de un familiar o una cuenta nueva).
+
 ## Capa 4: modelo de la red neuronal (funcionalidad 012)
 
 Sin estos pasos la plataforma funciona igual: la capa 4 aparece como «No disponible» y las otras tres capas se presentan normalmente. Se hace una vez por versión del modelo.
@@ -309,12 +327,47 @@ Clarity graba cómo se usa la plataforma (mapas de calor y recorridos) para que 
 - **Ver los datos:** en [clarity.microsoft.com](https://clarity.microsoft.com), proyecto evidentIA. Las primeras sesiones aparecen a las pocas horas del despliegue.
 - **Apagarlo:** cambiar `ID_PROYECTO` por `''` y desplegar.
 
-## Cuando compres el dominio
+## Dominio propio
 
-1. En `terraform.tfvars`, poné `dominio = "tu-dominio.com.ar"` y ejecutá `terraform apply`.
-2. En el proveedor del dominio (por ejemplo, NIC Argentina), creá un registro **A** que apunte a la `ip_publica`.
-3. Esperá a que el dominio resuelva. Lo comprobás con `nslookup tu-dominio.com.ar`.
-4. En la terminal de Session Manager, ejecutá:
+El dominio de la plataforma es **`evidentiaa.com.ar`** (comprado por la autora el 2026-11-13). Sin dominio, la plataforma funciona en `https://<ip>.sslip.io`; con él cambian la dirección, el certificado y, sobre todo, los correos: con el dominio verificado en SES dejan de caer en Spam y se puede pedir que cualquier persona los reciba.
+
+Desde la funcionalidad 040, **Terraform administra todo el DNS en Route 53** (`infraestructura/terraform/principal/dns.tf`): el registro A al servidor, las tres claves DKIM de SES y la política DMARC. No se carga ningún registro a mano. Route 53 cuesta US$ 0,50 por mes.
+
+### 1. Crear la zona y la identidad de correo
+
+1. En `terraform.tfvars`, poné:
+   ```hcl
+   dominio          = "evidentiaa.com.ar"
+   correo_remitente = "notificaciones@evidentiaa.com.ar"
+   ```
+   El remitente del dominio no necesita verificarse aparte: lo cubre la identidad del dominio. Dejá en `correos_verificados` y `administradores` tus correos reales (Gmail, etc.).
+2. Desde `infraestructura/terraform/principal`, ejecutá `terraform apply` y confirmá con `yes`.
+3. Ejecutá `terraform output servidores_de_nombres`. Devuelve **cuatro** servidores, del estilo `ns-123.awsdns-45.com`.
+
+### 2. Delegar el dominio en DonWeb
+
+`evidentiaa.com.ar` se compró en **DonWeb**, que lo registra en NIC Argentina por la autora; la delegación se hace en el panel de DonWeb, no en nic.ar.
+
+1. Esperá a que DonWeb muestre el dominio como **activo** (tarda uno o dos días después de la compra).
+2. En el panel de DonWeb, en la sección de **Dominios**, elegí `evidentiaa.com.ar` y buscá la opción de **servidores DNS** (según la versión del panel: «Servidores DNS», «Cambiar DNS» o «Delegar»). Elegí usar servidores **propios o personalizados**, no los de DonWeb.
+3. Cargá los cuatro servidores de la salida anterior, **sin el punto final** si lo tienen, y guardá. Si el panel no tiene lugar para cuatro, cargá los que entren y avisá a soporte de DonWeb para sumar el resto.
+4. **No crees registros en la zona DNS de DonWeb**: deja de usarse en cuanto el dominio apunta a Route 53.
+5. La delegación tarda de minutos a unas horas. Comprobala con `nslookup evidentiaa.com.ar`: tiene que devolver la `ip_publica` del servidor.
+
+### Plan B: si la delegación no avanza
+
+Si después de un día NIC Argentina sigue mostrando los servidores de DonWeb (`dig NS evidentiaa.com.ar @f.dns.ar +norec`) y soporte no lo resuelve, se pueden cargar los registros a mano en la zona de DonWeb en lugar de delegar:
+
+1. En DonWeb, volvé a poner los nameservers de DonWeb (`ns1.donweb.com` y `ns2.donweb.com`) y tocá **Crear zona DNS**.
+2. Ejecutá `terraform output registros_dns`: devuelve los cinco registros (un A, tres CNAME de DKIM y un TXT de DMARC).
+3. Cargá cada uno en la zona de DonWeb con el mismo tipo, nombre y valor. Si el panel agrega el dominio solo al final del nombre, escribí solo la primera parte (por ejemplo, `abc123._domainkey` o `_dmarc`; para el A, `@` o vacío).
+4. Seguí con el paso 3. La zona de Route 53 queda sin uso (cuesta US$ 0,50 por mes; se puede dejar).
+
+### 3. Pasar la plataforma al dominio
+
+Cuando el paso anterior ya devuelve la IP:
+
+1. En la consola de AWS, **EC2**, el servidor, **Connect**, **Session Manager**, y ahí:
 
 ```bash
 sudo bash /opt/plataforma/servidor/scripts/generar_entorno.sh
@@ -322,7 +375,26 @@ sudo bash /opt/plataforma/servidor/scripts/pedir_certificado.sh
 sudo systemctl restart plataforma-web plataforma-trabajador
 ```
 
-5. Opcional: para que cualquier persona reciba correos, verificá el dominio en SES y pedí la salida del modo de prueba (*SES*, *Account dashboard*, *Request production access*). AWS responde en alrededor de un día.
+2. Entrá a `https://evidentiaa.com.ar/estado`: todo en verde y el candado sin avisos.
+3. Si usás el inicio con Google: en Google Cloud (*APIs y servicios*, *Credenciales*, el cliente OAuth) agregá el origen `https://evidentiaa.com.ar` y el redireccionamiento `https://evidentiaa.com.ar/api/google/retorno`. En la *pantalla de consentimiento*, agregá `evidentiaa.com.ar` como dominio autorizado.
+4. Los informes ya generados siguen apuntando a la dirección `sslip.io` en sus QR: funcionan mientras esa dirección exista (la IP es fija). Los nuevos usan el dominio.
+
+### 4. Comprobar los correos
+
+1. En **SES** (región `eu-west-1`), *Identities*: `evidentiaa.com.ar` tiene que figurar como **Verified** (unos minutos después de la delegación).
+2. Pedí «Recuperar la contraseña» desde la plataforma con un correo de `correos_verificados` y revisá que llegue a la bandeja de entrada, desde `notificaciones@evidentiaa.com.ar`.
+
+### 5. Salir del modo de prueba de SES
+
+Mientras SES esté en modo de prueba, **solo reciben correos las direcciones de `correos_verificados`** que confirmaron el enlace de AWS. Eso incluye a la cuenta de Administrador: si su dirección no está en esa lista, no le llega el aviso de las organizaciones pendientes.
+
+1. En SES, **Account dashboard**, **Request production access**.
+2. Tipo de correo: **Transactional**. Sitio: `https://evidentiaa.com.ar`.
+3. Descripción del uso (se puede copiar):
+
+> evidentIA es una plataforma para abogados y aseguradoras que analiza fotos usadas como prueba. Envía solo correos transaccionales a personas que crearon una cuenta: verificación del correo, recuperación de la contraseña, invitaciones a una organización, aviso de fin de un análisis y avisos de la aprobación de una organización. No envía correos de marketing. Las direcciones se obtienen únicamente del registro en la plataforma, que exige confirmar el correo. Los rebotes y las quejas se atienden desactivando el envío a esa dirección. El volumen esperado es bajo (menos de 500 correos por día).
+
+4. AWS suele responder en alrededor de un día. Hasta entonces, para probar con otra persona, agregá su correo a `correos_verificados`, ejecutá `terraform apply` y pedile que confirme el enlace.
 
 ## Operación
 

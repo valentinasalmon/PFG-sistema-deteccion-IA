@@ -448,6 +448,9 @@ a:hover {
   justify-content: center;
   border-radius: 50%;
   background: var(--lima);
+  /* Texto oscuro sobre el lima: el blanco que heredaba del encabezado tenía un
+     contraste de 1,9:1 (041, RNF11). */
+  color: var(--tinta);
   font-family: var(--fuente-titulos);
   font-weight: 700;
   font-size: 0.875rem;

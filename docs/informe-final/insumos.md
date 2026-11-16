@@ -363,3 +363,23 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **QR de un solo uso**: atar el enlace al primer dispositivo al abrir la página falló en la prueba porque el navegador puede repetir la consulta; se ata con la primera foto subida. Lección: los controles de un solo uso tienen que tolerar repeticiones.
 - **Diseño**: agrandar un contenedor no alcanza; el contenido tiene que reorganizarse (dos columnas, índice, largo de línea). Se registró como criterio de revisión visual.
 
+
+## Correcciones de producción (039, 2026-11-10)
+
+- **Probar en producción encuentra lo que el entorno local no**: el flujo de aprobación de estudios funcionaba en local, pero en producción el correo dependía de SES en modo de prueba (solo entrega a direcciones verificadas). Lección: las integraciones externas se validan contra el servicio real, como pide el arnés.
+- **Un enlace tiene que cumplir lo que su rótulo promete**: el QR «Análisis detallado» llevaba al análisis plegado; se agregó un parámetro que lo despliega entero.
+- **Vocabulario por destinatario**: los correos usan «caso» o «siniestro» según el perfil de quien los recibe.
+- **Verificación visual automatizada**: el sensor de diseño y los recorridos de punta a punta pasaron a la integración continua, con un entorno completo (base, Redis, backend y frontend) levantado en GitHub Actions; deja de depender de que alguien los corra a mano.
+
+## Dominio propio (040, 2026-11-13)
+
+- **Dominio**: `evidentiaa.com.ar`. `evidentia.com` estaba tomado y las variantes libres en `.com` eran dominios premium; el `.com.ar` era accesible y en pesos.
+- **DNS como código**: la zona de Route 53, los registros de DKIM y DMARC y el registro del servidor se crean con Terraform; la única acción manual es delegar el dominio en NIC Argentina. Evita errores al copiar registros largos y deja el DNS versionado.
+- **Correo**: verificar el dominio entero en SES (DKIM) en lugar de direcciones sueltas mejora la entrega y es requisito práctico para pedir la salida del modo de prueba.
+
+## Accesibilidad (041, 2026-11-16)
+
+- **Revisión automática con axe-core** (WCAG 2.1 A y AA) de 14 pantallas en computadora y celular, más un caso y Administración: solo dos problemas de contraste (1,9:1 y 2,4:1), corregidos con colores de la paleta. El sensor quedó en la integración continua.
+- **Falsos positivos por animaciones**: medir la portada a mitad de la animación de aparición dio 30 problemas de contraste inexistentes; se revisa con `prefers-reduced-motion`. Lección para cualquier verificación automática de interfaces animadas.
+- **QI provisorio**: 0,975 (segunda medición); falta el SUS de la prueba de usabilidad.
+- **Uso con teclado (043)**: un sensor recorre las pantallas con Tab (foco visible, sin trampas, inicio de sesión sin mouse). Se validó que el sensor detecta el error inyectándolo a propósito: un sensor que nunca falla no prueba nada.

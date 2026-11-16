@@ -62,6 +62,11 @@ implementación siguiendo tareas.md, con pruebas
 | 034 | [Pulido de UX/UI de todo el sistema](034-pulido-ux/especificacion.md) | 10 | RNF10 | Implementada en cuatro tandas (la tercera y la cuarta, en revisión); falta la revisión final con la autora (CA1, CA3, CA4, CA6, CA9) |
 | 035 | [Verificación de identidad de aseguradoras](035-identidad-aseguradoras/especificacion.md) | 10 | RN36, RN41, RF01 | Implementada con proveedor simulado; falta conectar Identik (CP-41) |
 | 038 | [Acceso compacto, pantallas a lo ancho y detalles de flujo](038-acceso-compacto/especificacion.md) | 10 | RNF10, RN38, RF53 | Implementada (2026-11-06) |
+| 039 | [Correcciones de producción](039-correcciones-produccion/especificacion.md) | 10 | RNF10, RN27 | Implementada (2026-11-10) |
+| 040 | [Dominio propio](040-dominio-propio/especificacion.md) | 10 | RF47, RNF03 | Implementada en el repositorio; falta aplicarla (2026-11-13) |
+| 041 | [Accesibilidad y materiales del cierre al día](041-accesibilidad/especificacion.md) | 10 | RNF11, RNF10 | Implementada (2026-11-16) |
+| 042 | [Kit imprimible de la prueba de usabilidad](042-kit-usabilidad/especificacion.md) | 10 | RNF10 | Implementada (2026-11-16) |
+| 043 | [Uso con teclado y plan B del DNS](043-teclado-y-dns/especificacion.md) | 10 | RNF11 | Implementada (2026-11-16) |
 | 037 | [Revisión integral: acceso, pantallas, siniestros e informe breve](037-acceso-y-pantallas/especificacion.md) | 10 | RNF10, RNF12, RF44 | En curso: aplicado lo pedido por la autora el 2026-11-05; quedan la presentación y la integración |
 | 036 | [Arnés para el trabajo asistido por IA](036-arnes/especificacion.md) | 10 | RNF02, RNF17, RNF19 | Implementada (ganchos, `/cerrar-etapa`, mapa y registro del arnés, ADR-0021) |
 | 039 | [Arnés del informe final: guías, revisor, cifras y diagramas desde el código](039-arnes-del-informe/especificacion.md) | 10 | RNF17, RNF19 | Implementada (comandos `/redactar-informe`, `/revisar-informe` y `/generar-diagramas`) |

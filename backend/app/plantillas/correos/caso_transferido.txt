@@ -1,6 +1,6 @@
 Hola, {{ nombre }}:
 
-{% if es_nuevo %}{{ otro }} te transfirió el caso {{ numero }}: ahora sos su Responsable.{% else %}Transferiste el caso {{ numero }} a {{ otro }}, que ahora es su Responsable.{% endif %}
+{% if es_nuevo %}{{ otro }} te transfirió el {{ palabra }} {{ numero }}: ahora sos su Responsable.{% else %}Transferiste el {{ palabra }} {{ numero }} a {{ otro }}, que ahora es su Responsable.{% endif %}
 
-Podés ver el caso en:
+Podés ver el {{ palabra }} en:
 {{ enlace }}
