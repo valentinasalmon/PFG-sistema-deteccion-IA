@@ -10,6 +10,7 @@ La autora delegó `evidentiaa.com.ar` en DonWeb a los servidores de Route 53. El
 - **Dos problemas de contraste corregidos**: las iniciales del menú (1,9:1) y la etiqueta de la tarjeta «Aseguradoras» de la portada (2,4:1).
 - **Protocolo de usabilidad** al día con la plataforma de la 037 a la 040.
 - **QI**: segunda medición provisoria, 0,975.
+- **Versión 1.0 preparada**: README nuevo (producción, qué hace, cómo ejecutarlo y verificar la calidad, insignia de la integración continua, uso de IA) y `docs/versiones.md` con el contenido de la v1.0 y la lista de lo que falta antes de etiquetarla. Solo existe la etiqueta `v0.1`; la v0.2 y la v0.3 quedan como hitos alcanzados sin etiqueta.
 - Se sumó a esta rama el commit de la guía de DonWeb (040) que había quedado fuera del PR #91.
 
 ## Decisiones

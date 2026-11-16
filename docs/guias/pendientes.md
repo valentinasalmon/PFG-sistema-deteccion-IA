@@ -77,7 +77,7 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 |---|---|---|
 | P1 | Catálogo de requisitos con trazabilidad al hallazgo y matriz hallazgo → requisito → componente | Agente |
 | P1 | Lienzo de modelo de negocio | Agente y autora |
-| P1 | Prototipo v1: etiqueta `v1`, README con instrucciones de ejecución y evidencia de la integración continua | Agente prepara, autora etiqueta |
+| P1 | Prototipo v1: README con instrucciones de ejecución y la insignia de la integración continua y `docs/versiones.md` listos (041); falta la etiqueta `v1.0` cuando se cumpla la lista de `docs/versiones.md` | Autora etiqueta |
 | P1 | Capítulos X (recursos), IX (diseño de solución, con diagrama de arquitectura actualizado y diagrama entidad-relación), VII (marketing), VIII (propiedad intelectual, búsqueda en el INPI), XII, XIII y conclusiones | Agente redacta, autora revisa |
 | P1 | Actualizar los Capítulos I a VI a lo construido (Hedera, React, organizaciones, HEIC, Google, cronograma real, columnas del tablero) | Agente |
 | P1 | Bitácora individual con la declaración de uso de IA y portafolio digital (instrumentos de la AE1 y la AE2, hoy sin hacer) | Autora, con apoyo del agente |
