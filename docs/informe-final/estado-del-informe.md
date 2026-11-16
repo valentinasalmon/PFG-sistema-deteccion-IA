@@ -2,7 +2,7 @@
 
 Tablero vivo de lo que falta para entregar. Se actualiza después de cada `/revisar-informe`; el detalle con los textos de corrección está en la última revisión de [revisiones/](revisiones/).
 
-Última revisión: [2026-11-11](revisiones/2026-11-11.md); el documento no cambió desde la del 5/11, así que todas sus correcciones siguen pendientes. Entrega del desarrollo: antes del 19/11/2026; defensa: febrero de 2027.
+Última revisión: [2026-11-16](revisiones/2026-11-16.md); el documento no cambió desde el 3/11, así que siguen pendientes todas las correcciones, y se suman las novedades N-01 a N-08 y los textos de los capítulos vacíos.
 
 ## Por capítulo
 
@@ -14,15 +14,15 @@ Tablero vivo de lo que falta para entregar. Se actualiza después de cada `/revi
 | III. Entorno y dominio | Casi listo | Niveles de título del alcance y los límites; Tabla 7 (Cresium o Mercado Pago); 38 casos de uso; Figuras 9 y 10 |
 | IV. Negocios | Casi listo | Proveedor de pagos neutral (CP-34); precios (CP-38) con el plan de negocios |
 | V. Planificación | Casi listo | Tabla 13 (ejecución real) y Figura 8; filas «[a definir]»; valor del clasificador en el MVP |
-| VI. Metodología | Casi listo | Cifras actualizadas; etiqueta `v1` |
+| VI. Metodología | Casi listo | Cifras (N-01, N-05); arnés del informe (N-02) con las Figuras 11 y 12; accesibilidad y usabilidad (N-05); etiqueta v0.1 (N-06) |
 | VII. Marketing | Casi listo | «portada pública», «evidentIA»; promoción como plan |
 | VIII. Propiedad intelectual | Casi listo | Número del capítulo; sigla INPI; Anexo M |
-| IX. Diseño de solución | **Falta** | Número del capítulo; Figuras 11 a 14; capturas (Figuras 15 a 20) |
-| X. Recursos | Casi listo | Costos reales; modelo del celular; fila de Identik |
-| XI. Oportunidades | **Vacío** | CANVAS (Tabla 16) y oportunidades: texto en el chat del 2026-11-03 |
-| XII. Lecciones | **Vacío** | Texto en el chat del 2026-11-03 y en `trabajo-con-ia.md` |
+| IX. Diseño de solución | **Falta** | Número del capítulo; Figuras 13 a 17; clasificador y Tabla 15 (N-03); dominio (N-04); capturas (Figuras 18 a 23) |
+| X. Recursos | Casi listo | Costos reales (dominio N-04, Hedera N-07); modelo del celular; fila de Identik |
+| XI. Oportunidades | **Vacío** | CANVAS (Tabla 17) y oportunidades: texto en la revisión del 16/11 |
+| XII. Lecciones | **Vacío** | Texto en la revisión del 16/11 y en `trabajo-con-ia.md` |
 | XIII. Entregables | **Parcial** | Versiones 2 y 3 con mapas de empatía (pendientes de hacer con interesados) |
-| Conclusiones | **Vacío** | Texto en el chat del 2026-11-03; completar con OE4 y OE5 |
+| Conclusiones | **Vacío** | Texto en la revisión del 16/11; falta el resultado del OE5 |
 | Bibliografía | Casi listo | Orden alfabético y entradas que faltan |
 | Anexos | **Desactualizados** | D (segundo «B»), E (aclaración), F, G y H (reemplazar por el repositorio), K (diagramas actuales), M (captura del INPI), N (mapas de empatía), O (declaración de uso de IA), P (plan de negocios, recomendado) |
 

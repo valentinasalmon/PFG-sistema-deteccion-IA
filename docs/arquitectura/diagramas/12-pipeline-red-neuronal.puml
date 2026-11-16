@@ -1,0 +1,44 @@
+@startuml pipeline-red-neuronal
+' Diagrama de actividad (UML 2.5) del pipeline del clasificador, según
+' red_neuronal/clasificador y docs/red-neuronal/ (capítulos 6 y 8).
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #333333
+}
+skinparam swimlane {
+  BorderColor #777777
+  TitleFontStyle bold
+}
+|Google Colab (autora)|
+start
+:1. Obtener imágenes
+(Community Forensics y OpenFake);
+:2. Validar
+(corruptas, duplicadas, fugas);
+:3. Preparar
+(normalización igual para las dos clases);
+:4. Entrenar EfficientNet-B0
+y calibrar la temperatura;
+:5. Exportar a ONNX;
+:6. Evaluar: prueba, generadores no vistos
+y evaluación fija del conjunto propio;
+if (7. ¿Pasa la compuerta?) then (no)
+  :Se registra el motivo
+  y no se publica;
+  stop
+else (sí)
+endif
+:Publica la versión con su ficha
+en el registro de modelos;
+|Plataforma (AWS)|
+:El trabajador de análisis la usa
+como capa 4, con la versión
+y la huella en cada resultado;
+stop
+@enduml

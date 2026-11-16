@@ -1,0 +1,55 @@
+@startuml arnes-del-informe
+' Diagrama de actividad (UML 2.5) del arnés del informe final (funcionalidad 039):
+' .claude/commands/redactar-informe.md, revisar-informe.md, generar-diagramas.md y
+' backend/herramientas/.
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #333333
+}
+skinparam swimlane {
+  BorderColor #777777
+  TitleFontStyle bold
+}
+|Autora|
+|Agente de IA|
+start
+fork
+  :Recalcula las cifras
+  desde el repositorio;
+fork again
+  :Genera los diagramas
+  desde el código;
+  |Sensores|
+  :Verifica que coincidan con el
+  código y la infraestructura,
+  y su notación y ortografía;
+  |Agente de IA|
+end fork
+:Redacta la sección (/redactar-informe)
+con la guía de redacción
+y los hechos del sistema;
+repeat
+  |Autora|
+  :Pega el texto y las
+  figuras en el documento;
+  |Agente de IA|
+  :Lee el documento completo
+  (/revisar-informe);
+  |Sensores|
+  :Revisor automático: numeración,
+  citas y bibliografía, tablas y figuras,
+  tiempo verbal, viñetas y veredictos;
+  |Agente de IA|
+  :Lectura de evaluador y
+  correcciones listas para pegar;
+  |Autora|
+repeat while (¿Quedan correcciones?) is (sí) not (no)
+:Entrega el informe;
+stop
+@enduml

@@ -13,6 +13,9 @@ Todos los diagramas del informe salen de aquí. **Representan el sistema real**:
 | `09-casos-de-uso-actores` | Actores y su generalización | **Generado** desde `docs/especificacion/05-casos-de-uso.md` | Cap. III, Catálogo de requisitos |
 | `09a` a `09e` | Casos de uso por módulo (cuentas; organizaciones, planes y aseguradoras; casos; imágenes, análisis e informes; retención) | **Generado** | Cap. III o Anexo F |
 | `09f-casos-de-uso-relaciones` | Relaciones «include» y «extend» entre casos de uso | **Generado** | Cap. III o Anexo F |
+| `10-ciclo-de-trabajo-con-ia` | Actividad UML 2.5 con particiones: el trabajo asistido por IA (autora, agente y sensores) | A mano, según `CLAUDE.md`, `.claude/` y la integración continua | Cap. VI, Metodología |
+| `11-arnes-del-informe` | Actividad UML 2.5: cómo se redacta, verifica y revisa el informe | A mano, según los comandos y las herramientas de la 039 | Cap. VI, Metodología |
+| `12-pipeline-red-neuronal` | Actividad UML 2.5: las siete etapas del clasificador, la compuerta y su uso como capa 4 | A mano, según `docs/red-neuronal/` (capítulos 6 y 8) | Cap. IX, caso de diseño de la red |
 
 ## Reglas que cumple todo diagrama
 

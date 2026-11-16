@@ -31,7 +31,7 @@ Fuente única de datos verificados para redactar el informe. Si un dato del info
 
 | Función | Estado | Evidencia |
 |---|---|---|
-| Registro con perfil Abogado o Aseguradora, con Google (OpenID Connect con PKCE) | Implementado; Google en modo de prueba hasta tener el dominio | Funcionalidades 002, 020 y 027; ADR-0019 |
+| Registro con perfil Abogado o Aseguradora, con Google (OpenID Connect con PKCE) | Implementado; inicio con Google publicado para cualquier persona con el dominio (027) | Funcionalidades 002, 020 y 027; ADR-0019 |
 | Organizaciones (estudio jurídico y aseguradora del catálogo de la SSN), invitaciones y permisos por caso | Implementado | Funcionalidades 004, 005 y 021 |
 | Carga de JPEG, PNG y HEIC desde la computadora, desde el celular (QR) y por la persona afectada (enlace con declaración) | Implementado | Funcionalidades 006, 024 y 028 |
 | Huella SHA-256 y sello de tiempo en Hedera (imágenes, informes y versiones) | Implementado; **probado en producción contra la *testnet*** el 2026-11-02 | Funcionalidades 023, 026 y 029; ADR-0018; `/estado` |
@@ -70,7 +70,11 @@ Fuente única de datos verificados para redactar el informe. Si un dato del info
   - Parameter Store para los secretos;
   - un presupuesto con alertas.
 - **Despliegue continuo** desde `main` con OIDC y Systems Manager: migra la base, verifica la salud, vuelve a la versión anterior si falla y sella la huella de la versión.
-- **Pendiente de infraestructura:** el dominio propio, la salida de SES del modo de prueba y Hedera en la red principal (*mainnet*) antes de la defensa.
+- **Dominio propio (040):** `evidentiaa.com.ar`, registrado en NIC Argentina por DonWeb (costo informado por la autora: unos ARS 30.000 por año, a confirmar con la factura). DNS en Route 53 por Terraform (US$ 0,50 por mes), identidad del dominio en SES con DKIM y DMARC. Certificado HTTPS de Let's Encrypt, **sin costo**, con `pedir_certificado.sh`. Al 2026-11-16 la delegación todavía no propagó en NIC Argentina (el `.ar` seguía publicando los servidores de DonWeb).
+- **Accesibilidad y uso (041, 043):** sensor axe-core WCAG 2.1 AA en 14 pantallas (pc y celular) y en la integración continua; dos contrastes corregidos; sensor de uso con teclado en 9 pantallas. Kit imprimible de la prueba de usabilidad con SUS (042). QI provisorio 0,975 sin SUS.
+- **Versiones:** solo existe la etiqueta `v0.1`; la `v1.0` se crea con las condiciones de `docs/versiones.md`.
+- **Pendiente de infraestructura:** propagación del dominio y certificado, salida de SES del modo de prueba y Hedera en la red principal (*mainnet*) en febrero de 2027, antes de la defensa (solo configuración).
+- **Red neuronal, mejora continua (ADR-0022, 2026-11-11):** el conjunto propio se divide por prompt en una evaluación fija, que nunca entrena, y una parte de ajuste; cada reentrenamiento es una versión MINOR que se publica solo si mejora a la anterior en la evaluación fija. Corte de cifras para el informe: 2026-11-16.
 
 ## 5. Diagramas (todos generados o verificados contra el código)
 
@@ -78,20 +82,22 @@ Están en `docs/arquitectura/diagramas/`; ver su `README.md`. Se regeneran con `
 
 ## 6. Cifras del proceso
 
-Se recalculan antes de cada entrega. Valores al 2026-11-11 (commit d3f5b7d):
+Se recalculan antes de cada entrega. Valores al 2026-11-16 (commit 95246a1):
 
 | Indicador | Valor |
 |---|---|
-| Commits (sin integraciones) | 395 |
-| Commits con coautoría de IA | 364 (92,2 %) |
-| Pull requests integrados | 77 |
-| Pruebas automatizadas | 810 (534 del backend y 276 de la interfaz) |
-| Funcionalidades en el plan | 39 (las 39 con especificación) |
-| ADR | 21 |
-| Entradas de bitácora | 62 |
+| Commits (sin integraciones) | 413 |
+| Commits con coautoría de IA | 382 (92,5 %) |
+| Pull requests integrados | 81 |
+| Pruebas declaradas (funciones de prueba) | 816 (538 del backend y 278 de la interfaz) |
+| Pruebas ejecutadas (con parametrizaciones, 2026-11-16) | 898 (612 del backend y 286 de la interfaz) |
+| Funcionalidades en el plan | 44 (las 44 con especificación) |
+| ADR | 21 en desarrollo (la 0022 de la red está en su rama) |
+| Entradas de bitácora | 66 |
+| Ajustes del arnés registrados | 28 (2026-10-08 a 2026-11-16) |
 | Requisitos | 56 RF, 24 RNF, 41 RN, 38 casos de uso |
 | Cuestiones abiertas registradas | 43 |
-| Cobertura del backend / frontend | 97,5 % / 92,4 % (índice de calidad, 018) |
+| Cobertura del backend / frontend | 97,5 % / 91,7 % (índice de calidad, segunda medición del 2026-11-16) |
 
 ## 7. Cuestiones que el informe no puede dar por cerradas
 

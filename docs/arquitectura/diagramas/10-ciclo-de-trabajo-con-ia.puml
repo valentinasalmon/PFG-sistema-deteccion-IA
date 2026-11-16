@@ -1,0 +1,58 @@
+@startuml ciclo-de-trabajo-con-ia
+' Diagrama de actividad (UML 2.5) del trabajo asistido por IA, según CLAUDE.md,
+' .claude/commands/, .claude/hooks/ y la integración continua.
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #333333
+}
+skinparam swimlane {
+  BorderColor #777777
+  TitleFontStyle bold
+}
+|Autora|
+start
+:Pide una funcionalidad;
+|Agente de IA|
+:Lee la constitución
+y la especificación general;
+if (¿Hay una decisión importante?) then (sí)
+  :Registra una cuestión abierta
+  con una propuesta;
+  |Autora|
+  :Decide, o lo lleva
+  a los tutores;
+  |Agente de IA|
+else (no)
+endif
+:Especifica, planifica y divide
+en tareas (/especificar,
+/planificar, /tareas);
+repeat
+  repeat
+    :Implementa una tarea
+    con sus pruebas;
+    |Sensores|
+    :Ganchos, controles previos al commit,
+    capas, sensor de diseño, accesibilidad
+    e integración continua;
+    |Agente de IA|
+  repeat while (¿Algún control falla?) is (sí, corrige) not (no)
+  :Cierra la etapa con
+  /cerrar-etapa: bitácora,
+  insumos y tablero;
+  |Autora|
+  :Revisa y prueba;
+repeat while (¿Pide cambios?) is (sí: el agente corrige y\nregistra la lección en el arnés) not (no)
+:Abre el pull request
+y lo integra;
+|Sensores|
+:Despliegue automático
+y página /estado;
+stop
+@enduml
