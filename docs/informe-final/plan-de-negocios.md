@@ -56,7 +56,7 @@ La suscripción es mensual y por organización. El espacio personal es gratuito 
 |---|---|---|
 | Instancia EC2 t3.small (eu-west-1) | Unos US$ 17 | Tarifa bajo demanda aproximada; **[verificar en la calculadora de AWS]** |
 | Disco, S3, transferencia, dirección IP pública y SES | Unos US$ 8 a 12 | Supuesto con el uso de un MVP; **[verificar en la factura de AWS]** |
-| Dominio `evidentiaa.com.ar` y zona DNS | Unos ARS 2.500 (ARS 30.000 por año, **[confirmar con la factura de DonWeb]**) más US$ 0,50 de Route 53 | Factura de DonWeb; certificado HTTPS de Let's Encrypt, sin costo |
+| Dominio `evidentiaa.com.ar` y zona DNS | Unos ARS 1.490 (ARS 17.900 por año, IVA incluido) más US$ 0,50 de Route 53 | Compra en DonWeb (2026-11). El certificado HTTPS es de Let's Encrypt, sin costo; el certificado Sectigo comprado en el mismo pedido (ARS 12.540 con descuento) no se usa y no se renueva |
 | Herramientas de desarrollo con IA | **[completar]** | Suscripción a Claude |
 | Contador y obligaciones fiscales | **[completar]** | Según la forma jurídica (sección 8) |
 | **Total operativo estimado** | **Unos US$ 40 a 60, más los datos a completar** | |
