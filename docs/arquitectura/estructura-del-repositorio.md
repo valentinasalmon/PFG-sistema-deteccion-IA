@@ -10,8 +10,8 @@ Las carpetas vacías contienen un archivo `.gitkeep`, que solo existe para que G
 |---|---|
 | `README.md` | Presentación del proyecto |
 | `CLAUDE.md` | Reglas del arnés para agentes de IA |
-| `.claude/commands/` | Comandos del flujo guiado por especificaciones (`/especificar`, `/planificar`, `/tareas`, `/cerrar-etapa`) |
-| `.claude/settings.json`, `.claude/hooks/` | Ganchos del arnés: protección de secretos y revisión de estilo, con sus pruebas (036) |
+| `.claude/commands/` | Comandos del flujo guiado por especificaciones (`/especificar`, `/planificar`, `/tareas`, `/cerrar-etapa`) y revisión del arnés (`/revisar-arnes`) |
+| `.claude/settings.json`, `.claude/hooks/` | Ganchos del arnés: protección de secretos y revisión de estilo (036) y verificación de la documentación al iniciar cada sesión (045), con sus pruebas |
 | `docs/arnes/` | Mapa del arnés y registro de sus cambios |
 | `.claude/skills/`, `.agents/` | Skills instalados para el asistente de IA |
 | `.github/workflows/` | Integración continua en GitHub Actions |
@@ -80,7 +80,7 @@ Las carpetas vacías contienen un archivo `.gitkeep`, que solo existe para que G
 | `terraform/` | Infraestructura como código de AWS (EC2, S3, SES, IAM, grupos de seguridad). |
 | `nginx/` | Configuración del proxy inverso y TLS. |
 | `systemd/` | Servicios de Gunicorn y del trabajador de RQ. |
-| `scripts/` | Respaldos de la base de datos, restauración y tareas de operación. |
+| `scripts/` | Preparación del servidor, despliegue, respaldos de la base de datos, restauración y tareas de operación, incluida la limpieza de ramas del repositorio (`limpiar_ramas.sh`, 045). |
 
 ## `docs/`
 

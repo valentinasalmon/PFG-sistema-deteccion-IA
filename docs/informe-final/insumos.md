@@ -367,3 +367,26 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Falsos positivos por animaciones**: medir la portada a mitad de la animación de aparición dio 30 problemas de contraste inexistentes; se revisa con `prefers-reduced-motion`. Lección para cualquier verificación automática de interfaces animadas.
 - **QI provisorio**: 0,975 (segunda medición); falta el SUS de la prueba de usabilidad.
 - **Uso con teclado (043)**: un sensor recorre las pantallas con Tab (foco visible, sin trampas, inicio de sesión sin mouse). Se validó que el sensor detecta el error inyectándolo a propósito: un sensor que nunca falla no prueba nada.
+
+## Revisión continua del arnés (045, etapa 1, 2026-11-05)
+
+- **Pedido de la autora**: que el arnés trabaje todo el tiempo, se mejore día a día, distribuya la información de manera adecuada y que todo lo que declaran los documentos sea verdad.
+- **Hallazgo de la auditoría**: el arnés de la 036 controlaba el código, pero no su propia documentación. El mapa del arnés tenía números de tres días antes (282 commits, 84 % con IA) cuando los reales eran 349 y 87 %, y 23 entradas de bitácora, desde el 2026-10-21, no figuraban en su índice. **Un documento desactualizado es especialmente dañino con un agente sin memoria: la sesión siguiente toma como cierto lo que dice.**
+- **Segundo hallazgo**: medir los números sobre el clon parcial de la sesión en la nube daba 327 commits en lugar de 349, sin ningún aviso. El verificador ahora se niega a calcular números si el historial está cortado.
+- **Qué se hizo**: un verificador (`.claude/hooks/verificar_arnes.py`, 11 pruebas) que compara lo declarado con lo real (enlaces, comandos, ganchos, skills, índices, tablas, números del proceso, cambios sin registrar y propuestas pendientes). Corre al iniciar cada sesión, al cerrar cada etapa y en la integración continua. Los números del mapa del arnés ya no se escriben a mano: se calculan.
+- **Reglas nuevas en `CLAUDE.md`**: lo declarado tiene que ser verdad; nada se da por verificado sin correrlo; cada error repetido deja un control nuevo; el agente puede agregar controles, pero cambiar o quitar uno existente queda como propuesta para la autora. Comando `/revisar-arnes` para la revisión semanal.
+- **Idea para el informe**: el arnés pasa de «sensores sobre el producto» a **«sensores sobre el propio arnés»**. Es el paso que hace sostenible la mejora continua: sin él, cada mejora agrega documentación que después nadie verifica.
+- **Números al 2026-11-05**: 349 commits, 305 con co-autoría de IA (87 %), 73 Pull Requests integrados, 36 especificaciones, 58 entradas de bitácora, 21 ADR; 489 funciones de prueba en el backend y 265 en el frontend (273 casos ejecutados por Vitest).
+
+## Orden del repositorio y del flujo de integración (045, etapa 2, 2026-11-05)
+
+- **Diagnóstico con datos**: 353 commits en 18 días con actividad, 38 % solo de documentación; 73 Pull Requests (mediana de 3 commits), 8 de ellos tandas de diseño de una misma funcionalidad; 18 merges de sincronización; 51 ramas integradas sin borrar; una sola etiqueta para 14 pasos a producción.
+- **Hallazgo para el informe**: trabajar con un agente de IA abarata cada commit y cada rama, y el costo se traslada a la persona que revisa: **cada Pull Request es una revisión humana**. La política resultante (una funcionalidad, una rama, un Pull Request; seguimiento en el mismo Pull Request) ataca ese costo, no la cantidad de commits.
+- **Segundo hallazgo**: dos reglas de la guía de flujo de trabajo («se elimina la rama», «versiones etiquetadas») no se cumplían porque ningún control las revisaba. Es el mismo patrón que la 036 encontró con los secretos: **una regla sin sensor depende de que alguien se acuerde**.
+- **Límite del entorno**: la sesión del agente en la nube solo puede subir a su propia rama; borrar ramas ajenas devuelve 403. Es una protección razonable: la limpieza queda en un script que corre la autora.
+
+## Que la política se cumpla sola (045, etapa 3, 2026-11-16)
+
+- **Hallazgo**: la política de ramas y Pull Requests escrita el 2026-11-05 no cambió nada en once días: de 30 Pull Requests, casi la mitad fueron de proceso (8 pasos a `main` después de cada funcionalidad, 6 de una misma funcionalidad, 4 duplicados o con la base equivocada). **Es la tercera vez que el proyecto confirma que una regla sin sensor no se cumple** (antes: los secretos en la 036 y el índice de la bitácora en la etapa 1).
+- **Solución**: la regla pasó a la integración continua (un Pull Request hacia `desarrollo` con merges o más de 3 commits no se puede integrar) y se dio la herramienta para cumplirla (`compactar_rama.sh`).
+- **Coordinación entre agentes**: con varias sesiones en paralelo, los números de funcionalidad chocaron tres veces (038, 039 y 044), porque cada sesión decide mirando solo su copia. Es un problema clásico de asignación de identificadores sin coordinación central; se resolvió con un control que mira las ramas remotas.

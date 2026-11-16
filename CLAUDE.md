@@ -9,6 +9,17 @@ El arnés completo (guías, sensores, memoria y persona en el circuito) está de
 1. Leer [docs/constitucion.md](docs/constitucion.md): principios no negociables.
 2. Leer la especificación relevante en [docs/especificacion/](docs/especificacion/) y, si existe, la carpeta de la funcionalidad en [docs/funcionalidades/](docs/funcionalidades/).
 3. Si el pedido no tiene especificación, **no implementar**: proponer primero la especificación con `/especificar`.
+4. Atender el aviso de **estado del arnés** que aparece al iniciar la sesión (gancho `verificar_arnes.py`): lo que esté desactualizado y le corresponda al agente se corrige en la misma sesión.
+
+## El arnés se revisa solo y mejora siempre
+
+Pedido de la autora, 2026-11-05: el arnés trabaja todo el tiempo, se mejora día a día y distribuye la información de manera adecuada.
+
+- **Lo declarado tiene que ser verdad.** Ningún documento afirma algo que el repositorio no cumpla: números, estados, índices, enlaces, comandos y controles. `verificar_arnes.py` lo comprueba al iniciar cada sesión, al cerrar cada etapa y en la integración continua (con errores, no se integra).
+- **Nada se da por verificado sin haberlo corrido.** Si un control no se pudo ejecutar (por ejemplo, falta una herramienta o el acceso a un servicio), se informa como «no verificado».
+- **Cada error repetido deja un control nuevo.** Si algo falla dos veces por la misma causa, se propone la regla, el comando, el gancho o el control que lo evite, y se anota en el registro de cambios del arnés.
+- **Revisión periódica**: `/revisar-arnes` al menos una vez por semana y siempre que el aviso de inicio de sesión muestre problemas.
+- **El agente no debilita controles por su cuenta**: puede agregar controles con sus pruebas; cambiar o quitar uno existente queda como propuesta para la autora en `docs/arnes/`.
 
 ## Forma de trabajo con la autora
 
@@ -49,6 +60,11 @@ flake8 clasificador/ && pylint clasificador/ && pytest --cov=clasificador --cov-
 
 `tipo(ámbito): descripción` con tipos en español: `funcionalidad`, `correccion`, `documentacion`, `estilo`, `refactorizacion`, `rendimiento`, `pruebas`, `construccion`, `integracion`, `tarea`, `revertir`. Ver [docs/guias/flujo-de-trabajo.md](docs/guias/flujo-de-trabajo.md).
 
+**Ramas y Pull Requests** (política de la funcionalidad 045): una funcionalidad, una rama, un Pull Request; las tandas o etapas de una funcionalidad van en su misma rama; el seguimiento viaja en el mismo Pull Request que el código; para traer `desarrollo` a una rama propia se usa `rebase`; al integrar, la rama se borra (`infraestructura/scripts/limpiar_ramas.sh`).
+
+- **El agente no hace commits por cambios mínimos ni pide Pull Requests por cualquier cosa** (pedido de la autora, 2026-11-16). Guarda seguido en su rama, pero antes de avisar que está lista la compacta en un commit por funcionalidad con `infraestructura/scripts/compactar_rama.sh` (la integración continua rechaza merges y más de 3 commits hacia `desarrollo`). Si la rama ya tiene un Pull Request abierto, se actualiza ese. Una corrección chica espera a la próxima funcionalidad del área, salvo que sea urgente para producción.
+- **El agente no propone un paso de `desarrollo` a `main` después de cada funcionalidad**: solo al completar un hito de `docs/versiones.md` o por una corrección urgente de producción.
+
 ## Documentación obligatoria al cerrar una etapa
 
 El comando `/cerrar-etapa` recorre estos pasos en orden.
@@ -69,3 +85,4 @@ El comando `/cerrar-etapa` recorre estos pasos en orden.
 | `/planificar [NNN]` | Crea el `plan.md` técnico de la funcionalidad |
 | `/tareas [NNN]` | Crea el `tareas.md` con los pasos ejecutables y los implementa |
 | `/cerrar-etapa` | Calidad, bitácora, seguimiento, decisiones, insumos, registro del arnés y Trello |
+| `/revisar-arnes` | Verifica que el arnés funcione como declara, pone al día su documentación y propone mejoras |

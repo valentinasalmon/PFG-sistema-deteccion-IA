@@ -44,6 +44,9 @@ jobs:
       - name: Ganchos del arnés para el agente de IA (036)
         working-directory: .
         run: python -m unittest discover -s .claude/hooks -p "pruebas_*.py"
+      - name: Documentación del arnés al día (045)
+        working-directory: .
+        run: python .claude/hooks/verificar_arnes.py
 
   frontend:
     name: Frontend (análisis, pruebas y compilación)
@@ -91,6 +94,24 @@ jobs:
           npx commitlint --verbose
           --from ${{ github.event.pull_request.base.sha }}
           --to ${{ github.event.pull_request.head.sha }}
+      - name: Forma del Pull Request (045)
+        # Política de ramas y Pull Requests (docs/guias/flujo-de-trabajo.md):
+        # a desarrollo llega un cambio por funcionalidad, sin merges de
+        # sincronización ni commits mínimos. Se arregla con
+        # infraestructura/scripts/compactar_rama.sh.
+        if: github.event.pull_request.base.ref == 'desarrollo'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          MAXIMO_COMMITS: 3
+        run: |
+          merges=$(git rev-list --merges --count "$BASE_SHA..$HEAD_SHA")
+          commits=$(git rev-list --no-merges --count "$BASE_SHA..$HEAD_SHA")
+          echo "Commits: $commits (máximo $MAXIMO_COMMITS). Merges: $merges (máximo 0)."
+          if [ "$merges" -gt 0 ] || [ "$commits" -gt "$MAXIMO_COMMITS" ]; then
+            echo "::error::El Pull Request trae $commits commits y $merges merges. A desarrollo llega un cambio por funcionalidad: corré infraestructura/scripts/compactar_rama.sh <mensaje> --subir (rebasa sobre desarrollo y deja un solo commit)."
+            exit 1
+          fi
 
   infraestructura:
     name: Infraestructura (Terraform y scripts del servidor)
