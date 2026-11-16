@@ -18,7 +18,7 @@ Guion para que la autora haga la prueba de usabilidad del cierre (funcionalidad 
    - Mientras SES siga en modo de prueba, solo reciben correos las direcciones verificadas: si T1 incluye el registro, agregar antes el correo del participante a `correos_verificados`, ejecutar `terraform apply` y pedirle que confirme el enlace de AWS (o crearle la cuenta de antemano).
 2. Crear una cuenta de prueba por participante, o pedirle que se registre si la tarea 1 incluye el registro. A los de aseguradoras, una cuenta dentro de una aseguradora ya aprobada: así la plataforma les habla de «siniestros».
 3. Tener 3 fotos de ejemplo **que no sean de casos reales** (por ejemplo, de un auto propio o de bancos de imágenes con licencia libre). Copiarlas al celular del participante si se prueba la carga desde el celular.
-4. Imprimir esta planilla y el consentimiento, o tenerlos en una tableta.
+4. Imprimir, una copia por participante, el **kit listo para imprimir** [`docs/calidad/usabilidad/kit-impresion.pdf`](../calidad/usabilidad/kit-impresion.pdf) (4 hojas A4: consentimiento, guion con las consignas, planilla de registro y cuestionario). El guion es solo para la autora; al participante se le dan el consentimiento y el cuestionario.
 5. Si se graba la pantalla, pedirlo en el consentimiento.
 
 ## 3. Consentimiento (leer y firmar antes de empezar)
