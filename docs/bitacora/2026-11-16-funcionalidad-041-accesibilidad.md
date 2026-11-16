@@ -35,3 +35,10 @@ Sensor de accesibilidad sin infracciones graves (14 pantallas en pc y celular, u
 
 - **Sensor de uso con teclado**: 9 pantallas recorridas con Tab, foco siempre visible, sin trampas, e inicio de sesión solo con el teclado. Primera corrida con un falso positivo: el campo de fecha nativo usa Tab entre día, mes y año, y parecía una trampa; se toleran hasta cinco Tab en el mismo control. Se comprobó que el sensor falla al quitar el contorno de foco.
 - **Plan B del DNS**: salida `registros_dns` de Terraform y sección en la guía, por si NIC Argentina no toma la delegación de DonWeb.
+
+## Más tarde: 044, perfiles de la portada y verificación de identidad
+
+- El dominio quedó funcionando (DKIM verificado en SES, certificado y `/estado` en verde) y la autora publicó el inicio con Google para cualquier persona.
+- **Portada**: dos propuestas para la sección de perfiles; la autora eligió la banda gris con título a la izquierda y pidió menos cajas. Quedó con columnas abiertas separadas por una línea.
+- **Identidad**: `verificacion_identidad` pasa a `simulado` por defecto (la autora esperaba ver la simulación de Identik como la de Cresium).
+- **Aseguradora que no llega al Administrador**: con la configuración de producción, en local el flujo completo funciona (pendiente, correo al Administrador, aprobación). Causas posibles en producción, a revisar con la autora: SES todavía en modo de prueba (solo entrega a direcciones verificadas), el pago sin acreditar o el listado debajo del tablero.

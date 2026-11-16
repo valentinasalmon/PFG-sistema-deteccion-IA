@@ -67,6 +67,7 @@ implementación siguiendo tareas.md, con pruebas
 | 041 | [Accesibilidad y materiales del cierre al día](041-accesibilidad/especificacion.md) | 10 | RNF11, RNF10 | Implementada (2026-11-16) |
 | 042 | [Kit imprimible de la prueba de usabilidad](042-kit-usabilidad/especificacion.md) | 10 | RNF10 | Implementada (2026-11-16) |
 | 043 | [Uso con teclado y plan B del DNS](043-teclado-y-dns/especificacion.md) | 10 | RNF11 | Implementada (2026-11-16) |
+| 044 | [Perfiles de la portada y verificación de identidad simulada](044-portada-y-identidad/especificacion.md) | 10 | RNF10, RN41 | Implementada (2026-11-16) |
 | 037 | [Revisión integral: acceso, pantallas, siniestros e informe breve](037-acceso-y-pantallas/especificacion.md) | 10 | RNF10, RNF12, RF44 | En curso: aplicado lo pedido por la autora el 2026-11-05; quedan la presentación y la integración |
 | 036 | [Arnés para el trabajo asistido por IA](036-arnes/especificacion.md) | 10 | RNF02, RNF17, RNF19 | Implementada (ganchos, `/cerrar-etapa`, mapa y registro del arnés, ADR-0021) |
 

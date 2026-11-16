@@ -280,6 +280,12 @@ La plataforma pide solo `openid`, `email` y `profile`, que Google no considera s
 
 Para comprobarlo, entrá con «Continuar con Google» desde una cuenta que **no** esté en la lista de usuarios de prueba (por ejemplo, la de un familiar o una cuenta nueva).
 
+## Verificación de identidad de aseguradoras (funcionalidad 035)
+
+Desde la 044, la variable `verificacion_identidad` vale **`simulado`** por defecto, igual que el cobro con Cresium: el Referente de una aseguradora ve **Verificar mi identidad** en la pantalla de su organización y una página de prueba que simula a Identik. El Administrador puede aprobar la aseguradora recién cuando la identidad figura como verificada (RN41).
+
+Para activarla en producción: `terraform apply` (cambia un parámetro) y después desplegar, o en Session Manager `generar_entorno.sh` y reiniciar los servicios. Con `verificacion_identidad = "desactivado"` en `terraform.tfvars` se vuelve a la aprobación solo manual.
+
 ## Capa 4: modelo de la red neuronal (funcionalidad 012)
 
 Sin estos pasos la plataforma funciona igual: la capa 4 aparece como «No disponible» y las otras tres capas se presentan normalmente. Se hace una vez por versión del modelo.
