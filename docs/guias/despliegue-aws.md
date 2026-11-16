@@ -262,6 +262,24 @@ El cliente se crea con tu cuenta de Google en https://console.cloud.google.com. 
    - La segunda vez entra directo.
    - Con tu correo de administradora, se vincula a tu cuenta existente.
 
+### Abrirlo a cualquier persona (con el dominio, 2026-11-16)
+
+Mientras la aplicación está **En prueba**, solo entran con Google los usuarios de prueba. Para que entre cualquiera:
+
+1. **Clientes** → `evidentIA web`: en **Orígenes de JavaScript autorizados** agregá `https://evidentiaa.com.ar`; en **URIs de redireccionamiento autorizados**, `https://evidentiaa.com.ar/api/google/retorno`. **Guardar**. Dejá las de `sslip.io` y `localhost` hasta confirmar que todo anda.
+2. **Desarrollo de la marca** (o **Branding**):
+   - **Página principal de la aplicación**: `https://evidentiaa.com.ar`
+   - **Política de privacidad**: `https://evidentiaa.com.ar/privacidad`
+   - **Condiciones del servicio**: `https://evidentiaa.com.ar/terminos`
+   - **Dominios autorizados**: `evidentiaa.com.ar`
+   - **Sin logo**: con logo, Google exige una verificación de marca que tarda días.
+   **Guardar**.
+3. **Público** → **Publicar la aplicación** → **Confirmar**. El estado pasa a **En producción**.
+
+La plataforma pide solo `openid`, `email` y `profile`, que Google no considera sensibles: no hace falta la verificación de la aplicación. Puede aparecer el aviso de «verificación recomendada» sin bloquear a nadie.
+
+Para comprobarlo, entrá con «Continuar con Google» desde una cuenta que **no** esté en la lista de usuarios de prueba (por ejemplo, la de un familiar o una cuenta nueva).
+
 ## Capa 4: modelo de la red neuronal (funcionalidad 012)
 
 Sin estos pasos la plataforma funciona igual: la capa 4 aparece como «No disponible» y las otras tres capas se presentan normalmente. Se hace una vez por versión del modelo.
