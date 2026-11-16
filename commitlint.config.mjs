@@ -27,5 +27,7 @@ export default {
     ],
     // Las descripciones en español pueden empezar con mayúscula en nombres propios.
     'subject-case': [0],
+    // Títulos cortos y legibles en la historia (pedido de la autora, 2026-11-16).
+    'header-max-length': [2, 'always', 72],
   },
 }

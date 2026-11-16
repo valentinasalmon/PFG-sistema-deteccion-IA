@@ -11,6 +11,17 @@
             "statusMessage": "Arnés: revisando que no se toquen secretos"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/revisar_commit.py\"",
+            "timeout": 10,
+            "statusMessage": "Arnés: revisando el mensaje del commit"
+          }
+        ]
       }
     ],
     "PostToolUse": [

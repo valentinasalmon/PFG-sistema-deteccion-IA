@@ -4,36 +4,59 @@ Guía de cómo se trabaja en el repositorio: ramas, commits, integración de cam
 
 ## 1. Modelo de ramas
 
+Decisión del 2026-11-16 (reemplaza al modelo de una rama por funcionalidad o corrección). Con un agente de IA trabajando todos los días, ese modelo producía decenas de ramas y Pull Requests chicos que no contaban nada; ramas permanentes por área, en cambio, se desincronizan de `desarrollo`. El punto medio es el de la práctica habitual: **ramas cortas, una por objetivo, agrupadas por área**.
+
 ```
-main ─────────────●───────────────────●──────────   versiones entregables (etiquetadas v0.1, v0.2...)
-                   \                 /
-desarrollo ─────────●──●──●───●──●──●─────────────   integración de funcionalidades terminadas
-                        \    /  \  /
-funcionalidad/005-casos  ●──●    ●       una rama por funcionalidad o corrección
+main ──────────────●──────────────────────●──────   producción (se despliega sola) y etiquetas v1.0...
+                    \                    /
+desarrollo ──────────●──────●────●───────●───────   integración
+                      \    /      \    /
+interfaz/calidad-visual ●──●        \  /            una rama por objetivo, con el área adelante
+                     hedera/mainnet  ●──●
 ```
 
 | Rama | Para qué | Se crea desde | Se integra en |
 |---|---|---|---|
-| `main` | Versión estable y entregable. Protegida: solo recibe integraciones desde `desarrollo`. | — | — |
-| `desarrollo` | Integración de funcionalidades terminadas y probadas. | `main` | `main` |
-| `funcionalidad/NNN-nombre` | Una funcionalidad de `docs/funcionalidades/`. | `desarrollo` | `desarrollo` |
-| `correccion/descripcion` | Corrección de un defecto. | `desarrollo` | `desarrollo` |
-| `documentacion/descripcion` | Cambios solo de documentación. | `desarrollo` | `desarrollo` |
+| `main` | Producción: cada fusión se despliega en AWS. Lleva las etiquetas de versión. | — | — |
+| `desarrollo` | Integración de los temas terminados y probados. | `main` | `main` |
+| `<área>/<objetivo>` | Un objetivo de un área. Se cierra al integrarse. | `desarrollo` | `desarrollo` |
+
+| Área | Qué abarca |
+|---|---|
+| `interfaz` | Pantallas, portada, diseño, accesibilidad, sensores visuales |
+| `plataforma` | Funcionalidades del backend y del frontend: casos, análisis, informes, cuentas, organizaciones |
+| `integraciones` | Servicios externos: Google, Identik, Cresium, correo |
+| `hedera` | Sello de tiempo, verificación del informe, red real |
+| `infraestructura` | AWS, Terraform, dominio, integración continua, despliegue |
+| `documentacion` | Informe final, guías, decisiones (ADR) |
+| `red-neuronal` | Clasificador de la capa 4 |
+
+Reglas:
+
+- **Un Pull Request por objetivo.** Todo lo del objetivo se acumula en su rama mientras el Pull Request no esté integrado. Un arreglo chico no abre rama propia: va a la rama abierta del tema.
+- **Las ramas son cortas.** Integrada la rama, se guarda como etiqueta `archivo/<área>/<nombre>` y se borra: la lista de ramas muestra solo el trabajo en curso, y la historia completa sigue en las etiquetas y en los Pull Requests.
+- El número `NNN` sigue identificando la carpeta de la especificación en `docs/funcionalidades/`.
+- El [mapa de ramas](mapa-de-ramas.md) agrupa por área todas las ramas del proyecto, con sus Pull Requests: es la trazabilidad requisito → especificación → rama → Pull Request → versión.
 
 Comandos habituales:
 
 ```bash
-# empezar una funcionalidad
+# empezar un objetivo
 git switch desarrollo
 git pull
-git switch -c funcionalidad/005-casos
+git switch -c interfaz/calidad-visual
 
 # guardar avances
 git add ruta/al/archivo.py
-git commit -m "funcionalidad(casos): agregar modelo de caso"
-git push -u origin funcionalidad/005-casos
+git commit -m "funcionalidad(interfaz): sensor de composición"
+git push -u origin interfaz/calidad-visual
 
-# al terminar: abrir un Pull Request de funcionalidad/005-casos hacia desarrollo en GitHub
+# al terminar el objetivo: un Pull Request de interfaz/calidad-visual hacia desarrollo
+
+# al integrarse: archivarla como etiqueta y borrar la rama
+git tag archivo/interfaz/calidad-visual origin/interfaz/calidad-visual
+git push origin archivo/interfaz/calidad-visual
+git push origin --delete interfaz/calidad-visual
 ```
 
 ## 2. Mensajes de commit
@@ -73,14 +96,20 @@ documentacion(especificacion): agregar casos de uso de organizaciones
 pruebas(c2pa): cubrir manifiesto con firma no confiable
 ```
 
-Los mensajes se validan automáticamente (commitlint en la integración continua y un hook local de pre-commit).
+Reglas (2026-11-16):
+
+- **Un commit por cambio completo**: el código, sus pruebas y su documentación van juntos.
+- **Título de 72 caracteres como máximo.**
+- Nada de commits de «corrijo lo anterior»: se juntan con el anterior **antes** de subirlos. Lo ya subido no se reescribe.
+
+Los mensajes se validan automáticamente: el gancho del arnés `revisar_commit.py` antes de crear cada commit del agente, un hook local de pre-commit y commitlint en la integración continua.
 
 ## 3. Pull Requests
 
 1. La rama pasa la integración continua (lint, pruebas, cobertura y commits).
 2. La descripción indica la funcionalidad, los requisitos que realiza y cómo se verificó.
 3. Se revisan los criterios de aceptación de la especificación.
-4. Se integra con *merge* y se elimina la rama.
+4. Se integra con *merge* (se conservan los commits) y la rama se archiva como etiqueta `archivo/<área>/<nombre>`.
 
 ## 4. Desarrollo guiado por especificaciones
 

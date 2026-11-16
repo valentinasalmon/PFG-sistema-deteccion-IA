@@ -13,12 +13,18 @@ El arnés completo (guías, sensores, memoria y persona en el circuito) está de
 ## Forma de trabajo con la autora
 
 - **Reparto del trabajo** (decisión de la autora, 2026-10-16, reemplaza la del 2026-10-10):
-  - **El agente** escribe y sube con commits propios todo el trabajo de cada funcionalidad: especificación, plan, tareas, código del backend y del frontend, pruebas, estilos, textos, configuración y documentación de seguimiento. Crea las ramas `funcionalidad/NNN-nombre` desde `desarrollo`. Cada commit del agente lleva la línea `Co-Authored-By` que identifica la asistencia de IA; nunca se quita ni se oculta.
+  - **El agente** escribe y sube con commits propios todo el trabajo de cada funcionalidad: especificación, plan, tareas, código del backend y del frontend, pruebas, estilos, textos, configuración y documentación de seguimiento. Crea las ramas desde `desarrollo` según el modelo de ramas de abajo. Cada commit del agente lleva la línea `Co-Authored-By` que identifica la asistencia de IA; nunca se quita ni se oculta.
   - **La autora** revisa el trabajo, abre los Pull Requests hacia `desarrollo`, los integra y toma las decisiones importantes: alcance del producto, cuestiones legales y de privacidad, cambios de arquitectura con impacto grande y todo lo que deba validarse con los tutores.
   - El agente no pregunta por detalles que pueda resolver con la especificación y la constitución: decide, lo deja registrado en la bitácora con su justificación y avisa a la autora cuando una funcionalidad está lista para su Pull Request.
 - Ante una decisión importante (ver la lista anterior), el agente no la toma: la registra como cuestión abierta en `docs/especificacion/06-cuestiones-abiertas.md` con una propuesta provisoria y sigue con lo que no dependa de ella.
 - **Documentación de seguimiento a cargo del agente**: la entrada de bitácora, el marcado de casillas en `tareas.md` y `especificacion.md`, el estado de cada funcionalidad y la actualización de la especificación general ante decisiones nuevas.
-- **Una rama y un Pull Request por tanda** (pedido de la autora, 2026-11-16): el agente no abre una rama por cada arreglo chico. Acumula todo lo de la tanda (varias funcionalidades, correcciones y documentación) en una sola rama `funcionalidad/NNN-nombre` y le avisa a la autora cuando está lista para **un único** Pull Request hacia `desarrollo`. Solo se separa en otra rama algo que la autora tenga que poder integrar aparte. Mientras el Pull Request de una tanda no esté integrado, los cambios nuevos se suman a esa misma rama.
+- **Modelo de ramas** (decisión del 2026-11-16, a pedido de la autora; detalle en [docs/guias/flujo-de-trabajo.md](docs/guias/flujo-de-trabajo.md)):
+  - `main` es producción (cada fusión se despliega) y lleva las etiquetas de versión; `desarrollo` integra.
+  - El trabajo va en **ramas cortas por tema**, con el área adelante: `interfaz/…`, `plataforma/…`, `integraciones/…`, `hedera/…`, `infraestructura/…`, `documentacion/…`, `red-neuronal/…`. El nombre dice el objetivo (`interfaz/calidad-visual`, `hedera/mainnet`), no el arreglo.
+  - **Un Pull Request por tema**: todo lo del tema se acumula en su rama mientras el Pull Request no esté integrado. No se abre una rama por un arreglo chico; si es del mismo tema, va a la rama abierta.
+  - Integrada la rama, se cierra: queda como etiqueta `archivo/<área>/<nombre>` y se borra la rama. La historia y el Pull Request no se pierden.
+  - El número `NNN` identifica la carpeta de `docs/funcionalidades/`, no la rama.
+- **Commits** con sentido: uno por cambio completo (código, pruebas y su documentación juntos); nada de commits de «corrijo lo anterior» (se juntan antes de subir); lo ya subido no se reescribe. El gancho `revisar_commit.py` bloquea un título fuera de formato, de más de 72 caracteres o sin `Co-Authored-By`.
 - En cada mensaje se indica en qué rama debe estar la autora y si corresponde o no abrir un Pull Request.
 
 ## Reglas de código

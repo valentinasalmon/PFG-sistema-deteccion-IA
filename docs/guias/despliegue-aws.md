@@ -352,6 +352,8 @@ Desde la funcionalidad 040, **Terraform administra todo el DNS en Route 53** (`i
 
 ### 2. Delegar el dominio en DonWeb
 
+El certificado SSL (Sectigo) que DonWeb ofrece o incluye con el dominio **no hace falta**: el servidor usa su propio certificado gratuito de Let's Encrypt, que se renueva solo. Si lo cobran aparte, se puede pedir la baja.
+
 `evidentiaa.com.ar` se compró en **DonWeb**, que lo registra en NIC Argentina por la autora; la delegación se hace en el panel de DonWeb, no en nic.ar.
 
 1. Esperá a que DonWeb muestre el dominio como **activo** (tarda uno o dos días después de la compra).
