@@ -22,3 +22,7 @@ Resultado de la última corrida y capturas: `docs/funcionalidades/037-acceso-y-p
 `accesibilidad.cjs [base] [pantallas.json]` revisa con [axe-core](https://github.com/dequelabs/axe-core) las mismas pantallas en computadora y celular contra las reglas de WCAG 2.1 nivel A y AA (contraste, nombres accesibles de botones y campos, títulos, idioma, regiones y ARIA). Falla con infracciones de impacto serio o crítico y avisa las moderadas. Corre sin animaciones (`prefers-reduced-motion`), porque las que aparecen al desplazarse dan falsos problemas de contraste. Necesita `npm install --no-save axe-core@4.10.3` (en la integración continua se instala junto con Playwright). Con un archivo de pantallas se revisan también un caso con su análisis o Administración.
 
 Primera corrida (2026-11-16): dos problemas de contraste, corregidos (ver `docs/funcionalidades/041-accesibilidad/especificacion.md`).
+
+## Sensor de uso con teclado (043)
+
+`teclado.cjs [base]` recorre en computadora cada pantalla apretando Tab y falla si un elemento recibe el foco sin un indicador visible, si el foco cae en algo invisible o si queda atrapado; además inicia sesión usando solo el teclado (WCAG 2.1: 2.1.1, 2.1.2 y 2.4.7). Un campo de fecha nativo usa Tab para pasar entre día, mes y año, por eso se toleran hasta cinco Tab seguidos en el mismo control. Se comprobó que detecta el problema real quitando el contorno de foco a propósito. Primera corrida (2026-11-16): sin problemas en 9 pantallas.

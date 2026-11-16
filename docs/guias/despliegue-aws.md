@@ -336,6 +336,15 @@ Desde la funcionalidad 040, **Terraform administra todo el DNS en Route 53** (`i
 4. **No crees registros en la zona DNS de DonWeb**: deja de usarse en cuanto el dominio apunta a Route 53.
 5. La delegación tarda de minutos a unas horas. Comprobala con `nslookup evidentiaa.com.ar`: tiene que devolver la `ip_publica` del servidor.
 
+### Plan B: si la delegación no avanza
+
+Si después de un día NIC Argentina sigue mostrando los servidores de DonWeb (`dig NS evidentiaa.com.ar @f.dns.ar +norec`) y soporte no lo resuelve, se pueden cargar los registros a mano en la zona de DonWeb en lugar de delegar:
+
+1. En DonWeb, volvé a poner los nameservers de DonWeb (`ns1.donweb.com` y `ns2.donweb.com`) y tocá **Crear zona DNS**.
+2. Ejecutá `terraform output registros_dns`: devuelve los cinco registros (un A, tres CNAME de DKIM y un TXT de DMARC).
+3. Cargá cada uno en la zona de DonWeb con el mismo tipo, nombre y valor. Si el panel agrega el dominio solo al final del nombre, escribí solo la primera parte (por ejemplo, `abc123._domainkey` o `_dmarc`; para el A, `@` o vacío).
+4. Seguí con el paso 3. La zona de Route 53 queda sin uso (cuesta US$ 0,50 por mes; se puede dejar).
+
 ### 3. Pasar la plataforma al dominio
 
 Cuando el paso anterior ya devuelve la IP:

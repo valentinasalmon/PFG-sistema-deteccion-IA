@@ -26,3 +26,8 @@ Sensor de accesibilidad sin infracciones graves (14 pantallas en pc y celular, u
 
 - Autora: seguir el dominio (propagación en NIC Argentina, certificado y correos).
 - Autora: prueba de usabilidad con el protocolo actualizado.
+
+## Más tarde: 043, uso con teclado y plan B del DNS
+
+- **Sensor de uso con teclado**: 9 pantallas recorridas con Tab, foco siempre visible, sin trampas, e inicio de sesión solo con el teclado. Primera corrida con un falso positivo: el campo de fecha nativo usa Tab entre día, mes y año, y parecía una trampa; se toleran hasta cinco Tab en el mismo control. Se comprobó que el sensor falla al quitar el contorno de foco.
+- **Plan B del DNS**: salida `registros_dns` de Terraform y sección en la guía, por si NIC Argentina no toma la delegación de DonWeb.
