@@ -49,8 +49,8 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 
 | Prioridad | Tarea | Depende de | Quién |
 |---|---|---|---|
-| P1 | **Pruebas de usabilidad** con 3 a 5 abogados o liquidadores: guion, tareas, cuestionario SUS y conclusiones | Participantes | Agente arma, autora conduce |
-| P1 | **Índice de calidad (QI ≥ 0,75)**: definir la fórmula y medir (cobertura, análisis estático, pruebas, usabilidad) | CP-04 (tutor) | Agente mide, tutor valida |
+| P1 | **Pruebas de usabilidad** con 3 a 5 abogados o liquidadores: protocolo listo y al día (`docs/guias/prueba-de-usabilidad.md`, 041) | Participantes | Autora conduce, agente calcula el SUS y el QI |
+| P1 | **Índice de calidad (QI ≥ 0,75)**: fórmula propuesta y medida (0,975 provisorio, 2026-11-16); falta el SUS y validar la fórmula (CP-04) | CP-04 (tutor) y prueba de usabilidad | Tutor valida, agente cierra la medición |
 | ✓ | Revisión de seguridad (030, hecha: `docs/arquitectura/seguridad.md`) | — | Agente |
 | ~~P2~~ | ~~Guía de uso para la persona usuaria~~ — hecha en `docs/guias/guia-de-usuario.md` (018); actualizada con la 037 y la 038 en la 039 | — | Agente |
 
