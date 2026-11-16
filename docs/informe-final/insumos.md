@@ -360,3 +360,9 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Dominio**: `evidentiaa.com.ar`. `evidentia.com` estaba tomado y las variantes libres en `.com` eran dominios premium; el `.com.ar` era accesible y en pesos.
 - **DNS como código**: la zona de Route 53, los registros de DKIM y DMARC y el registro del servidor se crean con Terraform; la única acción manual es delegar el dominio en NIC Argentina. Evita errores al copiar registros largos y deja el DNS versionado.
 - **Correo**: verificar el dominio entero en SES (DKIM) en lugar de direcciones sueltas mejora la entrega y es requisito práctico para pedir la salida del modo de prueba.
+
+## Accesibilidad (041, 2026-11-16)
+
+- **Revisión automática con axe-core** (WCAG 2.1 A y AA) de 14 pantallas en computadora y celular, más un caso y Administración: solo dos problemas de contraste (1,9:1 y 2,4:1), corregidos con colores de la paleta. El sensor quedó en la integración continua.
+- **Falsos positivos por animaciones**: medir la portada a mitad de la animación de aparición dio 30 problemas de contraste inexistentes; se revisa con `prefers-reduced-motion`. Lección para cualquier verificación automática de interfaces animadas.
+- **QI provisorio**: 0,975 (segunda medición); falta el SUS de la prueba de usabilidad.

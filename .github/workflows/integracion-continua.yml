@@ -200,7 +200,7 @@ jobs:
         working-directory: frontend
         run: |
           npm ci
-          npm install --no-save playwright@1.63.0
+          npm install --no-save playwright@1.63.0 axe-core@4.10.3
           npx playwright install --with-deps chromium
           nohup npx vite --port 5173 > ../frontend.log 2>&1 &
           for _ in $(seq 1 60); do curl -fsS http://localhost:5000/api/salud >/dev/null && curl -fsS http://localhost:5173 >/dev/null && break; sleep 2; done
@@ -218,6 +218,8 @@ jobs:
           PY
       - name: Sensor de diseño (computadora y celular)
         run: node frontend/e2e/sensor-diseno.cjs
+      - name: Sensor de accesibilidad WCAG 2.1 AA (computadora y celular)
+        run: node frontend/e2e/accesibilidad.cjs
       - name: Recorrido del abogado en computadora
         run: node frontend/e2e/recorrido-abogado.cjs capturas-recorrido imagenes-recorrido pc
       - name: Recorrido del abogado en celular

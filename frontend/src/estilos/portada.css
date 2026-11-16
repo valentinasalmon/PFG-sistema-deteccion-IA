@@ -464,6 +464,12 @@
   color: #c4d3c9;
 }
 
+/* La etiqueta verde oscura no se leía sobre el bosque (2,4:1): en la tarjeta
+   oscura va en lima, como el resto de los acentos sobre fondo oscuro (041, RNF11). */
+.portada-perfil:last-child .portada-etq {
+  color: var(--p-lima);
+}
+
 .portada-perfil__enlace {
   justify-self: start;
   margin-top: 0.4rem;

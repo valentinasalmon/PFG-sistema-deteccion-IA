@@ -49,8 +49,8 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 
 | Prioridad | Tarea | Depende de | Quién |
 |---|---|---|---|
-| P1 | **Pruebas de usabilidad** con 3 a 5 abogados o liquidadores: guion, tareas, cuestionario SUS y conclusiones | Participantes | Agente arma, autora conduce |
-| P1 | **Índice de calidad (QI ≥ 0,75)**: definir la fórmula y medir (cobertura, análisis estático, pruebas, usabilidad) | CP-04 (tutor) | Agente mide, tutor valida |
+| P1 | **Pruebas de usabilidad** con 3 a 5 abogados o liquidadores: protocolo listo y al día (`docs/guias/prueba-de-usabilidad.md`, 041) | Participantes | Autora conduce, agente calcula el SUS y el QI |
+| P1 | **Índice de calidad (QI ≥ 0,75)**: fórmula propuesta y medida (0,975 provisorio, 2026-11-16); falta el SUS y validar la fórmula (CP-04) | CP-04 (tutor) y prueba de usabilidad | Tutor valida, agente cierra la medición |
 | ✓ | Revisión de seguridad (030, hecha: `docs/arquitectura/seguridad.md`) | — | Agente |
 | ~~P2~~ | ~~Guía de uso para la persona usuaria~~ — hecha en `docs/guias/guia-de-usuario.md` (018); actualizada con la 037 y la 038 en la 039 | — | Agente |
 
@@ -77,7 +77,7 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 |---|---|---|
 | P1 | Catálogo de requisitos con trazabilidad al hallazgo y matriz hallazgo → requisito → componente | Agente |
 | P1 | Lienzo de modelo de negocio | Agente y autora |
-| P1 | Prototipo v1: etiqueta `v1`, README con instrucciones de ejecución y evidencia de la integración continua | Agente prepara, autora etiqueta |
+| P1 | Prototipo v1: README con instrucciones de ejecución y la insignia de la integración continua y `docs/versiones.md` listos (041); falta la etiqueta `v1.0` cuando se cumpla la lista de `docs/versiones.md` | Autora etiqueta |
 | P1 | Capítulos X (recursos), IX (diseño de solución, con diagrama de arquitectura actualizado y diagrama entidad-relación), VII (marketing), VIII (propiedad intelectual, búsqueda en el INPI), XII, XIII y conclusiones | Agente redacta, autora revisa |
 | P1 | Actualizar los Capítulos I a VI a lo construido (Hedera, React, organizaciones, HEIC, Google, cronograma real, columnas del tablero) | Agente |
 | P1 | Bitácora individual con la declaración de uso de IA y portafolio digital (instrumentos de la AE1 y la AE2, hoy sin hacer) | Autora, con apoyo del agente |
