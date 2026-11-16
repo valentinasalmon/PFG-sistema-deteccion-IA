@@ -6,3 +6,4 @@
 - [x] T04 — Sensor de diseño y recorridos del abogado en pc y celular; capturas revisadas.
 - [x] T05 — Protocolo de usabilidad al día.
 - [x] T06 — Segunda medición del QI.
+- [x] T07 — README de la versión 1.0 (instrucciones de ejecución, insignia de la integración continua) y `docs/versiones.md` con la lista previa a la etiqueta.
