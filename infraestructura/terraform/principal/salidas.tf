@@ -15,6 +15,19 @@ output "servidores_de_nombres" {
   value       = local.dominio_propio ? aws_route53_zone.dominio[0].name_servers : []
 }
 
+output "registros_dns" {
+  description = "Plan B si el dominio no se delega a Route 53: registros para cargar a mano en el DNS del registrador (vacío sin dominio propio)."
+  value = local.dominio_propio ? concat(
+    [{ tipo = "A", nombre = var.dominio, valor = aws_eip.servidor.public_ip }],
+    [for token in aws_sesv2_email_identity.dominio[0].dkim_signing_attributes[0].tokens : {
+      tipo   = "CNAME"
+      nombre = "${token}._domainkey.${var.dominio}"
+      valor  = "${token}.dkim.amazonses.com"
+    }],
+    [{ tipo = "TXT", nombre = "_dmarc.${var.dominio}", valor = "v=DMARC1; p=none;" }],
+  ) : []
+}
+
 output "id_instancia" {
   description = "EC2 del servidor (variable ID_INSTANCIA de GitHub)."
   value       = aws_instance.servidor.id

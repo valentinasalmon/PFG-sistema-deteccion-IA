@@ -366,3 +366,4 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Revisión automática con axe-core** (WCAG 2.1 A y AA) de 14 pantallas en computadora y celular, más un caso y Administración: solo dos problemas de contraste (1,9:1 y 2,4:1), corregidos con colores de la paleta. El sensor quedó en la integración continua.
 - **Falsos positivos por animaciones**: medir la portada a mitad de la animación de aparición dio 30 problemas de contraste inexistentes; se revisa con `prefers-reduced-motion`. Lección para cualquier verificación automática de interfaces animadas.
 - **QI provisorio**: 0,975 (segunda medición); falta el SUS de la prueba de usabilidad.
+- **Uso con teclado (043)**: un sensor recorre las pantallas con Tab (foco visible, sin trampas, inicio de sesión sin mouse). Se validó que el sensor detecta el error inyectándolo a propósito: un sensor que nunca falla no prueba nada.

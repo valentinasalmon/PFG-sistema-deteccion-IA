@@ -262,6 +262,24 @@ El cliente se crea con tu cuenta de Google en https://console.cloud.google.com. 
    - La segunda vez entra directo.
    - Con tu correo de administradora, se vincula a tu cuenta existente.
 
+### Abrirlo a cualquier persona (con el dominio, 2026-11-16)
+
+Mientras la aplicación está **En prueba**, solo entran con Google los usuarios de prueba. Para que entre cualquiera:
+
+1. **Clientes** → `evidentIA web`: en **Orígenes de JavaScript autorizados** agregá `https://evidentiaa.com.ar`; en **URIs de redireccionamiento autorizados**, `https://evidentiaa.com.ar/api/google/retorno`. **Guardar**. Dejá las de `sslip.io` y `localhost` hasta confirmar que todo anda.
+2. **Desarrollo de la marca** (o **Branding**):
+   - **Página principal de la aplicación**: `https://evidentiaa.com.ar`
+   - **Política de privacidad**: `https://evidentiaa.com.ar/privacidad`
+   - **Condiciones del servicio**: `https://evidentiaa.com.ar/terminos`
+   - **Dominios autorizados**: `evidentiaa.com.ar`
+   - **Sin logo**: con logo, Google exige una verificación de marca que tarda días.
+   **Guardar**.
+3. **Público** → **Publicar la aplicación** → **Confirmar**. El estado pasa a **En producción**.
+
+La plataforma pide solo `openid`, `email` y `profile`, que Google no considera sensibles: no hace falta la verificación de la aplicación. Puede aparecer el aviso de «verificación recomendada» sin bloquear a nadie.
+
+Para comprobarlo, entrá con «Continuar con Google» desde una cuenta que **no** esté en la lista de usuarios de prueba (por ejemplo, la de un familiar o una cuenta nueva).
+
 ## Capa 4: modelo de la red neuronal (funcionalidad 012)
 
 Sin estos pasos la plataforma funciona igual: la capa 4 aparece como «No disponible» y las otras tres capas se presentan normalmente. Se hace una vez por versión del modelo.
@@ -335,6 +353,15 @@ Desde la funcionalidad 040, **Terraform administra todo el DNS en Route 53** (`i
 3. Cargá los cuatro servidores de la salida anterior, **sin el punto final** si lo tienen, y guardá. Si el panel no tiene lugar para cuatro, cargá los que entren y avisá a soporte de DonWeb para sumar el resto.
 4. **No crees registros en la zona DNS de DonWeb**: deja de usarse en cuanto el dominio apunta a Route 53.
 5. La delegación tarda de minutos a unas horas. Comprobala con `nslookup evidentiaa.com.ar`: tiene que devolver la `ip_publica` del servidor.
+
+### Plan B: si la delegación no avanza
+
+Si después de un día NIC Argentina sigue mostrando los servidores de DonWeb (`dig NS evidentiaa.com.ar @f.dns.ar +norec`) y soporte no lo resuelve, se pueden cargar los registros a mano en la zona de DonWeb en lugar de delegar:
+
+1. En DonWeb, volvé a poner los nameservers de DonWeb (`ns1.donweb.com` y `ns2.donweb.com`) y tocá **Crear zona DNS**.
+2. Ejecutá `terraform output registros_dns`: devuelve los cinco registros (un A, tres CNAME de DKIM y un TXT de DMARC).
+3. Cargá cada uno en la zona de DonWeb con el mismo tipo, nombre y valor. Si el panel agrega el dominio solo al final del nombre, escribí solo la primera parte (por ejemplo, `abc123._domainkey` o `_dmarc`; para el A, `@` o vacío).
+4. Seguí con el paso 3. La zona de Route 53 queda sin uso (cuesta US$ 0,50 por mes; se puede dejar).
 
 ### 3. Pasar la plataforma al dominio
 
