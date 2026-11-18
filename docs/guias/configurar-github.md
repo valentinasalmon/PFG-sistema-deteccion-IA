@@ -2,14 +2,15 @@
 
 Pasos que hace la autora una sola vez, con su cuenta de dueña del repositorio. Sin la protección de `main` el flujo pierde su red de seguridad: cada fusión se publica en producción.
 
-## 1. Transición: dejar todo en `main`
+## 1. Transición: un único Pull Request a `main`
 
-En este orden, cada uno con su ✓ verde antes de fusionar:
+La rama `infraestructura/flujo-github` ya contiene todo lo que había en `desarrollo` (accesibilidad, kit de usabilidad, teclado), más la portada nueva, la identidad simulada y este cambio de flujo. Por eso alcanza con **un solo Pull Request**:
 
-1. Pull Request **`desarrollo` → `main`** (trae lo último que quedó en `desarrollo`). Fusionarlo con **Create a merge commit**, como hasta ahora.
-2. Pull Request **`infraestructura/flujo-github` → `main`** (este cambio de flujo, con la portada nueva y la identidad simulada). Fusionarlo con **Create a merge commit** también: es el último que entra así.
+1. **New pull request**: base **`main`** ← compare **`infraestructura/flujo-github`**.
+2. Esperar el ✓ verde en todas las verificaciones.
+3. Fusionarlo con **Create a merge commit** (es el último que entra así: conserva en `main` los commits de `desarrollo`). Se despliega solo.
 
-Desde acá, todos los Pull Requests van a `main`.
+`desarrollo` queda sin uso: se archiva en el paso 5.
 
 ## 2. Fusión con *squash* y borrado automático de ramas
 
