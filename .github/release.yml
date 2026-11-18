@@ -1,0 +1,10 @@
+# Notas automáticas de cada versión (GitHub Releases, ADR-0023): se arman con
+# los títulos de los Pull Requests integrados desde la versión anterior.
+changelog:
+  exclude:
+    authors:
+      - dependabot
+  categories:
+    - title: Cambios de la versión
+      labels:
+        - "*"

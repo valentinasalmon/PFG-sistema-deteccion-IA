@@ -53,6 +53,22 @@ El script imprime cada componente con su peso efectivo y el QI. Sale con código
 
 **Sensibilidad.** Con los demás valores fijos, el QI final cumple el umbral si el SUS promedio es de 23 o más. Un SUS de 68 (el promedio de referencia de la industria) daría un QI de 0,888. Como el código ya está cerca del máximo, el QI solo no exige mucha usabilidad. Por eso la usabilidad tiene su propio objetivo: un SUS de 68 o más y 80 % de éxito en las tareas (RNF10).
 
+## Segunda medición (2026-11-16, provisoria)
+
+Con el código de la 040 y la 041 (612 pruebas del backend y 286 del frontend).
+
+| Componente | Valor |
+|---|---|
+| Cobertura del backend | 0,975 |
+| Cobertura del frontend | 0,917 |
+| Análisis estático (pylint 10/10) | 1,000 |
+| Complejidad acotada (ninguna función supera 10) | 1,000 |
+| Código sin duplicar | 1,000 |
+| Usabilidad (SUS) | sin medir |
+| **QI provisorio** | **0,975** |
+
+La sensibilidad no cambia: el QI final cumple el umbral con un SUS de 23 o más, y un SUS de 68 daría 0,887. La cobertura del frontend bajó levemente (0,924 a 0,917) por las pantallas de la 037 a la 039.
+
 ## Para validar con el tutor (CP-04)
 
 - ¿Alcanzan estos componentes o se suma otro? Por ejemplo, la tasa de éxito de las tareas o las vulnerabilidades de `pip-audit` y `npm audit`.

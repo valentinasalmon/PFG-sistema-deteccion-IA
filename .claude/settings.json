@@ -1,5 +1,17 @@
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/verificar_arnes.py\" --sesion",
+            "timeout": 30,
+            "statusMessage": "Arnés: verificando que la documentación esté al día"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Read|Edit|Write|NotebookEdit|Grep|Glob|Bash",
@@ -9,6 +21,17 @@
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/proteger_secretos.py\"",
             "timeout": 10,
             "statusMessage": "Arnés: revisando que no se toquen secretos"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/revisar_commit.py\"",
+            "timeout": 10,
+            "statusMessage": "Arnés: revisando el mensaje del commit"
           }
         ]
       }

@@ -1,6 +1,6 @@
 # Protocolo de la prueba de usabilidad
 
-Guion para que la autora haga la prueba de usabilidad del cierre (funcionalidad 018). Demuestra RNF10 CA1: una persona del dominio, sin capacitación, completa el flujo principal sin ayuda, con al menos **5 participantes** y **80 % de éxito**. El puntaje SUS promedio se suma al Índice de Calidad ([QI](../calidad/indice-de-calidad.md)).
+Guion para que la autora haga la prueba de usabilidad del cierre (funcionalidad 018; actualizado en la 041 con la plataforma de la 037 a la 040). Demuestra RNF10 CA1: una persona del dominio, sin capacitación, completa el flujo principal sin ayuda, con al menos **5 participantes** y **80 % de éxito**. El puntaje SUS promedio se suma al Índice de Calidad ([QI](../calidad/indice-de-calidad.md)).
 
 ## 1. Participantes
 
@@ -14,10 +14,11 @@ Guion para que la autora haga la prueba de usabilidad del cierre (funcionalidad 
 
 ## 2. Preparación (una vez)
 
-1. Usar **producción** (la versión que se entrega), no la máquina local.
-2. Crear una cuenta de prueba por participante, o pedirle que se registre si la tarea 1 incluye el registro.
+1. Usar **producción** (la versión que se entrega, `https://evidentiaa.com.ar`), no la máquina local.
+   - Mientras SES siga en modo de prueba, solo reciben correos las direcciones verificadas: si T1 incluye el registro, agregar antes el correo del participante a `correos_verificados`, ejecutar `terraform apply` y pedirle que confirme el enlace de AWS (o crearle la cuenta de antemano).
+2. Crear una cuenta de prueba por participante, o pedirle que se registre si la tarea 1 incluye el registro. A los de aseguradoras, una cuenta dentro de una aseguradora ya aprobada: así la plataforma les habla de «siniestros».
 3. Tener 3 fotos de ejemplo **que no sean de casos reales** (por ejemplo, de un auto propio o de bancos de imágenes con licencia libre). Copiarlas al celular del participante si se prueba la carga desde el celular.
-4. Imprimir esta planilla y el consentimiento, o tenerlos en una tableta.
+4. Imprimir, una copia por participante, el **kit listo para imprimir** [`docs/calidad/usabilidad/kit-impresion.pdf`](../calidad/usabilidad/kit-impresion.pdf) (4 hojas A4: consentimiento, guion con las consignas, planilla de registro y cuestionario). El guion es solo para la autora; al participante se le dan el consentimiento y el cuestionario.
 5. Si se graba la pantalla, pedirlo en el consentimiento.
 
 ## 3. Consentimiento (leer y firmar antes de empezar)
@@ -49,13 +50,14 @@ Leer cada consigna tal cual. No usar las palabras de los botones.
 | # | Consigna para el participante | Éxito cuando… | Tiempo esperado |
 |---|---|---|---|
 | T1 | «Ingresá a la plataforma con la cuenta que te di.» (o «Creá una cuenta como abogado/a») | Ve la pantalla de inicio | 1 min (3 min con registro) |
-| T2 | «Tenés un siniestro de un auto. Registralo en la plataforma.» | Hay un caso nuevo con un título reconocible | 2 min |
+| T2 | «Tenés un siniestro de un auto. Registralo en la plataforma.» | Hay un caso (o siniestro) nuevo con la fecha y el lugar del hecho | 2 min |
 | T3 | «Sumá al siniestro las tres fotos que te pasé.» | Las tres imágenes figuran en el caso | 2 min |
 | T4 | «Averiguá si alguna de las fotos podría estar modificada.» | Inicia el análisis y llega a ver los resultados | 3 min |
 | T5 | «Explicame con tus palabras qué dice el resultado de la segunda foto.» | Describe los indicios sin decir que la foto es «falsa» o «verdadera» con certeza | 2 min |
-| T6 | «Conseguí un documento para presentar con este análisis.» | Descarga el informe PDF | 2 min |
+| T6 | «Conseguí un documento para presentar con este análisis.» | Descarga el informe PDF (se genera solo al terminar el análisis) | 2 min |
 | T7 | «Otra persona te mandó este informe. Comprobá que nadie lo modificó.» | Usa la verificación pública y ve el resultado | 2 min |
-| T8 (opcional) | «Cargá una foto nueva desde tu celular.» | La imagen aparece en el caso | 3 min |
+| T8 (opcional) | «Cargá una foto nueva desde tu celular.» | Escanea el QR, sube la foto, toca «Terminar» y la imagen aparece en la computadora | 3 min |
+| T9 (opcional) | «Desde el informe impreso, mirá el análisis completo en el celular.» | Escanea el QR «Análisis detallado» del PDF, inicia sesión y ve el detalle desplegado | 3 min |
 
 T5 comprueba RN27: la persona entiende que son indicios y no un veredicto.
 
@@ -73,6 +75,7 @@ Participante: P__ · Perfil: abogado/a ☐ aseguradora ☐ · Fecha: ____ · Dis
 | T6 | | | | |
 | T7 | | | | |
 | T8 | | | | |
+| T9 | | | | |
 
 «Con dificultad» cuenta como éxito para la tasa, pero se anota para el análisis.
 

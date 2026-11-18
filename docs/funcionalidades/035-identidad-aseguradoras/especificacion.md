@@ -41,3 +41,13 @@ Hoy una aseguradora se registra, paga el plan y queda pendiente hasta que el Adm
 ## Preguntas abiertas
 
 - CP-35: flujo exacto de Identik (redirección o dentro de la web), validación contra RENAPER, prueba de vida, retención de los datos biométricos del lado de Identik y costo. Consultado a Identik el 2026-11-03.
+
+## Accesos de Identik para conectar el proveedor real (registrado el 2026-11-16)
+
+Respuesta de Identik del 2026-11-04 (sin datos personales ni claves):
+
+- **Sandbox de firma electrónica**: `https://sandbox-electronica.identik.me` con la cuenta de la autora. Créditos de prueba: 5 documentos, 1 verificación biométrica (DNI y rostro) y 1 mensaje de WhatsApp. Los documentos salen marcados «PRUEBA — FIRMA NO VÁLIDA».
+- **Token de API**: lo genera la autora en el sandbox (*Configuración → Tokens de API*); se muestra una sola vez. Se guarda cifrado en Parameter Store, como la clave de Hedera, y nunca en el repositorio ni en el chat.
+- **Documentación**: hub `identik.me/developers`; API de firma electrónica `electronica.identik.me/api/docs`; API de firma digital `firma.identik.me/api/docs`; verificación de identidad `identik.me/verificacion-identidad`.
+- **Flujo**: redirección o iFrame; el resultado vuelve por *webhook* al backend. La firma de los webhooks y la conservación de datos (Ley 25.326) quedan para la reunión técnica.
+- **Estado (2026-11-16)**: el contacto comercial preguntó si ya se envió el primer documento por API. Todavía no: la integración real queda para después de la entrega del 19/11 (propuesta del agente; decide la autora), con el servicio de CP-41.

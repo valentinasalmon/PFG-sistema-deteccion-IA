@@ -88,9 +88,9 @@ variable "sello_tiempo" {
 }
 
 variable "verificacion_identidad" {
-  description = "Verificación de identidad del Referente de una aseguradora (035): desactivado o simulado hasta conectar Identik (CP-35)."
+  description = "Verificación de identidad del Referente de una aseguradora (035): simulado (como el cobro con Cresium) hasta conectar Identik, o desactivado (CP-35)."
   type        = string
-  default     = "desactivado"
+  default     = "simulado"
 
   validation {
     condition     = contains(["desactivado", "simulado"], var.verificacion_identidad)
