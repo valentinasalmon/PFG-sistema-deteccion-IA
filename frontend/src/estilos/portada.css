@@ -414,17 +414,25 @@
   font-size: 0.96rem;
 }
 
-/* --- Para quién: una tarjeta por perfil (037) --- */
+/* --- Para quién (037; 044): banda gris de borde a borde con el título a la
+   izquierda, como «Qué miramos», y los dos perfiles como columnas abiertas
+   separadas por una línea, sin tarjetas (pedido de la autora: menos cajas). --- */
 .portada-perfiles {
-  width: min(72rem, 100%);
-  margin: 0 auto;
-  padding: 4.5rem clamp(1rem, 4vw, 2rem) 0;
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
+  align-items: start;
+  gap: 2.6rem 4rem;
+  padding: 4.5rem var(--p-margen);
+  background: var(--fondo);
+}
+
+.portada-perfiles__cab {
+  position: static;
 }
 
 .portada-perfiles__grilla {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -433,17 +441,17 @@
 .portada-perfil {
   display: grid;
   align-content: start;
-  gap: 0.6rem;
-  padding: 1.75rem 1.75rem 1.5rem;
-  border: 1px solid var(--linea);
-  border-radius: 24px;
-  background: var(--superficie);
+  justify-items: start;
+  gap: 0.7rem;
+  padding: 0.25rem 2.5rem 0.5rem;
 }
 
-.portada-perfil:last-child {
-  border-color: var(--p-bosque);
-  background: var(--p-bosque);
-  color: #fff;
+.portada-perfil:first-child {
+  padding-left: 0;
+}
+
+.portada-perfil + .portada-perfil {
+  border-left: 1px solid var(--linea);
 }
 
 .portada-perfil h3 {
@@ -456,28 +464,44 @@
   color: var(--tinta-2);
 }
 
-.portada-perfil:last-child h3 {
-  color: #fff;
-}
-
-.portada-perfil:last-child p {
-  color: #c4d3c9;
-}
-
 .portada-perfil__enlace {
-  justify-self: start;
-  margin-top: 0.4rem;
-  color: var(--p-verde);
+  margin-top: 0.5rem;
+  padding: 0.7rem 1.15rem;
+  border-radius: 999px;
+  background: var(--p-bosque);
+  color: #fff;
   font-weight: 800;
   text-decoration: none;
 }
 
-.portada-perfil:last-child .portada-perfil__enlace {
-  color: var(--p-lima);
+.portada-perfil__enlace:hover {
+  background: var(--p-verde);
 }
 
-.portada-perfil__enlace:hover {
-  text-decoration: underline;
+@media (max-width: 900px) {
+  .portada-perfiles {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
+    padding-block: 3.5rem;
+  }
+
+  .portada-perfiles__grilla {
+    grid-template-columns: 1fr;
+  }
+
+  .portada-perfil,
+  .portada-perfil:first-child {
+    padding: 1.6rem 0;
+  }
+
+  .portada-perfil:first-child {
+    padding-top: 0;
+  }
+
+  .portada-perfil + .portada-perfil {
+    border-left: 0;
+    border-top: 1px solid var(--linea);
+  }
 }
 
 .portada-mirada__pronto {
@@ -490,16 +514,6 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   vertical-align: 0.2rem;
-}
-
-@media (width <= 48rem) {
-  .portada-perfiles {
-    padding-top: 3rem;
-  }
-
-  .portada-perfiles__grilla {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* --- Tres pasos --- */

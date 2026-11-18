@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>evidentIA · Kit de la prueba de usabilidad</title>
+<!-- Fuente del PDF imprimible del kit (041/042). Se regenera con:
+     python -c "import weasyprint; weasyprint.HTML('kit-impresion.html').write_pdf('kit-impresion.pdf')"
+     Contenido tomado de docs/guias/prueba-de-usabilidad.md: si cambia el protocolo, cambiar también este archivo. -->
+<style>
+  @page { size: A4; margin: 16mm 16mm 18mm; @bottom-right { content: "evidentIA · prueba de usabilidad · " counter(page); font-size: 8pt; color: #4E5B54; font-family: "DejaVu Sans", sans-serif; } }
+  body { font-family: "DejaVu Sans", sans-serif; font-size: 10pt; color: #14201A; line-height: 1.45; }
+  h1 { font-size: 17pt; margin: 0 0 2mm; }
+  h2 { font-size: 12pt; margin: 6mm 0 2mm; padding-bottom: 1mm; border-bottom: 2px solid #A4CB3E; }
+  .marca { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #c9d1cc; padding-bottom: 2mm; margin-bottom: 4mm; }
+  .marca strong { font-size: 12pt; } .marca span { color: #4E5B54; font-size: 9pt; }
+  .hoja { page-break-after: always; } .hoja:last-child { page-break-after: auto; }
+  .campos { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 8mm; margin: 3mm 0 4mm; }
+  .linea { border-bottom: 1px solid #14201A; min-height: 7mm; display: flex; align-items: flex-end; font-size: 9pt; color: #4E5B54; }
+  table { width: 100%; border-collapse: collapse; margin-top: 2mm; }
+  th, td { border: 1px solid #9aa59f; padding: 2mm; vertical-align: top; text-align: left; }
+  th { background: #F3F5F4; font-size: 9pt; }
+  .alta td { height: 13mm; }
+  .respuesta { margin-top: 3mm; font-size: 9.5pt; } .respuesta div { border-bottom: 1px solid #9aa59f; height: 9mm; }
+  .sus td { padding: 1.6mm 2mm; } .sus td.n { width: 8mm; text-align: center; } .sus td.c { width: 10mm; text-align: center; } .sus td.c::before { content: "☐"; font-size: 12pt; }
+  .nota { color: #4E5B54; font-size: 9pt; }
+  blockquote { margin: 3mm 0; padding: 3mm 4mm; background: #F3F5F4; border-left: 3px solid #17291F; }
+  .casilla::before { content: "☐ "; }
+  .consigna { font-size: 11pt; }
+</style>
+</head>
+<body>
+
+<section class="hoja">
+  <div class="marca"><strong>evidentIA</strong><span>Prueba de usabilidad · Consentimiento</span></div>
+  <h1>Consentimiento para participar</h1>
+  <blockquote>
+    <p>Te invito a probar evidentIA, una plataforma que forma parte de mi Proyecto Final de Grado. Lo que se evalúa es la plataforma, no a vos: si algo no sale, es un problema del diseño.</p>
+    <p>La prueba dura unos 30 minutos. Te voy a pedir que hagas algunas tareas y que digas en voz alta lo que pensás mientras las hacés. Al final completás un cuestionario corto.</p>
+    <p>Tus respuestas se usan solo para el proyecto, sin tu nombre. Las imágenes son de ejemplo: no vas a cargar datos reales. Podés dejar la prueba cuando quieras.</p>
+  </blockquote>
+  <p class="casilla">Acepto participar.</p>
+  <p class="casilla">Acepto que se grabe la pantalla (opcional).</p>
+  <div class="campos">
+    <div class="linea">Nombre y apellido</div><div class="linea">Fecha</div>
+    <div class="linea">Firma</div><div class="linea">Participante (lo completa la autora): P</div>
+  </div>
+  <p class="nota">Esta hoja se guarda aparte de las respuestas y no se sube al repositorio.</p>
+</section>
+
+<section class="hoja">
+  <div class="marca"><strong>evidentIA</strong><span>Prueba de usabilidad · Guion de la autora</span></div>
+  <h1>Guion y consignas</h1>
+  <p><strong>Antes de empezar (2 minutos):</strong> «Pensá en voz alta: contame qué buscás, qué esperás que pase y si algo te sorprende.» · «No te puedo ayudar durante las tareas. Si te trabás mucho, decímelo y pasamos a la siguiente.»</p>
+  <p><strong>Durante:</strong> no explicar ni señalar. Si pregunta, responder «¿Qué harías si yo no estuviera?». Una tarea <strong>falla</strong> si pasan 5 minutos sin avanzar, si la persona se rinde o si termina con un resultado incorrecto.</p>
+  <p class="nota">Leer cada consigna tal cual. No usar las palabras de los botones. Dirección: https://evidentiaa.com.ar</p>
+  <table>
+    <tr><th>#</th><th>Consigna (leer en voz alta)</th><th>Éxito cuando…</th><th>Tiempo</th></tr>
+    <tr><td>T1</td><td class="consigna">«Ingresá a la plataforma con la cuenta que te di.» (o «Creá una cuenta como abogado/a»)</td><td>Ve la pantalla de inicio</td><td>1 min (3 con registro)</td></tr>
+    <tr><td>T2</td><td class="consigna">«Tenés un siniestro de un auto. Registralo en la plataforma.»</td><td>Hay un caso o siniestro nuevo con fecha y lugar</td><td>2 min</td></tr>
+    <tr><td>T3</td><td class="consigna">«Sumá al siniestro las tres fotos que te pasé.»</td><td>Las tres imágenes figuran en el caso</td><td>2 min</td></tr>
+    <tr><td>T4</td><td class="consigna">«Averiguá si alguna de las fotos podría estar modificada.»</td><td>Inicia el análisis y llega a los resultados</td><td>3 min</td></tr>
+    <tr><td>T5</td><td class="consigna">«Explicame con tus palabras qué dice el resultado de la segunda foto.»</td><td>Describe indicios sin decir «falsa» o «verdadera» con certeza</td><td>2 min</td></tr>
+    <tr><td>T6</td><td class="consigna">«Conseguí un documento para presentar con este análisis.»</td><td>Descarga el informe PDF</td><td>2 min</td></tr>
+    <tr><td>T7</td><td class="consigna">«Otra persona te mandó este informe. Comprobá que nadie lo modificó.»</td><td>Usa la verificación pública y ve el resultado</td><td>2 min</td></tr>
+    <tr><td>T8*</td><td class="consigna">«Cargá una foto nueva desde tu celular.»</td><td>Escanea el QR, sube, toca «Terminar» y la foto aparece en la computadora</td><td>3 min</td></tr>
+    <tr><td>T9*</td><td class="consigna">«Desde el informe impreso, mirá el análisis completo en el celular.»</td><td>Escanea el QR del PDF, inicia sesión y ve el detalle</td><td>3 min</td></tr>
+  </table>
+  <p class="nota">* Opcionales. La tasa de éxito se calcula sobre T1 a T7. T5 comprueba RN27: indicios, no veredictos.</p>
+</section>
+
+<section class="hoja">
+  <div class="marca"><strong>evidentIA</strong><span>Prueba de usabilidad · Planilla de registro</span></div>
+  <h1>Planilla de registro</h1>
+  <div class="campos">
+    <div class="linea">Participante: P</div><div class="linea">Fecha</div>
+    <div class="linea">Perfil: ☐ abogado/a ☐ aseguradora</div><div class="linea">Dispositivo y navegador</div>
+  </div>
+  <table class="alta">
+    <tr><th>Tarea</th><th>Éxito (sí / con dificultad / no)</th><th>Tiempo</th><th>Errores</th><th>Comentarios textuales</th></tr>
+    <tr><td>T1</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>T2</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>T3</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>T4</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>T5</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>T6</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>T7</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>T8</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>T9</td><td></td><td></td><td></td><td></td></tr>
+  </table>
+  <p class="nota">«Con dificultad» cuenta como éxito para la tasa, pero se anota para el análisis.</p>
+</section>
+
+<section class="hoja">
+  <div class="marca"><strong>evidentIA</strong><span>Prueba de usabilidad · Cuestionario</span></div>
+  <h1>Cuestionario</h1>
+  <p>Para cada frase, marcá de <strong>1 (totalmente en desacuerdo)</strong> a <strong>5 (totalmente de acuerdo)</strong>. Respondé rápido, sin pensarlo demasiado.</p>
+  <div class="campos"><div class="linea">Participante: P</div><div class="linea">Fecha</div></div>
+  <table class="sus">
+    <tr><th>#</th><th>Frase</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+    <tr><td class="n">1</td><td>Creo que me gustaría usar esta plataforma con frecuencia.</td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+    <tr><td class="n">2</td><td>Encontré la plataforma innecesariamente compleja.</td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+    <tr><td class="n">3</td><td>Me pareció fácil de usar.</td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+    <tr><td class="n">4</td><td>Creo que necesitaría la ayuda de una persona con conocimientos técnicos para usarla.</td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+    <tr><td class="n">5</td><td>Las distintas funciones de la plataforma están bien integradas.</td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+    <tr><td class="n">6</td><td>Encontré demasiadas inconsistencias en la plataforma.</td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+    <tr><td class="n">7</td><td>Imagino que la mayoría de las personas aprendería a usarla muy rápido.</td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+    <tr><td class="n">8</td><td>La encontré muy incómoda de usar.</td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+    <tr><td class="n">9</td><td>Me sentí muy seguro/a al usar la plataforma.</td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+    <tr><td class="n">10</td><td>Tuve que aprender muchas cosas antes de poder usarla.</td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td></tr>
+  </table>
+  <p class="nota">Escala SUS (Brooke, 1996), adaptada al español. ¡Gracias por participar!</p>
+  <h2>Para terminar</h2>
+  <div class="respuesta">1. ¿Qué fue lo más difícil?<div></div></div>
+  <div class="respuesta">2. ¿Qué cambiarías primero?<div></div></div>
+  <div class="respuesta">3. ¿Usarías esta plataforma en tu trabajo? ¿Por qué?<div></div></div>
+</section>
+
+</body>
+</html>

@@ -19,7 +19,7 @@ implementación siguiendo tareas.md, con pruebas
 ## Convenciones
 
 - Carpeta por funcionalidad: `NNN-nombre-corto/` (tres dígitos, minúsculas, guiones).
-- La rama de trabajo lleva el mismo nombre: `funcionalidad/NNN-nombre-corto`.
+- La rama de trabajo lleva el mismo nombre: `funcionalidad/NNN-nombre-corto`. El número es el siguiente al mayor que exista en `desarrollo` **y en las ramas remotas** (las sesiones trabajan en paralelo; el verificador avisa si dos usan el mismo). **Una funcionalidad, una rama, un Pull Request**: una tanda o etapa nueva de una funcionalidad existente se agrega a su especificación y se trabaja en su misma rama (política completa en [flujo-de-trabajo.md](../guias/flujo-de-trabajo.md)).
 - Plantillas en [plantillas/](plantillas/).
 
 ## Plan de funcionalidades
@@ -53,18 +53,41 @@ implementación siguiendo tareas.md, con pruebas
 | 025 | [Informe por rubro, breve y autosuficiente](025-informe-por-rubro/especificacion.md) | 10 | RF44, RF54 | Completado |
 | 026 | [Informe inalterable: huella en Hedera y verificación pública](026-informe-verificable/especificacion.md) | 10 | RF55 | Completado (firma digital opcional) |
 | 027 | [Inicio de sesión y registro con Google](027-inicio-con-google/especificacion.md) | 10 | RF52 | Implementada |
-| 028 | [Mejoras de usabilidad e interfaz](028-mejoras-interfaz/especificacion.md) | 10 | RNF10 | En curso: primera y segunda tanda integradas; tercera (celular e inicio de sesión) implementada; el registro con pago pasó a la 032 |
+| 028 | [Mejoras de usabilidad e interfaz](028-mejoras-interfaz/especificacion.md) | 10 | RNF10 | Completado: tres tandas integradas (#46, #47 y #50); el registro con pago pasó a la 032 |
 | 029 | [Huella de cada versión desplegada en Hedera ("host tokenizado")](029-version-en-hedera/especificacion.md) | 10 | RF56 | Completado (se activa en el próximo despliegue) |
 | 030 | [Revisión y refuerzo de la seguridad](030-seguridad/especificacion.md) | 10 | RNF01, RNF02, RNF20 | Implementada (se activa en el próximo despliegue) |
 | 031 | Traza de la experiencia de uso con Microsoft Clarity (CP-33) | 10 | RNF08, RNF10 | Instalada (2026-10-30, proyecto de la autora, solo en producción y enmascarada); texto provisorio en la política de privacidad, a aprobar por la autora (CP-37) |
 | 032 | [Pago del plan en el registro](032-pago-en-el-registro/especificacion.md) | 10 | RF10, RF19, RF20 | Implementada (cobro simulado con Cresium; precios a confirmar) |
 | 033 | [Portada pública con los planes](033-portada/especificacion.md) | 10 | RF19, RF20, RNF10 | Implementada (primera versión; se puede seguir enriqueciendo el diseño) |
-| 034 | [Pulido de UX/UI de todo el sistema](034-pulido-ux/especificacion.md) | 10 | RNF10 | Implementada en cuatro tandas (la tercera y la cuarta, en revisión); falta la revisión final con la autora (CA1, CA3, CA4, CA6, CA9) |
+| 034 | [Pulido de UX/UI de todo el sistema](034-pulido-ux/especificacion.md) | 10 | RNF10 | Implementada en cinco tandas, todas integradas (#53, #60, #64, #65 y #67); falta la revisión final con la autora (CA1, CA3, CA4, CA6, CA9) |
 | 035 | [Verificación de identidad de aseguradoras](035-identidad-aseguradoras/especificacion.md) | 10 | RN36, RN41, RF01 | Implementada con proveedor simulado; falta conectar Identik (CP-41) |
+| 036 | [Arnés para el trabajo asistido por IA](036-arnes/especificacion.md) | 10 | RNF02, RNF17, RNF19 | Implementada (ganchos, `/cerrar-etapa`, mapa y registro del arnés, ADR-0021) |
+| 037 | [Revisión integral: acceso, pantallas, siniestros e informe breve](037-acceso-y-pantallas/especificacion.md) | 10 | RNF10, RNF12, RF44 | En curso: aplicado lo pedido por la autora el 2026-11-05; quedan la presentación y la integración |
 | 038 | [Acceso compacto, pantallas a lo ancho y detalles de flujo](038-acceso-compacto/especificacion.md) | 10 | RNF10, RN38, RF53 | Implementada (2026-11-06) |
 | 039 | [Correcciones de producción](039-correcciones-produccion/especificacion.md) | 10 | RNF10, RN27 | Implementada (2026-11-10) |
 | 040 | [Dominio propio](040-dominio-propio/especificacion.md) | 10 | RF47, RNF03 | Implementada en el repositorio; falta aplicarla (2026-11-13) |
+| 041 | [Accesibilidad y materiales del cierre al día](041-accesibilidad/especificacion.md) | 10 | RNF11, RNF10 | Implementada (2026-11-16) |
+| 042 | [Kit imprimible de la prueba de usabilidad](042-kit-usabilidad/especificacion.md) | 10 | RNF10 | Implementada (2026-11-16) |
+| 043 | [Uso con teclado y plan B del DNS](043-teclado-y-dns/especificacion.md) | 10 | RNF11 | Implementada (2026-11-16) |
+| 044 | [Perfiles de la portada y verificación de identidad simulada](044-portada-y-identidad/especificacion.md) | 10 | RNF10, RN41 | Implementada (2026-11-16) |
+| 045 | [Un arnés que se hace cumplir: revisión continua y flujo de integración](045-arnes-que-se-hace-cumplir/especificacion.md) | 10 | RNF17, RNF19 | Implementada en tres etapas (verificador de la documentación, política de ramas y Pull Requests, controles en la integración continua); esperan a la autora la limpieza de ramas y la configuración de GitHub |
 | 037 | [Revisión integral: acceso, pantallas, siniestros e informe breve](037-acceso-y-pantallas/especificacion.md) | 10 | RNF10, RNF12, RF44 | En curso: aplicado lo pedido por la autora el 2026-11-05; quedan la presentación y la integración |
 | 036 | [Arnés para el trabajo asistido por IA](036-arnes/especificacion.md) | 10 | RNF02, RNF17, RNF19 | Implementada (ganchos, `/cerrar-etapa`, mapa y registro del arnés, ADR-0021) |
+
+## Diseño de la interfaz
+
+El diseño se hizo en varias funcionalidades sucesivas. Para seguirlo de punta a punta, en orden:
+
+| Funcionalidad | Qué aportó | Integrada |
+|---|---|---|
+| [022](022-rediseno-interfaz/especificacion.md) | Rediseño de la interfaz y del informe PDF con la [identidad visual](../guias/identidad-visual.md) elegida por la autora | 2026-10-21 |
+| [028](028-mejoras-interfaz/especificacion.md) | Usabilidad de las pantallas internas y versión para celular, en tres tandas | 2026-10-28 y 2026-10-29 |
+| [033](033-portada/especificacion.md) | Portada pública con los planes | 2026-10-29 |
+| [034](034-pulido-ux/especificacion.md#tandas) | Pulido de todo el sistema y de la portada, en cinco tandas | 2026-10-30 a 2026-11-02 |
+| [037](037-acceso-y-pantallas/especificacion.md) | Revisión integral: acceso, paleta, vocabulario «caso» o «siniestro», celular, informe y textos legales | 2026-11-06 |
+| [038](038-acceso-compacto/especificacion.md) | Acceso compacto y pantallas a lo ancho | 2026-11-09 |
+| [041](041-accesibilidad/especificacion.md) | Accesibilidad WCAG 2.1 AA | 2026-11-16 |
+| [043](043-teclado-y-dns/especificacion.md) | Uso con teclado | 2026-11-16 |
+| [044](044-portada-y-identidad/especificacion.md) | Perfiles de la portada en banda propia | 2026-11-18 |
 
 Las fases, los hitos y el ciclo de trabajo están en [docs/guias/hoja-de-ruta.md](../guias/hoja-de-ruta.md).

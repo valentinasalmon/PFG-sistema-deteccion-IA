@@ -81,16 +81,16 @@ Todas las funcionalidades siguen los mismos pasos. Desde la 003, el asistente ha
 
 | Paso | Qué se hace | Quién | Commit típico |
 |---|---|---|---|
-| 1 | Crear la rama desde `desarrollo`: `git switch desarrollo && git pull && git switch -c funcionalidad/NNN-nombre` | Autora | — |
+| 1 | Crear la rama del objetivo desde `main`: `git switch main && git pull && git switch -c plataforma/nombre` (ADR-0023) | Autora | — |
 | 2 | `/especificar`: el asistente redacta `especificacion.md`; la autora lo revisa, lo crea y lo confirma | Ambas | `documentacion(NNN): agregar especificacion` |
 | 3 | `/planificar`: diseño técnico (capas, contratos, datos, bibliotecas) | Ambas | `documentacion(NNN): agregar plan tecnico` |
 | 4 | `/tareas`: lista de pasos ejecutables | Ambas | `documentacion(NNN): agregar tareas` |
 | 5 | Implementación tarea por tarea: el asistente entrega cada archivo documentado; la autora lo crea, lo ejecuta y hace el commit | Ambas | `funcionalidad(...)`, `pruebas(...)` |
 | 6 | Verificación: pruebas, flake8, pylint, cobertura, ESLint y prueba manual en el navegador | Autora | — |
 | 7 | Bitácora, casillas de tareas y criterios, estado de la funcionalidad y ADR si hubo decisiones | Asistente (commit en la rama de la funcionalidad; la autora hace `git pull`) | `documentacion(bitacora): registrar funcionalidad NNN` |
-| 8 | Pull Request hacia `desarrollo`, revisión de la integración continua y *merge* | Autora | — |
+| 8 | Pull Request hacia `main`, todas las verificaciones en verde e integración con *squash* (ADR-0023) | Autora | — |
 
-Al alcanzar un hito (v0.1, v0.2, v0.3, v1.0) se abre un Pull Request de `desarrollo` hacia `main` y se crea la etiqueta de versión:
+Al alcanzar un hito se crea la etiqueta de versión sobre `main` (hasta el 2026-11-16, con un Pull Request previo de `desarrollo` hacia `main`; ver [configurar GitHub](configurar-github.md) para las versiones con GitHub Releases):
 
 ```bash
 git switch main && git pull
