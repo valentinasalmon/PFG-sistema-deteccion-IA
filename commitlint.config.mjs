@@ -27,7 +27,8 @@ export default {
     ],
     // Las descripciones en español pueden empezar con mayúscula en nombres propios.
     'subject-case': [0],
-    // Títulos cortos y legibles en la historia (pedido de la autora, 2026-11-16).
-    'header-max-length': [2, 'always', 72],
+    // El largo máximo queda en 100 (el de config-conventional) para los commits ya
+    // subidos y los de Dependabot; los del agente los limita a 72 el gancho del arnés
+    // revisar_commit.py antes de crearlos (ADR-0023).
   },
 }

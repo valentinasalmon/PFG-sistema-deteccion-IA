@@ -11,7 +11,7 @@ El 2026-11-16 la autora pidió dejar de abrir una rama y un Pull Request por cad
 - **Guía para la autora** (`docs/guias/configurar-github.md`): transición, *squash*, protección de `main`, Dependabot, archivo de ramas y versiones.
 - **`herramientas/archivar_ramas.sh`**: archiva como etiqueta `archivo/<área>/<nombre>` cada rama del modelo anterior ya integrada en `main` y la borra; muestra primero qué haría. La corre la autora: desde el entorno del agente no se pueden subir etiquetas ni borrar ramas en bloque.
 - `CLAUDE.md`, `/especificar`, flujo de trabajo, hoja de ruta, despliegue, tablero, mapa de ramas, versiones y README al día.
-- Ya del 2026-11-16: gancho `revisar_commit.py` (formato, 72 caracteres, `Co-Authored-By`) y commitlint a 72.
+- Ya del 2026-11-16: gancho `revisar_commit.py` (formato, 72 caracteres, `Co-Authored-By`). Commitlint en la integración continua queda en 100: con 72 rechazaba commits ya subidos (uno de la 044 tiene 79) y habría bloqueado el Pull Request de transición.
 
 ## Decisiones
 
