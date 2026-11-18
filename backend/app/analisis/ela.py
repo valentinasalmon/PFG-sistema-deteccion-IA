@@ -49,6 +49,9 @@ MAXIMO_REGIONES_INFORMADAS = 3
 MINIMO_BLOQUES_POR_LADO = 8  # imágenes de menos de 128 píxeles por lado no se analizan
 LADO_MAXIMO_MAPA = 900
 PISO_DISPERSION = 0.25  # evita dividir por casi cero en imágenes muy uniformes
+# Escala mínima del mapa (047): sin piso, una foto sin cambios (error parejo de 4 a 8)
+# se estiraba hasta encenderse entera y parecía «transformada».
+ESCALA_MINIMA_MAPA = 16.0
 
 # Tabla estándar de cuantización de luminancia (JPEG, anexo K), para estimar
 # la calidad con que se guardó el archivo.
@@ -209,8 +212,13 @@ def describir_ubicacion(region, filas, columnas):
 
 
 def dibujar_mapa(diferencia, regiones):
-    """Mapa ELA ampliado, en PNG, con las regiones recuadradas en rojo."""
-    tope = max(float(np.percentile(diferencia, 99.5)), 1.0)
+    """Mapa ELA ampliado, en PNG, con las regiones recuadradas en rojo.
+
+    El brillo se escala con el percentil 99,5 de la diferencia, pero nunca por
+    debajo de ``ESCALA_MINIMA_MAPA``: así una foto sin cambios se ve oscura en
+    lugar de encenderse entera por el ruido de compresión (funcionalidad 047, CA4).
+    """
+    tope = max(float(np.percentile(diferencia, 99.5)), ESCALA_MINIMA_MAPA)
     brillo = np.clip(diferencia * (255.0 / tope), 0, 255).astype(np.uint8)
     mapa = Image.fromarray(brillo).convert("RGB")
     dibujo = ImageDraw.Draw(mapa)
