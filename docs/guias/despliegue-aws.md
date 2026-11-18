@@ -121,7 +121,7 @@ Si dice `AVISO: no se pudo obtener el certificado`, ejecutá `sudo bash /opt/pla
 ## Paso 8. Primer despliegue
 
 El despliegue corre solo con cada envío a `main` que pasa la integración continua. El primero coincide con el **hito v0.1**:
-1. Abrí el Pull Request de `desarrollo` hacia `main` e integralo.
+1. Integrá el Pull Request en `main` (desde el 2026-11-16 no hay `desarrollo`, ADR-0023).
 2. En la pestaña *Actions* vas a ver el trabajo **Despliegue en AWS**, que tarda unos 5 minutos la primera vez.
 3. Si falla, copiame el registro del paso *Desplegar en la EC2 con Systems Manager*. Una versión que no responde no reemplaza a la anterior.
 
@@ -137,7 +137,7 @@ Para repetir un despliegue sin cambios: en *Actions*, abrí la última ejecució
 
 La infraestructura ya está creada: para publicar alcanza con integrar en `main`.
 1. Integrá los Pull Requests en orden hacia `desarrollo`: primero `funcionalidad/013-panel-y-notificaciones` y después `funcionalidad/022-rediseno-interfaz`, que sale de la 013.
-2. Abrí el Pull Request de `desarrollo` hacia `main` e integralo. El trabajo **Despliegue en AWS** publica la versión sola, en unos 3 minutos.
+2. El trabajo **Despliegue en AWS** publica la versión sola, en unos 3 minutos.
 3. La 022 cambia el remitente de los correos a «evidentIA». Se aplica una sola vez, después del despliegue del paso 2:
 
    **A. Actualizar el parámetro en AWS, desde tu WSL**
@@ -210,7 +210,7 @@ La cuenta de Hedera se crea en https://portal.hedera.com con clave **ED25519**. 
    hedera_tema   = "0.0.…"   # Topic ID del paso 1
    ```
    Después: `terraform plan` (tiene que crear 3 parámetros y cambiar SELLO_TIEMPO) y `terraform apply`.
-4. **Desplegar** (PR de `desarrollo` a `main`). El despliegue regenera el `.env` del servidor con los datos de Hedera.
+4. **Desplegar** (integrar el Pull Request en `main`). El despliegue regenera el `.env` del servidor con los datos de Hedera.
 5. **Probar**: cargar una imagen en un caso. En unos segundos (o en la próxima pasada del temporizador, cada 15 minutos) tiene que aparecer "Registrada en Hedera" con el enlace "Verificar en HashScan".
 6. **Comprobar en la página de estado**: abrir `/estado`. Tiene que decir «Sello de tiempo · Hedera (testnet): Funciona» y la fecha del último sello confirmado.
    - «Desactivado»: falta `sello_tiempo = "hedera"` en `terraform.tfvars`, o no se volvió a desplegar después del `terraform apply`.
@@ -255,7 +255,7 @@ El cliente se crea con tu cuenta de Google en https://console.cloud.google.com. 
      ```
    - En `terraform.tfvars` agregá `google_id_cliente = "....apps.googleusercontent.com"`.
    - Ejecutá `terraform plan`, que crea 1 parámetro, y después `terraform apply`.
-   - Desplegá (PR de `desarrollo` a `main`).
+   - Desplegá (integrar el Pull Request en `main`).
 7. **Probar**:
    - En **Iniciar sesión** aparece **Continuar con Google**.
    - Con un correo sin cuenta, pide completar el rubro y entra.
@@ -308,7 +308,7 @@ Sin estos pasos la plataforma funciona igual: la capa 4 aparece como «No dispon
    read -rs TOKEN && aws ssm put-parameter --name /deteccion-imagenes/produccion/HF_TOKEN \
      --type SecureString --value "$TOKEN" --overwrite --region eu-west-1 && unset TOKEN
    ```
-4. **Desplegar** (PR de `desarrollo` a `main`). El despliegue instala ONNX Runtime y el paquete `clasificador`, y regenera el `.env` con los tres valores. Si no hay nada que desplegar, en Session Manager:
+4. **Desplegar** (integrar el Pull Request en `main`). El despliegue instala ONNX Runtime y el paquete `clasificador`, y regenera el `.env` con los tres valores. Si no hay nada que desplegar, en Session Manager:
    ```bash
    sudo bash /opt/plataforma/servidor/scripts/generar_entorno.sh
    ```

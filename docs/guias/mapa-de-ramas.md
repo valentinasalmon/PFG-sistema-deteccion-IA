@@ -1,6 +1,6 @@
 # Mapa de ramas
 
-Cómo evolucionó el código, agrupado por área (decisión del 2026-11-16; ver [flujo de trabajo](flujo-de-trabajo.md)). Cada rama ya integrada se conserva como **etiqueta** `archivo/<área>/<nombre>`: con `git switch --detach archivo/...` se ve el código exacto de ese momento, y el Pull Request guarda la revisión y la integración continua.
+Cómo evolucionó el código hasta el cambio a GitHub Flow del 2026-11-16 ([ADR-0023](../arquitectura/decisiones/0023-flujo-de-trabajo-github-flow.md)), agrupado por área. Las ramas del modelo anterior se archivan como **etiquetas** `archivo/<área>/<nombre>` con `herramientas/archivar_ramas.sh` ([configurar GitHub](configurar-github.md), paso 5): con `git switch --detach archivo/...` se ve el código exacto de ese momento, y el Pull Request guarda la revisión y la integración continua. Desde el cambio, cada Pull Request entra a `main` como un commit y su rama se borra sola.
 
 La trazabilidad completa es: requisito (`docs/especificacion/`) → funcionalidad (`docs/funcionalidades/NNN-…`) → rama → Pull Request → versión (`docs/versiones.md`).
 
@@ -8,9 +8,10 @@ La trazabilidad completa es: requisito (`docs/especificacion/`) → funcionalida
 
 | Rama | Qué es |
 |---|---|
-| `main` | Producción (`evidentiaa.com.ar`) y etiquetas de versión |
-| `desarrollo` | Integración |
-| `interfaz/calidad-visual` | En curso: portada, identidad simulada, sensor de composición, galería y auditoría visual |
+| `main` | Única rama permanente: producción (`evidentiaa.com.ar`) y etiquetas de versión |
+| `desarrollo` | Se retira al terminar la transición (se archiva como `archivo/integracion/desarrollo`) |
+| `infraestructura/flujo-github` | En curso: el cambio a GitHub Flow, con la portada nueva y la identidad simulada |
+| `interfaz/calidad-visual` | Siguiente: sensor de composición, galería, comparación visual y auditoría completa |
 | `funcionalidad/010-red-neuronal` | Entrenamiento de la red (sesión de la red neuronal) |
 | `funcionalidad/012-capa-4-activacion` | Activación de la capa 4 cuando se publique el modelo |
 | `claude/…` | Ramas de trabajo de otras sesiones del agente (por ejemplo, la del informe) |

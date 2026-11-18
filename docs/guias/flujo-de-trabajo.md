@@ -2,29 +2,25 @@
 
 Guía de cómo se trabaja en el repositorio: ramas, commits, integración de cambios y uso del asistente de IA.
 
-## 1. Modelo de ramas
+## 1. Modelo de ramas: GitHub Flow
 
-Decisión del 2026-11-16 (reemplaza al modelo de una rama por funcionalidad o corrección). Con un agente de IA trabajando todos los días, ese modelo producía decenas de ramas y Pull Requests chicos que no contaban nada; ramas permanentes por área, en cambio, se desincronizan de `desarrollo`. El punto medio es el de la práctica habitual: **ramas cortas, una por objetivo, agrupadas por área**.
+**Decisión de mejora del 2026-11-16** ([ADR-0023](../arquitectura/decisiones/0023-flujo-de-trabajo-github-flow.md)). Hasta esa fecha el proyecto usó `main`, `desarrollo` y una rama por funcionalidad o corrección; con el ritmo de trabajo diario eso llevó a 72 ramas y a dos Pull Requests por cada cambio. Se pasó a GitHub Flow:
 
 ```
-main ──────────────●──────────────────────●──────   producción (se despliega sola) y etiquetas v1.0...
-                    \                    /
-desarrollo ──────────●──────●────●───────●───────   integración
-                      \    /      \    /
-interfaz/calidad-visual ●──●        \  /            una rama por objetivo, con el área adelante
-                     hedera/mainnet  ●──●
+main ──●───────────●──────────●──────●─────────  producción: cada fusión se despliega; etiquetas v1.0, v1.1…
+        \         /            \    /
+interfaz/calidad-visual ●──●    hedera/mainnet ●──●   ramas cortas por objetivo, un Pull Request directo a main
 ```
 
-| Rama | Para qué | Se crea desde | Se integra en |
-|---|---|---|---|
-| `main` | Producción: cada fusión se despliega en AWS. Lleva las etiquetas de versión. | — | — |
-| `desarrollo` | Integración de los temas terminados y probados. | `main` | `main` |
-| `<área>/<objetivo>` | Un objetivo de un área. Se cierra al integrarse. | `desarrollo` | `desarrollo` |
+| Rama | Para qué |
+|---|---|
+| `main` | Única rama permanente. Siempre en verde e igual a producción. Protegida: solo recibe Pull Requests con todas las verificaciones en verde. |
+| `<área>/<objetivo>` | Un objetivo. Se crea desde `main`, vuelve a `main` con un Pull Request y GitHub la borra al integrarla. |
 
 | Área | Qué abarca |
 |---|---|
 | `interfaz` | Pantallas, portada, diseño, accesibilidad, sensores visuales |
-| `plataforma` | Funcionalidades del backend y del frontend: casos, análisis, informes, cuentas, organizaciones |
+| `plataforma` | Funcionalidades del producto: casos, análisis, informes, cuentas, organizaciones |
 | `integraciones` | Servicios externos: Google, Identik, Cresium, correo |
 | `hedera` | Sello de tiempo, verificación del informe, red real |
 | `infraestructura` | AWS, Terraform, dominio, integración continua, despliegue |
@@ -34,29 +30,25 @@ interfaz/calidad-visual ●──●        \  /            una rama por objetiv
 Reglas:
 
 - **Un Pull Request por objetivo.** Todo lo del objetivo se acumula en su rama mientras el Pull Request no esté integrado. Un arreglo chico no abre rama propia: va a la rama abierta del tema.
-- **Las ramas son cortas.** Integrada la rama, se guarda como etiqueta `archivo/<área>/<nombre>` y se borra: la lista de ramas muestra solo el trabajo en curso, y la historia completa sigue en las etiquetas y en los Pull Requests.
+- **Fusión con *squash***: el Pull Request entra a `main` como un solo commit con su título y su número. El detalle de los commits queda en el Pull Request.
+- **Nada entra a `main` sin todo en verde**: lo exige la protección de la rama ([configurar GitHub](configurar-github.md)).
 - El número `NNN` sigue identificando la carpeta de la especificación en `docs/funcionalidades/`.
-- El [mapa de ramas](mapa-de-ramas.md) agrupa por área todas las ramas del proyecto, con sus Pull Requests: es la trazabilidad requisito → especificación → rama → Pull Request → versión.
+- Las ramas del modelo anterior se conservan como etiquetas `archivo/<área>/<nombre>`; el [mapa de ramas](mapa-de-ramas.md) las agrupa por área.
 
 Comandos habituales:
 
 ```bash
 # empezar un objetivo
-git switch desarrollo
+git switch main
 git pull
 git switch -c interfaz/calidad-visual
 
-# guardar avances
+# guardar avances (un commit por cambio completo)
 git add ruta/al/archivo.py
 git commit -m "funcionalidad(interfaz): sensor de composición"
 git push -u origin interfaz/calidad-visual
 
-# al terminar el objetivo: un Pull Request de interfaz/calidad-visual hacia desarrollo
-
-# al integrarse: archivarla como etiqueta y borrar la rama
-git tag archivo/interfaz/calidad-visual origin/interfaz/calidad-visual
-git push origin archivo/interfaz/calidad-visual
-git push origin --delete interfaz/calidad-visual
+# al terminar el objetivo: un Pull Request de interfaz/calidad-visual hacia main
 ```
 
 ## 2. Mensajes de commit
@@ -106,10 +98,10 @@ Los mensajes se validan automáticamente: el gancho del arnés `revisar_commit.p
 
 ## 3. Pull Requests
 
-1. La rama pasa la integración continua (lint, pruebas, cobertura y commits).
+1. El Pull Request va de la rama del objetivo a `main` y pasa la integración continua (lint, pruebas, cobertura, sensores, Terraform y commits).
 2. La descripción indica la funcionalidad, los requisitos que realiza y cómo se verificó.
 3. Se revisan los criterios de aceptación de la especificación.
-4. Se integra con *merge* (se conservan los commits) y la rama se archiva como etiqueta `archivo/<área>/<nombre>`.
+4. Se integra con ***squash*** cuando todas las verificaciones están en verde (la protección de `main` no deja hacerlo antes). GitHub borra la rama sola.
 
 ## 4. Desarrollo guiado por especificaciones
 
@@ -122,7 +114,7 @@ Ver [docs/funcionalidades/README.md](../funcionalidades/README.md). Ninguna func
   | Quién | Qué hace |
   |---|---|
   | Asistente | Todo el trabajo de cada funcionalidad: especificación, plan, tareas, código del backend y del frontend, pruebas, estilos, textos, configuración y documentación de seguimiento. Crea las ramas y sube commits propios con la línea `Co-Authored-By`. |
-  | Autora | Revisión, Pull Requests e integración en `desarrollo`, y las decisiones importantes: alcance, cuestiones legales y de privacidad, cambios grandes de arquitectura y lo que deba validarse con los tutores. |
+  | Autora | Revisión, Pull Requests e integración en `main`, y las decisiones importantes: alcance, cuestiones legales y de privacidad, cambios grandes de arquitectura y lo que deba validarse con los tutores. |
 
 - El asistente registra en la bitácora cada decisión que toma y su justificación, para que la autora pueda revisarla y revertirla.
 - Las decisiones importantes que surgen durante el trabajo se registran como cuestiones abiertas con una propuesta provisoria, sin bloquear el resto.

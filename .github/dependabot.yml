@@ -1,0 +1,27 @@
+# Actualizaciones automáticas de dependencias (ADR-0023): Dependabot abre un
+# Pull Request hacia main cuando sale una versión nueva o un parche de seguridad.
+# Cada Pull Request pasa por la misma integración continua que el resto.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /backend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: construccion
+      include: scope
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: construccion
+      include: scope
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: integracion

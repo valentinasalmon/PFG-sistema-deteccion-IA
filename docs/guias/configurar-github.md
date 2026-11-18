@@ -1,0 +1,56 @@
+# Configurar GitHub para el flujo de trabajo (ADR-0023)
+
+Pasos que hace la autora una sola vez, con su cuenta de dueña del repositorio. Sin la protección de `main` el flujo pierde su red de seguridad: cada fusión se publica en producción.
+
+## 1. Transición: dejar todo en `main`
+
+En este orden, cada uno con su ✓ verde antes de fusionar:
+
+1. Pull Request **`desarrollo` → `main`** (trae lo último que quedó en `desarrollo`). Fusionarlo con **Create a merge commit**, como hasta ahora.
+2. Pull Request **`infraestructura/flujo-github` → `main`** (este cambio de flujo, con la portada nueva y la identidad simulada). Fusionarlo con **Create a merge commit** también: es el último que entra así.
+
+Desde acá, todos los Pull Requests van a `main`.
+
+## 2. Fusión con *squash* y borrado automático de ramas
+
+En el repositorio: **Settings → General**, sección **Pull Requests**:
+
+- Destildar **Allow merge commits** y **Allow rebase merging**.
+- Dejar tildado solo **Allow squash merging**, con *Default commit message* en **Pull request title and description**.
+- Tildar **Automatically delete head branches**: al integrar un Pull Request, GitHub borra la rama sola.
+
+Cada Pull Request entra a `main` como un único commit con el título del Pull Request. GitHub suma las líneas `Co-authored-by` de los commits de la rama, así la asistencia de IA queda declarada.
+
+## 3. Protección de `main`
+
+**Settings → Rules → Rulesets → New ruleset → New branch ruleset**:
+
+- **Ruleset name**: `main protegida`. **Enforcement status**: *Active*.
+- **Target branches**: *Add target* → *Include default branch*.
+- Tildar:
+  - **Restrict deletions**.
+  - **Require a pull request before merging** (aprobaciones requeridas: 0, porque la autora es la única persona del equipo).
+  - **Require status checks to pass** → *Add checks* y agregar, uno por uno, los trabajos de la integración continua: *Backend (estilo, análisis, arquitectura y pruebas)*, *Frontend (análisis, pruebas y compilación)*, *Infraestructura (Terraform y scripts del servidor)*, *Seguridad (dependencias y configuración de Nginx)*, *Interfaz (sensor de diseño y recorrido de punta a punta)* y *Mensajes de commit (Conventional Commits en español)*. Tildar **Require branches to be up to date before merging**.
+  - **Block force pushes**.
+- **Create**.
+
+Con esto el botón de fusionar queda gris hasta que todo esté en verde.
+
+## 4. Dependabot
+
+**Settings → Code security** (o *Advanced Security*): activar **Dependabot alerts** y **Dependabot security updates**. La configuración de las actualizaciones semanales ya está en `.github/dependabot.yml`.
+
+## 5. Archivar las ramas viejas
+
+Desde la computadora, en la carpeta del repositorio y con `main` al día (`git switch main && git pull`):
+
+```bash
+bash herramientas/archivar_ramas.sh            # muestra qué haría, sin cambiar nada
+bash herramientas/archivar_ramas.sh --aplicar  # crea las etiquetas archivo/... y borra las ramas
+```
+
+Solo archiva ramas del modelo anterior cuyo trabajo ya está en `main` (incluida `desarrollo`). Conserva las que tienen trabajo sin integrar, como las de la red neuronal y las de otras sesiones del agente (`claude/…`). El [mapa de ramas](mapa-de-ramas.md) dice a qué área pertenece cada una.
+
+## 6. Versiones
+
+Al llegar a un hito (por ejemplo, la entrega): **Releases → Draft a new release → Choose a tag**, escribir `v1.0` → *Create new tag on publish*, destino `main` → **Generate release notes** → **Publish release**. Las notas se arman solas con los títulos de los Pull Requests desde la versión anterior.

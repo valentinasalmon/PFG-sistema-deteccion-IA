@@ -36,7 +36,7 @@ Toda tarjeta nueva lleva una etiqueta de cada grupo; las de Completado no llevan
 
 ## Reglas
 
-- **Fuentes**: el estado se deduce de hechos comprobables. Valen los Pull Request integrados en `desarrollo` o `main`, los commits de las ramas, las casillas de `tareas.md`, la bitácora, `docs/guias/pendientes.md`, `docs/especificacion/06-cuestiones-abiertas.md` y el documento del informe en Google Drive.
+- **Fuentes**: el estado se deduce de hechos comprobables. Valen los Pull Request integrados en `main` (antes del 2026-11-16, también en `desarrollo`), los commits de las ramas, las casillas de `tareas.md`, la bitácora, `docs/guias/pendientes.md`, `docs/especificacion/06-cuestiones-abiertas.md` y el documento del informe en Google Drive.
 - **Nada se da por hecho sin evidencia**: una tarea pasa a Completado solo si está integrada o si la autora la marcó. Lo que hizo el agente pero la autora no aceptó o no probó va a En pruebas.
 - **Los movimientos de la autora mandan**: si la autora movió o editó una tarjeta a mano, no se la devuelve a otra lista. Ante una duda, se deja un comentario en la tarjeta en lugar de moverla.
 - **No se borra nada**: lo que sobra se archiva con un comentario que explica por qué.

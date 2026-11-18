@@ -52,7 +52,7 @@ node frontend/e2e/sensor-diseno.cjs
 node frontend/e2e/accesibilidad.cjs
 ```
 
-La integración continua corre todo esto en cada Pull Request, más la validación de Terraform, `shellcheck`, `pip-audit`, `npm audit` y el recorrido del abogado en computadora y celular. Cada fusión en `main` se despliega sola en AWS. Índice de Calidad del Software: [docs/calidad/indice-de-calidad.md](docs/calidad/indice-de-calidad.md).
+La integración continua corre todo esto en cada Pull Request hacia `main` (que no se puede integrar hasta que todo esté en verde), más la validación de Terraform, `shellcheck`, `pip-audit`, `npm audit` y el recorrido del abogado en computadora y celular. Cada fusión en `main` se despliega sola en AWS. Índice de Calidad del Software: [docs/calidad/indice-de-calidad.md](docs/calidad/indice-de-calidad.md).
 
 ## Estructura del repositorio
 
@@ -79,7 +79,8 @@ El detalle de cada carpeta está en [docs/arquitectura/estructura-del-repositori
 | [docs/arquitectura/decisiones/](docs/arquitectura/decisiones/) | Registros de decisiones de arquitectura (ADR) |
 | [docs/red-neuronal/](docs/red-neuronal/README.md) | La red neuronal de la capa 4, de punta a punta |
 | [docs/guias/despliegue-aws.md](docs/guias/despliegue-aws.md) | Infraestructura, despliegue y dominio |
-| [docs/guias/flujo-de-trabajo.md](docs/guias/flujo-de-trabajo.md) | Ramas, commits y desarrollo guiado por especificaciones |
+| [docs/guias/flujo-de-trabajo.md](docs/guias/flujo-de-trabajo.md) | GitHub Flow (ADR-0023), commits y desarrollo guiado por especificaciones |
+| [docs/guias/mapa-de-ramas.md](docs/guias/mapa-de-ramas.md) | Cómo evolucionó el código, por área |
 | [docs/arnes/README.md](docs/arnes/README.md) | Cómo se trabaja con el agente de IA (guías, sensores y memoria) |
 | [docs/versiones.md](docs/versiones.md) | Qué trae cada versión etiquetada |
 | [docs/bitacora/](docs/bitacora/) | Registro cronológico de lo realizado |

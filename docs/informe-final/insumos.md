@@ -367,3 +367,9 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Falsos positivos por animaciones**: medir la portada a mitad de la animación de aparición dio 30 problemas de contraste inexistentes; se revisa con `prefers-reduced-motion`. Lección para cualquier verificación automática de interfaces animadas.
 - **QI provisorio**: 0,975 (segunda medición); falta el SUS de la prueba de usabilidad.
 - **Uso con teclado (043)**: un sensor recorre las pantallas con Tab (foco visible, sin trampas, inicio de sesión sin mouse). Se validó que el sensor detecta el error inyectándolo a propósito: un sensor que nunca falla no prueba nada.
+
+## Mejora del proceso: GitHub Flow (ADR-0023, 2026-11-18)
+
+- **Evolución del flujo de trabajo**: se empezó con un modelo inspirado en Git Flow (`main`, `desarrollo` y una rama por funcionalidad o corrección). Con un agente de IA trabajando a diario llevó a 72 ramas y a dos Pull Requests por cambio. Se pasó a **GitHub Flow**: `main` única rama permanente y protegida, ramas cortas por objetivo, un Pull Request directo a `main` con fusión *squash* y despliegue continuo.
+- **Lección**: el control no lo da la cantidad de ramas sino la regla automática de que nada entre a producción sin todas las verificaciones en verde; el paso manual por `desarrollo` no la reemplazaba (en el PR #94 se integró con la integración continua corriendo).
+- **Trazabilidad**: requisito → especificación → rama y Pull Request → commit en `main` → versión; las ramas viejas se conservan como etiquetas y el mapa de ramas las agrupa por área.

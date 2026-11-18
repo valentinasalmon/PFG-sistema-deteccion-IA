@@ -1,6 +1,6 @@
 # Versiones
 
-Las versiones se marcan con una etiqueta de Git sobre `main` cuando se alcanza un hito de la [hoja de ruta](guias/hoja-de-ruta.md). La etiqueta la crea la autora.
+Las versiones se marcan con una etiqueta de Git sobre `main` cuando se alcanza un hito de la [hoja de ruta](guias/hoja-de-ruta.md). Desde el cambio a GitHub Flow ([ADR-0023](arquitectura/decisiones/0023-flujo-de-trabajo-github-flow.md)) se publican como **GitHub Releases**, con notas armadas solas a partir de los títulos de los Pull Requests. La versión la crea la autora.
 
 | Versión | Estado | Qué trae |
 |---|---|---|
@@ -27,12 +27,6 @@ Las versiones se marcan con una etiqueta de Git sobre `main` cuando se alcanza u
 - [ ] Clarity quitado al terminar las pruebas (CP-37).
 - [ ] Integración continua en verde sobre `main`.
 
-Para etiquetar, desde la carpeta del repositorio:
-
-```bash
-git switch main && git pull
-git tag -a v1.0 -m "evidentIA 1.0: producto final del Proyecto Final de Grado"
-git push origin v1.0
-```
+Para publicarla: en GitHub, **Releases → Draft a new release**, etiqueta `v1.0` sobre `main`, **Generate release notes** y **Publish release** (paso a paso en [configurar GitHub](guias/configurar-github.md), punto 6).
 
 Hedera pasa a la red real (*mainnet*) en febrero de 2027, antes de la defensa; ese cambio es de configuración y no requiere una versión nueva.
