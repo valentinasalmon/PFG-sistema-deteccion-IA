@@ -396,3 +396,8 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Evolución del flujo de trabajo**: se empezó con un modelo inspirado en Git Flow (`main`, `desarrollo` y una rama por funcionalidad o corrección). Con un agente de IA trabajando a diario llevó a 72 ramas y a dos Pull Requests por cambio. Se pasó a **GitHub Flow**: `main` única rama permanente y protegida, ramas cortas por objetivo, un Pull Request directo a `main` con fusión *squash* y despliegue continuo.
 - **Lección**: el control no lo da la cantidad de ramas sino la regla automática de que nada entre a producción sin todas las verificaciones en verde; el paso manual por `desarrollo` no la reemplazaba (en el PR #94 se integró con la integración continua corriendo).
 - **Trazabilidad**: requisito → especificación → rama y Pull Request → commit en `main` → versión; las ramas viejas se conservan como etiquetas y el mapa de ramas las agrupa por área.
+
+## Fotos de celular y ELA (047, 2026-11-18)
+
+- **Medir antes de corregir**: no hay información confiable de qué metadatos entrega el iPhone al subir una foto desde el navegador (las fuentes se contradicen y dependen de la versión de iOS y del camino elegido). Se construyó una página de diagnóstico para medirlo con dispositivos reales antes de decidir el camino recomendado.
+- **El problema de ELA no era el análisis sino su visualización**: el mapa se normalizaba al punto más brillante y amplificaba el ruido de compresión de una foto sin cambios. Un piso de escala absoluto bajó los píxeles «encendidos» de una foto limpia de ~7 % a <1 %. Cambiar la calidad de recompresión se probó y se descartó con datos.

@@ -29,6 +29,7 @@ import PaginaCaso from './paginas/PaginaCaso.jsx'
 import PaginaCasos from './paginas/PaginaCasos.jsx'
 import PaginaConfirmarCorreo from './paginas/PaginaConfirmarCorreo.jsx'
 import PaginaEstado from './paginas/PaginaEstado.jsx'
+import PaginaProbarCelular from './paginas/PaginaProbarCelular.jsx'
 import PaginaIniciarSesion from './paginas/PaginaIniciarSesion.jsx'
 import PaginaInvitacion from './paginas/PaginaInvitacion.jsx'
 import PaginaInicio from './paginas/PaginaInicio.jsx'
@@ -74,6 +75,7 @@ export default function App() {
         <Route path="/terminos" element={<PaginaTerminos />} />
         <Route path="/privacidad" element={<PaginaPrivacidad />} />
         <Route path="/estado" element={<PaginaEstado />} />
+        <Route path="/probar-celular" element={<PaginaProbarCelular />} />
         <Route path="*" element={<PaginaNoEncontrada />} />
       </Route>
 

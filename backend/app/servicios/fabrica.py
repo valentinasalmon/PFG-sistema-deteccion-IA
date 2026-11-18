@@ -254,3 +254,13 @@ def crear_servicio_versiones(configuracion, origen=None):
         RepositorioVersiones(), crear_servicio_sellos(configuracion, origen),
         crear_servicio_auditoria(origen), configuracion["VERSION_APLICACION"],
     )
+
+
+def crear_servicio_diagnostico(configuracion):
+    """Diagnóstico de qué llega al subir una foto desde el celular (funcionalidad 047)."""
+    from app.servicios.servicio_diagnostico import (  # pylint: disable=import-outside-toplevel
+        ServicioDiagnostico, crear_capa_para_diagnostico,
+    )
+    return ServicioDiagnostico(
+        crear_capa_para_diagnostico(configuracion), configuracion["TAMANIO_MAXIMO_IMAGEN"]
+    )

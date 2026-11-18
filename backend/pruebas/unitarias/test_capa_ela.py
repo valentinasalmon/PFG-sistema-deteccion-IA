@@ -25,6 +25,7 @@ from app.analisis.ela import (
     Region,
     buscar_regiones,
     describir_ubicacion,
+    dibujar_mapa,
     estimar_calidad_jpeg,
 )
 
@@ -224,3 +225,20 @@ def test_describir_ubicacion():
         "una zona de aproximadamente 10 % × 10 % de la imagen, a 25 % del borde izquierdo "
         "y 20 % del borde superior"
     )
+
+
+def test_mapa_de_una_foto_sin_cambios_queda_oscuro():
+    """047, CA4: el ruido parejo de compresión no enciende el mapa entero."""
+    generador = np.random.default_rng(7)
+    ruido = generador.uniform(0, 6, size=(256, 256)).astype(np.float32)
+    mapa = np.asarray(Image.open(io.BytesIO(dibujar_mapa(ruido, []))).convert("L"))
+    assert (mapa > 128).mean() < 0.02
+
+
+def test_mapa_destaca_una_zona_con_mucho_error():
+    """Una zona con error alto sigue viéndose brillante con el piso de escala."""
+    diferencia = np.full((256, 256), 3.0, dtype=np.float32)
+    diferencia[96:160, 96:160] = 40.0
+    mapa = np.asarray(Image.open(io.BytesIO(dibujar_mapa(diferencia, []))).convert("L"))
+    assert mapa[128, 128] > 200
+    assert mapa[10, 10] < 60
