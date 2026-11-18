@@ -34,6 +34,15 @@ Reglas:
 - **Nada entra a `main` sin todo en verde**: lo exige la protección de la rama ([configurar GitHub](configurar-github.md)).
 - El número `NNN` sigue identificando la carpeta de la especificación en `docs/funcionalidades/`.
 - Las ramas del modelo anterior se conservan como etiquetas `archivo/<área>/<nombre>`; el [mapa de ramas](mapa-de-ramas.md) las agrupa por área.
+- Las ramas `claude/…` son de sesiones del agente en la nube, que solo pueden subir a su propia rama: se usan como una rama de objetivo más.
+- **El seguimiento viaja con el trabajo**: la bitácora, las casillas de `tareas.md`, los estados y los insumos van en el mismo Pull Request que el código.
+- **Para traer `main` a una rama propia se usa `git rebase`**, no un merge, mientras nadie más trabaje en esa rama.
+
+Por qué se llegó acá: la funcionalidad 045 midió el proceso (2026-11-05): 353 commits y 73 Pull Requests en 18 días, 38 % de commits solo de documentación, 51 ramas sin borrar y 18 merges «traer desarrollo». Escribió una política de una funcionalidad, una rama y un Pull Request, pero en los once días siguientes no cambió nada (de 30 Pull Requests, 8 fueron pasos de `desarrollo` a `main`). La lección, que justifica el [ADR-0023](../arquitectura/decisiones/0023-flujo-de-trabajo-github-flow.md): **una regla que depende de que alguien se acuerde no se cumple; tiene que estar en la herramienta**. Por eso la protección de `main`, el *squash* y el borrado automático de ramas.
+
+Herramientas:
+- `herramientas/archivar_ramas.sh` archiva como etiqueta y borra las ramas del modelo anterior ya integradas en `main` (sin argumentos muestra qué haría).
+- El verificador del arnés (`.claude/hooks/verificar_arnes.py`) avisa al iniciar cada sesión si hay ramas integradas sin borrar y si dos funcionalidades comparten número.
 
 Comandos habituales:
 
@@ -119,4 +128,4 @@ Ver [docs/funcionalidades/README.md](../funcionalidades/README.md). Ninguna func
 - El asistente registra en la bitácora cada decisión que toma y su justificación, para que la autora pueda revisarla y revertirla.
 - Las decisiones importantes que surgen durante el trabajo se registran como cuestiones abiertas con una propuesta provisoria, sin bloquear el resto.
 - Al iniciar una sesión, el asistente lee `CLAUDE.md` y la constitución.
-- Comandos disponibles: `/especificar`, `/planificar`, `/tareas`.
+- Comandos disponibles: `/especificar`, `/planificar`, `/tareas`, `/cerrar-etapa` y `/revisar-arnes` (ver [CLAUDE.md](../../CLAUDE.md)).

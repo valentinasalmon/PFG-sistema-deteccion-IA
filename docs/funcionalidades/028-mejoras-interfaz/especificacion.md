@@ -1,7 +1,7 @@
 # Especificación: 028 — Mejoras de usabilidad e interfaz
 
 - **Rama**: `funcionalidad/028-mejoras-interfaz`
-- **Estado**: En curso. Primera tanda implementada; la segunda espera la validación de la autora.
+- **Estado**: Completada. Tres tandas integradas: la primera y la segunda el 2026-10-28 (Pull Requests #46 y #47; la segunda, validada por la autora) y la tercera, celular e inicio de sesión, el 2026-10-29 (#50). El registro (T15) pasó a la 032.
 - **Requisitos que realiza**: RNF10, RF26, RF48 (interfaz), RF53 (enlace para la persona afectada, segunda tanda)
 - **Reglas de negocio aplicadas**: RN01, RN12, RN27
 - **Casos de uso**: transversal

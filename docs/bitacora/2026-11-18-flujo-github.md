@@ -13,6 +13,15 @@ El 2026-11-16 la autora pidió dejar de abrir una rama y un Pull Request por cad
 - `CLAUDE.md`, `/especificar`, flujo de trabajo, hoja de ruta, despliegue, tablero, mapa de ramas, versiones y README al día.
 - Ya del 2026-11-16: gancho `revisar_commit.py` (formato, 72 caracteres, `Co-Authored-By`). Commitlint en la integración continua queda en 100: con 72 rechazaba commits ya subidos (uno de la 044 tiene 79) y habría bloqueado el Pull Request de transición.
 
+## Unificación con la 045
+
+Otra sesión del agente («Harness engineering») había preparado en paralelo la funcionalidad 045 (rama `claude/charming-turing-j7esco`, sin integrar): un verificador que compara lo que declara la documentación del arnés con lo real, un control de numeración de funcionalidades, el comando `/revisar-arnes`, una política de ramas para `desarrollo` y los scripts `compactar_rama.sh` y `limpiar_ramas.sh`. Integradas por separado, las dos propuestas se pisaban. Se incorporó la 045 a esta rama y se adaptó a GitHub Flow:
+
+- se quedan el verificador, el control de numeración, `/revisar-arnes` y el índice de la bitácora, ahora contra `main` (el verificador encontró enseguida que esta bitácora faltaba en el índice);
+- se quitan el paso «Forma del Pull Request» de la integración continua y `compactar_rama.sh`, que solo tenían sentido hacia `desarrollo` (con *squash* cada Pull Request ya entra como un commit);
+- `limpiar_ramas.sh` se reemplaza por `herramientas/archivar_ramas.sh`, que guarda cada rama como etiqueta antes de borrarla, como pidió la autora;
+- su propuesta de configuración de GitHub queda resuelta por el ADR-0023.
+
 ## Decisiones
 
 - **Se descartaron las ramas permanentes por área**: una rama que vive meses se aleja de la principal y arrastra conflictos.
