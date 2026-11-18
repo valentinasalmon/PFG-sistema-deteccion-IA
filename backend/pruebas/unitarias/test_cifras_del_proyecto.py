@@ -1,4 +1,4 @@
-"""Pruebas de las cifras del proyecto calculadas desde el repositorio (funcionalidad 039)."""
+"""Pruebas de las cifras del proyecto calculadas desde el repositorio (funcionalidad 046)."""
 from herramientas import cifras_del_proyecto as cifras
 
 

@@ -1,4 +1,4 @@
-"""Pruebas del generador de diagramas desde el código (funcionalidad 039)."""
+"""Pruebas del generador de diagramas desde el código (funcionalidad 046)."""
 from herramientas import diagrama_despliegue
 from herramientas import diagramas_del_sistema as diagramas
 

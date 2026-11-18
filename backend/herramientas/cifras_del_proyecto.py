@@ -1,4 +1,4 @@
-"""Cifras del proyecto calculadas desde el repositorio (funcionalidad 039).
+"""Cifras del proyecto calculadas desde el repositorio (funcionalidad 046).
 
 El informe cita números del proceso (commits, coautoría de IA, pull requests,
 pruebas, especificaciones, decisiones de arquitectura). Escritos a mano, se
@@ -10,7 +10,7 @@ Uso, desde la raíz del repositorio o desde ``backend/``::
 
     python backend/herramientas/cifras_del_proyecto.py [--json]
 
-Realiza: RNF19 (trazabilidad del proceso); funcionalidad 039.
+Realiza: RNF19 (trazabilidad del proceso); funcionalidad 046.
 """
 import argparse
 import datetime

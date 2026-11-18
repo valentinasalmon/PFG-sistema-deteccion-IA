@@ -69,6 +69,6 @@ implementación siguiendo tareas.md, con pruebas
 | 043 | [Uso con teclado y plan B del DNS](043-teclado-y-dns/especificacion.md) | 10 | RNF11 | Implementada (2026-11-16) |
 | 037 | [Revisión integral: acceso, pantallas, siniestros e informe breve](037-acceso-y-pantallas/especificacion.md) | 10 | RNF10, RNF12, RF44 | En curso: aplicado lo pedido por la autora el 2026-11-05; quedan la presentación y la integración |
 | 036 | [Arnés para el trabajo asistido por IA](036-arnes/especificacion.md) | 10 | RNF02, RNF17, RNF19 | Implementada (ganchos, `/cerrar-etapa`, mapa y registro del arnés, ADR-0021) |
-| 039 | [Arnés del informe final: guías, revisor, cifras y diagramas desde el código](039-arnes-del-informe/especificacion.md) | 10 | RNF17, RNF19 | Implementada (comandos `/redactar-informe`, `/revisar-informe` y `/generar-diagramas`) |
+| 046 | [Arnés del informe final: guías, revisor, cifras y diagramas desde el código](046-arnes-del-informe/especificacion.md) | 10 | RNF17, RNF19 | Implementada (comandos `/redactar-informe`, `/revisar-informe` y `/generar-diagramas`) |
 
 Las fases, los hitos y el ciclo de trabajo están en [docs/guias/hoja-de-ruta.md](../guias/hoja-de-ruta.md).

@@ -1,4 +1,4 @@
-"""Diagrama de despliegue UML dibujado con posiciones fijas (funcionalidad 039).
+"""Diagrama de despliegue UML dibujado con posiciones fijas (funcionalidad 046).
 
 El diagrama de despliegue tiene nodos anidados (nube, servidor, sistema
 operativo, entornos de ejecución) y muchas rutas de comunicación hacia
@@ -19,7 +19,7 @@ Uso, desde ``backend/``::
 
 Escribe ``docs/arquitectura/diagramas/07-despliegue-uml.svg``.
 
-Realiza: RNF19 (trazabilidad del diseño); funcionalidad 039.
+Realiza: RNF19 (trazabilidad del diseño); funcionalidad 046.
 """
 import sys
 from html import escape

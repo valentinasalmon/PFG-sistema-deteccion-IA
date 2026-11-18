@@ -51,3 +51,6 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-10-30 | [Funcionalidad 010: prueba de concepto de la red neuronal](2026-10-30-prueba-de-concepto-red-neuronal.md) |
 | 2026-10-30 | [Funcionalidad 010: documentación, plan de entrenamientos y búsqueda de datos](2026-10-30-datos-y-plan-de-entrenamientos.md) |
 | 2026-10-30 | [Funcionalidad 010: exploración de datos, receta v1 y cuaderno de entrenamiento completo](2026-10-30-red-neuronal-exploracion-y-receta-v1.md) |
+| 2026-11-05 | [Funcionalidad 046: arnés del informe final](2026-11-05-funcionalidad-046-arnes-del-informe.md) |
+| 2026-11-11 | [Segunda revisión del informe y diagramas con aspecto de hechos a mano](2026-11-11-revision-del-informe.md) |
+| 2026-11-16 | [Tercera revisión del informe: capítulos vacíos, red neuronal, dominio y diagramas del proceso](2026-11-16-revision-del-informe.md) |

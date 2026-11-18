@@ -1,4 +1,4 @@
-"""Pruebas del revisor automático del informe final (funcionalidad 039)."""
+"""Pruebas del revisor automático del informe final (funcionalidad 046)."""
 from herramientas import revisar_informe as revisor
 
 INFORME = """Resumen

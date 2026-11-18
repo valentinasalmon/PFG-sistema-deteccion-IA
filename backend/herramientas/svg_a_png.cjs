@@ -1,4 +1,4 @@
-// Convierte un diagrama SVG en PNG con el Chromium de Playwright (funcionalidad 039).
+// Convierte un diagrama SVG en PNG con el Chromium de Playwright (funcionalidad 046).
 // Uso: node svg_a_png.cjs entrada.svg salida.png [escala]
 const { chromium } = require('playwright');
 const fs = require('fs');

@@ -1,4 +1,4 @@
-"""Revisión automática del informe final del proyecto (funcionalidad 039).
+"""Revisión automática del informe final del proyecto (funcionalidad 046).
 
 Lee el texto del informe (exportado de Google Docs como texto sin formato o
 leído con el conector de Google Drive) y detecta los errores mecánicos que un
@@ -18,7 +18,7 @@ Uso, desde ``backend/``::
 
 Devuelve 1 si encuentra al menos un error, para poder usarlo como control.
 
-Realiza: RNF19 (calidad de la documentación); funcionalidad 039.
+Realiza: RNF19 (calidad de la documentación); funcionalidad 046.
 """
 import argparse
 import json
