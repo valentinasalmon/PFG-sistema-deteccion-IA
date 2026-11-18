@@ -45,5 +45,5 @@ hiero-sdk-python==0.3.0     # SDK oficial de Hiero/Hedera: publicar huellas en C
 # --- Funcionalidad 012: capa 4 (red neuronal) ---
 # El paquete "clasificador" (red_neuronal/) se instala aparte con --no-deps, para
 # no arrastrar PyTorch: solo usa estas dos bibliotecas además de numpy y Pillow.
-onnxruntime==1.31.1         # Ejecución del modelo ONNX en CPU (ADR-0015)
+onnxruntime==1.32.0         # Ejecución del modelo ONNX en CPU (ADR-0015)
 huggingface_hub==2.4.0      # Descarga de la versión fija del modelo del registro privado (ADR-0014)
