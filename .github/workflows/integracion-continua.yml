@@ -269,7 +269,7 @@ jobs:
           --exclude=__pycache__ --exclude=backend/almacenamiento_local --exclude=backend/pruebas
           backend frontend/dist infraestructura/nginx infraestructura/systemd infraestructura/scripts
           red_neuronal/pyproject.toml red_neuronal/README.md red_neuronal/clasificador
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.AWS_ROLE_DESPLIEGUE }}
           aws-region: ${{ vars.AWS_REGION }}
