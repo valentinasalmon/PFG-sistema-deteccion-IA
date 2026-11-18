@@ -31,7 +31,7 @@ segno==1.6.6                # Códigos QR de los enlaces de carga desde el celul
 boto3==1.43.114             # Almacenamiento en Amazon S3 (producción)
 
 # --- Funcionalidad 007: motor de análisis ---
-rq==2.12.0                  # Cola de trabajos sobre Redis (ADR-0004); requiere ExifTool del sistema
+rq==3.0.0                  # Cola de trabajos sobre Redis (ADR-0004); requiere ExifTool del sistema
 
 # --- Funcionalidad 009: capa 2 (credenciales de contenido) ---
 c2pa-python==0.38.0         # Lectura y verificación de la firma de los manifiestos C2PA
