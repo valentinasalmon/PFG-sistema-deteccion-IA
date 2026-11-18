@@ -22,5 +22,5 @@ El 2026-11-16 la autora pidió dejar de abrir una rama y un Pull Request por cad
 
 ## Pendiente
 
-- Autora: los dos Pull Requests de transición, la configuración de GitHub y el archivo de ramas (guía `configurar-github.md`).
+- Autora: el Pull Request de transición (`infraestructura/flujo-github` → `main`, que ya trae todo `desarrollo`), la configuración de GitHub y el archivo de ramas (guía `configurar-github.md`).
 - Agente: `interfaz/calidad-visual` (sensor de composición, galería, comparación visual y auditoría completa) desde `main` cuando termine la transición.
