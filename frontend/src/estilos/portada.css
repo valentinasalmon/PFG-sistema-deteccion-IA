@@ -414,156 +414,591 @@
   font-size: 0.96rem;
 }
 
-/* --- Animación de «Qué miramos» (050): plano de la foto con la marca de cada
-   mirada por turnos. Solo usa opacidad y transformaciones (sin recalcular la
-   disposición) y queda quieta con «reducir movimiento». --- */
-.escaneo {
+/* --- Video de «Qué miramos» (050): una animación propia con forma de video
+   de 16:9 y la lista como capítulos. Solo anima opacidad y transformaciones;
+   sin «reducir movimiento» se ve el estado final, quieto. --- */
+.portada-miradas--video {
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.6fr);
+  align-items: center;
+  gap: 2.4rem 4rem;
+}
+
+.portada-miradas--video .portada-cab--izquierda {
+  position: static;
+}
+
+.portada-miradas__video {
   width: 100%;
-  max-width: 30rem;
-  margin: 1.4rem 0 0;
 }
 
-.escaneo__lienzo {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 18px;
-  box-shadow: 0 30px 50px -36px #0f1f17aa;
+.portada-miradas--video .portada-miradas__grilla {
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.escaneo__fondo {
-  fill: var(--p-bosque);
+.portada-miradas--video .portada-mirada {
+  position: relative;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  align-content: start;
+  gap: 0.9rem;
+  padding: 1.3rem 1.3rem 1.4rem;
+  border-radius: 20px;
 }
 
-.escaneo__grilla {
-  stroke: var(--p-lima);
-  stroke-opacity: 0.08;
+.portada-miradas--video .portada-mirada:hover {
+  transform: translateY(-3px);
 }
 
-.escaneo__visor {
-  fill: none;
-  stroke: var(--p-lima);
-  stroke-width: 3;
-  stroke-linecap: round;
+.portada-mirada__ver {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-block: -11px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
-.escaneo__foto path,
-.escaneo__foto circle {
-  fill: none;
-  stroke: var(--p-claro);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0.75;
+/* El botón ocupa toda la tarjeta. */
+.portada-mirada__ver::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
 }
 
-.escaneo__foto .escaneo__abolladura {
-  stroke: var(--p-lima);
-  opacity: 1;
-}
-
-.escaneo__marca {
-  opacity: 0.18;
-  transition: opacity 0.45s ease;
-}
-
-.escaneo__marca--activa {
-  opacity: 1;
-}
-
-.escaneo__rotulo {
-  fill: var(--p-lima);
-  font: 700 11px var(--p-mono);
-  letter-spacing: 0.06em;
-}
-
-.escaneo__ficha {
-  fill: var(--p-bosque-2);
-  stroke: var(--p-lima);
-  stroke-width: 1.5;
-}
-
-.escaneo__renglon,
-.escaneo__guia {
-  fill: none;
-  stroke: var(--p-lima);
-  stroke-width: 2;
-  stroke-linecap: round;
-}
-
-.escaneo__guia {
-  stroke-dasharray: 4 4;
-}
-
-.escaneo__zona {
-  fill: none;
-  stroke: var(--p-lima);
-  stroke-width: 2;
-  stroke-dasharray: 6 4;
-}
-
-.escaneo__calor {
-  fill: var(--p-lima);
-  opacity: 0.45;
-}
-
-.escaneo__red {
-  fill: none;
-  stroke: var(--p-lima);
-  stroke-width: 1.5;
-  stroke-dasharray: 3 5;
-}
-
-.escaneo__nodo {
-  fill: var(--p-bosque);
-  stroke: var(--p-lima);
-  stroke-width: 2;
-}
-
-.escaneo__barra {
-  fill: var(--p-bosque-2);
-  stroke: var(--p-apagado);
-  stroke-opacity: 0.5;
-}
-
-.escaneo__barra-valor {
-  fill: var(--p-lima);
+.portada-mirada__ver:focus-visible {
+  border-radius: 4px;
+  outline: 3px solid var(--p-verde);
+  outline-offset: 3px;
 }
 
 .portada-mirada--activa {
   box-shadow: inset 0 0 0 2px var(--p-lima);
 }
 
+.video {
+  margin: 0;
+}
+
+.video__pantalla {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--p-bosque);
+  box-shadow: 0 40px 70px -46px #0f1f17cc;
+  aspect-ratio: 16 / 9;
+}
+
+.video__lienzo {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.video__fondo {
+  fill: var(--p-bosque);
+}
+
+.video__grilla {
+  stroke: var(--p-lima);
+  stroke-opacity: 0.07;
+}
+
+.video__camara {
+  transition: transform 1.1s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.video__foto path,
+.video__foto circle {
+  fill: none;
+  stroke: var(--p-claro);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.8;
+}
+
+.video__foto .video__abolladura,
+.video__foto .video__restos {
+  stroke: var(--p-lima);
+  opacity: 1;
+}
+
+.video__visor {
+  fill: none;
+  stroke: var(--p-lima);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.video__rec {
+  fill: #e5484d;
+}
+
+.video__rotulo {
+  fill: var(--p-lima);
+  font: 700 12px var(--p-mono);
+  letter-spacing: 0.06em;
+}
+
+.video__clave {
+  fill: var(--p-apagado);
+  font: 600 11px var(--p-mono);
+  letter-spacing: 0.05em;
+}
+
+.video__valor {
+  fill: var(--p-claro);
+  font: 500 12px var(--p-mono);
+}
+
+.video__ficha {
+  fill: var(--p-bosque-2);
+  stroke: var(--p-lima);
+  stroke-width: 1.5;
+}
+
+.video__escudo {
+  fill: var(--p-bosque-2);
+  stroke: var(--p-lima);
+  stroke-width: 2;
+}
+
+.video__trazo,
+.video__guia {
+  fill: none;
+  stroke: var(--p-lima);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.video__guia {
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.video__zona {
+  fill: none;
+  stroke: var(--p-lima);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+}
+
+.video__calor {
+  fill: var(--p-lima);
+  opacity: var(--intensidad);
+}
+
+.video__enlace {
+  fill: none;
+  stroke: var(--p-lima);
+  stroke-width: 1.2;
+  stroke-opacity: 0.6;
+}
+
+.video__nodo {
+  fill: var(--p-bosque);
+  stroke: var(--p-lima);
+  stroke-width: 2;
+}
+
+.video__medidor {
+  fill: var(--p-bosque-2);
+  stroke: var(--p-apagado);
+  stroke-opacity: 0.5;
+}
+
+.video__medidor-valor {
+  fill: var(--p-lima);
+  transform: scaleX(0.3);
+  transform-box: fill-box;
+}
+
+.video__barrido {
+  display: none;
+}
+
+.video__barrido-linea {
+  stroke: var(--p-lima);
+  stroke-width: 2;
+}
+
+/* En el informe los rótulos ya están en la tarjeta: queda el dibujo con sus marcas. */
+.video[data-escena='4'] .video__capa text,
+.video[data-escena='4'] .video__ficha,
+.video[data-escena='4'] .video__sello,
+.video[data-escena='4'] .video__guia {
+  opacity: 0;
+}
+
+.video[data-escena='4'] .video__enlace {
+  stroke-opacity: 0.25;
+}
+
+/* Cada mirada se ve tenue hasta que le toca; en el informe se ven todas. */
+.video__capa {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.video__capa--activa,
+.video[data-escena='4'] .video__capa,
+.video--quieta .video__capa {
+  opacity: 1;
+}
+
+.video__informe {
+  position: absolute;
+  top: 50%;
+  right: 4%;
+  display: grid;
+  gap: 0.7rem;
+  width: min(42%, 20rem);
+  padding: clamp(0.8rem, 2.4vw, 1.4rem);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--tinta);
+  box-shadow: 0 30px 50px -30px #000c;
+  opacity: 0;
+  transform: translate(0, calc(-50% + 14px));
+  transition:
+    opacity 0.5s ease,
+    transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+
+.video__informe--activo {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+.video__informe-etq,
+.video__informe-pie {
+  color: var(--p-verde);
+  font: 700 clamp(0.6rem, 1.2vw, 0.72rem) var(--p-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.video__informe-pie {
+  padding-top: 0.5rem;
+  border-top: 1px solid #d9e0dc;
+}
+
+.video__informe ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: clamp(0.66rem, 1.5vw, 0.88rem);
+}
+
+.video__informe li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.video__informe li span {
+  color: var(--tinta-2);
+  text-align: right;
+}
+
+.video__subtitulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.5rem;
+  min-height: 3.2em;
+  margin: 1rem 0 0.4rem;
+  color: var(--tinta-2);
+  font-size: clamp(0.95rem, 1.4vw, 1.08rem);
+}
+
+.video__subtitulo b {
+  color: var(--tinta);
+}
+
+.video__subtitulo-num {
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  background: var(--p-bosque);
+  color: var(--p-lima);
+  font: 700 0.75rem var(--p-mono);
+}
+
+.video__controles {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.video__boton {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--p-bosque);
+  color: var(--p-lima);
+  cursor: pointer;
+  transition: transform 0.15s ease-out;
+}
+
+.video__boton:active {
+  transform: scale(0.94);
+}
+
+.video__boton:focus-visible {
+  outline: 3px solid var(--p-verde);
+  outline-offset: 3px;
+}
+
+.video__boton svg {
+  width: 20px;
+  height: 20px;
+  fill: currentcolor;
+}
+
+.video__progreso {
+  display: flex;
+  flex: 1;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.video__tramo {
+  flex: 1;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #0f1f1722;
+}
+
+.video__tramo--visto {
+  background: var(--p-verde);
+}
+
+.video__tramo-avance {
+  display: block;
+  height: 100%;
+  background: var(--p-verde);
+  transform-origin: left;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .escaneo__barrido {
-    animation: escaneo-barrer 2.8s ease-in-out infinite;
+  .video__barrido {
+    display: inline;
+    animation: video-barrer 3.2s ease-in-out infinite;
   }
 
-  .escaneo__marca--activa .escaneo__zona,
-  .escaneo__marca--activa .escaneo__red {
-    animation: escaneo-trazar 1.4s linear infinite;
+  .video__rec {
+    animation: video-parpadeo 1.2s steps(2, jump-none) infinite;
   }
 
-  .portada-mirada {
-    transition:
-      transform 0.25s ease,
-      box-shadow 0.35s ease;
+  .video__capa--activa .video__linea {
+    animation: video-aparecer 0.45s ease-out both;
+    animation-delay: calc(var(--i) * 0.4s + 0.8s);
+  }
+
+  .video__capa--activa .video__sello {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: video-sellar 0.55s cubic-bezier(0.3, 1.6, 0.5, 1) 0.9s both;
+  }
+
+  .video__capa--activa .video__calor {
+    animation: video-calor 0.5s ease-out both;
+    animation-delay: calc(var(--i) * 0.15s + 1s);
+  }
+
+  .video__capa--activa .video__zona {
+    animation: video-marchar 1.2s linear infinite;
+  }
+
+  .video__capa--activa .video__enlace {
+    stroke-dasharray: 1;
+    animation: video-trazar 0.6s ease-out both;
+    animation-delay: calc(var(--i) * 0.08s + 0.4s);
+  }
+
+  .video__capa--activa .video__nodo {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: video-nodo 0.5s ease-out both;
+    animation-delay: calc(var(--i) * 0.07s + 0.3s);
+  }
+
+  .video__capa--activa .video__medidor-valor {
+    transform-origin: left;
+    animation: video-buscar 2s ease-in-out 0.8s infinite alternate both;
+  }
+
+  .video__informe--activo li {
+    animation: video-aparecer 0.4s ease-out both;
+    animation-delay: calc(var(--i) * 0.18s + 0.5s);
+  }
+
+  .video__subtitulo {
+    animation: video-aparecer 0.45s ease-out both;
+  }
+
+  .video__tramo-avance {
+    animation: video-avance var(--duracion) linear both;
+  }
+
+  .video--pausado *,
+  .video--pausado *::after {
+    animation-play-state: paused !important;
   }
 }
 
-@keyframes escaneo-barrer {
+@media (prefers-reduced-motion: reduce) {
+  .video__camara,
+  .video__capa,
+  .video__informe {
+    transition: none;
+  }
+}
+
+@keyframes video-barrer {
   from {
-    transform: translateY(0);
+    transform: translateX(0);
   }
 
   to {
-    transform: translateY(186px);
+    transform: translateX(720px);
   }
 }
 
-@keyframes escaneo-trazar {
+@keyframes video-parpadeo {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes video-aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes video-sellar {
+  from {
+    opacity: 0;
+    transform: scale(1.8) rotate(-8deg);
+  }
+}
+
+@keyframes video-calor {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes video-marchar {
   to {
     stroke-dashoffset: -20;
+  }
+}
+
+@keyframes video-trazar {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes video-nodo {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+
+@keyframes video-buscar {
+  from {
+    transform: scaleX(0.08);
+  }
+
+  to {
+    transform: scaleX(0.85);
+  }
+}
+
+@keyframes video-avance {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (width <= 68rem) {
+  .portada-miradas--video {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .portada-miradas--video .portada-miradas__grilla {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 34rem) {
+  .portada-miradas--video .portada-miradas__grilla {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .portada-miradas--video .portada-mirada {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .video__pantalla {
+    border-radius: 16px;
+  }
+
+  .video__informe {
+    right: 3%;
+    gap: 0.3rem;
+    width: 50%;
+    padding: 0.55rem 0.65rem;
+    border-radius: 10px;
+  }
+
+  .video__informe ul {
+    gap: 0.15rem;
+    font-size: 0.6rem;
+  }
+
+  .video__informe li span {
+    white-space: nowrap;
+  }
+
+  .video__informe-etq,
+  .video__informe-pie {
+    font-size: 0.52rem;
+  }
+
+  .video__informe-pie {
+    padding-top: 0.25rem;
   }
 }
 

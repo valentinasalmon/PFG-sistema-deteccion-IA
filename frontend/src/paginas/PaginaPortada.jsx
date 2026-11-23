@@ -22,9 +22,9 @@
 import { useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { listarPlanes } from '../api/pagos.js'
-import EscaneoMiradas from '../componentes/EscaneoMiradas.jsx'
+import VideoMiradas from '../componentes/VideoMiradas.jsx'
 import { useAparecer } from '../hooks/useAparecer.js'
-import { useMiradaActiva } from '../hooks/useMiradaActiva.js'
+import { useReproductor } from '../hooks/useReproductor.js'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { NOMBRES_DE_PLAN, textoDelPrecio } from '../utilidades/planes.js'
@@ -95,31 +95,40 @@ const MIRADAS = [
   },
 ]
 
+/** Duración de cada escena del video de «Qué miramos» (las 4 miradas y el informe). */
+const DURACIONES_VIDEO = [4200, 3600, 4000, 4200, 5200]
+
 /**
- * «Qué miramos»: el título, la animación del escaneo y las cuatro miradas.
- * La mirada que muestra la animación se resalta en la lista; pasar o enfocar
- * una de la lista la muestra en la animación (050).
+ * «Qué miramos»: el título, el video de las cuatro miradas y la lista, que
+ * funciona como capítulos del video (050). Elegir una mirada lleva el video a
+ * esa escena; la que se está mostrando queda resaltada.
  */
 function SeccionMiradas() {
   const refSeccion = useRef(null)
-  const [activa, elegir, quieta] = useMiradaActiva(refSeccion, MIRADAS.length)
+  const reproductor = useReproductor(refSeccion, DURACIONES_VIDEO)
+  const { escena, ir, quieta } = reproductor
   return (
-    <section id="como-funciona" className="portada-miradas" aria-labelledby="titulo-miradas" ref={refSeccion}>
+    <section
+      id="como-funciona"
+      className="portada-miradas portada-miradas--video"
+      aria-labelledby="titulo-miradas"
+      ref={refSeccion}
+    >
       <div className="portada-cab portada-cab--izquierda" data-aparecer>
         <span className="portada-etq">Qué miramos</span>
         <h2 id="titulo-miradas">Cuatro miradas sobre cada foto</h2>
         <p>Cada una busca algo distinto. Juntas te dicen qué revisar antes de presentar la prueba.</p>
-        <EscaneoMiradas activa={activa} quieta={quieta} />
+      </div>
+      <div className="portada-miradas__video" data-aparecer>
+        <VideoMiradas {...reproductor} duracion={DURACIONES_VIDEO[escena]} />
       </div>
       <ul className="portada-miradas__grilla">
         {MIRADAS.map((mirada, indice) => (
           <li
             key={mirada.codigo}
-            className={`portada-mirada${!quieta && indice === activa ? ' portada-mirada--activa' : ''}`}
+            className={`portada-mirada${!quieta && indice === escena ? ' portada-mirada--activa' : ''}`}
             data-aparecer
             style={{ '--orden': indice }}
-            onMouseEnter={() => elegir(indice)}
-            onMouseLeave={() => elegir(null)}
           >
             <span className="portada-mirada__icono">
               <Trazo nombre={mirada.icono} />
@@ -127,7 +136,15 @@ function SeccionMiradas() {
             <span className="portada-mirada__texto">
               <code>{mirada.codigo}</code>
               <h3>
-                {mirada.titulo}
+                {/* El botón cubre toda la tarjeta (::after): lleva el video a esta mirada. */}
+                <button
+                  type="button"
+                  className="portada-mirada__ver"
+                  onClick={() => ir(indice)}
+                  aria-current={!quieta && indice === escena ? 'step' : undefined}
+                >
+                  {mirada.titulo}
+                </button>
                 {mirada.proximamente && <span className="portada-mirada__pronto">Próximamente</span>}
               </h3>
               <p>{mirada.texto}</p>
