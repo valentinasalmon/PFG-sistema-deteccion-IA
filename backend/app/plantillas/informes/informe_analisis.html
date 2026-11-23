@@ -38,6 +38,7 @@
     .tipo { display: inline-block; font-size: 7.6pt; font-weight: bold; padding: 1pt 5pt; border-radius: 3pt; white-space: nowrap; }
     .tipo-determinista { background: #eef5dc; color: #2f4a0c; }
     .tipo-probabilistico { background: #f0ecf8; color: #4b2f7a; }
+    .independiente { margin-top: 5pt; padding-top: 5pt; border-top: 0.6pt solid #d9e0dc; font-size: 8pt; }
     .huella { font-family: "DejaVu Sans Mono", monospace; font-size: 7.2pt; word-break: break-all; }
     .ok { color: #33500c; font-weight: bold; }
     .mal { color: #b42318; font-weight: bold; }
@@ -203,9 +204,16 @@
         <p>Entrá a <strong>{{ informe.verificacion.pagina }}</strong> con el código
           <strong class="codigo">{{ informe.verificacion.codigo }}</strong>. Si el archivo cambió aunque sea en un carácter, no coincide.</p>
         <p class="nota">Sin cuenta. La huella del PDF queda sellada en una red pública.</p>
+        {% if informe.independiente %}
+        <p class="independiente"><strong>También sin evidentIA:</strong> la huella está en Hedera
+          (red {{ informe.independiente.red }}, tema {{ informe.independiente.tema }}). Calculá la huella SHA-256 del PDF
+          en tu computadora y buscala en <strong>{{ informe.independiente.enlace_tema }}</strong>.
+          Guía: {{ informe.verificacion.pagina }}/sin-evidentia</p>
+        {% endif %}
       </td>
     </tr></table>
   </div>
+
   {% endif %}
 
 </body>

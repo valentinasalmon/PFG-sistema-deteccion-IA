@@ -29,4 +29,4 @@ Las versiones se marcan con una etiqueta de Git sobre `main` cuando se alcanza u
 
 Para publicarla: en GitHub, **Releases → Draft a new release**, etiqueta `v1.0` sobre `main`, **Generate release notes** y **Publish release** (paso a paso en [configurar GitHub](guias/configurar-github.md), punto 6).
 
-Hedera pasa a la red real (*mainnet*) en febrero de 2027, antes de la defensa; ese cambio es de configuración y no requiere una versión nueva.
+Hedera se queda en la red de prueba (*testnet*), también para la defensa (decisión de la autora del 2026-11-23, CP-26). Cualquiera puede comprobar los sellos en HashScan sin depender de evidentIA (048).

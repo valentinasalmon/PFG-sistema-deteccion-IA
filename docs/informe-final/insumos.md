@@ -396,3 +396,9 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Evolución del flujo de trabajo**: se empezó con un modelo inspirado en Git Flow (`main`, `desarrollo` y una rama por funcionalidad o corrección). Con un agente de IA trabajando a diario llevó a 72 ramas y a dos Pull Requests por cambio. Se pasó a **GitHub Flow**: `main` única rama permanente y protegida, ramas cortas por objetivo, un Pull Request directo a `main` con fusión *squash* y despliegue continuo.
 - **Lección**: el control no lo da la cantidad de ramas sino la regla automática de que nada entre a producción sin todas las verificaciones en verde; el paso manual por `desarrollo` no la reemplazaba (en el PR #94 se integró con la integración continua corriendo).
 - **Trazabilidad**: requisito → especificación → rama y Pull Request → commit en `main` → versión; las ramas viejas se conservan como etiquetas y el mapa de ramas las agrupa por área.
+
+## Verificación independiente en Hedera (048, 2026-11-23)
+
+- **Confianza sin intermediarios**: sellar en una red pública solo sirve si se puede comprobar sin la plataforma que selló. Se agregó al PDF la red y el tema de Hedera y una guía pública para calcular la huella SHA-256 con la propia computadora y buscarla en HashScan, el explorador público.
+- **Límite de diseño**: un PDF no puede contener el enlace a su propio sello (el sello se pide sobre el archivo terminado); se resuelve con el tema y la fecha.
+- **Decisión de la autora**: la plataforma se queda en la red de prueba de Hedera (*testnet*), con el riesgo documentado de sus reinicios periódicos.

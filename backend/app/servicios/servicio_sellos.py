@@ -12,7 +12,7 @@ Realiza: RF37 (CA1 a CA3); RNF20 (CA1).
 import logging
 import time
 
-from app.integraciones.sello_tiempo import SelloNoDisponible
+from app.integraciones.sello_tiempo import SelloNoDisponible, enlace_tema
 from app.servicios import auditoria
 
 SELLO_PENDIENTE = "pendiente"
@@ -53,6 +53,18 @@ class ServicioSellos:
     def activo(self):
         """True si hay un sellador configurado."""
         return self.sellador is not None
+
+    def red_publica(self):
+        """Red y tema de Hedera para verificar sin evidentIA, o None si no hay sello real (048).
+
+        Son datos públicos por naturaleza: cualquiera ve el tema y sus mensajes en
+        HashScan, y son la base para comprobar un sello sin depender de la
+        plataforma. La cuenta y su clave nunca se muestran.
+        """
+        if self.sellador is None or self.sellador.simulado:
+            return None
+        red, tema = self.sellador.red, self.sellador.tema
+        return {"red": red, "tema": tema, "enlace_tema": enlace_tema(red, tema)}
 
     def intentar(self, imagen):
         """Avanza un paso el sello de una imagen o de un informe; nunca lanza (RF37 CA3).

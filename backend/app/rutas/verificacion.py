@@ -2,6 +2,7 @@
 
 GET /api/verificacion?codigo=<código>   Datos del informe con ese código
 GET /api/verificacion?huella=<sha256>   Datos del informe cuyo PDF tiene esa huella
+GET /api/verificacion/red               Red y tema públicos de Hedera (048)
 
 También muestra con qué versión de la plataforma se hizo el análisis y su
 sello en Hedera (funcionalidad 029). No requiere sesión: la usa quien recibe
@@ -14,7 +15,9 @@ from flask import Blueprint, current_app, jsonify, request
 
 from app.esquemas.verificacion import informe_verificado_a_dict
 from app.seguridad.origen import origen_de_la_solicitud
-from app.servicios.fabrica import crear_servicio_informes, crear_servicio_versiones
+from app.servicios.fabrica import (
+    crear_servicio_informes, crear_servicio_sellos, crear_servicio_versiones,
+)
 
 verificacion_bp = Blueprint("verificacion", __name__, url_prefix="/api/verificacion")
 
@@ -32,3 +35,9 @@ def verificar():
     commit = (informe.analisis.versiones or {}).get("commit") if informe.analisis else None
     version = crear_servicio_versiones(current_app.config).por_commit(commit)
     return jsonify({"informe": informe_verificado_a_dict(informe, version)})
+
+
+@verificacion_bp.get("/red")
+def red_publica():
+    """Red y tema de Hedera donde se sellan las huellas, o null si no hay sello real (048)."""
+    return jsonify({"red_publica": crear_servicio_sellos(current_app.config).red_publica()})

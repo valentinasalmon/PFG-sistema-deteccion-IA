@@ -66,6 +66,11 @@ def enlace_explorador(recibo):
     return f"https://hashscan.io/{red}/topic/{tema}/message/{secuencia}"
 
 
+def enlace_tema(red, tema):
+    """Enlace al tema en HashScan: la lista pública de todos los mensajes sellados (048)."""
+    return f"https://hashscan.io/{red}/topic/{tema}"
+
+
 class SelladorHedera:
     """Cliente de Hedera Consensus Service para sellar huellas (ADR-0018).
 

@@ -248,3 +248,19 @@ def test_capa_4_con_su_titulo_y_su_tabla():
     assert "La red neuronal estima una probabilidad de 80 %" in html
     datos = informe_analisis.armar_datos(analisis, {}, "0.2.0")
     assert datos["versiones"]["Capa 4 · Red neuronal"].startswith("1.0 (modelo 1.0.0")
+
+
+def test_verificar_sin_evidentia():
+    """048, CA1: con sello real, el PDF explica cómo comprobarlo en Hedera sin la plataforma."""
+    datos = informe_analisis.armar_datos(_analisis(), {}, "0.2.0")
+    datos["verificacion"] = {"codigo": "ABCD-EFGH-JKMN", "url": "http://x/verificar/A",
+                             "qr": "data:image/svg+xml,qr", "pagina": "http://x/verificar"}
+    plantilla = entorno.get_template("informe_analisis.html")
+    sin_red = plantilla.render(informe=datos, generado_en=GENERADO)
+    assert "También sin evidentIA" not in sin_red
+    datos["independiente"] = {"red": "testnet", "tema": "0.0.123",
+                              "enlace_tema": "https://hashscan.io/testnet/topic/0.0.123"}
+    html = entorno.get_template("informe_analisis.html").render(informe=datos, generado_en=GENERADO)
+    assert "También sin evidentIA" in html and "0.0.123" in html
+    assert "https://hashscan.io/testnet/topic/0.0.123" in html
+    assert "http://x/verificar/sin-evidentia" in html

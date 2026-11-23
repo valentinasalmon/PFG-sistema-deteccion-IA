@@ -263,3 +263,13 @@ def test_comando_crear_tema(aplicacion, monkeypatch):
         args=["sellos", "crear-tema", "--cuenta", "0.0.1001"], input="x\n"
     )
     assert resultado.exit_code != 0 and "sin saldo" in resultado.output
+
+
+def test_red_publica_solo_con_sello_real():
+    """048: la red y el tema se publican solo con un sellador real, nunca la cuenta."""
+    assert ServicioSellos(Repositorio([]), None, None).red_publica() is None
+    assert ServicioSellos(Repositorio([]), SelladorSimulado(), None).red_publica() is None
+    real = SimpleNamespace(simulado=False, red="testnet", tema="0.0.123", cuenta="0.0.9")
+    datos = ServicioSellos(Repositorio([]), real, None).red_publica()
+    assert datos == {"red": "testnet", "tema": "0.0.123",
+                     "enlace_tema": "https://hashscan.io/testnet/topic/0.0.123"}

@@ -6657,3 +6657,67 @@ h1.estado-vacio__titulo {
     width: 100%;
   }
 }
+
+/* --- Verificar sin evidentIA (048) --- */
+.sin-evidentia__intro {
+  margin-top: 0.75rem;
+  max-width: 68ch;
+}
+
+.sin-evidentia__pasos {
+  display: grid;
+  gap: 1.5rem;
+  margin: 1.75rem 0;
+  padding-left: 1.25rem;
+}
+
+.sin-evidentia__pasos h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.15rem;
+}
+
+.sin-evidentia__pasos p {
+  max-width: 68ch;
+  overflow-wrap: anywhere;
+}
+
+.sin-evidentia__pasos li {
+  min-width: 0;
+}
+
+.sin-evidentia__comandos {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sin-evidentia__comandos code {
+  display: block;
+  margin-top: 0.3rem;
+  padding: 0.55rem 0.75rem;
+  overflow-x: auto;
+  border-radius: 8px;
+  background: var(--fondo);
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.sin-evidentia__aviso {
+  max-width: 68ch;
+}
+
+.verificar-informe__independiente {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 1.75rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+}
+
+.verificar-informe__independiente p {
+  margin: 0;
+}

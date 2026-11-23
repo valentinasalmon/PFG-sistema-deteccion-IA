@@ -39,7 +39,7 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
 |---|---|---|---|
 | P1 | **Configurar el dominio `evidentiaa.com.ar`** (comprado el 2026-11-13): `terraform apply`, delegar en NIC Argentina, certificado y prueba de correos; pasos en `docs/guias/despliegue-aws.md`, «Dominio propio» (040) | — | Autora, con la guía |
 | P1 | **Sacar SES del modo de prueba**, para que cualquiera reciba los correos y se pueda registrar | Dominio | Autora pide a AWS |
-| P1 | **Pasar Hedera a la red real (*mainnet*)** en **febrero de 2027**, antes de la defensa (decisión de la autora, 2026-11-11): cuenta nueva, unos US$ 10 de HBAR, tema nuevo (CP-26). Hasta entonces sigue en *testnet* | Compra de HBAR | Autora compra, agente guía |
+| ~~P1~~ | ~~Pasar Hedera a la red real (*mainnet*)~~ — **descartado por la autora (2026-11-23)**: se queda en *testnet*, también para la defensa (CP-26). En su lugar, verificación independiente en HashScan (048) | — | — |
 | P2 | Probar la restauración de la copia de seguridad de la base (pendiente de la 017) | — | Autora, con la guía |
 | P2 | Logo como foto del remitente de los correos | Dominio; según el proveedor, BIMI | Agente investiga |
 | ✓ | Limitar la cantidad de pedidos por minuto (030, hecho) | — | Agente |
@@ -111,7 +111,7 @@ Esta lista está volcada en el [tablero de Trello](https://trello.com/b/FE1lU3cm
    - índice de calidad;
    - empezar a redactar el informe final.
 3. **10/11 – 15/11:**
-   - Hedera en la red real;
+   - Hedera: se queda en *testnet* (decisión del 2026-11-23);
    - prueba de restauración;
    - revisión de seguridad;
    - terminar el informe final.

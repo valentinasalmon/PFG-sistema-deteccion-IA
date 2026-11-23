@@ -117,6 +117,8 @@ class ServicioInformes:
             "codigo": codigo_legible(codigo), "url": url, "qr": qr_svg(url),
             "pagina": f"{self.url_frontend}/verificar",
         }
+        # 048: red y tema públicos de Hedera para verificar sin depender de evidentIA.
+        datos["independiente"] = self.sellos.red_publica() if self.sellos else None
         # PDF breve con enlace al análisis completo en la plataforma (037, propuesta del tutor).
         # 038: el QR del PDF abre el análisis con todo desplegado («Análisis detallado»).
         detalle = f"{self.url_frontend}/casos/{analisis.id_caso}?etapa=analisis&detalle=completo"

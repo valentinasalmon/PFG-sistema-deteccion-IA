@@ -34,3 +34,9 @@ export async function verificarInforme({ codigo, huella }) {
   const { informe } = await solicitar('GET', `/api/verificacion?${parametros}`)
   return informe
 }
+
+/** Red y tema públicos de Hedera para verificar sin evidentIA, o null si no hay sello real (048). */
+export async function obtenerRedPublica() {
+  const { red_publica: red } = await solicitar('GET', '/api/verificacion/red')
+  return red
+}

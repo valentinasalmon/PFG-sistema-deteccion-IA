@@ -240,3 +240,10 @@ def test_verificacion_publica_por_codigo_y_por_huella(aplicacion, ana, caso):
     assert visitante.get("/api/verificacion?codigo=NOEXISTE1234").status_code == 404
     assert visitante.get("/api/verificacion?huella=" + "0" * 64).status_code == 404
     assert visitante.get("/api/verificacion").status_code == 404
+
+
+def test_red_publica_sin_sesion(cliente):
+    """048: sin cuenta; en pruebas el sello es simulado, así que no hay red pública."""
+    respuesta = cliente.get("/api/verificacion/red")
+    assert respuesta.status_code == 200
+    assert respuesta.get_json() == {"red_publica": None}

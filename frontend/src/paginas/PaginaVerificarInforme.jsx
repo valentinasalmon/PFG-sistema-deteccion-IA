@@ -15,7 +15,7 @@
  * Realiza: RF55 (CA3), RF56 (CA2).
  */
 import { useEffect, useId, useState } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import { verificarInforme } from '../api/informes.js'
 import Aviso from '../componentes/Aviso.jsx'
 import Cargando from '../componentes/Cargando.jsx'
@@ -225,6 +225,13 @@ export default function PaginaVerificarInforme() {
         )}
         {estado.mensaje && <Aviso tipo="error">{estado.mensaje}</Aviso>}
       </div>
+
+      {/* 048: la verificación no tiene que depender de evidentIA. */}
+      <aside className="verificar-informe__independiente">
+        <strong>¿No querés depender de evidentIA?</strong>
+        <p>La huella del informe está publicada en Hedera, una red pública. Podés comprobarla con tu computadora.</p>
+        <Link to="/verificar/sin-evidentia">Verificar sin evidentIA</Link>
+      </aside>
     </div>
   )
 }

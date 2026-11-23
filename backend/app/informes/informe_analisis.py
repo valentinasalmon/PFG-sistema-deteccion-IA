@@ -260,6 +260,8 @@ def armar_datos(analisis, miniaturas, version_plataforma, imagenes_de_capas=None
         "rubro": rubro,
         # Código, URL y QR de verificación: los agrega ServicioInformes (026).
         "verificacion": None,
+        # Red y tema de Hedera para verificar sin evidentIA: los agrega ServicioInformes (048).
+        "independiente": None,
         "caso": {
             "numero": caso.numero,
             "expediente": caso.expediente,

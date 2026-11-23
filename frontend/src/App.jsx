@@ -49,6 +49,7 @@ import PaginaRestablecerContrasenia from './paginas/PaginaRestablecerContrasenia
 import PaginaTerminos from './paginas/PaginaTerminos.jsx'
 import PaginaVerificarCorreo from './paginas/PaginaVerificarCorreo.jsx'
 import PaginaVerificarInforme from './paginas/PaginaVerificarInforme.jsx'
+import PaginaVerificarSinEvidentia from './paginas/PaginaVerificarSinEvidentia.jsx'
 
 export default function App() {
   return (
@@ -70,6 +71,7 @@ export default function App() {
         <Route path="/pago/:token" element={<PaginaPago />} />
         <Route path="/identidad/:token" element={<PaginaVerificacionIdentidad />} />
         <Route path="/verificar" element={<PaginaVerificarInforme />} />
+        <Route path="/verificar/sin-evidentia" element={<PaginaVerificarSinEvidentia />} />
         <Route path="/verificar/:codigo" element={<PaginaVerificarInforme />} />
         <Route path="/terminos" element={<PaginaTerminos />} />
         <Route path="/privacidad" element={<PaginaPrivacidad />} />
