@@ -33,3 +33,14 @@ Otra sesión del agente («Harness engineering») había preparado en paralelo l
 
 - Autora: el Pull Request de transición (`infraestructura/flujo-github` → `main`, que ya trae todo `desarrollo`), la configuración de GitHub y el archivo de ramas (guía `configurar-github.md`).
 - Agente: `interfaz/calidad-visual` (sensor de composición, galería, comparación visual y auditoría completa) desde `main` cuando termine la transición.
+
+## Más tarde: 047, análisis confiable para fotos de celular (rama `plataforma/analisis-confiable`)
+
+- La autora informó que con fotos subidas desde el celular «no se toman» los metadatos y que el ELA «transforma todo». Pidió que funcione bien para todos, sobre todo con iPhone.
+- **Metadatos**: la extracción funciona (ExifTool lee JPEG y HEIC). Las fuentes sobre qué entrega el iPhone al subir desde el navegador se contradicen (un reporte de WebKit dice que desde iOS 13 se quita el EXIF; otras pruebas dicen que no). **Decisión: medir antes de cambiar.** Se hizo la página pública «Probar mi celular», que muestra qué llega por cada camino (galería, cámara, Archivos) sin guardar la foto.
+- **ELA**: experimento con fotos de una biblioteca científica guardadas al 97 % (como un celular), sin y con un parche pegado. Cambiar la calidad de recompresión según la de la foto no mejoró de forma consistente, así que no se cambió. Lo que «transformaba todo» era el **mapa**: se estiraba para que el punto más brillante quedara blanco, y en una foto sin cambios el ruido se amplificaba unas 40 veces. Se le puso un piso de escala: la proporción de píxeles encendidos en una foto limpia bajó de alrededor del 7 % a menos del 1 %, y una zona con error alto se sigue destacando. Los umbrales de detección no se tocaron.
+- **Decisiones de la autora** (2026-11-18): el filtro de fotos «hace lo que consideres» → avisa y no bloquea (ADR-0017); reCAPTCHA de Google; no hay entrega el 19/11, se sigue mejorando hasta enero; «realtime» a criterio del agente → se mantienen las consultas periódicas (2 a 4 segundos), que ya actualizan solas el análisis, el celular y el pago; se revisará que ninguna pantalla obligue a recargar.
+
+## 2026-11-23: Dependabot agrupado
+
+Integrado el cambio de flujo (PR #97), Dependabot abrió 13 Pull Requests sueltos (uno por biblioteca y por acción de GitHub). Se agrupó: una vez por mes, un Pull Request por ecosistema con las versiones menores y parches, otro con las mayores, y uno solo para las acciones. Los parches de seguridad siguen llegando en el momento. Los 13 abiertos se cierran: los grupos nuevos los reemplazan.

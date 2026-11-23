@@ -6657,3 +6657,39 @@ h1.estado-vacio__titulo {
     width: 100%;
   }
 }
+
+/* --- Probar mi celular (047): un botón por camino, con su ayuda debajo --- */
+.probar-celular__caminos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.probar-celular__caminos li {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+}
+
+.probar-celular__caminos .boton {
+  justify-content: center;
+  width: 100%;
+}
+
+.probar-celular__intro {
+  margin-top: 0.75rem;
+  max-width: 62ch;
+}
+
+.probar-celular__titulo {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+
+.probar-celular__caminos .boton:focus-within {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 2px;
+}

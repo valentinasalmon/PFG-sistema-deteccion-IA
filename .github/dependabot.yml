@@ -1,27 +1,43 @@
-# Actualizaciones automáticas de dependencias (ADR-0023): Dependabot abre un
-# Pull Request hacia main cuando sale una versión nueva o un parche de seguridad.
-# Cada Pull Request pasa por la misma integración continua que el resto.
+# Actualizaciones automáticas de dependencias (ADR-0023).
+#
+# Agrupadas para no llenar el repositorio de Pull Requests: una vez por mes,
+# un Pull Request por ecosistema con todas las versiones menores y parches.
+# Las versiones mayores (que pueden romper algo) llegan aparte, también
+# agrupadas, para revisarlas con calma. Los parches de seguridad no esperan
+# al mes: Dependabot los abre apenas se publican.
 version: 2
 updates:
   - package-ecosystem: pip
     directory: /backend
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 3
+      interval: monthly
+    open-pull-requests-limit: 2
     commit-message:
       prefix: construccion
-      include: scope
+    groups:
+      backend-menores:
+        update-types: [minor, patch]
+      backend-mayores:
+        update-types: [major]
   - package-ecosystem: npm
     directory: /frontend
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 3
+      interval: monthly
+    open-pull-requests-limit: 2
     commit-message:
       prefix: construccion
-      include: scope
+    groups:
+      frontend-menores:
+        update-types: [minor, patch]
+      frontend-mayores:
+        update-types: [major]
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    open-pull-requests-limit: 1
     commit-message:
       prefix: integracion
+    groups:
+      acciones:
+        patterns: ["*"]
