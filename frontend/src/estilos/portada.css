@@ -414,6 +414,159 @@
   font-size: 0.96rem;
 }
 
+/* --- Animación de «Qué miramos» (050): plano de la foto con la marca de cada
+   mirada por turnos. Solo usa opacidad y transformaciones (sin recalcular la
+   disposición) y queda quieta con «reducir movimiento». --- */
+.escaneo {
+  width: 100%;
+  max-width: 30rem;
+  margin: 1.4rem 0 0;
+}
+
+.escaneo__lienzo {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  box-shadow: 0 30px 50px -36px #0f1f17aa;
+}
+
+.escaneo__fondo {
+  fill: var(--p-bosque);
+}
+
+.escaneo__grilla {
+  stroke: var(--p-lima);
+  stroke-opacity: 0.08;
+}
+
+.escaneo__visor {
+  fill: none;
+  stroke: var(--p-lima);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.escaneo__foto path,
+.escaneo__foto circle {
+  fill: none;
+  stroke: var(--p-claro);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.75;
+}
+
+.escaneo__foto .escaneo__abolladura {
+  stroke: var(--p-lima);
+  opacity: 1;
+}
+
+.escaneo__marca {
+  opacity: 0.18;
+  transition: opacity 0.45s ease;
+}
+
+.escaneo__marca--activa {
+  opacity: 1;
+}
+
+.escaneo__rotulo {
+  fill: var(--p-lima);
+  font: 700 11px var(--p-mono);
+  letter-spacing: 0.06em;
+}
+
+.escaneo__ficha {
+  fill: var(--p-bosque-2);
+  stroke: var(--p-lima);
+  stroke-width: 1.5;
+}
+
+.escaneo__renglon,
+.escaneo__guia {
+  fill: none;
+  stroke: var(--p-lima);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.escaneo__guia {
+  stroke-dasharray: 4 4;
+}
+
+.escaneo__zona {
+  fill: none;
+  stroke: var(--p-lima);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+}
+
+.escaneo__calor {
+  fill: var(--p-lima);
+  opacity: 0.45;
+}
+
+.escaneo__red {
+  fill: none;
+  stroke: var(--p-lima);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+}
+
+.escaneo__nodo {
+  fill: var(--p-bosque);
+  stroke: var(--p-lima);
+  stroke-width: 2;
+}
+
+.escaneo__barra {
+  fill: var(--p-bosque-2);
+  stroke: var(--p-apagado);
+  stroke-opacity: 0.5;
+}
+
+.escaneo__barra-valor {
+  fill: var(--p-lima);
+}
+
+.portada-mirada--activa {
+  box-shadow: inset 0 0 0 2px var(--p-lima);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .escaneo__barrido {
+    animation: escaneo-barrer 2.8s ease-in-out infinite;
+  }
+
+  .escaneo__marca--activa .escaneo__zona,
+  .escaneo__marca--activa .escaneo__red {
+    animation: escaneo-trazar 1.4s linear infinite;
+  }
+
+  .portada-mirada {
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.35s ease;
+  }
+}
+
+@keyframes escaneo-barrer {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(186px);
+  }
+}
+
+@keyframes escaneo-trazar {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
 /* --- Para quién (037; 044): banda gris de borde a borde con el título a la
    izquierda, como «Qué miramos», y los dos perfiles como columnas abiertas
    separadas por una línea, sin tarjetas (pedido de la autora: menos cajas). --- */

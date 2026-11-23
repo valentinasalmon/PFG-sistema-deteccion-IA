@@ -35,9 +35,11 @@ import { useSesion } from '../hooks/useSesion.js'
 import { caminoConPago, perfilDelCamino } from '../utilidades/registro.js'
 
 // Desde la tercera tanda de la 034, los datos, la institución y el estudio van en un solo paso.
-const PASOS_INDEPENDIENTE = ['perfil', 'datos', 'terminos']
-const PASOS_CON_PAGO = ['perfil', 'datos', 'plan', 'terminos']
-const PASOS_EMPLEADO = ['datos', 'terminos']
+// Desde la 050 los Términos van en el último paso, junto a lo último que se completa,
+// como en el registro común (pedido de la autora: no en una pantalla aparte).
+const PASOS_INDEPENDIENTE = ['perfil', 'datos']
+const PASOS_CON_PAGO = ['perfil', 'datos', 'plan']
+const PASOS_EMPLEADO = ['datos']
 
 const PASO_DE_CADA_CAMPO = {
   perfil: 'perfil',
@@ -49,17 +51,15 @@ const PASO_DE_CADA_CAMPO = {
   colegio: 'datos',
   empresa: 'datos',
   id_aseguradora: 'datos',
-  acepta_terminos: 'terminos',
 }
 
 const TITULOS = {
   perfil: '¿Cómo vas a usar la plataforma?',
   datos: 'Tus datos',
   plan: 'Elegí el plan',
-  terminos: 'Últimos detalles',
 }
 
-function validarPaso(paso, valores, esEmpleado) {
+function validarPaso(paso, valores, esEmpleado, esUltimoPaso) {
   const errores = {}
   if (paso === 'perfil' && !valores.camino) errores.camino = 'Elegí cómo vas a usar la plataforma.'
   if (paso === 'datos') {
@@ -72,7 +72,7 @@ function validarPaso(paso, valores, esEmpleado) {
       errores.id_aseguradora = 'Elegí tu aseguradora del listado.'
     }
   }
-  if (paso === 'terminos' && !valores.acepta_terminos) {
+  if (esUltimoPaso && !valores.acepta_terminos) {
     errores.acepta_terminos = 'Tenés que aceptar los Términos de Uso y la Política de Privacidad.'
   }
   return errores
@@ -135,7 +135,7 @@ function FormularioGoogle({ pendiente, invitacion }) {
 
   async function manejarEnvio(evento) {
     evento.preventDefault()
-    const erroresDelPaso = validarPaso(paso, valores, esEmpleado)
+    const erroresDelPaso = validarPaso(paso, valores, esEmpleado, esUltimoPaso)
     marcarErrores(erroresDelPaso)
     if (Object.keys(erroresDelPaso).length > 0) return
     if (!esUltimoPaso) {
@@ -153,7 +153,9 @@ function FormularioGoogle({ pendiente, invitacion }) {
       return
     }
     const indices = Object.keys(resultado.error.errores)
-      .map((campo) => pasos.indexOf(PASO_DE_CADA_CAMPO[campo]))
+      .map((campo) =>
+        campo === 'acepta_terminos' ? pasos.length - 1 : pasos.indexOf(PASO_DE_CADA_CAMPO[campo]),
+      )
       .filter((posicion) => posicion >= 0)
     if (indices.length && Math.min(...indices) < indice) setIndice(Math.min(...indices))
   }
@@ -240,7 +242,7 @@ function FormularioGoogle({ pendiente, invitacion }) {
             )}
           </>
         )}
-        {paso === 'terminos' && (
+        {esUltimoPaso && (
           <AceptacionTerminos
             aceptado={valores.acepta_terminos}
             onChange={cambiar}

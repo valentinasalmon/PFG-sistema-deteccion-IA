@@ -71,6 +71,7 @@ implementación siguiendo tareas.md, con pruebas
 | 043 | [Uso con teclado y plan B del DNS](043-teclado-y-dns/especificacion.md) | 10 | RNF11 | Implementada (2026-11-16) |
 | 044 | [Perfiles de la portada y verificación de identidad simulada](044-portada-y-identidad/especificacion.md) | 10 | RNF10, RN41 | Implementada (2026-11-16) |
 | 045 | [Un arnés que se hace cumplir: revisión continua y flujo de integración](045-arnes-que-se-hace-cumplir/especificacion.md) | 10 | RNF17, RNF19 | Implementada en tres etapas (verificador de la documentación, política de ramas y Pull Requests, controles en la integración continua); esperan a la autora la limpieza de ramas y la configuración de GitHub |
+| 050 | [Calidad visual de la portada y del registro](050-calidad-visual/especificacion.md) | 10 | RF19 | En curso (2026-11-23) |
 | 037 | [Revisión integral: acceso, pantallas, siniestros e informe breve](037-acceso-y-pantallas/especificacion.md) | 10 | RNF10, RNF12, RF44 | En curso: aplicado lo pedido por la autora el 2026-11-05; quedan la presentación y la integración |
 | 036 | [Arnés para el trabajo asistido por IA](036-arnes/especificacion.md) | 10 | RNF02, RNF17, RNF19 | Implementada (ganchos, `/cerrar-etapa`, mapa y registro del arnés, ADR-0021) |
 

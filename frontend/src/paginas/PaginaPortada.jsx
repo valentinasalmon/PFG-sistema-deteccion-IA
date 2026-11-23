@@ -22,7 +22,9 @@
 import { useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { listarPlanes } from '../api/pagos.js'
+import EscaneoMiradas from '../componentes/EscaneoMiradas.jsx'
 import { useAparecer } from '../hooks/useAparecer.js'
+import { useMiradaActiva } from '../hooks/useMiradaActiva.js'
 import { useDatos } from '../hooks/useDatos.js'
 import { useSesion } from '../hooks/useSesion.js'
 import { NOMBRES_DE_PLAN, textoDelPrecio } from '../utilidades/planes.js'
@@ -92,6 +94,50 @@ const MIRADAS = [
     proximamente: true,
   },
 ]
+
+/**
+ * «Qué miramos»: el título, la animación del escaneo y las cuatro miradas.
+ * La mirada que muestra la animación se resalta en la lista; pasar o enfocar
+ * una de la lista la muestra en la animación (050).
+ */
+function SeccionMiradas() {
+  const refSeccion = useRef(null)
+  const [activa, elegir, quieta] = useMiradaActiva(refSeccion, MIRADAS.length)
+  return (
+    <section id="como-funciona" className="portada-miradas" aria-labelledby="titulo-miradas" ref={refSeccion}>
+      <div className="portada-cab portada-cab--izquierda" data-aparecer>
+        <span className="portada-etq">Qué miramos</span>
+        <h2 id="titulo-miradas">Cuatro miradas sobre cada foto</h2>
+        <p>Cada una busca algo distinto. Juntas te dicen qué revisar antes de presentar la prueba.</p>
+        <EscaneoMiradas activa={activa} quieta={quieta} />
+      </div>
+      <ul className="portada-miradas__grilla">
+        {MIRADAS.map((mirada, indice) => (
+          <li
+            key={mirada.codigo}
+            className={`portada-mirada${!quieta && indice === activa ? ' portada-mirada--activa' : ''}`}
+            data-aparecer
+            style={{ '--orden': indice }}
+            onMouseEnter={() => elegir(indice)}
+            onMouseLeave={() => elegir(null)}
+          >
+            <span className="portada-mirada__icono">
+              <Trazo nombre={mirada.icono} />
+            </span>
+            <span className="portada-mirada__texto">
+              <code>{mirada.codigo}</code>
+              <h3>
+                {mirada.titulo}
+                {mirada.proximamente && <span className="portada-mirada__pronto">Próximamente</span>}
+              </h3>
+              <p>{mirada.texto}</p>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
 
 const PASOS = [
   { titulo: 'Creá el caso o el siniestro', texto: 'Con la fecha y el lugar del hecho.' },
@@ -343,30 +389,7 @@ export default function PaginaPortada() {
           </ul>
         </section>
 
-        <section id="como-funciona" className="portada-miradas" aria-labelledby="titulo-miradas">
-          <div className="portada-cab portada-cab--izquierda" data-aparecer>
-            <span className="portada-etq">Qué miramos</span>
-            <h2 id="titulo-miradas">Cuatro miradas sobre cada foto</h2>
-            <p>Cada una busca algo distinto. Juntas te dicen qué revisar antes de presentar la prueba.</p>
-          </div>
-          <ul className="portada-miradas__grilla">
-            {MIRADAS.map((mirada, indice) => (
-              <li key={mirada.codigo} className="portada-mirada" data-aparecer style={{ '--orden': indice }}>
-                <span className="portada-mirada__icono">
-                  <Trazo nombre={mirada.icono} />
-                </span>
-                <span className="portada-mirada__texto">
-                  <code>{mirada.codigo}</code>
-                  <h3>
-                    {mirada.titulo}
-                    {mirada.proximamente && <span className="portada-mirada__pronto">Próximamente</span>}
-                  </h3>
-                  <p>{mirada.texto}</p>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <SeccionMiradas />
 
         <section className="portada-pasos" aria-labelledby="titulo-pasos">
           <div className="portada-pasos__texto" data-aparecer>

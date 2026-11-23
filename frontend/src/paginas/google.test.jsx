@@ -96,9 +96,9 @@ describe('completar el registro con Google', () => {
     // Nombre y apellido vienen de Google.
     expect(screen.getByLabelText('Nombre')).toHaveValue('Ana')
     await usuario.type(screen.getByLabelText(/Colegio de abogados/), 'CPACF')
-    await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
 
-    // Los Términos también.
+    // Los Términos van en la misma pantalla que los datos, no en una aparte (050).
+    expect(screen.getByRole('checkbox')).toBeInTheDocument()
     await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
     expect(await screen.findByText(/Tenés que aceptar los Términos/)).toBeInTheDocument()
     await usuario.click(screen.getByRole('checkbox'))
@@ -122,9 +122,7 @@ describe('completar el registro con Google', () => {
     }))
     const { usuario } = renderizarEn('/registro/google')
     await usuario.click(await screen.findByLabelText(/Abogado o abogada/))
-    for (let paso = 0; paso < 2; paso += 1) {
-      await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
-    }
+    await usuario.click(screen.getByRole('button', { name: 'Siguiente' }))
     await usuario.click(screen.getByRole('checkbox'))
     await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
     expect(await screen.findByText('Muy largo.')).toBeInTheDocument()
