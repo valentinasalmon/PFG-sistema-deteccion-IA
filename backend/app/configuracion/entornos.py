@@ -237,6 +237,9 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
         # el botón no se muestra. El secreto solo llega por el entorno (SSM).
         self.GOOGLE_ID_CLIENTE = os.getenv("GOOGLE_ID_CLIENTE", "")
         self.GOOGLE_SECRETO_CLIENTE = os.getenv("GOOGLE_SECRETO_CLIENTE", "")
+        # Botón «Simular pago» con un proveedor de pagos real (049): la autora lo deja
+        # activo para mostrar la plataforma sin pagar; queda auditado como simulado.
+        self.PERMITIR_SIMULAR_PAGO = os.getenv("PERMITIR_SIMULAR_PAGO", "si").lower() == "si"
         # Proxies delante de la aplicación: 0 en desarrollo, 1 (Nginx) en producción.
         self.PROXIES_DE_CONFIANZA = int(os.getenv("PROXIES_DE_CONFIANZA", "0"))
 

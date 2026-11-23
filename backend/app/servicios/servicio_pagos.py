@@ -13,8 +13,10 @@ Si el Administrador rechaza una aseguradora pagada, su cobro se devuelve.
 Cuando una organización queda pendiente, se avisa por correo a cada
 Administrador para que la revise (funcionalidades 037 y 038).
 
-Mientras no esté la API de Cresium, la acreditación se simula (CP-34) y queda
-en la auditoría como simulada.
+La acreditación se puede simular (CP-34) con el proveedor simulado o, con un
+proveedor real, si la configuración ``PERMITIR_SIMULAR_PAGO`` lo habilita: la
+autora lo usa para mostrar la plataforma sin pagar (049). Siempre queda en la
+auditoría como simulada.
 
 El enlace de la página de pago lleva un token aleatorio; en la base solo se
 guarda su huella SHA-256.
@@ -155,11 +157,23 @@ class ServicioPagos:
             "titular": self.proveedor.titular,
             "cvu": cobro.cvu,
             "alias": cobro.alias,
-            "permite_simular": self.proveedor.permite_simular,
+            "estilo": self.proveedor.estilo,
+            "permite_simular": self.permite_simular(),
             "acreditado_en": (
                 cobro.acreditado_en.isoformat(timespec="seconds") if cobro.acreditado_en else None
             ),
         }
+
+    def permite_simular(self):
+        """Si se puede acreditar un cobro sin pagar (botón «Simular pago», 049).
+
+        Con el proveedor simulado, siempre (no hay otra forma de acreditar); con
+        uno real, solo si ``PERMITIR_SIMULAR_PAGO`` está activo.
+        """
+        return bool(
+            self.proveedor.permite_simular
+            or self.configuracion.get("PERMITIR_SIMULAR_PAGO", False)
+        )
 
     def consultar(self, token):
         """El cobro del enlace, para la pantalla de pago."""
@@ -197,10 +211,10 @@ class ServicioPagos:
 
         Raises:
             NoEncontrado: si el enlace no es válido.
-            AccesoDenegado: si el proveedor no permite simular (cobro real).
+            AccesoDenegado: si no se permite simular (cobro real sin ``PERMITIR_SIMULAR_PAGO``).
         """
         cobro = self._por_token(token)
-        if not self.proveedor.permite_simular:
+        if not self.permite_simular():
             raise AccesoDenegado("Este cobro se acredita solo al recibir la transferencia.")
         if cobro.estado == COBRO_PENDIENTE:
             cobro.estado = COBRO_ACREDITADO

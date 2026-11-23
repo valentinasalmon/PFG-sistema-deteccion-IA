@@ -9,11 +9,22 @@ misma forma y permite simular la acreditación desde la pantalla.
 Cambiar de proveedor no toca los servicios ni las pantallas: alcanza con otra
 clase con la misma interfaz y la variable ``PROVEEDOR_PAGOS``.
 
-Realiza: RF20 (CA2); CP-01, CP-34.
+Interfaz de un proveedor (049):
+
+- ``nombre``, ``nombre_visible`` y ``titular``: cómo se muestra en la pantalla;
+- ``estilo``: ``"transferencia"`` (datos para copiar, como Cresium) o
+  ``"redireccion"`` (la persona paga en la pantalla del proveedor, como
+  Checkout Pro de Mercado Pago);
+- ``permite_simular``: si el proveedor mismo es simulado. Con un proveedor real,
+  el botón «Simular pago» depende de ``PERMITIR_SIMULAR_PAGO`` (049).
+
+Realiza: RF20 (CA2); CP-01, CP-34; 049 (interfaz para Mercado Pago).
 """
 import hashlib
 
 PROVEEDOR_SIMULADO = "cresium_simulado"
+ESTILO_TRANSFERENCIA = "transferencia"
+ESTILO_REDIRECCION = "redireccion"
 
 
 class ProveedorPagosSimulado:
@@ -25,6 +36,7 @@ class ProveedorPagosSimulado:
 
     nombre = PROVEEDOR_SIMULADO
     nombre_visible = "Cresium (simulado)"
+    estilo = ESTILO_TRANSFERENCIA
     permite_simular = True
     titular = "evidentIA (cuenta de cobro de prueba)"
 
