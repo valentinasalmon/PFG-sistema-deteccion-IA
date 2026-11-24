@@ -31,7 +31,12 @@
 - No se pudo abrir la página de referencia (fox-tienda) desde el entorno del agente: el estilo se tomó de la descripción de la autora y de su archivo de skills (movimiento con «reducir movimiento», celular primero, sin trabas).
 - El recorrido del abogado falla con la cuenta por defecto en el entorno local del agente, porque esa cuenta es Administradora; se corrió con la cuenta de demostración (`RECORRIDO_CORREO`).
 
+## Actualización 2026-11-24
+
+La autora vio la grabación del video y no lo aprobó: «no me gusta ese video, no integres eso, después vemos cómo solucionamos eso». Se sacó de `interfaz/calidad-visual`: la portada vuelve a quedar como en `main`. Las dos versiones quedan guardadas en la rama `interfaz/video-miradas`, sin Pull Request. Para retomarla conviene que la autora muestre con capturas o una grabación lo que le gusta de la página de referencia, que el entorno del agente no puede abrir.
+
 ## Pendientes
 
 - Revisión de la autora en producción (050 CA5).
+- Nueva dirección para la animación de «Qué miramos» (050 T02, pospuesta).
 - Cobro con Mercado Pago (049): la documentación oficial sigue sin abrirse desde el entorno del agente.
