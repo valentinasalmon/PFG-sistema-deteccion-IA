@@ -70,6 +70,8 @@ class ProtegerSecretos(unittest.TestCase):
             "grep HEDERA backend.hcl",
             "cp terraform.tfstate /tmp/",
             "cat > backend/.env <<'EOF'\nCLAVE=x\nEOF",
+            'git commit -m "arreglo" && cat backend/.env',
+            "cat backend.hcl <<'EOF'\ntexto\nEOF",
         ]:
             codigo, _ = _correr(
                 proteger_secretos, {"tool_name": "Bash", "tool_input": {"command": comando}}
@@ -80,6 +82,9 @@ class ProtegerSecretos(unittest.TestCase):
         """Nombrar un secreto en un mensaje de commit no lo abre."""
         for comando in [
             'git commit -m "documentacion: no subir terraform.tfvars ni .env"',
+            'git add -A docs && git commit -q -m "proteger backend.hcl y .env"',
+            "git add docs && git commit -q -F - <<'EOF'\nno subir backend.hcl\nEOF",
+            "cat > docs/guia.md <<'EOF'\nCopiá backend.hcl y completá .env\nEOF",
             "ls -la && cat README.md",
             "cp backend/.env.ejemplo /tmp/copia",
             "flake8 app/",

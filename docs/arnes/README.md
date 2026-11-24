@@ -112,16 +112,16 @@ Desde la funcionalidad 045 (pedido de la autora, 2026-11-05) el arnés **se revi
 - **Nada se da por verificado sin correrlo.** Un control que no se pudo ejecutar se informa como «no verificado».
 - **Revisión periódica con `/revisar-arnes`**, al menos una vez por semana: verifica, corrige lo desactualizado, recuerda lo que espera a la autora y propone al menos una mejora.
 
-## Números del proceso (al 2026-11-16)
+## Números del proceso (al 2026-11-24)
 
 | Indicador | Valor |
 |---|---|
-| Commits (sin contar integraciones) | 424 |
-| Commits con co-autoría de IA | 380 (90 %) |
-| Pull Requests integrados | 81 |
-| Especificaciones / planes | 44 / 37 |
-| Entradas de bitácora | 67 |
-| ADR | 21 |
+| Commits (sin contar integraciones) | 433 |
+| Commits con co-autoría de IA | 389 (90 %) |
+| Pull Requests integrados | 88 |
+| Especificaciones / planes | 45 / 37 |
+| Entradas de bitácora | 69 |
+| ADR | 22 |
 | Pruebas automáticas escritas | 521 backend + 278 frontend |
 
 ## Límites conocidos

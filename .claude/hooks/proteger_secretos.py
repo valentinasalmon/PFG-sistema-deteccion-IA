@@ -49,15 +49,31 @@ def es_secreto(ruta):
     return any(patron.match(nombre) for patron in SECRETOS)
 
 
+# Texto que no se ejecuta como ruta: cuerpos de heredoc y mensajes ``-m "..."``.
+HEREDOC = re.compile(r"<<-?\s*(['\"]?)(\w+)\1[^\n]*\n.*?\n\s*\2\s*(?=\n|$)", re.S)
+MENSAJE = re.compile(r"(?:-m|--message)(?:\s+|=)(\"(?:[^\"\\]|\\.)*\"|'[^']*')")
+
+
+def _sin_textos(comando):
+    """El comando sin los cuerpos de heredoc ni los mensajes de commit.
+
+    Ajuste aprobado por la autora el 2026-11-24 (propuesta del 2026-11-02):
+    antes, la excepción para los mensajes solo valía si el comando empezaba
+    con ``git commit``, y bloqueaba commits encadenados o documentos escritos
+    con un heredoc que solo nombraban un archivo secreto. El destino de una
+    escritura (``cat > secreto <<EOF``) queda fuera del cuerpo y se sigue
+    bloqueando.
+    """
+    return MENSAJE.sub("-m ''", HEREDOC.sub("<<EOF", comando or ""))
+
+
 def secreto_en_comando(comando):
     """Primer nombre secreto que aparece como argumento del comando, o None.
 
-    No revisa los mensajes de commit (``git commit -m "..."``), que pueden
-    nombrar estos archivos sin abrirlos.
+    No revisa el texto de los mensajes de commit ni de los heredocs, que
+    pueden nombrar estos archivos sin abrirlos.
     """
-    if re.match(r"\s*git\s+commit\b", comando or ""):
-        return None
-    for coincidencia in EN_COMANDO.finditer(comando or ""):
+    for coincidencia in EN_COMANDO.finditer(_sin_textos(comando)):
         nombre = coincidencia.group(1)
         if not PERMITIDOS.search(nombre):
             return nombre

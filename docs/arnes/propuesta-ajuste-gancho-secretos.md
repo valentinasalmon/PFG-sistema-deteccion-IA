@@ -1,4 +1,6 @@
-# Propuesta: ajuste del gancho de secretos (pendiente de aprobación de la autora)
+# Propuesta: ajuste del gancho de secretos (aprobada por la autora el 2026-11-24)
+
+> **Resolución (2026-11-24)**: la autora la aprobó y el agente la aplicó tal como estaba propuesta, con los tres casos de prueba y dos casos más que comprueban que el ajuste no abre un hueco: un comando encadenado que lee un secreto después del commit y un heredoc cuyo destino es un archivo secreto se siguen bloqueando. Prueba en vivo: un `git commit` cuyo mensaje solo nombra un archivo secreto ya no lo frena este gancho. Registrado en `registro-de-cambios.md`.
 
 ## Qué pasó
 

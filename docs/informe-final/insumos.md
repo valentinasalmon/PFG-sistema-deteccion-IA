@@ -396,3 +396,8 @@ Investigación completa en `docs/investigacion/2026-10-30-conjuntos-de-datos-ima
 - **Evolución del flujo de trabajo**: se empezó con un modelo inspirado en Git Flow (`main`, `desarrollo` y una rama por funcionalidad o corrección). Con un agente de IA trabajando a diario llevó a 72 ramas y a dos Pull Requests por cambio. Se pasó a **GitHub Flow**: `main` única rama permanente y protegida, ramas cortas por objetivo, un Pull Request directo a `main` con fusión *squash* y despliegue continuo.
 - **Lección**: el control no lo da la cantidad de ramas sino la regla automática de que nada entre a producción sin todas las verificaciones en verde; el paso manual por `desarrollo` no la reemplazaba (en el PR #94 se integró con la integración continua corriendo).
 - **Trazabilidad**: requisito → especificación → rama y Pull Request → commit en `main` → versión; las ramas viejas se conservan como etiquetas y el mapa de ramas las agrupa por área.
+
+## Revisión del arnés del 2026-11-24
+
+- **Persona en el circuito, de punta a punta**: el falso positivo del gancho de secretos (2026-11-02) no lo corrigió el agente, porque Claude Code no le deja debilitar un control que lo vigila. Quedó como propuesta, el verificador la recordó en cada sesión durante tres semanas y la autora la aprobó el 2026-11-24. Es el recorrido completo de una mejora de un control: detección, propuesta, recordatorio automático, decisión humana y aplicación con pruebas.
+- **El ruido también viene de las herramientas**: el 2026-11-18 Dependabot abrió 13 Pull Requests en minutos, uno por dependencia, y ninguno se integró. Agruparlos por ecosistema y por tipo de cambio reduce los Pull Requests automáticos a dos por ecosistema sin demorar los parches de seguridad.
