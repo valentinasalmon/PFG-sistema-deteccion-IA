@@ -15,6 +15,7 @@ from app.esquemas.cuentas import (
     SolicitudRestablecimiento,
     SolicitudToken,
 )
+from app.rutas.recaptcha import exigir_persona
 from app.seguridad.origen import origen_de_la_solicitud
 from app.servicios.fabrica import crear_servicio_cuentas
 
@@ -39,7 +40,9 @@ def registrar():
     Si se registró un estudio jurídico o una aseguradora, trae el token del
     enlace de pago del plan (funcionalidad 032).
     """
-    token = _servicio().registrar(validar(SolicitudRegistro, request.get_json(silent=True)))
+    solicitud = validar(SolicitudRegistro, request.get_json(silent=True))
+    exigir_persona("registro")  # 051
+    token = _servicio().registrar(solicitud)
     return jsonify({
         "mensaje": MENSAJE_REGISTRO, "pago": {"token": token} if token else None,
     }), 201
@@ -57,6 +60,7 @@ def verificar():
 def reenviar_verificacion():
     """Reenvía el correo de verificación sin revelar si la cuenta existe."""
     solicitud = validar(SolicitudCorreo, request.get_json(silent=True))
+    exigir_persona("reenvio_verificacion")  # 051
     _servicio().reenviar_verificacion(solicitud.correo)
     return jsonify({"mensaje": MENSAJE_GENERICO_CORREO})
 
@@ -65,6 +69,7 @@ def reenviar_verificacion():
 def solicitar_recuperacion():
     """Envía el enlace de recuperación sin revelar si la cuenta existe (RF05 CA2)."""
     solicitud = validar(SolicitudCorreo, request.get_json(silent=True))
+    exigir_persona("recuperacion")  # 051
     _servicio().solicitar_recuperacion(solicitud.correo)
     return jsonify({"mensaje": MENSAJE_GENERICO_CORREO})
 

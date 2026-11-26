@@ -11,6 +11,7 @@ from flask_wtf.csrf import generate_csrf
 
 from app.esquemas import validar
 from app.esquemas.cuentas import SolicitudInicioSesion, usuario_a_dict
+from app.rutas.recaptcha import exigir_persona
 from app.seguridad.autenticacion import cerrar_sesion, iniciar_sesion
 from app.seguridad.origen import origen_de_la_solicitud
 from app.servicios.fabrica import crear_servicio_sesion
@@ -28,6 +29,7 @@ def obtener_csrf():
 def iniciar():
     """Valida las credenciales y abre la sesión (RF03)."""
     solicitud = validar(SolicitudInicioSesion, request.get_json(silent=True))
+    exigir_persona("inicio_sesion")  # 051
     servicio = crear_servicio_sesion(
         current_app.config, current_app.extensions["enviador_correo"], origen_de_la_solicitud()
     )

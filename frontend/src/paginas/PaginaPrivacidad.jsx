@@ -177,6 +177,19 @@ export default function PaginaPrivacidad() {
         Clarity no ve tus datos, tus casos ni tus fotos. Podés evitarlo bloqueando las cookies de
         terceros en tu navegador.
       </p>
+      <p>
+        Para frenar a los programas automáticos, el registro, el inicio de sesión y la
+        recuperación de la contraseña usan Google reCAPTCHA, que analiza cómo interactúa el
+        navegador con la página y envía esa información a Google. Su uso se rige por la{' '}
+        <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
+          Política de Privacidad
+        </a>{' '}
+        y las{' '}
+        <a href="https://policies.google.com/terms" target="_blank" rel="noreferrer">
+          Condiciones del Servicio
+        </a>{' '}
+        de Google.
+      </p>
 
       <h2>7. Quién trata tus datos</h2>
       <p>

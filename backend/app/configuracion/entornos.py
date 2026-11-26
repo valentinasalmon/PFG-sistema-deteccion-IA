@@ -237,6 +237,12 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
         # el botón no se muestra. El secreto solo llega por el entorno (SSM).
         self.GOOGLE_ID_CLIENTE = os.getenv("GOOGLE_ID_CLIENTE", "")
         self.GOOGLE_SECRETO_CLIENTE = os.getenv("GOOGLE_SECRETO_CLIENTE", "")
+        # reCAPTCHA de Google Cloud (051): sin los tres valores queda desactivado. La clave del
+        # sitio y el proyecto son públicos; la clave de API va como SecureString en SSM.
+        self.RECAPTCHA_PROYECTO = os.getenv("RECAPTCHA_PROYECTO", "")
+        self.RECAPTCHA_CLAVE_SITIO = os.getenv("RECAPTCHA_CLAVE_SITIO", "")
+        self.RECAPTCHA_CLAVE_API = os.getenv("RECAPTCHA_CLAVE_API", "")
+        self.RECAPTCHA_UMBRAL = float(os.getenv("RECAPTCHA_UMBRAL", "0.5"))
         # Proxies delante de la aplicación: 0 en desarrollo, 1 (Nginx) en producción.
         self.PROXIES_DE_CONFIANZA = int(os.getenv("PROXIES_DE_CONFIANZA", "0"))
 

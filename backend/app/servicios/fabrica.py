@@ -11,6 +11,7 @@ from app.analisis.registro import crear_capas
 from app.integraciones.google import crear_cliente_google
 from app.integraciones.identidad import crear_proveedor_identidad
 from app.integraciones.pagos import crear_proveedor_pagos
+from app.integraciones.recaptcha import crear_verificador_recaptcha
 from app.integraciones.sello_tiempo import crear_sellador, crear_tema_hedera
 from app.repositorios.repositorio_analisis import RepositorioAnalisis
 from app.repositorios.repositorio_auditoria import RepositorioAuditoria
@@ -36,6 +37,7 @@ from app.servicios.servicio_imagenes import ArchivosDeCasos, ServicioImagenes
 from app.servicios.servicio_informes import ServicioInformes
 from app.servicios.servicio_organizaciones import ServicioOrganizaciones
 from app.servicios.servicio_pagos import ServicioPagos
+from app.servicios.servicio_recaptcha import ServicioRecaptcha
 from app.servicios.servicio_panel import ServicioPanel
 from app.servicios.servicio_perfil import ServicioPerfil
 from app.servicios.servicio_planes import ServicioPlanes
@@ -86,6 +88,14 @@ def crear_servicio_google(configuracion, enviador, origen=None):
         crear_cliente_google(configuracion), RepositorioUsuarios(),
         crear_servicio_cuentas(configuracion, enviador, origen),
         crear_servicio_sesion(configuracion, enviador, origen), configuracion,
+    )
+
+
+def crear_servicio_recaptcha(configuracion):
+    """reCAPTCHA de los formularios públicos (051); desactivado sin configuración."""
+    return ServicioRecaptcha(
+        crear_verificador_recaptcha(configuracion),
+        float(configuracion.get("RECAPTCHA_UMBRAL", 0.5)),
     )
 
 

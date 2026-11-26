@@ -4,6 +4,7 @@
  * Realiza: RF03, RF04.
  */
 import { definirTokenCsrf, ErrorApi, solicitar } from './cliente.js'
+import { cabecerasRecaptcha } from './recaptcha.js'
 
 /**
  * Inicia sesión y guarda el token CSRF asociado a la sesión nueva.
@@ -11,7 +12,8 @@ import { definirTokenCsrf, ErrorApi, solicitar } from './cliente.js'
  * @returns {Promise<Object>} el usuario autenticado.
  */
 export async function iniciarSesion(correo, contrasenia) {
-  const { usuario, csrf } = await solicitar('POST', '/api/sesion', { correo, contrasenia })
+  const cabeceras = await cabecerasRecaptcha('inicio_sesion') // 051
+  const { usuario, csrf } = await solicitar('POST', '/api/sesion', { correo, contrasenia }, cabeceras)
   definirTokenCsrf(csrf)
   return usuario
 }

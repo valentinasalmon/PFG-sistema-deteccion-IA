@@ -94,3 +94,9 @@ class InicioGoogleRechazado(ErrorDominio):
     """
 
     codigo = "google_error"
+
+
+class VerificacionHumanaFallida(ErrorDominio):
+    """reCAPTCHA no confirmó que el formulario lo envió una persona (400, 051)."""
+
+    codigo = "verificacion_humana"

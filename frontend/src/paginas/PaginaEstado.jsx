@@ -92,6 +92,12 @@ export default function PaginaEstado() {
               </li>
             ))}
             <EstadoSello sello={salud.sello} />
+            {salud.recaptcha && (
+              <li>
+                <span>reCAPTCHA de Google</span>
+                <strong>{salud.recaptcha.activo ? 'Activo' : 'Sin configurar'}</strong>
+              </li>
+            )}
           </ul>
           <p className="nota">
             Entorno: {salud.entorno} · Versión {salud.version}

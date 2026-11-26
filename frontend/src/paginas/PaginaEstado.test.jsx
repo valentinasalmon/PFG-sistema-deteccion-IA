@@ -76,4 +76,17 @@ describe('PaginaEstado', () => {
     render(<PaginaEstado />)
     expect(await screen.findByRole('alert')).toBeInTheDocument()
   })
+
+  it('muestra si reCAPTCHA está activo (051)', async () => {
+    simularRespuesta(200, {
+      estado: 'ok',
+      componentes: { api: 'ok' },
+      entorno: 'produccion',
+      version: '1.0.0',
+      recaptcha: { activo: true },
+    })
+    render(<PaginaEstado />)
+    expect(await screen.findByText('reCAPTCHA de Google')).toBeInTheDocument()
+    expect(screen.getByText('Activo')).toBeInTheDocument()
+  })
 })

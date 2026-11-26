@@ -84,3 +84,4 @@ Un archivo por entrada: `AAAA-MM-DD-tema.md`, con las secciones:
 | 2026-11-16 | [Funcionalidad 041: accesibilidad y materiales del cierre](2026-11-16-funcionalidad-041-accesibilidad.md) |
 | 2026-11-16 | [Funcionalidad 045, etapa 3: que la política se cumpla sola](2026-11-16-funcionalidad-045-que-se-cumpla-sola.md) |
 | 2026-11-18 | [Cambio a GitHub Flow (ADR-0023) y unificación con la 045](2026-11-18-flujo-github.md) |
+| 2026-11-26 | [reCAPTCHA de Google en los formularios públicos](2026-11-26-recaptcha.md) |

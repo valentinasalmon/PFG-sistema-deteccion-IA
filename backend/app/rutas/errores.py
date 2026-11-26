@@ -21,12 +21,14 @@ from app.servicios.errores import (
     InicioGoogleRechazado,
     NoEncontrado,
     TokenInvalido,
+    VerificacionHumanaFallida,
 )
 
 CODIGOS_HTTP = {
     ErrorValidacion: 400,
     TokenInvalido: 400,
     InicioGoogleRechazado: 400,
+    VerificacionHumanaFallida: 400,
     CredencialesInvalidas: 401,
     CuentaNoVerificada: 403,
     CuentaDesactivada: 403,
