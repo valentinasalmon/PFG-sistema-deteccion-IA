@@ -55,6 +55,16 @@ data "aws_iam_policy_document" "servidor" {
     resources = ["arn:aws:ssm:${var.region}:${data.aws_caller_identity.cuenta.account_id}:parameter${local.prefijo_parametros}*"]
   }
   statement {
+    sid       = "PublicarMetricasDeSalud" # 053: scripts/medir_salud.sh
+    actions   = ["cloudwatch:PutMetricData"]
+    resources = ["*"] # la acción no admite recursos; se limita por el espacio de métricas
+    condition {
+      test     = "StringEquals"
+      variable = "cloudwatch:namespace"
+      values   = ["evidentIA"]
+    }
+  }
+  statement {
     sid       = "DescifrarParametros"
     actions   = ["kms:Decrypt"]
     resources = ["*"]

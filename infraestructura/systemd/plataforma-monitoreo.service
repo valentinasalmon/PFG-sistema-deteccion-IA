@@ -1,0 +1,15 @@
+# Publica en CloudWatch las métricas de salud de la plataforma (funcionalidad 053).
+# Corre como root para ver todos los servicios; no escribe nada en el servidor.
+[Unit]
+Description=evidentIA - métricas de salud para CloudWatch
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/opt/plataforma/.env
+ExecStart=/bin/bash /opt/plataforma/servidor/scripts/medir_salud.sh
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
