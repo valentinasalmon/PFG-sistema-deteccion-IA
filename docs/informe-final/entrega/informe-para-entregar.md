@@ -264,6 +264,8 @@ El proyecto comprende el diseño, el desarrollo, el despliegue y la documentaci�
 Dentro del sistema se encuentran la interfaz, la API, la base de datos, la cola de análisis, el almacenamiento de archivos, las cuatro capas de análisis, el generador de informes, la página de verificación pública y el registro de auditoría. Quedan fuera los actores y servicios del entorno, el valor probatorio que el Poder Judicial asigne al informe y las decisiones que los usuarios adopten a partir de él. El sistema opera como una única instancia, en la que cada caso pertenece a un espacio personal o al de una organización, y solo acceden a él su responsable y los miembros a quienes este otorga permiso. El aislamiento entre usuarios y organizaciones es lógico, mediante control de acceso y verificación de permisos en cada operación, y no físico, mediante infraestructura dedicada. Esta decisión responde a la escala y al presupuesto del proyecto, y la capa de acceso a datos permite incorporar un aislamiento más fuerte en una evolución futura. 
 ### **Limitaciones técnicas**
 El sistema analiza el archivo recibido y no el dispositivo de origen, cuyo examen ofrece, según la práctica forense, una base de autenticidad más confiable, y una imagen generada por IA y luego fotografiada en una pantalla se registra como una foto nueva (Lars, 2026). La presencia de un manifiesto C2PA constituye un indicio fuerte; su ausencia no prueba nada, porque el manifiesto se pierde con la recompresión y la captura de pantalla, y los metadatos se pierden por la misma razón. El clasificador reconoce las familias de generadores vistas durante el entrenamiento, y su desempeño disminuye frente a generadores nuevos y a imágenes comprimidas (Williams, 2025; Lars, 2026). El análisis de niveles de error opera sobre JPEG, puede dar falsos positivos en bordes de alto contraste y se utiliza como señal complementaria. El sistema no localiza las zonas manipuladas de una imagen ni detecta fotografías reales reutilizadas fuera de contexto. Todos los resultados son parciales y de apoyo a la decisión humana. El formato HEIC se analiza sin convertir el original, pero el análisis de niveles de error tiene en él una validez limitada. El sello de tiempo acredita que una huella existía en una fecha, no que la imagen sea auténtica. 
+El clasificador de imágenes sintéticas no garantiza la detección de imágenes producidas con herramientas posteriores a su entrenamiento ni de ediciones parciales sobre una fotografía auténtica, y su desempeño en las escenas del sistema depende de su reentrenamiento periódico.
+
 ### **Limitaciones del relevamiento**
 El muestreo es exploratorio y de conveniencia: 11 abogados, una entrevista del lado asegurador y dos peritos. Las pruebas de canales se limitan a dos generadores y a una imagen por generador. El reconocimiento judicial del método depende de factores externos al desarrollo técnico. 
 ## **Catálogo de requisitos**
@@ -602,28 +604,6 @@ El modelo publicado se guarda en un repositorio privado de modelos de Hugging Fa
 ### **Limitaciones y consideraciones éticas**
 
 El clasificador presenta limitaciones que el informe de cada caso declara. Su desempeño con las herramientas comerciales actuales en las escenas del sistema es bajo, y su medición en condiciones reales todavía no incluye fotografías reales de esas escenas. No detecta ediciones localizadas sobre una fotografía auténtica, que quedan a cargo del análisis del nivel de error. Los datos de entrenamiento no se depuran de casi duplicados ni de fotografías reales de OpenFake que no son fotografías de cámara, y los temas de las imágenes reales y sintéticas difieren entre conjuntos, lo que se mitiga en parte con la evaluación por generador y en condiciones reales. Las licencias de los conjuntos utilizados permiten el uso con fines de investigación, como el de este proyecto, pero una explotación comercial requiere reentrenar con datos de licencia compatible y verificar los términos de uso de las herramientas generativas para el entrenamiento de un detector. En el plano ético, el diseño mide el desempeño por tono de piel en las imágenes de lesiones, nunca utiliza imágenes de usuarios ni de causas reales, y presenta el resultado como una probabilidad calibrada y explicada, acompañada del descargo de que no constituye un dictamen pericial, conforme al principio de supervisión humana que orienta al sistema (Parlamento Europeo y Consejo de la Unión Europea, 2024).
-
-El clasificador de imágenes sintéticas no garantiza la detección de imágenes producidas con herramientas posteriores a su entrenamiento ni de ediciones parciales sobre una fotografía auténtica, y su desempeño en las escenas del sistema depende de su reentrenamiento periódico.
-
-El entrenamiento utiliza además timm para la arquitectura preentrenada, MLflow para registrar cada experimento y Hugging Face como fuente de los conjuntos de datos y como registro privado de las versiones del modelo.
-
-Google Cloud. (s. f.). *MLOps: Continuous delivery and automation pipelines in machine learning*. https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning
-
-Guo, C., Pleiss, G., Sun, Y., y Weinberger, K. Q. (2017). On calibration of modern neural networks. En *Proceedings of the 34th International Conference on Machine Learning* (pp. 1321-1330). PMLR.
-
-Livernoche, V., Arodi, A., Musulan, A., Yang, Z., Salvail, A., Marceau Caron, G., Godbout, J.-F., y Rabbany, R. (2025). *OpenFake: An open dataset and platform toward large-scale deepfake detection* (arXiv:2509.09495). arXiv. https://arxiv.org/abs/2509.09495
-
-Loshchilov, I., y Hutter, F. (2019). Decoupled weight decay regularization. En *International Conference on Learning Representations*. https://openreview.net/forum?id=Bkg6RiCqY7
-
-Mitchell, M., Wu, S., Zaldivar, A., Barnes, P., Vasserman, L., Hutchinson, B., Spitzer, E., Raji, I. D., y Gebru, T. (2019). Model cards for model reporting. En *Proceedings of the Conference on Fairness, Accountability, and Transparency* (pp. 220-229). https://doi.org/10.1145/3287560.3287596
-
-Park, J., y Owens, A. (2025). Community Forensics: Using thousands of generators to train fake image detectors. En *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition* (pp. 8245-8257).
-
-Tan, M., y Le, Q. V. (2019). EfficientNet: Rethinking model scaling for convolutional neural networks. En *Proceedings of the 36th International Conference on Machine Learning* (pp. 6105-6114). PMLR.
-
-Wang, S.-Y., Wang, O., Zhang, R., Owens, A., y Efros, A. A. (2020). CNN-generated images are surprisingly easy to spot… for now. En *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition* (pp. 8695-8704).
-
-Wang, X., Li, W., y Wu, Z. (2023). CarDD: A new dataset for vision-based car damage detection. *IEEE Transactions on Intelligent Transportation Systems, 24*(7), 7202-7214. https://doi.org/10.1109/TITS.2023.3258480
 
 ## **Modelo de Datos**
 
