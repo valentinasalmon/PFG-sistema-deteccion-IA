@@ -2,11 +2,15 @@
 #
 # Pedido de la autora (2026-11-24): «agreguemos alguna herramienta de
 # monitoreo». Se usa CloudWatch, de AWS, sin instalar agentes: el servidor
-# publica sus métricas cada 5 minutos con scripts/medir_salud.sh y estas
+# publica sus métricas cada 15 minutos con scripts/medir_salud.sh y estas
 # alarmas avisan por correo (SNS) cuando algo falla y cuando se recupera.
 #
-# Costo estimado: 6 métricas propias × USD 0,30 = USD 1,80 por mes; las
-# alarmas entran en las 10 gratuitas de CloudWatch.
+# Frecuencia: 15 minutos alcanzan para el MVP (pedido de la autora, 2026-11-26).
+# En una operación comercial conviene 5: bajar PERIODO_MONITOREO y el temporizador
+# plataforma-monitoreo.timer.
+#
+# Costo estimado: 5 métricas propias × USD 0,30 = USD 1,50 por mes (se cobra
+# por métrica, no por medición); las alarmas entran en las 10 gratuitas.
 #
 # Si el hardware de AWS falla, la EC2 se recupera sola (recuperación automática
 # simplificada, activa por defecto en las t3); la alarma de estado avisa igual.
@@ -23,8 +27,9 @@ resource "aws_sns_topic_subscription" "alertas_correo" {
 }
 
 locals {
-  espacio_metricas = "evidentIA"
-  acciones_alerta  = [aws_sns_topic.alertas.arn]
+  periodo_monitoreo = 900 # segundos: 15 minutos, igual que el temporizador
+  espacio_metricas  = "evidentIA"
+  acciones_alerta   = [aws_sns_topic.alertas.arn]
 
   # Métricas que publica medir_salud.sh: umbral, comparación y cómo tratar la falta de datos.
   alarmas_propias = {
@@ -35,7 +40,7 @@ locals {
       periodos    = 2
       estadistica = "Minimum"
       sin_datos   = "breaching" # si el servidor deja de publicar, también es una caída
-      descripcion = "La plataforma no responde en https://${local.dominio}/api/salud desde hace 10 minutos."
+      descripcion = "La plataforma no responde en https://${local.dominio}/api/salud desde hace 30 minutos."
     }
     tareas-fallidas = {
       metrica     = "TareasFallidas"
@@ -50,7 +55,7 @@ locals {
       metrica     = "DiscoUsado"
       comparacion = "GreaterThanThreshold"
       umbral      = 85
-      periodos    = 2
+      periodos    = 1
       estadistica = "Maximum"
       sin_datos   = "missing"
       descripcion = "El disco del servidor está por encima del 85 %."
@@ -59,10 +64,10 @@ locals {
       metrica     = "MemoriaDisponible"
       comparacion = "LessThanThreshold"
       umbral      = 150
-      periodos    = 3
+      periodos    = 2
       estadistica = "Minimum"
       sin_datos   = "missing"
-      descripcion = "Quedan menos de 150 MB de memoria disponible desde hace 15 minutos."
+      descripcion = "Quedan menos de 150 MB de memoria disponible desde hace 30 minutos."
     }
     certificado-por-vencer = {
       metrica     = "DiasCertificado"
@@ -84,7 +89,7 @@ resource "aws_cloudwatch_metric_alarm" "propia" {
   namespace           = local.espacio_metricas
   metric_name         = each.value.metrica
   statistic           = each.value.estadistica
-  period              = 300
+  period              = local.periodo_monitoreo
   evaluation_periods  = each.value.periodos
   comparison_operator = each.value.comparacion
   threshold           = each.value.umbral
@@ -126,12 +131,12 @@ resource "aws_cloudwatch_metric_alarm" "servidor_cpu" {
   ok_actions          = local.acciones_alerta
 }
 
-# Tablero con las métricas de la plataforma (CloudWatch → Dashboards).
+# Tablero con las métricas de la plataforma y la CPU que publica AWS (CloudWatch → Dashboards).
 resource "aws_cloudwatch_dashboard" "plataforma" {
   dashboard_name = var.proyecto
   dashboard_body = jsonencode({
     widgets = [
-      for indice, metrica in ["Saludable", "TareasFallidas", "DiscoUsado", "MemoriaDisponible", "DiasCertificado", "CargaPorCpu"] : {
+      for indice, metrica in ["Saludable", "TareasFallidas", "DiscoUsado", "MemoriaDisponible", "DiasCertificado"] : {
         type   = "metric"
         x      = (indice % 3) * 8
         y      = floor(indice / 3) * 6
@@ -141,7 +146,7 @@ resource "aws_cloudwatch_dashboard" "plataforma" {
           title   = metrica
           region  = var.region
           metrics = [[local.espacio_metricas, metrica]]
-          period  = 300
+          period  = local.periodo_monitoreo
           stat    = "Average"
           view    = "timeSeries"
         }

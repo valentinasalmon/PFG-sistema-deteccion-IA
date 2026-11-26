@@ -1,11 +1,13 @@
-# Mide la salud de la plataforma cada 5 minutos y la publica en CloudWatch (053).
+# Mide la salud de la plataforma cada 15 minutos y la publica en CloudWatch (053).
+# Para el MVP alcanza con 15 minutos (pedido de la autora, 2026-11-26). En una
+# operación comercial conviene 5: cambiar OnUnitActiveSec y PERIODO_MONITOREO en monitoreo.tf.
 [Unit]
-Description=Monitoreo de la plataforma cada 5 minutos
+Description=Monitoreo de la plataforma cada 15 minutos
 
 [Timer]
 OnBootSec=2min
-OnUnitActiveSec=5min
-AccuracySec=30s
+OnUnitActiveSec=15min
+AccuracySec=1min
 
 [Install]
 WantedBy=timers.target
