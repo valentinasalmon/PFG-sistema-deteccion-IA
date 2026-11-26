@@ -35,3 +35,20 @@ Sensor de accesibilidad sin infracciones graves (14 pantallas en pc y celular, u
 
 - **Sensor de uso con teclado**: 9 pantallas recorridas con Tab, foco siempre visible, sin trampas, e inicio de sesión solo con el teclado. Primera corrida con un falso positivo: el campo de fecha nativo usa Tab entre día, mes y año, y parecía una trampa; se toleran hasta cinco Tab en el mismo control. Se comprobó que el sensor falla al quitar el contorno de foco.
 - **Plan B del DNS**: salida `registros_dns` de Terraform y sección en la guía, por si NIC Argentina no toma la delegación de DonWeb.
+
+## Más tarde: 044, perfiles de la portada y verificación de identidad
+
+- El dominio quedó funcionando (DKIM verificado en SES, certificado y `/estado` en verde) y la autora publicó el inicio con Google para cualquier persona.
+- **Portada**: dos propuestas para la sección de perfiles; la autora eligió la banda gris con título a la izquierda y pidió menos cajas. Quedó con columnas abiertas separadas por una línea.
+- **Identidad**: `verificacion_identidad` pasa a `simulado` por defecto (la autora esperaba ver la simulación de Identik como la de Cresium).
+- **Aseguradora que no llega al Administrador**: con la configuración de producción, en local el flujo completo funciona (pendiente, correo al Administrador, aprobación). Causas posibles en producción, a revisar con la autora: SES todavía en modo de prueba (solo entrega a direcciones verificadas), el pago sin acreditar o el listado debajo del tablero.
+
+## Más tarde: ramas por tema, commits y control visual
+
+- La autora pidió dejar de abrir una rama y un Pull Request por cada arreglo chico, agrupar por temas con valor para la defensa, sin borrar historia, y aplicar lo mismo a los commits.
+- **Decisión**: ramas cortas por objetivo con el área adelante (`interfaz/…`, `hedera/…`, `integraciones/…`, `infraestructura/…`, `documentacion/…`, `plataforma/…`, `red-neuronal/…`); un Pull Request por objetivo; al integrarse, la rama se guarda como etiqueta `archivo/<área>/<nombre>` y se borra. Se descartaron las ramas permanentes por área porque se desincronizan de `desarrollo`.
+- **Mapa de ramas** (`docs/guias/mapa-de-ramas.md`): 62 ramas integradas agrupadas en siete áreas, con su Pull Request y su etiqueta.
+- **Commits**: uno por cambio completo; gancho `revisar_commit.py` (formato, 72 caracteres, `Co-Authored-By`) y commitlint a 72.
+- La tanda actual pasa a `interfaz/calidad-visual`, donde siguen el sensor de composición, la galería, la comparación visual y la auditoría completa.
+- Un intento previo de borrar 26 ramas falló por la red antes de llegar a GitHub; la autora pidió no borrar sin conservar la historia, y por eso se archivan como etiquetas.
+- La sesión del informe avisó que `claude/gracious-thompson-9slyyn` tiene trabajo sin integrar: no se archiva. El certificado Sectigo de DonWeb no hace falta (se aclaró en la guía).

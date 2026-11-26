@@ -1,5 +1,5 @@
 # Integración y despliegue continuos (RNF20, CP-06).
-# Se ejecuta en cada Pull Request y en cada envío a main y desarrollo.
+# Se ejecuta en cada Pull Request y en cada envío a main (GitHub Flow, ADR-0023).
 # Un Pull Request solo puede integrarse si todas las verificaciones terminan en
 # verde. Cada envío a main que pasa las verificaciones se despliega en la EC2
 # (funcionalidad 017); el despliegue se omite mientras no estén cargadas las
@@ -12,7 +12,7 @@ name: Integración continua
 on:
   pull_request:
   push:
-    branches: [main, desarrollo]
+    branches: [main]
   schedule:
     - cron: "17 9 * * 1"  # lunes 09:17 UTC
 
@@ -44,6 +44,9 @@ jobs:
       - name: Ganchos del arnés para el agente de IA (036)
         working-directory: .
         run: python -m unittest discover -s .claude/hooks -p "pruebas_*.py"
+      - name: Documentación del arnés al día (045)
+        working-directory: .
+        run: python .claude/hooks/verificar_arnes.py
 
   frontend:
     name: Frontend (análisis, pruebas y compilación)
@@ -69,13 +72,14 @@ jobs:
 
   commits:
     name: Mensajes de commit (Conventional Commits en español)
-    # Los Pull Requests de integración (desarrollo → main, o main → desarrollo)
-    # traen commits ya validados en su propio Pull Request y los de fusión
-    # escritos en GitHub; volver a validarlos solo repite fallas pasadas.
+    # Solo en los Pull Requests: valida los commits de la rama antes de integrarla.
+    # El Pull Request de transición desde la antigua rama desarrollo trae commits
+    # ya validados en su momento (ADR-0023). Los de Dependabot los escribe la
+    # herramienta y pueden pasar de 72 caracteres con el nombre del paquete.
     if: >
       github.event_name == 'pull_request'
       && github.head_ref != 'desarrollo'
-      && github.head_ref != 'main'
+      && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4

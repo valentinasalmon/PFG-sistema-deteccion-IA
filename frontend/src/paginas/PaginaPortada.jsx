@@ -321,8 +321,14 @@ export default function PaginaPortada() {
           </div>
         </header>
 
+        {/* 044: banda propia con título, alineada con «Qué miramos»; los perfiles
+            van como columnas abiertas, sin tarjetas, para no sumar cajas. */}
         <section className="portada-perfiles" aria-labelledby="titulo-perfiles">
-          <h2 id="titulo-perfiles" className="solo-lectores">Para quién es</h2>
+          <div className="portada-cab portada-cab--izquierda portada-perfiles__cab" data-aparecer>
+            <span className="portada-etq">Para quién es</span>
+            <h2 id="titulo-perfiles">Una plataforma, dos rubros</h2>
+            <p>Las mismas cuatro miradas, con el vocabulario de tu trabajo.</p>
+          </div>
           <ul className="portada-perfiles__grilla">
             {PERFILES.map((perfil) => (
               <li key={perfil.titulo} className="portada-perfil" data-aparecer>

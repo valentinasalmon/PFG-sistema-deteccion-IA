@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import proteger_secretos  # noqa: E402  pylint: disable=wrong-import-position
 import revisar_estilo  # noqa: E402  pylint: disable=wrong-import-position
+import revisar_commit  # noqa: E402  pylint: disable=wrong-import-position
 
 
 def _correr(modulo, pedido):
@@ -125,6 +126,62 @@ class RevisarEstilo(unittest.TestCase):
             )
         self.assertEqual(codigo, 2)
         self.assertIn("F401", error)
+
+
+class RevisarCommit(unittest.TestCase):
+    """Regla de commits: tipo en español, título de 72 caracteres o menos y Co-Authored-By."""
+
+    PIE = "\n\nCo-Authored-By: Agente <noreply@ejemplo.com>"
+
+    def _commit(self, mensaje):
+        comando = "git commit -q -F - <<'FIN'\n" + mensaje + "\nFIN"
+        return _correr(revisar_commit, {"tool_name": "Bash", "tool_input": {"command": comando}})
+
+    def test_deja_pasar_un_commit_correcto(self):
+        """Título válido, corto y con la línea de asistencia."""
+        codigo, _ = self._commit("funcionalidad(044): perfiles de la portada" + self.PIE)
+        self.assertEqual(codigo, 0)
+
+    def test_bloquea_un_titulo_largo(self):
+        """Un título de más de 72 caracteres se rechaza antes de crear el commit."""
+        codigo, error = self._commit("funcionalidad(041): " + "x" * 80 + self.PIE)
+        self.assertEqual(codigo, 2)
+        self.assertIn("máximo es 72", error)
+
+    def test_bloquea_un_tipo_en_ingles(self):
+        """Los tipos van en español."""
+        codigo, error = self._commit("feat: algo" + self.PIE)
+        self.assertEqual(codigo, 2)
+        self.assertIn("tipo en español", error)
+
+    def test_bloquea_sin_co_authored_by(self):
+        """La asistencia de IA nunca se oculta."""
+        codigo, error = self._commit("tarea(arnes): algo")
+        self.assertEqual(codigo, 2)
+        self.assertIn("Co-Authored-By", error)
+
+    def test_lee_el_mensaje_de_la_opcion_m(self):
+        """También revisa la opción -m, también después de otros comandos."""
+        comando = 'git add -A && git ' + 'commit -m "feat: algo"'
+        codigo, _ = _correr(
+            revisar_commit, {"tool_name": "Bash", "tool_input": {"command": comando}}
+        )
+        self.assertEqual(codigo, 2)
+
+    def test_ignora_el_texto_dentro_de_un_archivo(self):
+        """Un commit escrito como texto dentro de un heredoc no es un commit."""
+        comando = "cat > prueba.py <<'FIN'\nx = 'git " + "commit -m \"feat: algo\"'\nFIN"
+        codigo, _ = _correr(
+            revisar_commit, {"tool_name": "Bash", "tool_input": {"command": comando}}
+        )
+        self.assertEqual(codigo, 0)
+
+    def test_ignora_otros_comandos(self):
+        """Lo que no es un commit no se revisa."""
+        codigo, _ = _correr(
+            revisar_commit, {"tool_name": "Bash", "tool_input": {"command": "git status"}}
+        )
+        self.assertEqual(codigo, 0)
 
 
 if __name__ == "__main__":
