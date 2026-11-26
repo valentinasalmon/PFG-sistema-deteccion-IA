@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block contenido %}
+<p>Hola, {{ nombre }}:</p>
+<p>Se actualizó el catálogo de aseguradoras con los datos abiertos de la Superintendencia de Seguros de la Nación. Ahora tiene <strong>{{ total }}</strong> aseguradoras.</p>
+{% if afectadas %}
+<p><strong>Para revisar:</strong> estas aseguradoras registradas en la plataforma dejaron de figurar como activas en la SSN o tienen en trámite la revocación de su autorización para operar. Siguen activas en la plataforma hasta que decidas qué hacer.</p>
+<ul>{% for organizacion in afectadas %}<li>{{ organizacion.nombre }} (CUIT {{ organizacion.cuit }})</li>{% endfor %}</ul>
+{% endif %}
+{% if revocaciones %}<p>Con revocación de la autorización en trámite ({{ revocaciones|length }}):</p><ul>{% for a in revocaciones %}<li>{{ a.denominacion }}</li>{% endfor %}</ul>{% endif %}
+{% if altas %}<p>Nuevas ({{ altas|length }}):</p><ul>{% for a in altas %}<li>{{ a.denominacion }}</li>{% endfor %}</ul>{% endif %}
+{% if bajas %}<p>Dejaron de figurar ({{ bajas|length }}):</p><ul>{% for a in bajas %}<li>{{ a.denominacion }}</li>{% endfor %}</ul>{% endif %}
+{% if modificadas %}<p>Con datos cambiados ({{ modificadas|length }}):</p><ul>{% for a in modificadas %}<li>{{ a.denominacion }}</li>{% endfor %}</ul>{% endif %}
+{% with texto_boton = "Ir a Administración" %}{% include "_boton.html" %}{% endwith %}
+{% endblock %}

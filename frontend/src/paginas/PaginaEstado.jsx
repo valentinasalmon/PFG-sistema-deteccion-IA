@@ -92,6 +92,19 @@ export default function PaginaEstado() {
               </li>
             ))}
             <EstadoSello sello={salud.sello} />
+            {salud.catalogo_ssn && (
+              <li>
+                <span>Catálogo de aseguradoras de la SSN</span>
+                <span className="estado-sello">
+                  <strong>{salud.catalogo_ssn.total} aseguradoras</strong>
+                  <small className="nota">
+                    {salud.catalogo_ssn.actualizado_en_la_fuente
+                      ? `Versión de la SSN del ${new Date(salud.catalogo_ssn.actualizado_en_la_fuente).toLocaleDateString('es-AR')}; se consulta cada semana`
+                      : 'Versión incluida en la plataforma'}
+                  </small>
+                </span>
+              </li>
+            )}
           </ul>
           <p className="nota">
             Entorno: {salud.entorno} · Versión {salud.version}

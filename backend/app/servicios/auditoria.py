@@ -89,6 +89,7 @@ IMAGEN_ELIMINACION = "imagen.eliminacion"
 IMAGEN_SELLO = "imagen.sello"  # funcionalidad 016 (RF37)
 IMAGEN_ENLACE_CARGA = "imagen.enlace_carga"  # funcionalidad 024 (RF53 CA2)
 VERSION_DESPLIEGUE = "version.despliegue"  # funcionalidad 029 (RF56)
+CATALOGO_ACTUALIZACION = "catalogo.actualizacion"  # funcionalidad 052
 
 # --- Acciones de análisis (funcionalidad 007) ---
 ANALISIS_SOLICITUD = "analisis.solicitud"

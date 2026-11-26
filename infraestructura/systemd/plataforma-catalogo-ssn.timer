@@ -1,0 +1,12 @@
+# Consulta los datos abiertos de la SSN una vez por semana, los lunes a la madrugada (052).
+# La SSN actualiza el conjunto de datos cada pocos meses: una vez por semana alcanza.
+[Unit]
+Description=Catálogo de aseguradoras de la SSN, semanal
+
+[Timer]
+OnCalendar=Mon *-*-* 05:17:00
+RandomizedDelaySec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -2,15 +2,18 @@
 
 Son una puerta de entrada como las rutas: solo usan la fábrica de servicios.
 
-Realiza: funcionalidad 021 (alta de administradores fuera de la interfaz).
+Realiza: funcionalidad 021 (alta de administradores fuera de la interfaz); 052 (catálogo de
+la SSN).
 """
 import click
 from flask import current_app
 from flask.cli import AppGroup
 
 from app.servicios.contrasenias import validar_politica
+from app.servicios.servicio_catalogo_ssn import CatalogoSsnInvalido, CatalogoSsnNoDisponible
 from app.servicios.errores import ErrorValidacion, NoEncontrado
 from app.servicios.fabrica import (
+    crear_servicio_catalogo_ssn,
     crear_servicio_cuentas,
     crear_servicio_sellos,
     crear_servicio_versiones,
@@ -136,8 +139,39 @@ def crear_tema(red, cuenta):
     click.echo(f"Tema creado en {red}: {tema}")
 
 
+catalogos_cli = AppGroup("catalogos", help="Catálogos externos (funcionalidad 052).")
+
+
+@catalogos_cli.command("actualizar-aseguradoras")
+@click.option("--forzar", is_flag=True,
+              help="Aplica aunque la lista nueva sea mucho más corta que la actual.")
+def actualizar_aseguradoras(forzar):
+    """Baja el catálogo de la SSN y lo aplica si cambió. La ejecuta un timer semanal (052).
+
+    Sale con código 1 si el portal no responde o el archivo no pasa las
+    validaciones, así systemd y el monitoreo lo registran como falla.
+    """
+    try:
+        resultado = crear_servicio_catalogo_ssn(
+            current_app.config, current_app.extensions["enviador_correo"]
+        ).actualizar(forzar=forzar)
+    except (CatalogoSsnNoDisponible, CatalogoSsnInvalido) as falla:
+        click.echo(f"Catálogo de la SSN sin cambios: {falla}", err=True)
+        raise SystemExit(1) from falla
+    if not resultado["cambio"]:
+        click.echo(f"Catálogo de la SSN al día ({resultado['total']} aseguradoras).")
+        return
+    click.echo(
+        f"Catálogo de la SSN actualizado: {resultado['total']} aseguradoras, "
+        f"{len(resultado['altas'])} alta(s), {len(resultado['bajas'])} baja(s), "
+        f"{len(resultado['modificadas'])} con cambios, "
+        f"{len(resultado['afectadas'])} organización(es) para revisar."
+    )
+
+
 def registrar_comandos(aplicacion):
     """Registra los grupos de comandos en la aplicación."""
     aplicacion.cli.add_command(administracion_cli)
     aplicacion.cli.add_command(retencion_cli)
     aplicacion.cli.add_command(sellos_cli)
+    aplicacion.cli.add_command(catalogos_cli)

@@ -53,6 +53,9 @@ from cachelib import SimpleCache
 
 # Carpeta de las imágenes en desarrollo: está en .gitignore y nunca se sube
 # al repositorio (constitución: nada de imágenes de casos reales).
+URL_PAQUETE_SSN = (
+    "https://datos.gob.ar/api/3/action/package_show?id=entidades-aseguradoras-y-reaseguradoras"
+)
 DIRECTORIO_ALMACENAMIENTO_LOCAL = Path(__file__).resolve().parents[2] / "almacenamiento_local"
 CARPETA_CONFIANZA = Path(__file__).resolve().parents[2] / "recursos" / "confianza_c2pa"
 # Modelo de la capa 4 descargado del registro (en .gitignore: nunca se sube).
@@ -237,6 +240,14 @@ class ConfiguracionBase:  # pylint: disable=too-many-instance-attributes
         # el botón no se muestra. El secreto solo llega por el entorno (SSM).
         self.GOOGLE_ID_CLIENTE = os.getenv("GOOGLE_ID_CLIENTE", "")
         self.GOOGLE_SECRETO_CLIENTE = os.getenv("GOOGLE_SECRETO_CLIENTE", "")
+        # Catálogo de la SSN (052): de dónde se baja y dónde se guarda la copia actualizada,
+        # fuera de la carpeta de cada versión para que no se pierda al desplegar.
+        self.URL_CATALOGO_SSN = os.getenv("URL_CATALOGO_SSN", URL_PAQUETE_SSN)
+        self.CARPETA_CATALOGOS = os.getenv(
+            "CARPETA_CATALOGOS",
+            "/opt/plataforma/datos/catalogos" if self.NOMBRE == "produccion"
+            else str(DIRECTORIO_ALMACENAMIENTO_LOCAL / "catalogos"),
+        )
         # Proxies delante de la aplicación: 0 en desarrollo, 1 (Nginx) en producción.
         self.PROXIES_DE_CONFIANZA = int(os.getenv("PROXIES_DE_CONFIANZA", "0"))
 

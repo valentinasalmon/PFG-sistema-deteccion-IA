@@ -25,8 +25,11 @@ systemctl reload nginx || systemctl restart nginx
 
 install -m 644 "$SERVIDOR"/systemd/* /etc/systemd/system/
 systemctl daemon-reload
-systemctl enable plataforma-web plataforma-trabajador plataforma-respaldo.timer plataforma-retencion.timer plataforma-sellos.timer
-systemctl start plataforma-respaldo.timer plataforma-retencion.timer plataforma-sellos.timer
+systemctl enable plataforma-web plataforma-trabajador plataforma-respaldo.timer plataforma-retencion.timer plataforma-sellos.timer plataforma-catalogo-ssn.timer
+systemctl start plataforma-respaldo.timer plataforma-retencion.timer plataforma-sellos.timer plataforma-catalogo-ssn.timer
+
+# Copia actualizada del catálogo de la SSN (052): fuera de las versiones, para que no se pierda.
+install -d -o plataforma -g plataforma /opt/plataforma/datos /opt/plataforma/datos/catalogos
 
 # Recarga Nginx cuando certbot renueva el certificado.
 mkdir -p /etc/letsencrypt/renewal-hooks/deploy

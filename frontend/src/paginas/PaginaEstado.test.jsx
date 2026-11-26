@@ -76,4 +76,18 @@ describe('PaginaEstado', () => {
     render(<PaginaEstado />)
     expect(await screen.findByRole('alert')).toBeInTheDocument()
   })
+
+  it('muestra de cuándo es el catálogo de la SSN (052)', async () => {
+    simularRespuesta(200, {
+      estado: 'ok',
+      componentes: { api: 'ok' },
+      entorno: 'produccion',
+      version: '1.0.0',
+      catalogo_ssn: { total: 192, actualizado_en_la_fuente: '2026-10-26T16:10:13', origen: 'datos_abiertos' },
+    })
+    render(<PaginaEstado />)
+    expect(await screen.findByText('Catálogo de aseguradoras de la SSN')).toBeInTheDocument()
+    expect(screen.getByText('192 aseguradoras')).toBeInTheDocument()
+    expect(screen.getByText(/Versión de la SSN del 26\/10\/2026/)).toBeInTheDocument()
+  })
 })

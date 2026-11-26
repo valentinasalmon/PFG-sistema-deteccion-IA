@@ -1,0 +1,21 @@
+Hola, {{ nombre }}:
+
+Se actualizó el catálogo de aseguradoras con los datos abiertos de la Superintendencia de Seguros de la Nación. Ahora tiene {{ total }} aseguradoras.
+{% if afectadas %}
+PARA REVISAR: estas aseguradoras registradas en la plataforma dejaron de figurar como activas en la SSN o tienen en trámite la revocación de su autorización para operar. Siguen activas en la plataforma hasta que decidas qué hacer.
+{% for organizacion in afectadas %}- {{ organizacion.nombre }} (CUIT {{ organizacion.cuit }})
+{% endfor %}{% endif %}{% if revocaciones %}
+Con revocación de la autorización en trámite ({{ revocaciones|length }}):
+{% for a in revocaciones %}- {{ a.denominacion }}
+{% endfor %}{% endif %}{% if altas %}
+Nuevas ({{ altas|length }}):
+{% for a in altas %}- {{ a.denominacion }}
+{% endfor %}{% endif %}{% if bajas %}
+Dejaron de figurar ({{ bajas|length }}):
+{% for a in bajas %}- {{ a.denominacion }}
+{% endfor %}{% endif %}{% if modificadas %}
+Con datos cambiados ({{ modificadas|length }}):
+{% for a in modificadas %}- {{ a.denominacion }}
+{% endfor %}{% endif %}
+Administración:
+{{ enlace }}

@@ -1,0 +1,15 @@
+# Baja el catálogo de aseguradoras de la SSN y lo aplica si cambió (funcionalidad 052).
+[Unit]
+Description=evidentIA - catálogo de aseguradoras de la SSN
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=plataforma
+Group=plataforma
+WorkingDirectory=/opt/plataforma/actual/backend
+EnvironmentFile=/opt/plataforma/.env
+ExecStart=/opt/plataforma/actual/venv/bin/flask --app wsgi catalogos actualizar-aseguradoras
+NoNewPrivileges=true
+PrivateTmp=true

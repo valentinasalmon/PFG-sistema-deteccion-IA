@@ -8,6 +8,7 @@ IP) para que la auditoría lo registre sin que los servicios conozcan Flask.
 """
 from app.repositorios.catalogo_aseguradoras import CatalogoAseguradoras
 from app.analisis.registro import crear_capas
+from app.integraciones.fuente_ssn import URL_PAQUETE, FuenteSsn
 from app.integraciones.google import crear_cliente_google
 from app.integraciones.identidad import crear_proveedor_identidad
 from app.integraciones.pagos import crear_proveedor_pagos
@@ -27,6 +28,7 @@ from app.repositorios.repositorio_versiones import RepositorioVersiones
 from app.servicios.auditoria import ServicioAuditoria
 from app.servicios.servicio_administracion import ServicioAdministracion
 from app.servicios.servicio_analisis import ServicioAnalisis
+from app.servicios.servicio_catalogo_ssn import ServicioCatalogoSsn
 from app.servicios.servicio_casos import ServicioCasos, TareasDeRetencion
 from app.servicios.servicio_correos import ServicioCorreos
 from app.servicios.servicio_cuentas import ServicioCuentas
@@ -67,7 +69,7 @@ def crear_servicio_cuentas(configuracion, enviador, origen=None):
         GestorTokens(configuracion["SECRET_KEY"]), configuracion,
         crear_servicio_auditoria(origen),
         crear_servicio_organizaciones(configuracion, enviador, origen),
-        CatalogoAseguradoras(),
+        crear_catalogo_aseguradoras(configuracion),
     )
 
 
@@ -89,9 +91,22 @@ def crear_servicio_google(configuracion, enviador, origen=None):
     )
 
 
-def crear_catalogo_aseguradoras():
-    """Catálogo de aseguradoras de la SSN (CP-18)."""
-    return CatalogoAseguradoras()
+def crear_servicio_catalogo_ssn(configuracion, enviador):
+    """Actualización semanal del catálogo de la SSN (052)."""
+    return ServicioCatalogoSsn(
+        FuenteSsn(configuracion.get("URL_CATALOGO_SSN") or URL_PAQUETE),
+        crear_catalogo_aseguradoras(configuracion),
+        crear_servicio_auditoria(),
+        organizaciones=RepositorioOrganizaciones(),
+        usuarios=RepositorioUsuarios(),
+        correos=_correos(configuracion, enviador),
+    )
+
+
+def crear_catalogo_aseguradoras(configuracion=None):
+    """Catálogo de aseguradoras de la SSN (CP-18), con la copia actualizada si existe (052)."""
+    carpeta = (configuracion or {}).get("CARPETA_CATALOGOS")
+    return CatalogoAseguradoras(carpeta_actualizada=carpeta)
 
 
 def crear_servicio_perfil(configuracion, enviador, origen=None):

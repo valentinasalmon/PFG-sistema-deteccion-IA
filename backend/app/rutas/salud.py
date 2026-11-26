@@ -9,6 +9,7 @@ Realiza: CA2 y CA3 de la funcionalidad 001; RF37 (estado del sello).
 """
 from flask import Blueprint, current_app, jsonify
 
+from app.servicios.fabrica import crear_catalogo_aseguradoras
 from app.servicios.servicio_salud import crear_servicio_salud, resumen_del_sello
 
 salud_bp = Blueprint("salud", __name__, url_prefix="/api")
@@ -27,5 +28,7 @@ def obtener_salud():
         "sello": resumen_del_sello(
             current_app.config["SELLO_TIEMPO"], current_app.config["HEDERA_RED"]
         ),
+        # 052: de cuándo es el catálogo de aseguradoras de la SSN.
+        "catalogo_ssn": crear_catalogo_aseguradoras(current_app.config).metadatos(),
     }
     return jsonify(cuerpo), 200 if estado.saludable else 503

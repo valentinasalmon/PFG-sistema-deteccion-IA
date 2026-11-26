@@ -16,7 +16,8 @@ def aseguradoras():
     """Las 192 aseguradoras habilitadas, ordenadas por denominación. No requiere sesión."""
     return jsonify({
         "aseguradoras": [
-            aseguradora_de_catalogo_a_dict(a) for a in crear_catalogo_aseguradoras().todas()
+            aseguradora_de_catalogo_a_dict(a)
+            for a in crear_catalogo_aseguradoras(current_app.config).todas()
         ]
     })
 

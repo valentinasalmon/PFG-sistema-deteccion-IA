@@ -204,6 +204,20 @@ class ServicioCorreos:  # pylint: disable=too-many-public-methods
             es_aseguradora=es_aseguradora, desactivada=desactivada,
         )
 
+    def enviar_aviso_catalogo_ssn(self, administrador, diferencias, afectadas, total):
+        """Aviso al Administrador: se actualizó el catálogo de la SSN (052)."""
+        asunto = (
+            f"Catálogo de la SSN: {len(afectadas)} aseguradora(s) para revisar"
+            if afectadas else "Se actualizó el catálogo de aseguradoras de la SSN"
+        )
+        return self._enviar(
+            administrador.correo, asunto, "catalogo_ssn",
+            nombre=administrador.nombre, total=total, afectadas=afectadas,
+            altas=diferencias["altas"], bajas=diferencias["bajas"],
+            modificadas=diferencias["modificadas"], revocaciones=diferencias["revocaciones"],
+            enlace=f"{self.url_frontend}/administracion",
+        )
+
     # --- Casos (funcionalidad 005) ---
 
     def _enlace_caso(self, caso):
