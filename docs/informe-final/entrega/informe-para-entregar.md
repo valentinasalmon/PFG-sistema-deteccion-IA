@@ -274,13 +274,13 @@ Los actores del sistema y sus casos de uso se presentan en las Figuras 8 y 9; lo
 
 ##### **Figura 8.** Actores del sistema
 
-![](diagramas/09-casos-de-uso-actores.png)
+![](../../arquitectura/diagramas/09-casos-de-uso-actores.png)
 
 *Nota. Elaboración propia, en notación UML 2.5.*
 
 ##### **Figura 9.** Casos de uso: imágenes, análisis e informes
 
-![](diagramas/09d-casos-de-uso.png)
+![](../../arquitectura/diagramas/09d-casos-de-uso.png)
 
 *Nota. Elaboración propia, en notación UML 2.5.*
 
@@ -393,7 +393,7 @@ La ejecución real difiere del plan en el orden y en el alcance, como resume la 
 
 ##### **Figura 10.** Cronograma planificado y ejecución real
 
-![](diagramas/06-cronograma.png)
+![](../../arquitectura/diagramas/06-cronograma.png)
 
 *Nota. Elaboración propia a partir de la bitácora de trabajo (Anexo H).*
 
@@ -412,7 +412,7 @@ El funcionamiento del arnés se comprueba en la práctica. En su primera prueba,
 
 ##### **Figura 11.** Ciclo de trabajo asistido por inteligencia artificial
 
-![](diagramas/10-ciclo-de-trabajo-con-ia.png)
+![](../../arquitectura/diagramas/10-ciclo-de-trabajo-con-ia.png)
 
 *Nota. Elaboración propia, diagrama de actividad en notación UML 2.5.*
 
@@ -420,7 +420,7 @@ El mismo criterio se aplica a la redacción de este informe, que cuenta con un a
 
 ##### **Figura 12.** Arnés del informe final
 
-![](diagramas/11-arnes-del-informe.png)
+![](../../arquitectura/diagramas/11-arnes-del-informe.png)
 
 *Nota. Elaboración propia, diagrama de actividad en notación UML 2.5.*
 La seguridad y la protección de datos se incorporan desde el diseño. Los activos de información se clasifican por nivel de confidencialidad conforme a la norma ISO/IEC 27001 (International Organization for Standardization \[ISO\], 2022), y las imágenes de siniestros y los informes se tratan como información de máxima confidencialidad. Se aplica el principio de mínimo privilegio: cada rol accede solo a lo necesario para su función, y el administrador gestiona usuarios y revisa la auditoría sin acceder al contenido de los casos. La protección de los datos personales sigue la Ley N.° 25.326 (República Argentina, 2000): seguridad de los datos (art. 9), destrucción de los datos que dejan de ser necesarios (art. 4, inc. 7) y tratamiento reforzado de los datos sensibles, categoría que puede alcanzar a imágenes con lesiones (art. 2). La norma ISO/IEC 27701 (ISO, 2019) orienta los controles de minimización, retención y supresión. Para la auditabilidad del componente de inteligencia artificial se toman como referencia el Reglamento de Inteligencia Artificial de la Unión Europea (Parlamento Europeo y Consejo de la Unión Europea, 2024) y la norma ISO/IEC 42001 (ISO, 2023): cada resultado registra la versión del modelo y de los componentes que lo produjeron, y el clasificador cuenta con una ficha técnica que documenta el conjunto de datos, el procedimiento de entrenamiento y las métricas obtenidas.
@@ -505,7 +505,7 @@ El sistema se organiza en un único repositorio que contiene una interfaz React,
 
 ##### **Figura 13.** Diagrama de despliegue
 
-![](diagramas/07-despliegue-uml.png)
+![](../../arquitectura/diagramas/07-despliegue-uml.png)
 
 *Nota. Elaboración propia, en notación UML 2.5. Datos verificados contra la infraestructura declarada en Terraform.*
 
@@ -515,7 +515,7 @@ El diseño aplica Strategy para las capas de análisis, el almacenamiento, la co
 
 ##### **Figura 14.** Diagrama de componentes del backend
 
-![](diagramas/08-componentes-uml.png)
+![](../../arquitectura/diagramas/08-componentes-uml.png)
 
 *Nota. Elaboración propia, en notación UML 2.5, generado desde el código.*
 
@@ -523,7 +523,7 @@ La Figura 15 muestra la secuencia completa de un caso: la carga de las imágenes
 
 ##### **Figura 15.** Secuencia de un caso, desde la carga hasta la verificación
 
-![](diagramas/05-secuencia-de-un-caso.png)
+![](../../arquitectura/diagramas/05-secuencia-de-un-caso.png)
 
 *Nota. Elaboración propia, en notación UML 2.5.*
 
@@ -573,7 +573,7 @@ El modelo se evalúa sobre tres conjuntos que miden cosas distintas: el conjunto
 
 ##### **Figura 16.** Pipeline del clasificador de imágenes
 
-![](diagramas/12-pipeline-red-neuronal.png)
+![](../../arquitectura/diagramas/12-pipeline-red-neuronal.png)
 
 *Nota. Elaboración propia, diagrama de actividad en notación UML 2.5.*
 
@@ -631,7 +631,7 @@ El modelo se compone de las siguientes entidades, que la Figura 17 presenta con 
 
 ##### **Figura 17.** Modelo de datos
 
-![](diagramas/04-modelo-de-datos.png)
+![](../../arquitectura/diagramas/04-modelo-de-datos.png)
 
 *Nota. Elaboración propia, generado desde los modelos del sistema. Se muestran las claves; el modelo completo está en el Anexo K.*
 
